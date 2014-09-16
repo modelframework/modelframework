@@ -1,95 +1,102 @@
 <?php
 
-namespace ModelFramework\ModelConfigsService;
-
-use ModelFramework\GatewayService\GatewayServiceAwareInterface;
-use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\DataModel\Custom\ConfigData;
-use ModelFramework\Utility\Arr;
-
 /**
- * Class ModelConfigsService
- * @package ModelFramework\ModelConfigsService
+ * Class FieldTypesService
+ * @package ModelFramework\FieldTypesService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
-class ModelConfigsService implements ModelConfigsServiceInterface, GatewayServiceAwareInterface
+
+namespace ModelFramework\FieldTypesService;
+
+class FiledTypesService implements FieldTypesServiceInterface
 {
 
-    use GatewayServiceAwareTrait;
-
     /**
      * @var array
      */
-    protected $_systemConfig = [ ];
+    protected $_fieldTypes = [ ];
 
     /**
-     * @var array
+     * @param array $systemConfig
+     *
+     * @return $this
+     * @throws \Exception
      */
-    protected $_customConfig = [ ];
-
     public function setSystemConfig( $systemConfig )
     {
-        $this->_systemConfig = isset( $systemConfig[ 'system' ] ) ? $systemConfig[ 'system' ] : [ ];
-        $this->_customConfig = isset( $systemConfig[ 'custom' ] ) ? $systemConfig[ 'custom' ] : [ ];
+        if ( !is_array( $systemConfig ) )
+        {
+            throw new \Exception( 'SystemConfig must be an array' );
+        }
+        $this->_fieldTypes = $systemConfig;
+
+        return $this;
     }
 
-    protected function getConfigFromDb( $modelName )
+    /**
+     * @param string $type
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getInputFilter( $type )
     {
-        $configData = $this->getGatewayServiceVerify()->get( 'ConfigData', new ConfigData() )
-                           ->findOne( [ 'model' => $modelName ] );
-        if ( $configData == null )
+        if ( !isset( $this->_fieldTypes[ $type ][ 'inputFilter' ] ) )
         {
-            $configArray = Arr::getDoubtField( $this->_customConfig, $modelName, null );
-            if ( $configArray == null )
-            {
-                throw new \Exception( ' unknown config for model ' . $modelName );
-            }
-            $configData = new ConfigData( $configArray );
-//            $configData->exchangeArray( $configArray );
-            $this->getGatewayServiceVerify()->get( 'ConfigData', $configData )->save( $configData );
+            throw new \Exception( 'Unknown type "' . $type . '" for getInputFilter' );
         }
 
-        return $configData;
+        return $this->_fieldTypes[ $type ][ 'inputFilter' ];
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getField( $type )
+    {
+        if ( !isset( $this->_fieldTypes[ $type ][ 'field' ] ) )
+        {
+            throw new \Exception( 'Unknown type "' . $type . '" for getField' );
+        }
+
+        return $this->_fieldTypes[ $type ][ 'field' ];
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getFormElement( $type )
+    {
+        if ( !isset( $this->_fieldTypes[ $type ][ 'formElement' ] ) )
+        {
+            throw new \Exception( 'Unknown type "' . $type . '" for getFormElement' );
+        }
+
+        return $this->_fieldTypes[ $type ][ 'formElement' ];
     }
 
     /**
      * @param string $modelName
      *
-     * @return Config
-     * @throws \Exception
+     * @return mixed
      */
-    public function getModelConfig( $modelName )
+    public function getUtilityFields( $modelName = '' )
     {
-        $configArray = Arr::getDoubtField( $this->_systemConfig, $modelName, null );
-
-        if ( $configArray == null )
-        {
-            $configData = $this->getConfigFromDb( $modelName );
-        }
-        else
-        {
-            $configData = new ConfigData();
-            $configData->exchangeArray( $configArray );
-        }
-
-        if ( $configData == null )
-        {
-            throw new \Exception( 'Can\'t find configuration for the ' . $modelName . 'model' );
-        }
-
-        return $configData;
+        return [
+            'fields'  =>
+                [
+                    '_id' => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID' ],
+                    'acl' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl' ],
+                ],
+            'filters' => [ '_id' => $this->getInputFilter( 'text' ) ],
+        ];
     }
 
-    /**
-     * @param string $modelName
-     *
-     * @return Config
-     * @throws \Exception
-     */
-    public function get( $modelName )
-    {
-        return $this->getModelConfig( $modelName );
-    }
-
-}
+} 
