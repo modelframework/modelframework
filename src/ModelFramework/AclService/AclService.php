@@ -18,7 +18,8 @@ use ModelFramework\ModelService\ModelServiceAwareTrait;
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
-class AclService implements AclServiceInterface, GatewayServiceAwareInterface, AuthServiceAwareInterface, ModelServiceAwareInterface
+class AclService
+    implements AclServiceInterface, GatewayServiceAwareInterface, AuthServiceAwareInterface, ModelServiceAwareInterface
 {
 
     use GatewayServiceAwareTrait, AuthServiceAwareTrait, ModelServiceAwareTrait;
@@ -97,16 +98,13 @@ class AclService implements AclServiceInterface, GatewayServiceAwareInterface, A
     {
         $aclData = new AclDataModel();
 
-        $dataModel = $this->getModelServiceVerify()->get( $modelName);
-        $aclData->setDataModel($dataModel);
+        $dataModel = $this->getModelServiceVerify()->get( $modelName );
+        $aclData->setDataModel( $dataModel );
 
-        $aclModel = $this->getAclData($modelName);
-        $aclData->setAclData( $aclModel  );
+        $aclModel = $this->getAclData( $modelName );
+        $aclData->setAclData( $aclModel );
 
         return $aclData;
     }
-
-
-
 
 }
