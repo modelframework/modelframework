@@ -38,7 +38,7 @@ class ModelView
 
     public function  init()
     {
-        if ( $this->getViewConfigData()->mode == 'list' )
+        if ( $this->getViewConfigDataVerify()->mode == 'list' )
         {
             $this->_plugin = new ViewListPlugin();
         }
@@ -46,7 +46,7 @@ class ModelView
 
     public function fields()
     {
-        return $this->getViewConfigData()->fields;
+        return $this->getViewConfigDataVerify()->fields;
     }
 
     public function labels()
