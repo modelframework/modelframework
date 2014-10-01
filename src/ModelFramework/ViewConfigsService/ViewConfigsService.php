@@ -29,6 +29,17 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
     /**
      * @var array
      */
+    protected $_systemConfig = [
+
+        'list' => [
+            'rows' => [ 5, 10, 25, 50, 100 ]
+        ],
+
+    ];
+
+    /**
+     * @var array
+     */
     protected $_dbConfig = [
 
         'Lead.list' => [

@@ -7,9 +7,11 @@ use ModelFramework\DataModel\Custom\ModelConfigAwareInterface;
 use ModelFramework\DataModel\Custom\ModelConfigAwareTrait;
 use ModelFramework\DataModel\Custom\ViewConfigDataAwareInterface;
 use ModelFramework\DataModel\Custom\ViewConfigDataAwareTrait;
+use ModelFramework\DataModel\DataModel;
 use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
 use ModelFramework\Utility\Arr;
+use Wepo\Model\Table;
 
 class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface, GatewayAwareInterface,
@@ -20,8 +22,21 @@ class ModelView
 
     private $_plugin = null;
     private $_data = [ ];
+    private $_user = null;
 
-    protected function getData()
+    public function getUser()
+    {
+        return $this->_user;
+    }
+
+    public function setUser( DataModel $user )
+    {
+        $this->_user = $user;
+
+        return $this;
+    }
+
+    public function getData()
     {
         return $this->_data;
     }
@@ -38,6 +53,7 @@ class ModelView
 
     public function  init()
     {
+
         if ( $this->getViewConfigDataVerify()->mode == 'list' )
         {
             $this->_plugin = new ViewListPlugin();
@@ -52,6 +68,39 @@ class ModelView
     public function labels()
     {
         return $this->getModelConfigVerify()[ 'labels' ];
+    }
+
+    public function setSaUrl( $label, $backUrl )
+    {
+        $result                = [ ];
+        $result[ 'saurl' ]        = '?back=' . $label;
+        $result[ 'saurlback' ]    =  $backUrl;
+        $this->setData( $result );
+        return $this;
+    }
+
+    public function setDataFields()
+    {
+        $viewConfig = $this->getViewConfigDataVerify();
+
+        $result                = [ ];
+        $result[ 'fields' ]    = $this->fields();
+        $result[ 'labels' ]    = $this->labels();
+        $result[ 'modelname' ] = strtolower( $viewConfig->model );
+        $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
+//        $result[ 'permission' ]   = 1;
+
+        $result[ 'search_query' ] = '';
+        $result[ 'user' ]         = $this->getUser();
+        $result[ 'rows' ]         = [ 5, 10, 25, 50, 100 ];
+        $result[ 'params' ]       = [
+            'action' => 'list',
+            'model'  => 'Lead',
+            'sort'   => 'created_dtm',
+            'desc'   => 1
+        ];
+//        prn( "Result", $result );
+        $this->setData( $result );
     }
 
 //    public function process()
@@ -97,9 +146,12 @@ class ModelView
     {
         $our[ 'order' ] = [ ];
 
-        $s                       = (int) $this->getParam( 'desc', 0 );
-        $sort                    = $this->getParam( 'sort', '' );
-        $our[ 'order' ][ $sort ] = ( $s == 1 ) ? 'desc' : 'asc';
+        $s    = (int) $this->getParam( 'desc', 0 );
+        $sort = $this->getParam( 'sort', '' );
+        if ( $sort != '' )
+        {
+            $our[ 'order' ][ $sort ] = ( $s == 1 ) ? 'desc' : 'asc';
+        }
 
         if ( !in_array( $sort, $this->fields() ) )
         {
@@ -118,8 +170,23 @@ class ModelView
     {
         $this->checkPermissions();
         $this->order();
+        $this->setDataFields();
 
-        prn( $this->getData() );
+        prn( $this->getViewConfigDataVerify() );
+
+        $viewConfig = $this->getViewConfigDataVerify();
+
+        $our[ 'paginator' ] =
+            $this
+                ->getGatewayVerify()
+                ->getPages( $viewConfig->query, [ ], $this->getData()[ 'order' ] );
+
+//        $our [ 'user' ] = $this ->
+
+        $this->setData( $our );
+
+        return $this;
+
     }
 
 }
