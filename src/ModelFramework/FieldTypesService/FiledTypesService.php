@@ -92,8 +92,12 @@ class FiledTypesService implements FieldTypesServiceInterface
         return [
             'fields'  =>
                 [
-                    '_id' => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID' ],
-                    'acl' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl' ],
+                    '_id' => [
+                        'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID', 'source' => '_id'
+                    ],
+                    'acl' => [
+                        'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl', 'source' => 'acl'
+                    ],
                 ],
             'filters' => [ '_id' => $this->getInputFilter( 'text' ) ],
         ];

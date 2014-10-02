@@ -98,11 +98,11 @@ class DataModel implements DataModelInterface
         return $data;
     }
 
-    public function toArray(  )
+    public function toArray()
     {
 
         $data = $this->getArrayCopy();
-        unset($data['_id']);
+        unset( $data[ '_id' ] );
 
         return $data;
     }
@@ -154,7 +154,7 @@ class DataModel implements DataModelInterface
         }
         if ( count( $arguments ) == 0 )
         {
-            return $this->_data[ $name ] ? : $this->_fields[ $name ][ 'default' ];
+            return $this->_data[ $name ] ?: $this->_fields[ $name ][ 'default' ];
         }
         $_result = [ ];
         foreach ( $arguments as $value )
@@ -181,6 +181,18 @@ class DataModel implements DataModelInterface
     public function __unset( $name )
     {
         unset( $this->_data[ $name ] );
+    }
+
+    public function getFieldSource( $fieldName )
+    {
+        if ( isset( $this->_fields[ $fieldName ] ) )
+        {
+            return $this->_fields[ $fieldName ][ 'source' ];
+        }
+        else
+        {
+            throw new \Exception( 'Field ' . $fieldName . 'does not set' );
+        }
     }
 
 }

@@ -190,8 +190,9 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
                 }
                 $_fields[ $name . $_sign . $_jfield ]     = [
                     'type'  => 'alias', 'datatype' => 'string', 'default' => '', 'source' => $name . '_id',
-                    'label' => $_jlabel
+                    'label' => $_jlabel, 'source' => $name
                 ];
+
                 $_labels[ $name . $_sign . $_jfield ] =  $_jlabel;
                 $_joinfields[ $name . $_sign . $_jfield ] = $_jfield;
                 if ( isset( $conf[ 'group' ] ) )
@@ -201,6 +202,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             }
             $_joins[ ]                =
                 [ 'model' => $conf[ 'model' ], 'on' => [ $name . '_id' => '_id' ], 'fields' => $_joinfields ];
+            $_fieldconf['source'] = $name;
             $_fields[ $name . '_id' ] = $_fieldconf;
             $_labels[ $name . '_id' ] =  $_jlabel;
             $name .= '_id';
@@ -211,6 +213,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             {
                 $_fieldsets[ $conf[ 'group' ] ][ 'elements' ][ $name ] = $_fieldconf[ 'label' ];
             }
+            $_fieldconf['source'] = $name;
             $_fields = [ $name => $_fieldconf ];
             $_labels = [ $name => $_fieldconf[ 'label' ] ];
         }
@@ -227,7 +230,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             'fields'    => $_fields,
             'filters'   => $_filters,
             'joins'     => $_joins,
-            'fieldsets' => $_fieldsets,
+            'fieldsets' => $_fieldsets
         ];
 
         return $result;

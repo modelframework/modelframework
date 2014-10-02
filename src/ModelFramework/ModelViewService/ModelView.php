@@ -67,6 +67,8 @@ class ModelView
 
     public function labels()
     {
+        prn('ModelView labels', $this->getModelConfigVerify());
+        prn('ModelView fields', $this->getViewConfigDataVerify());
         return $this->getModelConfigVerify()[ 'labels' ];
     }
 

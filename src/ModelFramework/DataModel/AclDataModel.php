@@ -71,13 +71,13 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,  AclD
             throw new \Exception( 'reading is not allowed' );
         }
 
-        if ( empty( $_aclData->fields[ $name ] ) )
+        if ( empty( $_aclData->fields[ $this->getDataModelVerify() ->getFieldSource($name) ] ) )
         {
             return null;
 //            throw new \Exception(' wrong config ' );
         }
 
-        if ( $_aclData->fields[ $name ] == 'x' )
+        if ( $_aclData->fields[ $this->getDataModelVerify() ->getFieldSource($name) ] == 'x' )
         {
             return 'reading is not allowed';
         }
