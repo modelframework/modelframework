@@ -8,24 +8,20 @@
 
 namespace ModelFramework\GatewayService;
 
-use ModelFramework\BaseService\ServiceLocatorAwareTrait;
+use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
-use Zend\Db\ResultSet\ResultSet;
-
 use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\Utility\Arr;
-use ModelFramework\Utility\Obj;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 class GatewayService extends GatewayServiceRaw
-    implements ModelServiceAwareInterface
+    implements ModelServiceAwareInterface, ModelConfigParserServiceAwareInterface
 {
 
-    use ModelServiceAwareTrait;
+    use ModelServiceAwareTrait, ModelConfigParserServiceAwareTrait;
 
     /**
-     * @param string    $name
+     * @param string             $name
      * @param DataModelInterface $model
      *
      * @return null|MongoGateway
@@ -37,8 +33,10 @@ class GatewayService extends GatewayServiceRaw
         {
             $model = $this->getModel( $name );
         }
+        $gw = parent::getGateway( $name, $model );
+        $gw->setModelConfig( $this->getModelConfigParserServiceVerify()->getModelConfig( $name ) );
 
-        return parent::getGateway( $name, $model );
+        return $gw;
     }
 
     /**

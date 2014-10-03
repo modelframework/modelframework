@@ -5,7 +5,7 @@ namespace ModelFramework\DataModel;
 use ModelFramework\AclService\AclDataAwareInterface;
 use ModelFramework\AclService\AclDataAwareTrait;
 
-class AclDataModel implements DataModelInterface, DataModelAwareInterface,  AclDataAwareInterface
+class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclDataAwareInterface
 {
 
     use DataModelAwareTrait, AclDataAwareTrait;
@@ -38,18 +38,14 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,  AclD
         {
             throw new \Exception( 'writing is not allowed' );
         }
-
         if ( empty( $_aclData->fields[ $name ] ) )
         {
             return null;
-//            throw new \Exception(' wrong config ' );
         }
-
         if ( $_aclData->fields[ $name ] == 'x' )
         {
             return 'reading is not allowed';
         }
-
         if ( $_aclData->fields[ $name ] !== 'e' )
         {
             return 'writing is not allowed';
@@ -60,24 +56,20 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,  AclD
 
     public function __get( $name )
     {
-        if ( in_array( $name , [ '_model', '_label', '_adapter' ]) )
+        if ( in_array( $name, [ '_model', '_label', '_adapter' ] ) )
         {
             return $this->getDataModelVerify()->{$name};
         }
-
         $_aclData = $this->getAclDataVerify();
         if ( !is_array( $_aclData->permissions ) || !in_array( 'r', $_aclData->permissions ) )
         {
             throw new \Exception( 'reading is not allowed' );
         }
-
-        if ( empty( $_aclData->fields[ $this->getDataModelVerify() ->getFieldSource($name) ] ) )
+        if ( empty( $_aclData->fields[ $this->getDataModelVerify()->getFieldSource( $name ) ] ) )
         {
             return null;
-//            throw new \Exception(' wrong config ' );
         }
-
-        if ( $_aclData->fields[ $this->getDataModelVerify() ->getFieldSource($name) ] == 'x' )
+        if ( $_aclData->fields[ $this->getDataModelVerify()->getFieldSource( $name ) ] == 'x' )
         {
             return 'reading is not allowed';
         }

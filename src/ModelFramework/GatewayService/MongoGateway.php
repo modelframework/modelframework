@@ -4,6 +4,8 @@ namespace ModelFramework\GatewayService;
 
 use ModelFramework\BaseService\AbstractService;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\ModelConfigParserService\ModelConfigAwareInterface;
+use ModelFramework\ModelConfigParserService\ModelConfigAwareTrait;
 use ModelFramework\ModelService\Config;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use \Zend\Db\Adapter\AdapterInterface;
@@ -18,8 +20,10 @@ use \Zend\Db\TableGateway\Feature\AbstractFeature;
 use \Zend\Paginator\Paginator;
 use \MonZend\Paginator\Adapter\MongoCursor;
 
-class MongoGateway implements GatewayInterface
+class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
 {
+    use ModelConfigAwareTrait;
+
     /**
      * @var bool
      */

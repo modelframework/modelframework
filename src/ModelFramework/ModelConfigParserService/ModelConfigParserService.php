@@ -1,13 +1,12 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/31/14
- * Time: 11:12 AM
+ * Class ModelConfigParserService
+ * @package ModelFramework\ModelConfigParserService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\ModelConfigParserService;
-
 
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
@@ -15,7 +14,9 @@ use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ConfigData;
 
-class ModelConfigParserService implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface {
+class ModelConfigParserService
+    implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface
+{
 
     use FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait;
 
@@ -27,6 +28,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
     public function getModelConfig( $modelName )
     {
         $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
+
         return $this->pullModelConfig( $cd );
     }
 
@@ -38,6 +40,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
     public function getViewConfig( $modelName )
     {
         $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
+
         return $this->pullViewConfig( $cd );
     }
 
@@ -57,7 +60,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             'label'     => $cm->label,
             'table'     => $cm->model,
             'fieldsets' => [ ],
-            'unique' => $cm->unique,
+            'unique'    => $cm->unique,
         ];
 
         foreach ( $cm->groups as $_grp => $_fls )
@@ -97,7 +100,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
         return $modelConfig;
     }
 
-        /**
+    /**
      * @param ConfigData $cm
      *
      * @return array
@@ -113,7 +116,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             'label'     => $cm->label,
             'table'     => $cm->model,
             'fieldsets' => [ ],
-            'unique' => $cm->unique,
+            'unique'    => $cm->unique,
         ];
 
         foreach ( $cm->groups as $_grp => $_fls )
@@ -143,7 +146,6 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             }
             $start_config [ 'fieldsets' ] [ $_grp ] = $_fls;
         }
-
         $modelConfig = array_merge_recursive( $start_config, $this->getUtilityFields( $cm->model ) );
         foreach ( $cm->fields as $field_name => $field_conf )
         {
@@ -152,12 +154,6 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
 
         return $modelConfig;
     }
-
-
-
-
-
-
 
     /**
      * @param string $name
@@ -168,17 +164,16 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
     protected function createField( $name, $conf )
     {
 
-        $type       = $conf[ 'type' ];
-        $_fieldconf = $this->getField( $type );
-
+        $type                  = $conf[ 'type' ];
+        $_fieldconf            = $this->getField( $type );
         $_fieldsets            = [ ];
         $_joins                = [ ];
         $_fieldconf[ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
-        $_labels = [ ];
+        $_labels               = [ ];
 
         if ( $type == 'lookup' )
         {
-            $_sign = '_';
+            $_sign       = '_';
             $_joinfields = [ ];
             $_i          = 0;
             $_fields     = [ ];
@@ -192,8 +187,7 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
                     'type'  => 'alias', 'datatype' => 'string', 'default' => '', 'source' => $name . '_id',
                     'label' => $_jlabel, 'source' => $name
                 ];
-
-                $_labels[ $name . $_sign . $_jfield ] =  $_jlabel;
+                $_labels[ $name . $_sign . $_jfield ]     = $_jlabel;
                 $_joinfields[ $name . $_sign . $_jfield ] = $_jfield;
                 if ( isset( $conf[ 'group' ] ) )
                 {
@@ -202,9 +196,9 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             }
             $_joins[ ]                =
                 [ 'model' => $conf[ 'model' ], 'on' => [ $name . '_id' => '_id' ], 'fields' => $_joinfields ];
-            $_fieldconf['source'] = $name;
+            $_fieldconf[ 'source' ]   = $name;
             $_fields[ $name . '_id' ] = $_fieldconf;
-            $_labels[ $name . '_id' ] =  $_jlabel;
+            $_labels[ $name . '_id' ] = $_jlabel;
             $name .= '_id';
         }
         else
@@ -213,11 +207,10 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
             {
                 $_fieldsets[ $conf[ 'group' ] ][ 'elements' ][ $name ] = $_fieldconf[ 'label' ];
             }
-            $_fieldconf['source'] = $name;
-            $_fields = [ $name => $_fieldconf ];
-            $_labels = [ $name => $_fieldconf[ 'label' ] ];
+            $_fieldconf[ 'source' ] = $name;
+            $_fields                = [ $name => $_fieldconf ];
+            $_labels                = [ $name => $_fieldconf[ 'label' ] ];
         }
-
         $_infilter = $this->getInputFilter( $type );
         if ( isset( $conf[ 'required' ] ) )
         {
@@ -236,4 +229,4 @@ class ModelConfigParserService implements ModelConfigParserServiceInterface, Fie
         return $result;
     }
 
-} 
+}

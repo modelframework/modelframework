@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/31/14
- * Time: 10:52 AM
+ * Class FieldTypesServiceAwareTrait
+ * @package ModelFramework\FieldTypesService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\FieldTypesService;
@@ -63,4 +63,4 @@ trait FieldTypesServiceAwareTrait
     {
         return $this->getFieldTypesServiceVerify()->getInputFilter( $type );
     }
-} 
+}

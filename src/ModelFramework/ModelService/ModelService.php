@@ -52,12 +52,11 @@ class ModelService
     protected function createModel( $modelName )
     {
 
-        $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
-
+        $modelConfig     = $this->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
         $model           = new DataModel();
         $model->_fields  = $modelConfig[ 'fields' ];
-        $model->_model    = $modelConfig[ 'model' ];
-        $model->_label    = $modelConfig[ 'label' ];
+        $model->_model   = $modelConfig[ 'model' ];
+        $model->_label   = $modelConfig[ 'label' ];
         $model->_adapter = $modelConfig[ 'adapter' ];
         $model->exchangeArray( [ ] );
 

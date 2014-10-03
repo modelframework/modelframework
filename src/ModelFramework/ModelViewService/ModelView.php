@@ -1,4 +1,10 @@
 <?php
+/**
+ * Class ModelView
+ * @package ModelFramework\ModelViewService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
+ */
 
 namespace ModelFramework\ModelViewService;
 
@@ -67,17 +73,19 @@ class ModelView
 
     public function labels()
     {
-        prn('ModelView labels', $this->getModelConfigVerify());
-        prn('ModelView fields', $this->getViewConfigDataVerify());
+        prn( 'ModelView labels', $this->getModelConfigVerify() );
+        prn( 'ModelView fields', $this->getViewConfigDataVerify() );
+
         return $this->getModelConfigVerify()[ 'labels' ];
     }
 
     public function setSaUrl( $label, $backUrl )
     {
         $result                = [ ];
-        $result[ 'saurl' ]        = '?back=' . $label;
-        $result[ 'saurlback' ]    =  $backUrl;
+        $result[ 'saurl' ]     = '?back=' . $label;
+        $result[ 'saurlback' ] = $backUrl;
         $this->setData( $result );
+
         return $this;
     }
 
