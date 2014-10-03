@@ -23,18 +23,20 @@ class GatewayService extends GatewayServiceRaw
     /**
      * @param string             $name
      * @param DataModelInterface $model
+     * @param array $modelConfig
      *
      * @return null|MongoGateway
      * @throws \Exception
      */
-    public function getGateway( $name, DataModelInterface $model = null )
+    public function getGateway( $name, DataModelInterface $model = null, array $modelConfig = [] )
     {
         if ( $model == null )
         {
             $model = $this->getModel( $name );
+            $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig( $name );
         }
         $gw = parent::getGateway( $name, $model );
-        $gw->setModelConfig( $this->getModelConfigParserServiceVerify()->getModelConfig( $name ) );
+        $gw->setModelConfig( $modelConfig );
 
         return $gw;
     }
