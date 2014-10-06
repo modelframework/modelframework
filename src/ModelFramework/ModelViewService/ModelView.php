@@ -79,16 +79,6 @@ class ModelView
         return $this->getModelConfigVerify()[ 'labels' ];
     }
 
-    public function setSaUrl( $label, $backUrl )
-    {
-        $result                = [ ];
-        $result[ 'saurl' ]     = '?back=' . $label;
-        $result[ 'saurlback' ] = $backUrl;
-        $this->setData( $result );
-
-        return $this;
-    }
-
     public function setDataFields()
     {
         $viewConfig = $this->getViewConfigDataVerify();
@@ -186,17 +176,103 @@ class ModelView
 
         $viewConfig = $this->getViewConfigDataVerify();
 
-        $our[ 'paginator' ] =
+        $result[ 'paginator' ] =
             $this
                 ->getGatewayVerify()
                 ->getPages( $viewConfig->query, [ ], $this->getData()[ 'order' ] );
-
-//        $our [ 'user' ] = $this ->
-
-        $this->setData( $our );
+        $this->setData( $result );
+        $this->setSaUrl( $this->generateLabel(), $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) ) );
 
         return $this;
 
+    }
+
+    public function setSaUrl( $label, $backUrl )
+    {
+        $result                = [ ];
+        $result[ 'saurl' ]     = '?back=' . $label;
+        $result[ 'saurlback' ] = $backUrl;
+        $this->setData( $result );
+
+        return $this;
+    }
+
+    public function getSaUrlBack( $backHash )
+    {
+        $saUrlBack = $this->getGatewayVerify( 'SaUrl' )->find( array( 'label' => $backHash ) );
+        if ( $saUrlBack->count() > 0 )
+        {
+            $saUrlBack = $saUrlBack->current()->url;
+        }
+        else
+        {
+            $saUrlBack = '/';
+        }
+
+        return $saUrlBack;
+    }
+
+    public function getBackUrl()
+    {
+        $url    = null;
+        $saUrl = $this->getParams()->fromPost( 'saurl', [ ] );
+        if ( isset( $saUrl[ 'back' ] ) )
+        {
+            $url = $this->getSaurlBack( $saUrl[ 'back' ] );
+        }
+
+        return $url;
+    }
+
+    public function generateLabel()
+    {
+        $saUrl      = $this->getAclModelVerify( 'SaUrl' )->getDataModel();
+        $saUrl->url = $this->getParams()->getController()->getRequest()->getServer( 'REQUEST_URI' );
+        $checkUrl   = $this->getGatewayVerify( 'SaUrl' )->findOne( [ 'url' => $saUrl->url ] );
+        if ( $checkUrl )
+        {
+            return $checkUrl->label;
+        }
+        else
+        {
+            if ( strlen( $saUrl->url ) )
+            {
+                $saUrl->label = md5( $saUrl->url );
+            }
+            $i = 0;
+            while ( ++$i < 6 && $this->getGatewayVerify( 'SaUrl' )->find( [ 'label' => $saUrl->label ] )->count() )
+            {
+                $saUrl->label = md5( $saUrl->url . time() . ( rand() * 10000 ) );
+            }
+            if ( $i >= 6 )
+            {
+                return '/';
+            }
+            try
+            {
+                $this->getGatewayVerify( 'SaUrl' )->save( $saUrl );
+            }
+            catch ( \Exception $ex )
+            {
+                $saUrl->label = '/';
+            }
+
+            return $saUrl->label;
+        }
+    }
+
+    public function SaUrl()
+    {
+        $saUrl      = $this->getAclModelVerify( 'SaUrl' )->getDataModel();
+        $check = $this->getGatewayVerify( 'SaUrl' )->find( array( 'label' => $saUrl->label ) );
+        if ( $check->count() > 0 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 }

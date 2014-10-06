@@ -47,7 +47,7 @@ trait AclDataAwareTrait
         $_aclData = $this->getAclData();
         if ( $_aclData == null || !$_aclData instanceof DataModelInterface || $_aclData->getModelName() !== 'Acl' )
         {
-            throw new \Exception( 'AclData does not set in the AclDataAware instance of ' . get_class( $this ) );
+            throw new \Exception( 'AclData is not set in the AclDataAware instance of ' . get_class( $this ) );
         }
 
         return $_aclData;

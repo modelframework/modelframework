@@ -191,7 +191,7 @@ class DataModel implements DataModelInterface
         }
         else
         {
-            throw new \Exception( 'Field ' . $fieldName . 'does not set' );
+            throw new \Exception( 'Field ' . $fieldName . ' is not set' );
         }
     }
 
