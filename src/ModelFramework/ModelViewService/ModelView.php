@@ -186,6 +186,8 @@ class ModelView
 
         $viewConfig = $this->getViewConfigDataVerify();
 
+        # :TODO: add permissions query
+
         $our[ 'paginator' ] =
             $this
                 ->getGatewayVerify()
