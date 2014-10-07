@@ -16,15 +16,17 @@ use ModelFramework\DataModel\Custom\ViewConfigDataAwareTrait;
 use ModelFramework\DataModel\DataModel;
 use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use Wepo\Model\Table;
 
 class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface, GatewayAwareInterface,
-               ParamsAwareInterface
+               ParamsAwareInterface, GatewayServiceAwareInterface
 {
 
-    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait;
+    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait;
 
     private $_plugin = null;
     private $_data = [ ];
@@ -73,8 +75,8 @@ class ModelView
 
     public function labels()
     {
-        prn( 'ModelView labels', $this->getModelConfigVerify() );
-        prn( 'ModelView fields', $this->getViewConfigDataVerify() );
+//        prn( 'ModelView labels', $this->getModelConfigVerify() );
+//        prn( 'ModelView fields', $this->getViewConfigDataVerify() );
 
         return $this->getModelConfigVerify()[ 'labels' ];
     }
@@ -89,7 +91,6 @@ class ModelView
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
         $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
 //        $result[ 'permission' ]   = 1;
-
         $result[ 'search_query' ] = '';
         $result[ 'user' ]         = $this->getUser();
         $result[ 'rows' ]         = [ 5, 10, 25, 50, 100 ];
@@ -99,14 +100,12 @@ class ModelView
             'sort'   => 'created_dtm',
             'desc'   => 1
         ];
-//        prn( "Result", $result );
+        $result[ 'saurl' ]        = '?back=' . $this->generateLabel();
+        $result[ 'saurlback' ]    = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
+        $result[ 'saurlback' ]    = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
+        $result[ 'user' ]    = $this->getUser();
         $this->setData( $result );
     }
-
-//    public function process()
-//    {
-//        $this->_plugin->process();
-//    }
 
     public function getParam( $name, $default = '' )
     {
@@ -168,30 +167,15 @@ class ModelView
 
     public function process()
     {
+        $this->setUser($this->getParams()->getController()->User());
         $this->checkPermissions();
         $this->order();
         $this->setDataFields();
-
-        prn( $this->getViewConfigDataVerify() );
-
-        $viewConfig = $this->getViewConfigDataVerify();
-
+        $viewConfig            = $this->getViewConfigDataVerify();
         $result[ 'paginator' ] =
             $this
                 ->getGatewayVerify()
                 ->getPages( $viewConfig->query, [ ], $this->getData()[ 'order' ] );
-        $this->setData( $result );
-        $this->setSaUrl( $this->generateLabel(), $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) ) );
-
-        return $this;
-
-    }
-
-    public function setSaUrl( $label, $backUrl )
-    {
-        $result                = [ ];
-        $result[ 'saurl' ]     = '?back=' . $label;
-        $result[ 'saurlback' ] = $backUrl;
         $this->setData( $result );
 
         return $this;
@@ -199,7 +183,7 @@ class ModelView
 
     public function getSaUrlBack( $backHash )
     {
-        $saUrlBack = $this->getGatewayVerify( 'SaUrl' )->find( array( 'label' => $backHash ) );
+        $saUrlBack = $this->getGatewayServiceVerify()->get( 'SaUrl' )->find( array( 'label' => $backHash ) );
         if ( $saUrlBack->count() > 0 )
         {
             $saUrlBack = $saUrlBack->current()->url;
@@ -214,7 +198,7 @@ class ModelView
 
     public function getBackUrl()
     {
-        $url    = null;
+        $url   = null;
         $saUrl = $this->getParams()->fromPost( 'saurl', [ ] );
         if ( isset( $saUrl[ 'back' ] ) )
         {
@@ -226,9 +210,10 @@ class ModelView
 
     public function generateLabel()
     {
-        $saUrl      = $this->getAclModelVerify( 'SaUrl' )->getDataModel();
-        $saUrl->url = $this->getParams()->getController()->getRequest()->getServer( 'REQUEST_URI' );
-        $checkUrl   = $this->getGatewayVerify( 'SaUrl' )->findOne( [ 'url' => $saUrl->url ] );
+        $saUrlGateway = $this->getGatewayServiceVerify()->get( 'SaUrl' );
+        $saUrl        = $saUrlGateway->model();
+        $saUrl->url   = $this->getParams()->getController()->getRequest()->getServer( 'REQUEST_URI' );
+        $checkUrl     = $saUrlGateway->findOne( [ 'url' => $saUrl->url ] );
         if ( $checkUrl )
         {
             return $checkUrl->label;
@@ -240,7 +225,7 @@ class ModelView
                 $saUrl->label = md5( $saUrl->url );
             }
             $i = 0;
-            while ( ++$i < 6 && $this->getGatewayVerify( 'SaUrl' )->find( [ 'label' => $saUrl->label ] )->count() )
+            while ( ++$i < 6 && $saUrlGateway->find( [ 'label' => $saUrl->label ] )->count() )
             {
                 $saUrl->label = md5( $saUrl->url . time() . ( rand() * 10000 ) );
             }
@@ -250,7 +235,7 @@ class ModelView
             }
             try
             {
-                $this->getGatewayVerify( 'SaUrl' )->save( $saUrl );
+                $saUrlGateway->save( $saUrl );
             }
             catch ( \Exception $ex )
             {
@@ -258,20 +243,6 @@ class ModelView
             }
 
             return $saUrl->label;
-        }
-    }
-
-    public function SaUrl()
-    {
-        $saUrl      = $this->getAclModelVerify( 'SaUrl' )->getDataModel();
-        $check = $this->getGatewayVerify( 'SaUrl' )->find( array( 'label' => $saUrl->label ) );
-        if ( $check->count() > 0 )
-        {
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 

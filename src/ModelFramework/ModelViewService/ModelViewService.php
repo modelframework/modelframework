@@ -17,7 +17,8 @@ use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareInterface;
 use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 
 class ModelViewService
-    implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface, GatewayServiceAwareInterface, AclServiceAwareInterface
+    implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface,
+               GatewayServiceAwareInterface, AclServiceAwareInterface
 {
 
     use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait;
@@ -63,11 +64,12 @@ class ModelViewService
         $modelView->setViewConfigData( $viewConfigData );
         $modelView->setModelConfig( $modelConfigArray );
 
-        $aclModel = $this->getAclServiceVerify()->getAclModel( $modelName);
-        $gateway = $this->getGatewayServiceVerify()->get( $modelName, $aclModel);
+        $aclModel = $this->getAclServiceVerify()->getAclModel( $modelName );
+        $gateway  = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
 
-        $modelView -> setGateway($gateway);
+        $modelView->setGatewayService( $this->getGatewayServiceVerify() );
 
+        $modelView->setGateway( $gateway );
 
         return $modelView;
     }
