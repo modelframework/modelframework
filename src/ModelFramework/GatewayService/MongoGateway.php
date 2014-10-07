@@ -607,6 +607,8 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function isUnique( DataModelInterface $model )
     {
+        $modelConfig = $this->getModelConfig();
+        prn($modelConfig);
         throw new \Exception(' fix me =) ');
 //        $uniqConfs = $this->getModelConfig(ucfirst($model->getModelName()))->getParsedConfig()['unique'];
 //        foreach ( $model->unique as $_unique )
