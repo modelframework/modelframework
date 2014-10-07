@@ -607,24 +607,22 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function isUnique( DataModelInterface $model )
     {
-        $modelConfig = $this->getModelConfig();
-        prn($modelConfig);
-        throw new \Exception(' fix me =) ');
-//        $uniqConfs = $this->getModelConfig(ucfirst($model->getModelName()))->getParsedConfig()['unique'];
+//        throw new \Exception(' fix me =) ');
+        $uniqConfs = $this->getModelConfig()['unique'];
 //        foreach ( $model->unique as $_unique )
-//        {
-//            $_data = [ ];
-//            foreach ( (array) $_unique as $_key )
-//            {
-//                $_data[ $_key ] = $model->$_key;
-//            }
-//            $check = $this->find( $_data );
-//            if ( $check->count() > 0 && $check->current()->id() != $model->id() )
-//            {
-//                return false;
-//            }
-//        }
-
+        foreach ( $uniqConfs as $_unique )
+        {
+            $_data = [ ];
+            foreach ( (array) $_unique as $_key )
+            {
+                $_data[ $_key ] = $model->$_key;
+            }
+            $check = $this->find( $_data );
+            if ( $check->count() > 0 && $check->current()->id() != $model->id() )
+            {
+                return false;
+            }
+        }
         return true;
     }
 
