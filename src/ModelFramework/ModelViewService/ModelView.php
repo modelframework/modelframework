@@ -84,7 +84,6 @@ class ModelView
     public function setDataFields()
     {
         $viewConfig = $this->getViewConfigDataVerify();
-
         $result                = [ ];
         $result[ 'fields' ]    = $this->fields();
         $result[ 'labels' ]    = $this->labels();
@@ -95,15 +94,15 @@ class ModelView
         $result[ 'user' ]         = $this->getUser();
         $result[ 'rows' ]         = [ 5, 10, 25, 50, 100 ];
         $result[ 'params' ]       = [
-            'action' => 'list',
-            'model'  => 'Lead',
-            'sort'   => 'created_dtm',
-            'desc'   => 1
+            'action' => $viewConfig->mode,
+            'model'  => $viewConfig->model,
+            'sort'   => $this->getParams()->fromRoute( 'sort', null ),
+            'desc'   => (int) $this->getParams()->fromRoute( 'desc', 0 )
         ];
-        $result[ 'saurl' ]        = '?back=' . $this->generateLabel();
-        $result[ 'saurlback' ]    = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
-        $result[ 'saurlback' ]    = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
-        $result[ 'user' ]    = $this->getUser();
+//        $result[ 'params' ] = $this -> getParams()->fromPost();
+        $result[ 'saurl' ]     = '?back=' . $this->generateLabel();
+        $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
+        $result[ 'user' ]      = $this->getUser();
         $this->setData( $result );
     }
 
@@ -167,15 +166,21 @@ class ModelView
 
     public function process()
     {
-        $this->setUser($this->getParams()->getController()->User());
+        $this->setUser( $this->getParams()->getController()->User() );
         $this->checkPermissions();
         $this->order();
         $this->setDataFields();
-        $viewConfig            = $this->getViewConfigDataVerify();
+        $viewConfig = $this->getViewConfigDataVerify();
+        prn( $viewConfig );
         $result[ 'paginator' ] =
             $this
                 ->getGatewayVerify()
-                ->getPages( $viewConfig->query, [ ], $this->getData()[ 'order' ] );
+                ->getPages( $this->fields(), $viewConfig->query, $this->getData()[ 'order' ] );
+        if ( $result[ 'paginator' ]->count() > 0 )
+        {
+            $result[ 'paginator' ]->setCurrentPageNumber( $this->getParam( 'page', 1 ) )
+                                  ->setItemCountPerPage( $viewConfig->rows );
+        }
         $this->setData( $result );
 
         return $this;
