@@ -90,7 +90,42 @@ class ModelView
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
         $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
 //        $result[ 'permission' ]   = 1;
-        $result[ 'search_query' ] = '';
+        $result[ 'search_query' ] = $searchQuery = $this->getParam( 'q', '' );
+        if ( $searchQuery )
+        {
+            $result[ 'params' ][ 'q' ] = $searchQuery;
+        }
+
+        # :TODO: add permissions query
+//        if ( $permission == Auth::OWN )
+//        {
+//            $field = [ 'owner_id' => (string) $this->user()->id() ];
+//        }
+
+        $permissionQuery = [];
+        $_where = $viewConfig->query;
+        $_dataWhere = $permissionQuery + $_where;
+        if ( empty( $searchQuery ) )
+        {
+            $_where = $_dataWhere;
+        }
+        else
+        {
+            $_where = [
+                '$and' => [ $_dataWhere, [ '$text' => [ '$search' => $searchQuery ] ] ]
+            ];
+        }
+
+        $result[ 'paginator' ] =
+            $this
+                ->getGatewayVerify()
+                ->getPages( $this->fields(), $_where, $this->getData()[ 'order' ] );
+        if ( $result[ 'paginator' ]->count() > 0 )
+        {
+            $result[ 'paginator' ]->setCurrentPageNumber( $this->getParam( 'page', 1 ) )
+                                  ->setItemCountPerPage( $viewConfig->rows );
+        }
+        prn($result);
         $result[ 'user' ]         = $this->getUser();
         $result[ 'rows' ]         = [ 5, 10, 25, 50, 100 ];
         $result[ 'params' ]       = [
@@ -170,19 +205,6 @@ class ModelView
         $this->checkPermissions();
         $this->order();
         $this->setDataFields();
-        $viewConfig = $this->getViewConfigDataVerify();
-        prn( $viewConfig );
-        $result[ 'paginator' ] =
-            $this
-                ->getGatewayVerify()
-                ->getPages( $this->fields(), $viewConfig->query, $this->getData()[ 'order' ] );
-        if ( $result[ 'paginator' ]->count() > 0 )
-        {
-            $result[ 'paginator' ]->setCurrentPageNumber( $this->getParam( 'page', 1 ) )
-                                  ->setItemCountPerPage( $viewConfig->rows );
-        }
-        $this->setData( $result );
-
         return $this;
     }
 
