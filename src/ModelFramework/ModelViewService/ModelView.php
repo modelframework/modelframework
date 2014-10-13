@@ -23,7 +23,7 @@ use Wepo\Model\Table;
 
 class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface, GatewayAwareInterface,
-               ParamsAwareInterface, GatewayServiceAwareInterface
+               ParamsAwareInterface, GatewayServiceAwareInterface, \SplSubject
 {
 
     use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait;
@@ -31,6 +31,30 @@ class ModelView
     private $_plugin = null;
     private $_data = [ ];
     private $_user = null;
+
+    protected $observers = array();
+
+    public function attach( \SplObserver $observer )
+    {
+        $this->observers[ ] = $observer;
+    }
+
+    public function detach( \SplObserver $observer )
+    {
+        $key = array_search( $observer, $this->observers );
+        if ( $key )
+        {
+            unset( $this->observers[ $key ] );
+        }
+    }
+
+    public function notify()
+    {
+        foreach ( $this->observers as $observer )
+        {
+            $observer->update( $this );
+        }
+    }
 
     public function getUser()
     {
@@ -61,10 +85,13 @@ class ModelView
 
     public function  init()
     {
-
         if ( $this->getViewConfigDataVerify()->mode == 'list' )
         {
-            $this->_plugin = new ViewListPlugin();
+            $this->_plugin = new ListPlugin();
+        }
+        if ( $this->getViewConfigDataVerify()->mode == 'view' )
+        {
+            $this->_plugin = new ViewPlugin();
         }
     }
 
