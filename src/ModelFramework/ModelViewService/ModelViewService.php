@@ -70,6 +70,7 @@ class ModelViewService
         $modelView->setGatewayService( $this->getGatewayServiceVerify() );
 
         $modelView->setGateway( $gateway );
+        $modelView->init();
 
         return $modelView;
     }

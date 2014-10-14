@@ -43,6 +43,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
     protected $_dbConfig = [
 
         'Lead.list' => [
+            'observers' => ['ListObserver'],
             'name'   => 'Lead.list',
             'custom' => 0,
             'model'  => 'Lead',
@@ -68,6 +69,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'rows' => 10,
         ],
         'Lead.view' => [
+            'observers' => ['ViewObserver'],
             'name'   => 'Lead.view',
             'custom' => 0,
             'model'  => 'Lead',
