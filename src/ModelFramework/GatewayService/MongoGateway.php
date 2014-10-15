@@ -22,6 +22,7 @@ use \MonZend\Paginator\Adapter\MongoCursor;
 
 class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
 {
+
     use ModelConfigAwareTrait;
 
     /**
@@ -120,7 +121,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         }
 
         // result prototype
-        $this->resultSetPrototype = ( $resultSetPrototype ) ? : new ResultSet;
+        $this->resultSetPrototype = ( $resultSetPrototype ) ?: new ResultSet;
 
         $this->initialize();
     }
@@ -593,6 +594,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         $result    = $this->adapter->getDriver()->createResult( $return, $this->getTable() );
         $resultSet = clone $this->resultSetPrototype;
         $resultSet->initialize( $result );
+//        prn("MongoGateway", $this -> model()->_model,$resultSet);
 
         // apply postSelect features
 //        $this -> featureSet -> apply( 'postSelect', array( $result, $resultSet ) );
@@ -607,22 +609,24 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function isUnique( DataModelInterface $model )
     {
-//        throw new \Exception(' fix me =) ');
-        $uniqConfs = $this->getModelConfig()['unique'];
-//        foreach ( $model->unique as $_unique )
-        foreach ( $uniqConfs as $_unique )
+        $modelConfig = $this->getModelConfig();
+        if ( $modelConfig && isset( $modelConfig[ 'unique' ] ) && is_array( $modelConfig[ 'unique' ] ) )
         {
-            $_data = [ ];
-            foreach ( (array) $_unique as $_key )
+            foreach ( $modelConfig[ 'unique' ] as $_unique )
             {
-                $_data[ $_key ] = $model->$_key;
-            }
-            $check = $this->find( $_data );
-            if ( $check->count() > 0 && $check->current()->id() != $model->id() )
-            {
-                return false;
+                $_data = [ ];
+                foreach ( (array) $_unique as $_key )
+                {
+                    $_data[ $_key ] = $model->$_key;
+                }
+                $check = $this->find( $_data );
+                if ( $check->count() > 0 && $check->current()->id() != $model->id() )
+                {
+                    return false;
+                }
             }
         }
+
         return true;
     }
 
@@ -634,9 +638,9 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function save( DataModelInterface $model )
     {
-        $data   = $this->_convertids( $model->toArray() );
+        $data = $this->_convertids( $model->toArray() );
 
-        $_id    = $model->id();
+        $_id = $model->id();
         if ( !$this->isUnique( $model ) )
         {
             throw new \Exception( 'Data is not unique' );
@@ -644,7 +648,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         if ( empty( $_id ) )
         {
             $insertResult = $this->insert( $data );
-            $result  = empty( $insertResult[ 'ok' ] ) ? 0 : $insertResult[ 'ok' ];
+            $result       = empty( $insertResult[ 'ok' ] ) ? 0 : $insertResult[ 'ok' ];
         }
         else
         {
@@ -677,8 +681,8 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
             $cursor->sort( $this->_orders( $orders ) );
         }
 
-        $adapter   = new MongoCursor( $cursor, $this->getResultSetPrototype() );
-        $pager = new Paginator( $adapter );
+        $adapter = new MongoCursor( $cursor, $this->getResultSetPrototype() );
+        $pager   = new Paginator( $adapter );
 
         return $pager;
     }
@@ -696,8 +700,8 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         {
             $cursor->sort( $this->_orders( $orders ) );
         }
-        $adapter   = new MongoCursor( $cursor, $this->getResultSetPrototype() );
-        $pager = new \Zend\Paginator\Paginator( $adapter );
+        $adapter = new MongoCursor( $cursor, $this->getResultSetPrototype() );
+        $pager   = new \Zend\Paginator\Paginator( $adapter );
 
         return $pager;
     }

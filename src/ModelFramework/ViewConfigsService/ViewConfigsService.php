@@ -69,7 +69,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'rows' => 10,
         ],
         'Lead.view' => [
-            'observers' => ['ViewObserver'],
+            'observers' => ['ViewObserver', 'WidgetObserver'],
             'name'   => 'Lead.view',
             'custom' => 0,
             'model'  => 'Lead',

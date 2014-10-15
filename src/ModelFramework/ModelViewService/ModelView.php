@@ -31,7 +31,7 @@ class ModelView
     private $_data = [ ];
     private $_user = null;
 
-    protected $allowed_observers = [ 'ListObserver', 'ViewObserver' ];
+    protected $allowed_observers = [ 'ListObserver', 'ViewObserver', 'WidgetObserver' ];
     protected $observers = [ ];
 
     public function attach( \SplObserver $observer )
@@ -85,12 +85,15 @@ class ModelView
 
     public function  init()
     {
-        $viewConfig = $this -> getViewConfigDataVerify();
-        prn($viewConfig);
-        foreach ($this -> getViewConfigDataVerify()->observers as $observer)
+        $viewConfig = $this->getViewConfigDataVerify();
+        prn( $viewConfig );
+        foreach ( $this->getViewConfigDataVerify()->observers as $observer )
         {
-            $observerClassName = 'ModelFramework\ModelViewService\Observer\\' . $observer;
-            $this->attach( new $observerClassName() );
+            if ( in_array( $observer, $this->allowed_observers ) )
+            {
+                $observerClassName = 'ModelFramework\ModelViewService\Observer\\' . $observer;
+                $this->attach( new $observerClassName() );
+            }
         }
     }
 
@@ -177,7 +180,7 @@ class ModelView
         return $param;
     }
 
-    protected function getAclModelVerify()
+    public function getAclModelVerify()
     {
         $model = $this->getGatewayVerify()->model();
         if ( $model == null || !$model instanceof AclDataModel )
