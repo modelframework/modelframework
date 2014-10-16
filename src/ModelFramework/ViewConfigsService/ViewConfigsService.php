@@ -43,15 +43,15 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
     protected $_dbConfig = [
 
         'Lead.list' => [
-            'observers' => ['ListObserver'],
-            'name'   => 'Lead.list',
-            'custom' => 0,
-            'model'  => 'Lead',
-            'mode'   => 'list',
-            'query'  => [
+            'observers' => [ 'ListObserver' ],
+            'name'      => 'Lead.list',
+            'custom'    => 0,
+            'model'     => 'Lead',
+            'mode'      => 'list',
+            'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
             ],
-            'fields' => [
+            'fields'    => [
                 'owner_login',
                 'fname',
                 'lname',
@@ -64,20 +64,20 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'created_dtm',
                 'status_status'
             ],
-            'params' => [ 'rows'=>10, 'sort'=>'created_dtm', 'desc'=>1, 'q' => '' ],
-            'groups' => [ ],
-            'rows' => 10,
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
         ],
         'Lead.view' => [
-            'observers' => ['ViewObserver', 'WidgetObserver'],
-            'name'   => 'Lead.view',
-            'custom' => 0,
-            'model'  => 'Lead',
-            'mode'   => 'view',
-            'query'  => [
+            'observers' => [ 'ViewObserver' ],
+            'name'      => 'Lead.view',
+            'custom'    => 0,
+            'model'     => 'Lead',
+            'mode'      => 'view',
+            'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
             ],
-            'fields' => [
+            'fields'    => [
                 'owner_login',
                 'fname',
                 'lname',
@@ -90,9 +90,9 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'created_dtm',
                 'status_status'
             ],
-            'params' => [ 'rows'=>10, 'sort'=>'created_dtm', 'desc'=>1, 'q' => '' ],
-            'groups' => [ ],
-            'rows' => 10,
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
         ]
 
     ];
@@ -106,7 +106,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
     {
 
         $viewConfigData = $this->getGatewayServiceVerify()->getGateway( 'ModelView', new ViewConfigData() )->findOne(
-                               [ 'model' => $modelName, 'mode' => $viewName ]
+            [ 'model' => $modelName, 'mode' => $viewName ]
         );
         if ( $viewConfigData == null )
         {

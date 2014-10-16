@@ -31,7 +31,7 @@ class ModelView
     private $_data = [ ];
     private $_user = null;
 
-    protected $allowed_observers = [ 'ListObserver', 'ViewObserver', 'WidgetObserver' ];
+    protected $allowed_observers = [ 'ListObserver', 'ViewObserver' ];
     protected $observers = [ ];
 
     public function attach( \SplObserver $observer )
