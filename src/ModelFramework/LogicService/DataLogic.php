@@ -312,7 +312,7 @@ class DataLogic extends AbstractService
         $this->setEvent( $event );
     }
 
-    protected function forge()
+    protected function forge( )
     {
         $model = $this->getEventObjects();
         foreach ( $this->getRules( $this->getAction() ) as $_key => $_rules )
