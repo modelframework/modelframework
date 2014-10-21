@@ -93,8 +93,33 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
             'groups'    => [ ],
             'rows'      => 10,
+        ],
+        'Lead.add' => [
+            'observers' => [ 'AddObserver' ],
+            'name'      => 'Lead.add',
+            'custom'    => 0,
+            'model'     => 'Lead',
+            'mode'      => 'add',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
         ]
-
     ];
 
     protected function getKeyName( $modelName, $viewName )

@@ -9,19 +9,23 @@ namespace ModelFramework\ModelViewService;
 
 use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
+use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelService\ModelServiceAwareInterface;
+use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\FormService\FormServiceAwareTrait;
 use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareInterface;
 use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 
 class ModelViewService
     implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface,
-               GatewayServiceAwareInterface, AclServiceAwareInterface
+               GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface, FormServiceAwareInterface
 {
 
-    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait;
+    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -68,6 +72,7 @@ class ModelViewService
         $gateway  = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
 
         $modelView->setGatewayService( $this->getGatewayServiceVerify() );
+        $modelView->setFormService( $this->getFormServiceVerify() );
 
         $modelView->setGateway( $gateway );
         $modelView->init();

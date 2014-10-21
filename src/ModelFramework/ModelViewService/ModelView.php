@@ -18,20 +18,26 @@ use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\Utility\Arr;
+use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelService\ModelServiceAwareInterface;
+use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\FormService\FormServiceAwareInterface;
+use ModelFramework\FormService\FormServiceAwareTrait;
 use Wepo\Model\Table;
 
 class ModelView
-    implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface, GatewayAwareInterface,
-               ParamsAwareInterface, GatewayServiceAwareInterface, \SplSubject
+    implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface,
+               ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
+               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait;
+    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait;
 
     private $_data = [ ];
     private $_user = null;
 
-    protected $allowed_observers = [ 'ListObserver', 'ViewObserver' ];
+    protected $allowed_observers = [ 'ListObserver', 'ViewObserver', 'AddObserver' ];
     protected $observers = [ ];
 
     public function attach( \SplObserver $observer )
@@ -85,15 +91,14 @@ class ModelView
 
     public function  init()
     {
-        $viewConfig = $this->getViewConfigDataVerify();
-        prn( $viewConfig );
         foreach ( $this->getViewConfigDataVerify()->observers as $observer )
         {
-            if ( in_array( $observer, $this->allowed_observers ) )
+            if ( !in_array( $observer, $this->allowed_observers ) )
             {
-                $observerClassName = 'ModelFramework\ModelViewService\Observer\\' . $observer;
-                $this->attach( new $observerClassName() );
+                throw new \Exception( $observer . ' is not allowed in ' . get_class( $this ) );
             }
+            $observerClassName = 'ModelFramework\ModelViewService\Observer\\' . $observer;
+            $this->attach( new $observerClassName() );
         }
     }
 
@@ -160,7 +165,6 @@ class ModelView
 //            'sort'   => $this->getParams()->fromRoute( 'sort', null ),
 //            'desc'   => (int) $this->getParams()->fromRoute( 'desc', 0 )
 //        ];
-        $this->notify();
         $result[ 'user' ]      = $this->getUser();
         $result[ 'saurl' ]     = '?back=' . $this->generateLabel();
         $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
@@ -208,6 +212,7 @@ class ModelView
         $this->setUser( $this->getParams()->getController()->User() );
         $this->checkPermissions();
         $this->setDataFields();
+        $this->notify();
 
         return $this;
     }

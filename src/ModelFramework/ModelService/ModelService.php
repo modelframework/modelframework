@@ -3,14 +3,9 @@
 namespace ModelFramework\ModelService;
 
 use ModelFramework\DataModel\DataModel;
-use ModelFramework\BaseService\ServiceLocatorAwareTrait;
-
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
  * Class ModelService
@@ -51,7 +46,6 @@ class ModelService
      */
     protected function createModel( $modelName )
     {
-
         $modelConfig     = $this->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
         $model           = new DataModel();
         $model->_fields  = $modelConfig[ 'fields' ];
