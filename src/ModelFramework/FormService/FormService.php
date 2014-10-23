@@ -10,32 +10,46 @@ namespace ModelFramework\FormService;
 
 use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
+use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
+use Wepo\Lib\Acl;
 
-class FormService implements FormServiceInterface, ModelConfigParserServiceAwareInterface, AclServiceAwareInterface
+class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface,
+                             ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
+                             GatewayServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait, AclServiceAwareTrait;
+    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param string             $mode
      *
      * @return DataForm
      */
-    public function get( $modelName )
+    public function get( DataModelInterface $model, $mode )
     {
-        return $this->getForm( $modelName );
+        return $this->getForm( $model, $mode );
     }
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param string             $mode
      *
      * @return DataForm
      */
-    public function getForm( $modelName )
+    public function getForm( DataModelInterface $model, $mode )
     {
-        return $this->createForm( $modelName );
+        return $this->createForm( $model, $mode );
     }
 
     /**
@@ -43,13 +57,14 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
      *
      * @return DataFormInterface
      */
-    protected function createForm0( $modelName )
+    protected function createForm0( $model, $mode )
     {
-        $aclModel = $this->getAclServiceVerify()->get( $modelName );
-        prn( 'Form Service', $aclModel->getAclDataVerify() );
+        $modelName = $model->getModelName();
+        $aclModel  = $this->getAclServiceVerify()->get( $modelName );
+        prn( 'Form Service', $aclModel->getAclDataVerify(), 'Mode = ' . $mode );
+        $formConfig = $this->getModelConfigParserServiceVerify()->getFormConfig( $modelName );
 
         return [ 'form' => '123' ];
-//        $modelConfig     = $this->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
 //        $model           = new DataModel();
 //        $model->_fields  = $modelConfig[ 'fields' ];
 //        $model->_model   = $modelConfig[ 'model' ];
@@ -61,16 +76,21 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
     }
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param        string      $mode
      *
      * @return DataFormInterface
      */
-    public function createForm( $modelName, $mode = 'e' )
+    public function createForm( DataModelInterface $model, $mode )
     {
+        $modelName = $model->getModelName();
+        prn( $modelName );
+        $cm = $this->getPermittedConfig( $model, $mode );
+        exit;
         $modelConfig = $this->getModelConfigParserServiceVerify()->getViewConfig( $modelName );
         $aclModel    = $this->getAclServiceVerify()->get( $modelName );
         $aclData     = $aclModel->getAclDataVerify();
-        prn( 'Form Service', $aclModel -> toArray(), $aclData, $modelConfig );
+        prn( 'Form Service', $aclModel->toArray(), $aclData, $modelConfig );
 
 //        return [ 'form' => '123' ];
 //        $cm = $this->getPermittedConfig( $modelName, $model, $mode );
@@ -89,9 +109,9 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
 
         prn( 'Form Config', $formConfig );
 
-        foreach( $modelConfig['fieldsets'] as $fieldSet)
+        foreach ( $modelConfig[ 'fieldsets' ] as $fieldSet )
         {
-            prn($fieldSet);
+            prn( $fieldSet );
         }
 
         exit;
@@ -100,13 +120,13 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
         foreach ( $aclData->fields as $field_name => $field_conf )
         {
             $_grp = $field_conf[ 'group' ];
-            if ( !isset( $_fsgroups[ $_grp ] ) )
+            if ( !isset( $_fsGroups[ $_grp ] ) )
             {
-                $_fsgroups[ $_grp ] = [ ];
+                $_fsGroups[ $_grp ] = [ ];
             }
             $_element = $this->createFormElement( $field_name, $field_conf );
 
-            $_fsgroups[ $_grp ] += $_element;
+            $_fsGroups[ $_grp ] += $_element;
 
             foreach ( array_keys( $_element ) as $_k )
             {
@@ -148,9 +168,9 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
                 'validationGroup' => [ ]
             ];
 
-            if ( isset( $_fsgroups[ $_grp ] ) )
+            if ( isset( $_fsGroups[ $_grp ] ) )
             {
-                $fsconfig[ 'elements' ] = $_fsgroups[ $_grp ];
+                $fsconfig[ 'elements' ] = $_fsGroups[ $_grp ];
             }
 
 //            foreach ( $cm -> fields as $field_name => $field_conf )
@@ -200,11 +220,11 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
         return $fs;
     }
 
-    public function getPermittedConfig( $modelName, $model, $mode = Acl::MODE_READ )
+    public function getPermittedConfig( $model, $mode )
     {
-        $fieldPermissions = $this->getFieldPermissions( $this->user(), $modelName, $model, $mode );
+        $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
-        $cm = $this->getConfig( $modelName );
+//        $cm = $this->getConfig( $modelName );
 
         $allowedFields = [ ];
         foreach ( $cm->fields as $k => $v )
@@ -219,10 +239,11 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
         return $cm;
     }
 
-    public function getFieldPermissions( $user, $modelName, $model, $mode = Acl::MODE_READ )
+    public function getFieldPermissions( $model, $mode )
     {
-        $acl = $this->table( 'Acl' )->findOne( [ 'role_id' => $user->role_id, 'resource' => $modelName ] );
-
+        $modelName = $model -> getModelName();
+        $user = $this -> getAuthServiceVerify()->getUser();
+        $acl = $this->getGatewayServiceVerify() -> get( 'Acl' )->findOne( [ 'role_id' => $user->role_id, 'resource' => $modelName ] );
         if ( $acl )
         {
             $modelPermissions = $acl->permissions;
@@ -245,7 +266,7 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
                 throw new \Exception( "This action is not allowed for you" );
             }
             $fieldPermissions = [ ];
-            $fieldModes       = ACL::getFieldPerms( $mode );
+            $fieldModes       = Acl::getFieldPerms( $mode );
             foreach ( $acl->fields as $k => $v )
             {
                 if ( in_array( $v, $fieldModes ) )
@@ -259,6 +280,9 @@ class FormService implements FormServiceInterface, ModelConfigParserServiceAware
         {
             throw new \Exception( "Incorrect acl data is in your account" );
         }
+
+        prn($fieldPermissions);
+        exit;
 
         return $fieldPermissions;
     }

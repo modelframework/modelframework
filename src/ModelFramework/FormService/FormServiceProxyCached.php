@@ -10,6 +10,7 @@ namespace ModelFramework\FormService;
 
 use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
+use ModelFramework\DataModel\DataModelInterface;
 
 class FormServiceProxyCached implements FormServiceAwareInterface, CacheServiceAwareInterface, FormServiceInterface
 {
@@ -17,23 +18,25 @@ class FormServiceProxyCached implements FormServiceAwareInterface, CacheServiceA
     use CacheServiceAwareTrait, FormServiceAwareTrait;
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param string             $mode
      *
      * @return DataForm
      */
-    public function get( $modelName )
+    public function get( DataModelInterface $model, $mode )
     {
-        return $this->getForm( $modelName );
+        return $this->getForm( $model, $mode );
     }
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param string             $mode
      *
      * @return DataForm
      */
-    public function getForm( $modelName )
+    public function getForm( DataModelInterface $model, $mode )
     {
-        return $this->getCacheService()->getCachedObjMethod( $this->getFormService(), 'getForm', [ $modelName ] );
+        return $this->getCacheService()->getCachedObjMethod( $this->getFormService(), 'getForm', [ $model, $mode ] );
     }
 
 }

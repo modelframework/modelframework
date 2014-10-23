@@ -36,8 +36,8 @@ class AddObserver implements \SplObserver
             $mode  = Acl::MODE_EDIT;
         }
 //        $form = $subject->getModelServiceVerify()->get( $modelName, $model, $mode );
-        $form = $subject->getFormServiceVerify()->get( $modelName );
-        prn( $model, $mode, $form );
+        prn( 'AddObserver', $model, $mode );
+        $form = $subject->getFormServiceVerify()->get( $model, 'c' );
         exit;
 
         $form->setRoute( strtolower( $modelName ) )->setAction( $this->params()->fromRoute( 'action', 'edit' ) );

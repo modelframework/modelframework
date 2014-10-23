@@ -8,21 +8,25 @@
 
 namespace ModelFramework\FormService;
 
+use ModelFramework\DataModel\DataModelInterface;
+
 interface FormServiceInterface
 {
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param string             $mode
      *
      * @return DataForm
      */
-    public function get( $modelName );
+    public function get( DataModelInterface $model, $mode );
 
     /**
-     * @param string $modelName
+     * @param DataModelInterface $model
+     * @param string             $mode
      *
      * @return DataForm
      */
-    public function getForm( $modelName );
+    public function getForm( DataModelInterface $model, $mode );
 
 }
