@@ -16,13 +16,18 @@ class AddObserver implements \SplObserver
     public function update( \SplSubject $subject )
     {
         prn( 'Add observer' );
+
         $viewConfig = $subject->getViewConfigDataVerify();
+
         $modelName  = $viewConfig->model;
+
         prn( $subject->getData(), $modelName );
 
-        $id = (string) $subject->getParams()->fromRoute( 'id', '0' );
+//        $id = (string) $subject->getParams()->fromRoute( 'id', '0' );
+        $id = (string) $subject->getParam( 'id', '0' );
         prn( $id );
         $modelGateway = $subject->getGatewayServiceVerify()->get( $modelName );
+        $modelGateway =  $subject->getGateway();
         if ( $id == '0' )
         {
             // :FIXME: check create permission
@@ -35,10 +40,25 @@ class AddObserver implements \SplObserver
             $model = $modelGateway->get( $id );
             $mode  = Acl::MODE_EDIT;
         }
-//        $form = $subject->getModelServiceVerify()->get( $modelName, $model, $mode );
+
+        $formService = $subject->getFormServiceVerify();
+
+        prn('subject', $subject);
+        $modelConfig = $subject->getModelConfig();
+        $aclModel = $subject->getGateway()->model();
+        $aclData = $aclModel->getAclData();
+
+        prn($modelConfig, $aclModel, $aclData);
+
+//        $form = $formService -> createFormWithConfig( $modelConfig, $aclData );
+
+//          $form = $subject->getModelServiceVerify()->get( $modelName, $model, $mode );
         prn( 'AddObserver', $model, $mode );
-        $form = $subject->getFormServiceVerify()->get( $model, 'c' );
-        exit;
+
+        $form = $subject->getFormServiceVerify()->get( $model, $mode );
+
+        prn('form', $form);
+        exit();
 
         $form->setRoute( strtolower( $modelName ) )->setAction( $this->params()->fromRoute( 'action', 'edit' ) );
         if ( $id != '0' )

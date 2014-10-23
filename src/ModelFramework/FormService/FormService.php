@@ -75,6 +75,39 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
 //        return $model;
     }
 
+
+    public function createFormWithConfig( $modelConfig, $aclData )
+    {
+        $cm = $this->splitPermittedConfig( $modelConfig, $aclData );
+
+        return null;
+    }
+
+
+    public function splitPermittedConfig( $modelConfig, $aclData )
+    {
+        prn($aclData);
+        exit();
+//        $fieldPermissions = $this->getFieldPermissions( $model, $mode );
+
+//        $cm = $this->getConfig( $modelName );
+
+        $allowedFields = [ ];
+        foreach ( $modelConfig->fields as $k => $v )
+        {
+            if ( in_array( $k, $fieldPermissions ) )
+            {
+                $allowedFields[ $k ] = $v;
+            }
+        }
+        $modelConfig->fields = $allowedFields;
+
+        return $modelConfig;
+        return null;
+    }
+
+
+
     /**
      * @param DataModelInterface $model
      * @param        string      $mode

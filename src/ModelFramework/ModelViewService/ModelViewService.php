@@ -60,21 +60,30 @@ class ModelViewService
      */
     protected function createView( $modelName, $viewName )
     {
+        // this object will deal with all view of model stuff
         $modelView = new ModelView();
 
+        // we want modelView get to know what to show and how
         $viewConfigData   = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
-        $modelConfigArray = $this->getModelConfigParserService()->getViewConfig( $modelName );
-
         $modelView->setViewConfigData( $viewConfigData );
+
+        // info about model - how it is organized. it will be useful
+        $modelConfigArray = $this->getModelConfigParserService()->getViewConfig( $modelName );
         $modelView->setModelConfig( $modelConfigArray );
 
+        // model view should deal with acl enabled model
         $aclModel = $this->getAclServiceVerify()->getAclModel( $modelName );
+        // primary gateway for data ops
         $gateway  = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
+        $modelView->setGateway( $gateway );
 
+        // gateway service for queries
         $modelView->setGatewayService( $this->getGatewayServiceVerify() );
+
+        // form service for form creation
         $modelView->setFormService( $this->getFormServiceVerify() );
 
-        $modelView->setGateway( $gateway );
+        // initialize stuff. observers as primary
         $modelView->init();
 
         return $modelView;
