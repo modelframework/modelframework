@@ -21,6 +21,8 @@ use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterfa
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
+use ModelFramework\ModelService\ConfigForm;
+use ModelFramework\Utility\Obj;
 use Wepo\Lib\Acl;
 
 class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface,
@@ -86,7 +88,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
 
     public function splitPermittedConfig( $modelConfig, $aclData )
     {
-        prn($aclData);
+        prn( $aclData );
         exit();
 //        $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
@@ -103,9 +105,9 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
         $modelConfig->fields = $allowedFields;
 
         return $modelConfig;
+
         return null;
     }
-
 
 
     /**
@@ -117,9 +119,9 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     public function createForm( DataModelInterface $model, $mode )
     {
         $modelName = $model->getModelName();
-        prn( $modelName );
-        $cm = $this->getPermittedConfig( $model, $mode );
-        exit;
+        $cd = $this->getPermittedConfig( $model, $mode );
+        prn( $modelName, $cd );
+//        exit;
         $modelConfig = $this->getModelConfigParserServiceVerify()->getViewConfig( $modelName );
         $aclModel    = $this->getAclServiceVerify()->get( $modelName );
         $aclData     = $aclModel->getAclDataVerify();
@@ -140,17 +142,17 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
         ];
         $fss        = [ ];
 
-        prn( 'Form Config', $formConfig );
-
-        foreach ( $modelConfig[ 'fieldsets' ] as $fieldSet )
-        {
-            prn( $fieldSet );
-        }
-
-        exit;
+//        prn( 'Form Config', $formConfig );
+//
+//        foreach ( $modelConfig[ 'fieldsets' ] as $fieldSet )
+//        {
+//            prn( $fieldSet );
+//        }
+//
+//        exit;
 
         $_fsGroups = [ ];
-        foreach ( $aclData->fields as $field_name => $field_conf )
+        foreach ( $cd->fields as $field_name => $field_conf )
         {
             $_grp = $field_conf[ 'group' ];
             if ( !isset( $_fsGroups[ $_grp ] ) )
@@ -167,13 +169,13 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
             }
         }
 
-        foreach ( $cm->groups as $_grp => $_fls )
+        foreach ( $cd->groups as $_grp => $_fls )
         {
 
             if ( is_numeric( $_grp ) )
             {
                 $_grp = $_fls;
-                $_lbl = $cm->model . ' information';
+                $_lbl = $cd->model . ' information';
                 if ( $_grp == 'fields' )
                 {
                     $_baseFieldSet = true;
@@ -206,7 +208,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
                 $fsconfig[ 'elements' ] = $_fsGroups[ $_grp ];
             }
 
-//            foreach ( $cm -> fields as $field_name => $field_conf )
+//            foreach ( $cd -> fields as $field_name => $field_conf )
 //            {
 //                if ( $field_conf[ 'group' ] == $_grp )
 //                {
@@ -216,7 +218,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
 //                }
 //            }
 
-            $cfs          = new ConfigForm();
+            $cfs          = new \Wepo\Model\ConfigForm();
             $fieldset     = Obj::create( '\\Wepo\\Lib\\WepoFieldset' );
             $fss[ $_grp ] = $fieldset->parseconfig( $cfs->exchangeArray( $fsconfig ), [ ] );
 
@@ -236,7 +238,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
             $formConfig[ 'fieldsets' ][ $fieldset->getName() ] = [ 'type' => get_class( $fieldset ) ];
         }
 
-        $cf = new ConfigForm();
+        $cf = new \Wepo\Model\ConfigForm();
         $cf->exchangeArray( $formConfig );
         $form = Obj::create( '\\Wepo\\Lib\\WepoForm' );
 
@@ -257,40 +259,47 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     {
         $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
-//        $cm = $this->getConfig( $modelName );
+        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
 
         $allowedFields = [ ];
-        foreach ( $cm->fields as $k => $v )
+        foreach ( $cd->fields as $k => $v )
         {
             if ( in_array( $k, $fieldPermissions ) )
             {
                 $allowedFields[ $k ] = $v;
             }
         }
-        $cm->fields = $allowedFields;
+        $cd->fields = $allowedFields;
 
-        return $cm;
+        return $cd;
     }
 
     public function getFieldPermissions( $model, $mode )
     {
-        $modelName = $model -> getModelName();
-        $user = $this -> getAuthServiceVerify()->getUser();
-        $acl = $this->getGatewayServiceVerify() -> get( 'Acl' )->findOne( [ 'role_id' => $user->role_id, 'resource' => $modelName ] );
+        $modelName = $model->getModelName();
+        $user      = $this->getAuthServiceVerify()->getUser();
+        $acl       = $this->getGatewayServiceVerify()->get( 'Acl' )->findOne( [
+                                                                                  'role_id'  => $user->role_id,
+                                                                                  'resource' => $modelName
+                                                                              ] );
         if ( $acl )
         {
+
             $modelPermissions = $acl->permissions;
             $groups           = $user->groups;
             $groups[ ]        = $user->_id;
-            foreach ( $groups as $group_id )
+            if ( is_array( $model->acl ) )
             {
-                foreach ( $model->acl as $_acl )
+                foreach ( $groups as $group_id )
                 {
-                    if ( !empty( $_acl[ 'role_id' ] ) && $_acl[ 'role_id' ] == $group_id )
+                    foreach ( $model->acl as $_acl )
                     {
-                        $modelPermissions = array_merge( $modelPermissions, $_acl[ 'permissions' ] );
-                    }
+                        if ( !empty( $_acl[ 'role_id' ] ) && $_acl[ 'role_id' ] == $group_id )
+                        {
+                            $modelPermissions = array_merge( $modelPermissions, $_acl[ 'permissions' ] );
+                        }
 
+                    }
                 }
             }
             $modelPermissions = array_unique( $modelPermissions );
@@ -314,16 +323,14 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
             throw new \Exception( "Incorrect acl data is in your account" );
         }
 
-        prn($fieldPermissions);
-        exit;
-
         return $fieldPermissions;
     }
 
     protected function createFormElement( $name, $conf )
     {
         $type                                 = $conf[ 'type' ];
-        $_elementconf                         = $this->_fieldtypes[ $type ][ 'formElement' ];
+//        $_elementconf                         = $this->_fieldtypes[ $type ][ 'formElement' ];
+        $_elementconf                         = $this->getFieldTypesServiceVerify() -> getFormElement( $type );
         $_elementconf[ 'options' ][ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
         if ( $type == 'lookup' )
         {

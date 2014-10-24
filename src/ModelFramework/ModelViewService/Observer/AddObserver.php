@@ -19,7 +19,7 @@ class AddObserver implements \SplObserver
 
         $viewConfig = $subject->getViewConfigDataVerify();
 
-        $modelName  = $viewConfig->model;
+        $modelName = $viewConfig->model;
 
         prn( $subject->getData(), $modelName );
 
@@ -27,7 +27,9 @@ class AddObserver implements \SplObserver
         $id = (string) $subject->getParam( 'id', '0' );
         prn( $id );
         $modelGateway = $subject->getGatewayServiceVerify()->get( $modelName );
-        $modelGateway =  $subject->getGateway();
+
+        $modelGateway = $subject->getGateway();
+
         if ( $id == '0' )
         {
             // :FIXME: check create permission
@@ -43,12 +45,12 @@ class AddObserver implements \SplObserver
 
         $formService = $subject->getFormServiceVerify();
 
-        prn('subject', $subject);
+        prn( 'subject', $subject );
         $modelConfig = $subject->getModelConfig();
-        $aclModel = $subject->getGateway()->model();
-        $aclData = $aclModel->getAclData();
+        $aclModel    = $subject->getGateway()->model();
+        $aclData     = $aclModel->getAclData();
 
-        prn($modelConfig, $aclModel, $aclData);
+        prn( $modelConfig, $aclModel, $aclData );
 
 //        $form = $formService -> createFormWithConfig( $modelConfig, $aclData );
 
@@ -57,10 +59,10 @@ class AddObserver implements \SplObserver
 
         $form = $subject->getFormServiceVerify()->get( $model, $mode );
 
-        prn('form', $form);
-        exit();
+        prn( 'form', $form );
+//        exit();
 
-        $form->setRoute( strtolower( $modelName ) )->setAction( $this->params()->fromRoute( 'action', 'edit' ) );
+        $form->setRoute( strtolower( $modelName ) )->setAction( $subject->getParams()->fromRoute( 'action', 'edit' ) );
         if ( $id != '0' )
         {
             $form->setActionParams( [ 'id' => $id ] );
@@ -84,9 +86,10 @@ class AddObserver implements \SplObserver
         }
         catch ( \Exception $ex )
         {
-            return $this->redirect()->toRoute( $form->getRoute(), array( 'action' => 'list' ) );
+//            return $subject->getParams()->getController()->redirect()
+//                           ->toRoute( $form->getRoute(), array( 'action' => 'list' ) );
         }
-        $request = $this->getRequest();
+        $request = $subject->getParams()->getController()->getRequest();
         if ( $request->isPost() )
         {
             $form->addInputFilter( $model->getInputFilter() );
@@ -139,10 +142,12 @@ class AddObserver implements \SplObserver
         $results[ 'form' ] = $form;
         if ( isset( $form->getFieldsets()[ 'saurl' ] ) )
         {
-            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $this->params()->fromQuery( 'back', 'home' ) );
+            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()->fromQuery( 'back', 'home' ) );
         }
 
-        return $results;
+        prn( 'AddObserver end', $results );
+        $subject->setData( $results );
+//        return $results;
     }
 
 }
