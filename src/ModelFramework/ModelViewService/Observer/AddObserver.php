@@ -50,7 +50,7 @@ class AddObserver implements \SplObserver
 
         prn($modelConfig, $aclModel, $aclData);
 
-//        $form = $formService -> createFormWithConfig( $modelConfig, $aclData );
+        $form = $formService -> createFormWithConfig( $modelConfig, $aclData );
 
 //          $form = $subject->getModelServiceVerify()->get( $modelName, $model, $mode );
         prn( 'AddObserver', $model, $mode );
