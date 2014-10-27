@@ -46,7 +46,7 @@ class AddObserver implements \SplObserver
         $formService = $subject->getFormServiceVerify();
 
         prn( 'subject', $subject );
-        $modelConfig = $subject->getModelConfig();
+        $modelConfig = null; // $subject->getModelConfig();
         $aclModel    = $subject->getGateway()->model();
         $aclData     = $aclModel->getAclData();
 

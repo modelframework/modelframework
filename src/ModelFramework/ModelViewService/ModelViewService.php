@@ -68,7 +68,7 @@ class ModelViewService
         $modelView->setViewConfigData( $viewConfigData );
 
         // info about model - how it is organized. it will be useful
-        $modelConfigArray = $this->getModelConfigParserService()->getViewConfig( $modelName );
+        $modelConfigArray = $this->getModelConfigParserService()->getModelConfig( $modelName );
         $modelView->setModelConfig( $modelConfigArray );
 
         // model view should deal with acl enabled model
