@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 27.10.14
- * Time: 15:57
+ * Class FormConfigParserServiceInterface
+ * @package ModelFramework\ModelConfigsService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\FormConfigParserService;

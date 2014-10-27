@@ -1,15 +1,15 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/31/14
- * Time: 11:18 AM
+ * Class FormConfigParserServiceAwareInterface
+ * @package ModelFramework\ModelConfigsService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\FormConfigParserService;
 
-
-interface FormConfigParserServiceAwareInterface {
+interface FormConfigParserServiceAwareInterface
+{
 
     /**
      * @param FormConfigParserServiceInterface $formConfigParserService

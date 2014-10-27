@@ -15,6 +15,8 @@ use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
+use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareInterface;
+use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
@@ -27,10 +29,11 @@ use Wepo\Lib\Acl;
 
 class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface,
                              ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
-                             GatewayServiceAwareInterface, AuthServiceAwareInterface
+                             GatewayServiceAwareInterface, AuthServiceAwareInterface,
+                             FormConfigParserServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
+    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
 
     /**
      * @param DataModelInterface $model
@@ -89,7 +92,8 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     public function splitPermittedConfig( $modelConfig, $aclData )
     {
         prn( $aclData );
-        exit();
+        return;
+//        exit();
 //        $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
 //        $cm = $this->getConfig( $modelName );
@@ -118,8 +122,11 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      */
     public function createForm( DataModelInterface $model, $mode )
     {
+        $formConfig = $this->getFormConfigParserServiceVerify()->getFormConfig( $model->getModelName() );
+        prn($formConfig);
+        exit;
         $modelName = $model->getModelName();
-        $cd = $this->getPermittedConfig( $model, $mode );
+        $cd        = $this->getPermittedConfig( $model, $mode );
         prn( $modelName, $cd );
 //        exit;
         $modelConfig = $this->getModelConfigParserServiceVerify()->getViewConfig( $modelName );
@@ -328,9 +335,9 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
 
     protected function createFormElement( $name, $conf )
     {
-        $type                                 = $conf[ 'type' ];
+        $type = $conf[ 'type' ];
 //        $_elementconf                         = $this->_fieldtypes[ $type ][ 'formElement' ];
-        $_elementconf                         = $this->getFieldTypesServiceVerify() -> getFormElement( $type );
+        $_elementconf                         = $this->getFieldTypesServiceVerify()->getFormElement( $type );
         $_elementconf[ 'options' ][ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
         if ( $type == 'lookup' )
         {
