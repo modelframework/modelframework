@@ -122,7 +122,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      */
     public function createForm( DataModelInterface $model, $mode )
     {
-        $formConfig = $this->getFormConfigParserServiceVerify()->getFormConfig( $model->getModelName() );
+        return $formConfig = $this->getFormConfigParserServiceVerify()->getFormConfig( $model->getModelName() );
         prn($formConfig);
         exit;
         $modelName = $model->getModelName();

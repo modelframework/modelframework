@@ -12,6 +12,7 @@ use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
+use ModelFramework\Utility\Obj;
 
 class FormConfigParserService
     implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface
@@ -24,14 +25,6 @@ class FormConfigParserService
         $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
         prn( 'FormConfigParser', $modelName, $cd );
 
-        $modelConfig = $this->getModelConfigParserServiceVerify()->getViewConfig( $modelName );
-        $aclModel    = $this->getAclServiceVerify()->get( $modelName );
-        $aclData     = $aclModel->getAclDataVerify();
-        prn( 'Form Service', $aclModel->toArray(), $aclData, $modelConfig );
-
-//        return [ 'form' => '123' ];
-//        $cm = $this->getPermittedConfig( $modelName, $model, $mode );
-
         $formConfig = [
             'name'            => $modelName . 'Form',
             'group'           => 'form',
@@ -43,16 +36,6 @@ class FormConfigParserService
             'validationGroup' => [ ]
         ];
         $fss        = [ ];
-
-//        prn( 'Form Config', $formConfig );
-//
-//        foreach ( $modelConfig[ 'fieldsets' ] as $fieldSet )
-//        {
-//            prn( $fieldSet );
-//        }
-//
-//        exit;
-
         $_fsGroups = [ ];
         foreach ( $cd->fields as $field_name => $field_conf )
         {
@@ -110,16 +93,6 @@ class FormConfigParserService
                 $fsconfig[ 'elements' ] = $_fsGroups[ $_grp ];
             }
 
-//            foreach ( $cd -> fields as $field_name => $field_conf )
-//            {
-//                if ( $field_conf[ 'group' ] == $_grp )
-//                {
-//                    $fsconfig = array_merge_recursive( $fsconfig, $this -> createFormElement( $field_name, $field_conf ) );
-//
-//                    $formConfig[ 'validaionGroup' ][ $_grp ][] = $field_name;
-//                }
-//            }
-
             $cfs          = new \Wepo\Model\ConfigForm();
             $fieldset     = Obj::create( '\\Wepo\\Lib\\WepoFieldset' );
             $fss[ $_grp ] = $fieldset->parseconfig( $cfs->exchangeArray( $fsconfig ), [ ] );
@@ -144,9 +117,9 @@ class FormConfigParserService
         $cf->exchangeArray( $formConfig );
         $form = Obj::create( '\\Wepo\\Lib\\WepoForm' );
 
-
-        prn($form->parseconfig( $cf, $fss ));
-        exit;
+        prn('12345',$fss);
+//        prn($form->parseconfig( $cf, $fss ));
+//        exit;
         return $form->parseconfig( $cf, $fss );
     }
 
@@ -160,23 +133,31 @@ class FormConfigParserService
         {
             $name .= '_id';
             //$conf[ 'fields' ] это не совесем порядок сортировки
-            $_lall    = $this->table( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
+            prn('createFormElement', $conf[ 'model' ], $conf[ 'fields' ]);
+//            prn('createFormElement', $this->getModelConfigsServiceVerify()->get());
+//            exit;
+
+
+
+//            $_lall    = $this->table( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
             $_options = [ ];
-            foreach ( $_lall as $_lrow )
-            {
-                $_llabel = '';
-                $_lvalue = $_lrow->id();
-                foreach ( array_keys( $conf[ 'fields' ] ) as $_k )
-                {
-                    if ( strlen( $_llabel ) )
-                    {
-                        $_llabel .= ' ';
-                    }
-                    $_llabel .= $_lrow->$_k;
-                }
-                $_options[ $_lvalue ] = $_llabel;
-            }
+//            foreach ( $_lall as $_lrow )
+//            {
+//                $_llabel = '';
+//                $_lvalue = $_lrow->id();
+//                foreach ( array_keys( $conf[ 'fields' ] ) as $_k )
+//                {
+//                    if ( strlen( $_llabel ) )
+//                    {
+//                        $_llabel .= ' ';
+//                    }
+//                    $_llabel .= $_lrow->$_k;
+//                }
+//                $_options[ $_lvalue ] = $_llabel;
+//            }
             $_elementconf[ 'options' ][ 'value_options' ] += $_options;
+
+
         }
         $_elementconf[ 'attributes' ][ 'name' ] = $name;
         if ( isset( $conf[ 'required' ] ) )
@@ -196,6 +177,17 @@ class FormConfigParserService
         $result = [ $name => $_elementconf ];
 
         return $result;
+    }
+
+
+    protected function getUtilityFieldsets( $modelName )
+    {
+        $fs = [ ];
+
+        $fs[ ] = new \Wepo\Form\ButtonFieldset();
+        $fs[ ] = new \Wepo\Form\SaUrlFieldset();
+
+        return $fs;
     }
 
 } 
