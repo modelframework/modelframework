@@ -10,6 +10,7 @@ namespace ModelFramework\FormConfigParserService;
 
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
+use ModelFramework\FormService\ConfigForm;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
 use ModelFramework\Utility\Obj;
@@ -19,6 +20,56 @@ class FormConfigParserService
 {
 
     use FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait;
+
+    protected $_utilityFieldsetsConfigs = [
+        'ButtonFieldset' => [
+            'name'       => 'ButtonFieldset',
+            'group'      => 'button',
+            'type'       => 'fieldset',
+            'options'    => [ ],
+            'attributes' => [
+                'name'  => 'button',
+                'class' => 'buttons',
+            ],
+            'fieldsets'  => [ ],
+            'elements'   => [
+                'submit' => [
+                    'type'       => 'Zend\Form\Element',
+                    'attributes' => [
+                        'value' => 'Save',
+                        'name'  => 'submit',
+                        'type'  => 'submit'
+                    ],
+                    'options'    => [ ]
+                ]
+            ]
+        ],
+        'SuUrlFieldset'  => [
+            'name'       => 'SuUrlFieldset',
+            'group'      => 'saurl',
+            'type'       => 'fieldset',
+            'options'    => [ ],
+            'attributes' => [
+                'name' => 'saurl',
+            ],
+            'fieldsets'  => [ ],
+            'elements'   => [
+                'back' => [
+                    'type'       => 'Zend\Form\Element',
+                    'attributes' => [
+                        'name' => 'back',
+                        'type' => 'hidden'
+                    ],
+                    'options'    => [ ]
+                ]
+            ]
+        ]
+    ];
+
+    public function getUtilityFieldsetsConfigs()
+    {
+        return $this->_utilityFieldsetsConfigs;
+    }
 
     public function getFormConfig( $modelName )
     {
@@ -36,7 +87,7 @@ class FormConfigParserService
             'validationGroup' => [ ]
         ];
         $fss        = [ ];
-        $_fsGroups = [ ];
+        $_fsGroups  = [ ];
         foreach ( $cd->fields as $field_name => $field_conf )
         {
             $_grp = $field_conf[ 'group' ];
@@ -53,6 +104,8 @@ class FormConfigParserService
                 $formConfig[ 'validationGroup' ][ $_grp ][ ] = $_k;
             }
         }
+
+        $fssConfigs = [ ];
 
         foreach ( $cd->groups as $_grp => $_fls )
         {
@@ -93,34 +146,28 @@ class FormConfigParserService
                 $fsconfig[ 'elements' ] = $_fsGroups[ $_grp ];
             }
 
-            $cfs          = new \Wepo\Model\ConfigForm();
-            $fieldset     = Obj::create( '\\Wepo\\Lib\\WepoFieldset' );
-            $fss[ $_grp ] = $fieldset->parseconfig( $cfs->exchangeArray( $fsconfig ), [ ] );
+//            $cfs          = new \Wepo\Model\ConfigForm();
+//            $fieldset     = Obj::create( '\\Wepo\\Lib\\WepoFieldset' );
+            $fssConfigs[ $_grp ] = $fsconfig;
 
             $formConfig[ 'fieldsets' ][ $_grp ] = [ 'type' => $modelName . 'Fieldset' ];
             if ( $_baseFieldSet == true )
             {
                 $formConfig[ 'fieldsets' ][ $_grp ] = [ 'options' => [ 'use_as_base_fieldset' => true ] ];
             }
-
         }
+        $formConfig[ 'fieldsets_configs' ] = $fssConfigs;
 
-        # add
-        $utilityfs = $this->getUtilityFieldsets( $modelName );
-        foreach ( $utilityfs as $fieldset )
+        $ufs = $this->getUtilityFieldsetsConfigs();
+        foreach ( $ufs as $fieldset )
         {
-            $fss[ $fieldset->getName() ]                       = $fieldset;
-            $formConfig[ 'fieldsets' ][ $fieldset->getName() ] = [ 'type' => get_class( $fieldset ) ];
+            $formConfig[ 'fieldsets' ][ $fieldset[ 'name' ] ]         = [ 'type' => $fieldset[ 'name' ] ];
+            $formConfig[ 'fieldsets_configs' ][ $fieldset[ 'name' ] ] = $fieldset;
         }
-
-        $cf = new \Wepo\Model\ConfigForm();
+        $cf = new ConfigForm();
         $cf->exchangeArray( $formConfig );
-        $form = Obj::create( '\\Wepo\\Lib\\WepoForm' );
 
-        prn('12345',$fss);
-//        prn($form->parseconfig( $cf, $fss ));
-//        exit;
-        return $form->parseconfig( $cf, $fss );
+        return $cf;
     }
 
     protected function createFormElement( $name, $conf )
@@ -133,11 +180,9 @@ class FormConfigParserService
         {
             $name .= '_id';
             //$conf[ 'fields' ] это не совесем порядок сортировки
-            prn('createFormElement', $conf[ 'model' ], $conf[ 'fields' ]);
+            prn( 'createFormElement', $conf[ 'model' ], $conf[ 'fields' ] );
 //            prn('createFormElement', $this->getModelConfigsServiceVerify()->get());
 //            exit;
-
-
 
 //            $_lall    = $this->table( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
             $_options = [ ];
@@ -156,7 +201,6 @@ class FormConfigParserService
 //                $_options[ $_lvalue ] = $_llabel;
 //            }
             $_elementconf[ 'options' ][ 'value_options' ] += $_options;
-
 
         }
         $_elementconf[ 'attributes' ][ 'name' ] = $name;
@@ -180,14 +224,14 @@ class FormConfigParserService
     }
 
 
-    protected function getUtilityFieldsets( $modelName )
-    {
-        $fs = [ ];
-
-        $fs[ ] = new \Wepo\Form\ButtonFieldset();
-        $fs[ ] = new \Wepo\Form\SaUrlFieldset();
-
-        return $fs;
-    }
+//    protected function getUtilityFieldsets( $modelName )
+//    {
+//        $fs = [ ];
+//
+//        $fs[ ] = new \Wepo\Form\ButtonFieldset();
+//        $fs[ ] = new \Wepo\Form\SaUrlFieldset();
+//
+//        return $fs;
+//    }
 
 } 

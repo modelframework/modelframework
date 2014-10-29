@@ -2,13 +2,12 @@
 
 namespace ModelFramework\FormService;
 
+use SebastianBergmann\Exporter\Exception;
 use Zend\Form\Form;
 use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\Input;
 use Zend\InputFilter\InputFilter;
-
-use \Wepo\Model\ConfigForm;
 
 class DataForm extends Form
 {
@@ -22,9 +21,9 @@ class DataForm extends Form
 
     public function bind( $object, $flags = FormInterface::VALUES_NORMALIZED )
     {
-        foreach($this -> getFieldsets() as $fieldset)
+        foreach ( $this->getFieldsets() as $fieldset )
         {
-           $fieldset ->setObject($object);
+            $fieldset->setObject( $object );
         }
         $result = parent::bind( $object, $flags );
 
@@ -39,17 +38,18 @@ class DataForm extends Form
     protected function extract()
     {
         $values = parent::extract();
-        foreach($this -> getFieldsets() as $fieldset)
+        foreach ( $this->getFieldsets() as $fieldset )
         {
-            if ( isset($fieldset->getOptions()['use_as_base_fieldset']) ) continue;
-            $name = $fieldset->getName();
-            $values[$name] = $fieldset->extract();
-            $fieldset->populateValues($values[$name]);
+            if ( isset( $fieldset->getOptions()[ 'use_as_base_fieldset' ] ) ) continue;
+            $name            = $fieldset->getName();
+            $values[ $name ] = $fieldset->extract();
+            $fieldset->populateValues( $values[ $name ] );
         }
+
         return $values;
     }
 
-    public function parseConfig( ConfigForm $config, array $fieldsets )
+    public function parseConfig( ConfigForm $config )
     {
         $this->_name = $config->name;
         $this->setName( $config->group );
@@ -61,11 +61,19 @@ class DataForm extends Form
         }
         foreach ( $config->fieldsets as $_k => $_v )
         {
+            if ( !isset( $config->fieldsets_configs[ $_k ] ) )
+            {
+                throw new \Exception( "Config for $_k fieldset is not set in $config->name ConfigForm" );
+            }
+            $fc       = $config->fieldsets_configs[ $_k ];
+            $cf       = new ConfigForm();
+            $fieldset = new DataFieldset();
+            $fieldset->parseconfig( $cf->exchangeArray( $fc ) );
             if ( !empty( $_v[ 'options' ] ) )
             {
-                $fieldsets[ $_k ]->setOptions( $_v[ 'options' ] );
+                $fieldset->setOptions( $_v[ 'options' ] );
             }
-            $this->add( $fieldsets[ $_k ] );
+            $this->add( $fieldset );
         }
         foreach ( $config->elements as $_k => $_v )
         {
@@ -79,10 +87,10 @@ class DataForm extends Form
     {
         $inputFilter = $this->getInputFilter();
 
-        $_inputs = $addInputFilter -> getInputs();
+        $_inputs = $addInputFilter->getInputs();
         foreach ( $this->getValidationGroup() as $_group => $_fields )
         {
-            if ( $fieldsetName!== null && $_group !== $fieldsetName )
+            if ( $fieldsetName !== null && $_group !== $fieldsetName )
             {
                 continue;
             }
@@ -92,18 +100,18 @@ class DataForm extends Form
                 $fieldsetFilter = new InputFilter();
                 foreach ( $_fields as $_fName )
                 {
-                    if ( isset($_inputs[$_fName]) )
+                    if ( isset( $_inputs[ $_fName ] ) )
                     {
-                        $fieldsetFilter -> add( $_inputs[$_fName] );
+                        $fieldsetFilter->add( $_inputs[ $_fName ] );
                     }
                 }
-                $inputFilter -> add( $fieldsetFilter, $_group );
+                $inputFilter->add( $fieldsetFilter, $_group );
             }
             else
             {
-                if ( isset($_inputs[$_fields]) )
+                if ( isset( $_inputs[ $_fields ] ) )
                 {
-                    $inputFilter -> add( $_inputs[$_fields] );
+                    $inputFilter->add( $_inputs[ $_fields ] );
                 }
             }
         }
