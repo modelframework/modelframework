@@ -44,7 +44,7 @@ class LogicService
 
     public function dispatch( $event )
     {
-        return call_user_func( [ $this->get( $event->getParams() ), $event->getName() ], $event );
+       return call_user_func( [ $this->get( $event->getParams() ), $event->getName() ], $event );
     }
 
 }

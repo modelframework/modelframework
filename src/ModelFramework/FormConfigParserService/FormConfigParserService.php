@@ -13,7 +13,6 @@ use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\ConfigForm;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
-use ModelFramework\Utility\Obj;
 
 class FormConfigParserService
     implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface
@@ -71,12 +70,10 @@ class FormConfigParserService
         return $this->_utilityFieldsetsConfigs;
     }
 
-    public function getFormConfig( $modelName )
+    public function getFormConfig( $cd )
     {
-        $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
-        prn( 'FormConfigParser', $modelName, $cd );
-
-        $formConfig = [
+        $modelName     = $cd->model;
+        $formConfig    = [
             'name'            => $modelName . 'Form',
             'group'           => 'form',
             'type'            => 'form',
@@ -84,29 +81,30 @@ class FormConfigParserService
             'attributes'      => [ 'method' => 'post', 'name' => $modelName . 'form' ], // , 'action' => 'reg'
             'fieldsets'       => [ ],
             'elements'        => [ ],
+            'filters'         => [ ],
             'validationGroup' => [ ]
         ];
-        $fss        = [ ];
-        $_fsGroups  = [ ];
+        $_fsGroups     = [ ];
+        $_filterGroups = [ ];
         foreach ( $cd->fields as $field_name => $field_conf )
         {
             $_grp = $field_conf[ 'group' ];
             if ( !isset( $_fsGroups[ $_grp ] ) )
             {
-                $_fsGroups[ $_grp ] = [ ];
+                $_fsGroups[ $_grp ]     = [ ];
+                $_filterGroups[ $_grp ] = [ ];
             }
-            $_element = $this->createFormElement( $field_name, $field_conf );
+            $_field = $this->createFormElement( $field_name, $field_conf );
 
-            $_fsGroups[ $_grp ] += $_element;
+            $_fsGroups[ $_grp ] += $_field[ 'elements' ];
+            $_filterGroups[ $_grp ] += $_field[ 'filters' ];
 
-            foreach ( array_keys( $_element ) as $_k )
+            foreach ( array_keys( $_field[ 'elements' ] ) as $_k )
             {
                 $formConfig[ 'validationGroup' ][ $_grp ][ ] = $_k;
             }
         }
-
         $fssConfigs = [ ];
-
         foreach ( $cd->groups as $_grp => $_fls )
         {
 
@@ -140,16 +138,16 @@ class FormConfigParserService
                 'elements'        => [ ],
                 'validationGroup' => [ ]
             ];
-
             if ( isset( $_fsGroups[ $_grp ] ) )
             {
+                if ( !isset( $formConfig[ 'filters' ][ $_grp ] ) )
+                {
+                    $formConfig[ 'filters' ][ $_grp ] = [ ];
+                }
                 $fsconfig[ 'elements' ] = $_fsGroups[ $_grp ];
+                $formConfig[ 'filters' ][ $_grp ] += $_filterGroups[ $_grp ];
             }
-
-//            $cfs          = new \Wepo\Model\ConfigForm();
-//            $fieldset     = Obj::create( '\\Wepo\\Lib\\WepoFieldset' );
-            $fssConfigs[ $_grp ] = $fsconfig;
-
+            $fssConfigs[ $_grp ]                = $fsconfig;
             $formConfig[ 'fieldsets' ][ $_grp ] = [ 'type' => $modelName . 'Fieldset' ];
             if ( $_baseFieldSet == true )
             {
@@ -157,8 +155,7 @@ class FormConfigParserService
             }
         }
         $formConfig[ 'fieldsets_configs' ] = $fssConfigs;
-
-        $ufs = $this->getUtilityFieldsetsConfigs();
+        $ufs                               = $this->getUtilityFieldsetsConfigs();
         foreach ( $ufs as $fieldset )
         {
             $formConfig[ 'fieldsets' ][ $fieldset[ 'name' ] ]         = [ 'type' => $fieldset[ 'name' ] ];
@@ -175,6 +172,8 @@ class FormConfigParserService
         $type = $conf[ 'type' ];
 //        $_elementconf                         = $this->_fieldtypes[ $type ][ 'formElement' ];
         $_elementconf                         = $this->getFieldTypesServiceVerify()->getFormElement( $type );
+        $filter                               = $this->getFieldTypesServiceVerify()->getInputFilter( $type );
+        $filter[ 'name' ]                     = $name;
         $_elementconf[ 'options' ][ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
         if ( $type == 'lookup' )
         {
@@ -218,20 +217,12 @@ class FormConfigParserService
                 $_elementconf[ 'options' ][ 'label_attributes' ] = [ 'class' => 'required' ];
             }
         }
-        $result = [ $name => $_elementconf ];
+
+        $result = [ 'filters' => [ $name => $filter ], 'elements' => [ $name => $_elementconf ] ];
+
+//        $result = [ $name => $_elementconf ];
 
         return $result;
     }
-
-
-//    protected function getUtilityFieldsets( $modelName )
-//    {
-//        $fs = [ ];
-//
-//        $fs[ ] = new \Wepo\Form\ButtonFieldset();
-//        $fs[ ] = new \Wepo\Form\SaUrlFieldset();
-//
-//        return $fs;
-//    }
 
 } 

@@ -64,8 +64,9 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      */
     public function createForm( DataModelInterface $model, $mode )
     {
-        $cf   = $this->getFormConfigParserServiceVerify()->getFormConfig( $model->getModelName() );
-        $form = new DataForm();
+        $configData = $this->getPermittedConfig( $model, $mode );
+        $cf         = $this->getFormConfigParserServiceVerify()->getFormConfig( $configData );
+        $form       = new DataForm();
 
         return $form->parseconfig( $cf );
     }
@@ -92,15 +93,10 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
 
     public function getFieldPermissions( $model, $mode )
     {
-        $modelName = $model->getModelName();
-        $user      = $this->getAuthServiceVerify()->getUser();
-        $acl       = $this->getGatewayServiceVerify()->get( 'Acl' )->findOne( [
-                                                                                  'role_id'  => $user->role_id,
-                                                                                  'resource' => $modelName
-                                                                              ] );
+        $user = $this->getAuthServiceVerify()->getUser();
+        $acl  = $model->getAclData();
         if ( $acl )
         {
-
             $modelPermissions = $acl->permissions;
             $groups           = $user->groups;
             $groups[ ]        = $user->_id;
@@ -114,7 +110,6 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
                         {
                             $modelPermissions = array_merge( $modelPermissions, $_acl[ 'permissions' ] );
                         }
-
                     }
                 }
             }
@@ -132,7 +127,6 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
                     $fieldPermissions[ ] = $k;
                 }
             }
-
         }
         else
         {

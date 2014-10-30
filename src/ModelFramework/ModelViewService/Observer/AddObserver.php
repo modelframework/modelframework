@@ -15,64 +15,33 @@ class AddObserver implements \SplObserver
 
     public function update( \SplSubject $subject )
     {
-        prn( 'Add observer' );
-
         $viewConfig = $subject->getViewConfigDataVerify();
-
         $modelName = $viewConfig->model;
-
-        prn( $subject->getData(), $modelName );
-
-//        $id = (string) $subject->getParams()->fromRoute( 'id', '0' );
         $id = (string) $subject->getParam( 'id', '0' );
-        prn( $id );
-        $modelGateway = $subject->getGatewayServiceVerify()->get( $modelName );
-
-        $modelGateway = $subject->getGateway();
-
         if ( $id == '0' )
         {
             // :FIXME: check create permission
-            $model = $modelGateway->model();
+            $model = $subject->getGateway()->model();
             $mode  = Acl::MODE_CREATE;
         }
         else
         {
             // :FIXME: add security filter
-            $model = $modelGateway->get( $id );
+            $model = $subject->getGateway()->get( $id );
             $mode  = Acl::MODE_EDIT;
         }
-
-        $formService = $subject->getFormServiceVerify();
-
-        prn( 'subject', $subject );
-        $modelConfig = null; // $subject->getModelConfig();
-        $aclModel    = $subject->getGateway()->model();
-        $aclData     = $aclModel->getAclData();
-
-        prn( $modelConfig, $aclModel, $aclData );
-
-//        $form = $formService -> createFormWithConfig( $modelConfig, $aclData );
-
-//          $form = $subject->getModelServiceVerify()->get( $modelName, $model, $mode );
-        prn( 'AddObserver', $model, $mode );
-
         $form = $subject->getFormServiceVerify()->get( $model, $mode );
-
-        prn( 'form', $form );
-//        exit();
-
         $form->setRoute( strtolower( $modelName ) )->setAction( $subject->getParams()->fromRoute( 'action', 'edit' ) );
         if ( $id != '0' )
         {
             $form->setActionParams( [ 'id' => $id ] );
         }
-
         $results = [ ];
         try
         {
+            prn('AddObserver123');
             $old_data = $model->split( $form->getValidationGroup() );
-
+            prn('AddObserver', $old_data);
             //Это жесть конечно и забавно, но на время сойдет :)
             $model_bind = $model->toArray();
             foreach ( $model_bind as $_k => $_v )
@@ -92,7 +61,7 @@ class AddObserver implements \SplObserver
         $request = $subject->getParams()->getController()->getRequest();
         if ( $request->isPost() )
         {
-            $form->addInputFilter( $model->getInputFilter() );
+//            $form->addInputFilter( $model->getInputFilter() );
             $form->setData( $request->getPost() );
             if ( $form->isValid() )
             {
@@ -104,12 +73,12 @@ class AddObserver implements \SplObserver
                 $model->merge( $model_data );
                 $model->merge( $old_data );
 
-                $this->trigger( 'presave', $model );
+                $subject->getParams()->getController()->trigger( 'presave', $model );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     try
                     {
-                        $this->table( $modelName )->save( $model );
+                        $subject->getGateway()->save( $model );
                     }
                     catch ( \Exception $ex )
                     {
@@ -118,8 +87,8 @@ class AddObserver implements \SplObserver
                 }
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
-                    $this->trigger( 'postsave', $model );
-                    $url = $this->getBackUrl();
+                    $subject->getParams()->getController()->trigger( 'postsave', $model );
+                    $url = $subject->getParams()->getController()->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {
                         $actionParams = [ 'action' => $form->getBackAction() ];
@@ -127,10 +96,10 @@ class AddObserver implements \SplObserver
                         {
                             $actionParams += $form->getActionParams();
                         }
-                        $url = $this->url()->fromRoute( $form->getRoute(), $actionParams );
+                        $url = $subject->getParams()->getController()->url()->fromRoute( $form->getRoute(), $actionParams );
                     }
 
-                    return $this->refresh( $modelName . ' data was successfully saved', $url );
+                    return $subject->getParams()->getController()->refresh( $modelName . ' data was successfully saved', $url );
                 }
             }
         }
@@ -144,8 +113,6 @@ class AddObserver implements \SplObserver
         {
             $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()->fromQuery( 'back', 'home' ) );
         }
-
-        prn( 'AddObserver end', $results );
         $subject->setData( $results );
 //        return $results;
     }

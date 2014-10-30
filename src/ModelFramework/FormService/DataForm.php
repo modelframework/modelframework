@@ -7,6 +7,7 @@ use Zend\Form\Form;
 use Zend\Form\FormInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\InputFilter\Input;
+use Zend\InputFilter\Factory;
 use Zend\InputFilter\InputFilter;
 
 class DataForm extends Form
@@ -79,8 +80,38 @@ class DataForm extends Form
         {
             $this->add( $_v );
         }
+        $this->setInputFilter( $this->createInputFilter( $config ) );
 
         return $this;
+    }
+
+    protected function createInputFilter( ConfigForm $config )
+    {
+        $inputFilter = new InputFilter();
+        $factory     = new Factory();
+        foreach ( $config->validationGroup as $_group => $_fields )
+        {
+            if ( is_array( $_fields ) )
+            {
+                $fieldsetFilter = new InputFilter();
+                foreach ( $_fields as $_fName )
+                {
+                    if ( isset( $config->filters[ $_group ][ $_fName ] ) )
+                    {
+                        $fieldsetFilter->add( $factory->createInput( $config->filters[ $_group ][ $_fName ] ) );
+                    }
+                }
+                $inputFilter->add( $fieldsetFilter, $_group );
+            }
+            else
+            {
+                if ( isset( $config->filters[ $_fields ] ) )
+                {
+                    $inputFilter->add( $factory->createInput( $config->filters[ $_fields ] ) );
+                }
+            }
+        }
+        return $inputFilter;
     }
 
     public function addInputFilter( InputFilterInterface $addInputFilter, $fieldsetName = null )

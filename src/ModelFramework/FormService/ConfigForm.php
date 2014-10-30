@@ -20,6 +20,7 @@ class ConfigForm
     public $fieldsets = [ ];
     public $fieldsets_configs = [ ];
     public $elements = [ ];
+    public $filters = [ ];
     public $validationGroup = [ ];
 
     /**

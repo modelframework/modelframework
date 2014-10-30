@@ -85,6 +85,79 @@ class DataModel implements DataModelInterface
         return $this;
     }
 
+    public function merge( $data )
+    {
+        if ( !isset( $this->_fields ) )
+        {
+            throw new \Exception( ' _fields property is not set in ' . get_class() );
+        }
+        if ( is_object( $data ) )
+        {
+            if ( method_exists( $data, 'getFields' ) )
+            {
+                $data = $this->getFields();
+            }
+            else
+            {
+                $data = get_object_vars( $data );
+            }
+        }
+        if ( !is_array( $data ) )
+        {
+            throw new \Exception( ' Array or object expected ' );
+        }
+        foreach ( array_keys( $this->_fields ) as $_field )
+        {
+            if ( isset( $data[ $_field ] ) )
+            {
+                $this->$_field = $data[ $_field ];
+            }
+        }
+
+        return $this;
+    }
+
+    private function values( $data )
+    {
+        static $results = [ ];
+        if ( is_object( $data ) )
+        {
+            if ( method_exists( $data, 'toArray' ) )
+            {
+                $data = array_keys( $data->toArray() );
+            }
+            else
+            {
+                $data = array_keys( get_object_vars( $data ) );
+            }
+        }
+        if ( is_array( $data ) )
+        {
+            foreach ( $data as $_v )
+            {
+                $this->values( $_v );
+            }
+        }
+        elseif ( !isset( $results[ $data ] ) )
+        {
+            $results[ $data ] = $data;
+        }
+
+        return $results;
+    }
+
+    public function split( $validationGroup )
+    {
+        $fields = $this->values( $validationGroup );
+        $data   = $this->_fields;
+        foreach ( $fields as $_v )
+        {
+            unset( $data[ $_v ] );
+        }
+
+        return $data;
+    }
+
     public function getArrayCopy()
     {
         $data = [ ];
@@ -145,6 +218,7 @@ class DataModel implements DataModelInterface
             {
                 return (string) $this->_id;
             }
+            prn( 'ololo512' );
             throw new \Exception( " Missed property $name in model {$this->getModelName()}" );
 //            $trace = debug_backtrace();
 //            trigger_error(
