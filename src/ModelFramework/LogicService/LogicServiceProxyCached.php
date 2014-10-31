@@ -19,11 +19,11 @@ class LogicServiceProxyCached
     use LogicServiceAwareTrait, CacheServiceAwareTrait;
 
     /**
-     * @param DataModelInterface $model
+     * @param array|DataModelInterface $model
      *
      * @return DataLogic
      */
-    public function get( DataModelInterface $model )
+    public function get( $model )
     {
         return $this->getCacheService()->getCachedObjMethod( $this->getLogicService(), 'get', [ $model ] );
     }

@@ -13,7 +13,7 @@ class LogicService
 
     protected $_logics = ['default' => '\ModelFramework\LogicService\DataLogic'];
 
-    public function get( DataModelInterface $model )
+    public function get( $model )
     {
         if ( is_array( $model ) )
         {

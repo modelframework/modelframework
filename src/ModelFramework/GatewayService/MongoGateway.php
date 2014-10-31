@@ -639,7 +639,6 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     public function save( DataModelInterface $model )
     {
         $data = $this->_convertids( $model->toArray() );
-
         $_id = $model->id();
         if ( !$this->isUnique( $model ) )
         {

@@ -9,11 +9,11 @@ interface LogicServiceInterface
 {
 
     /**
-     * @param DataModelInterface $model
+     * @param array|DataModelInterface $model
      *
      * @return DataLogic
      */
-    public function get( DataModelInterface $model );
+    public function get( $model );
 
     /**
      * @param $event

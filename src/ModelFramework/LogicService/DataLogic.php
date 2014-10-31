@@ -17,6 +17,7 @@ use Wepo\Model\Table;
 
 class DataLogic extends AbstractService
 {
+
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait;
 
     static public $adapter = 'wepo_company';
@@ -48,16 +49,17 @@ class DataLogic extends AbstractService
      */
     public function getGateway( $gatewayName )
     {
-        return $this -> getGatewayService() -> get( $gatewayName );
+        return $this->getGatewayService()->get( $gatewayName );
     }
 
     /**
      * @param string $modelName
+     *
      * @return Array
      */
     public function getModelConfig( $modelName )
     {
-        return $this -> getModelConfigParserService() -> getModelConfig( $modelName );
+        return $this->getModelConfigParserService()->getModelConfig( $modelName );
     }
 
 //    /**
@@ -103,16 +105,15 @@ class DataLogic extends AbstractService
 
     public function fillJoins()
     {
-        $models = $this->getEventObjects();
-        $modelConfig = $this->getModelConfig($this->_modelName);
-
+        $models      = $this->getEventObjects();
+        $modelConfig = $this->getModelConfig( $this->_modelName );
         if ( !is_array( $models ) )
         {
             $models = [ $models ];
         }
         foreach ( $models as $mymodel )
         {
-            foreach ( $modelConfig['joins'] as $_k => $join )
+            foreach ( $modelConfig[ 'joins' ] as $_k => $join )
             {
                 $othergw = $this->getGateway( $join[ 'model' ] );
                 foreach ( $join[ 'on' ] as $myfield => $otherfield )
@@ -140,10 +141,10 @@ class DataLogic extends AbstractService
     public function fillJoinsConvert( $model )
     {
         ////////////////////////////////////////////////////
-        $modelConfig = $this->getModelConfig($model->_model);
+        $modelConfig = $this->getModelConfig( $model->_model );
 
         $mymodel = $model;
-        foreach ( $modelConfig['joins'] as $_k => $join )
+        foreach ( $modelConfig[ 'joins' ] as $_k => $join )
         {
             $othergw = $this->getGateway( $join[ 'model' ] );
             foreach ( $join[ 'on' ] as $myfield => $otherfield )
@@ -280,15 +281,15 @@ class DataLogic extends AbstractService
         {
             case 'restore':
                 $this->getGateway( $modelname )->update( [
-                                                                         'status'    => Status::getLabel( Status::NORMAL ),
-                                                                         'status_id' => Status::NORMAL
-                                                                     ], [ '_id' => $ids ] );
+                                                             'status'    => Status::getLabel( Status::NORMAL ),
+                                                             'status_id' => Status::NORMAL
+                                                         ], [ '_id' => $ids ] );
                 break;
             case 'delete':
                 $this->getGateway( $modelname )->update( [
-                                                                         'status'    => Status::getLabel( Status::DELETED ),
-                                                                         'status_id' => Status::DELETED
-                                                                     ], [ '_id' => $ids ] );
+                                                             'status'    => Status::getLabel( Status::DELETED ),
+                                                             'status_id' => Status::DELETED
+                                                         ], [ '_id' => $ids ] );
                 break;
             case 'clean':
                 $this->getGateway( $modelname )->delete( [ '_id' => $ids ] );
@@ -312,7 +313,7 @@ class DataLogic extends AbstractService
         $this->setEvent( $event );
     }
 
-    protected function forge( )
+    protected function forge()
     {
         $model = $this->getEventObjects();
         foreach ( $this->getRules( $this->getAction() ) as $_key => $_rules )

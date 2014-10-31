@@ -36,8 +36,9 @@ class ModelView
 
     private $_data = [ ];
     private $_user = null;
+    private $_redirect = null;
 
-    protected $allowed_observers = [ 'ListObserver', 'ViewObserver', 'AddObserver' ];
+    protected $allowed_observers = [ 'ListObserver', 'ViewObserver', 'FormObserver', 'RecycleObserver' ];
     protected $observers = [ ];
 
     public function attach( \SplObserver $observer )
@@ -60,6 +61,26 @@ class ModelView
         {
             $observer->update( $this );
         }
+    }
+
+    public function setRedirect( $redirect )
+    {
+        $this->_redirect = $redirect;
+    }
+
+    public function getRedirect()
+    {
+        return $this->_redirect;
+    }
+
+    public function hasRedirect()
+    {
+        if ( !empty( $this->_redirect ) )
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public function getUser()

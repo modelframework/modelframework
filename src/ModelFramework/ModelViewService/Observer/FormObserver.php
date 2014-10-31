@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AddObserver
+ * Class FormObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -10,14 +10,14 @@ namespace ModelFramework\ModelViewService\Observer;
 
 use Wepo\Lib\Acl;
 
-class AddObserver implements \SplObserver
+class FormObserver implements \SplObserver
 {
 
     public function update( \SplSubject $subject )
     {
         $viewConfig = $subject->getViewConfigDataVerify();
-        $modelName = $viewConfig->model;
-        $id = (string) $subject->getParam( 'id', '0' );
+        $modelName  = $viewConfig->model;
+        $id         = (string) $subject->getParam( 'id', '0' );
         if ( $id == '0' )
         {
             // :FIXME: check create permission
@@ -39,9 +39,9 @@ class AddObserver implements \SplObserver
         $results = [ ];
         try
         {
-            prn('AddObserver123');
+            prn( 'AddObserver123' );
             $old_data = $model->split( $form->getValidationGroup() );
-            prn('AddObserver', $old_data);
+            prn( 'AddObserver', $old_data );
             //Это жесть конечно и забавно, но на время сойдет :)
             $model_bind = $model->toArray();
             foreach ( $model_bind as $_k => $_v )
@@ -73,7 +73,7 @@ class AddObserver implements \SplObserver
                 $model->merge( $model_data );
                 $model->merge( $old_data );
 
-                $subject->getParams()->getController()->trigger( 'presave', $model );
+                $subject->getParams()->getController()->trigger( 'presave', $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     try
@@ -87,7 +87,7 @@ class AddObserver implements \SplObserver
                 }
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
-                    $subject->getParams()->getController()->trigger( 'postsave', $model );
+                    $subject->getParams()->getController()->trigger( 'postsave', $model->getDataModel() );
                     $url = $subject->getParams()->getController()->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {
@@ -96,10 +96,14 @@ class AddObserver implements \SplObserver
                         {
                             $actionParams += $form->getActionParams();
                         }
-                        $url = $subject->getParams()->getController()->url()->fromRoute( $form->getRoute(), $actionParams );
+                        $url = $subject->getParams()->getController()->url()
+                                       ->fromRoute( $form->getRoute(), $actionParams );
                     }
+                    $subject->setRedirect( $subject->getParams()->getController()->refresh( $modelName .
+                                                                                            ' data was successfully saved',
+                                                                                            $url ) );
 
-                    return $subject->getParams()->getController()->refresh( $modelName . ' data was successfully saved', $url );
+                    return;
                 }
             }
         }
@@ -111,10 +115,10 @@ class AddObserver implements \SplObserver
         $results[ 'form' ] = $form;
         if ( isset( $form->getFieldsets()[ 'saurl' ] ) )
         {
-            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()->fromQuery( 'back', 'home' ) );
+            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()
+                                                                               ->fromQuery( 'back', 'home' ) );
         }
         $subject->setData( $results );
-//        return $results;
     }
 
 }
