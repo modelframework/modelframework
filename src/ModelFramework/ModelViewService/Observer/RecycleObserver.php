@@ -14,12 +14,13 @@ class RecycleObserver implements \SplObserver
     public function update( \SplSubject $subject )
     {
         prn( 'RecycleObserver', $subject );
-        $viewConfig = $subject->getViewConfigDataVerify();
-        $modelName  = $viewConfig->model;
-        $request                = $subject->getParams()->getController()->getRequest();
-        $results = [];
-        $results[ 'action' ]    = $subject->getParam( 'action' );
-        $ids                    = $request->getPost( 'checkedid', null );
+        $viewConfig          = $subject->getViewConfigDataVerify();
+        $modelName           = $viewConfig->model;
+        $modelRoute          = strtolower( $viewConfig->model );
+        $request             = $subject->getParams()->getController()->getRequest();
+        $results             = [ ];
+        $results[ 'action' ] = $subject->getParam( 'action' );
+        $ids                 = $request->getPost( 'checkedid', null );
         if ( !is_array( $ids ) )
         {
             $id = $subject->getParams()->fromRoute( 'id', 0 );
@@ -29,8 +30,14 @@ class RecycleObserver implements \SplObserver
             }
             else
             {
-                $subject->setRedirect($subject->getParams()->getController()->redirect()->toRoute( $modelName,
-                                            [ 'action' => $results[ 'action' ] == 'delete' ? 'list' : 'recyclelist' ] ));
+                $subject->setRedirect( $subject->getParams()->getController()->redirect()->toRoute( $modelRoute,
+                                                                                                    [ 'action' =>
+                                                                                                          $results[ 'action' ] ==
+                                                                                                          'delete' ?
+                                                                                                              'list' :
+                                                                                                              'recyclelist'
+                                                                                                    ] ) );
+
                 return;
             }
         }
@@ -43,9 +50,10 @@ class RecycleObserver implements \SplObserver
             }
             catch ( \Exception $ex )
             {
-                $subject->setRedirect($subject->getParams()->getController()->refresh( 'Data is invalid ' . $ex->getMessage(), $this->url()
-                                                                                                  ->fromRoute( $modelName,
-                                                                                                               array( 'action' => 'list' ) ) ));
+                $subject->setRedirect( $subject->getParams()->getController()->refresh( 'Data is invalid ' .
+                                                                                        $ex->getMessage(), $this->url()
+                                                                                                                ->fromRoute( $modelRoute,
+                                                                                                                             array( 'action' => 'list' ) ) ) );
                 return;
             }
         }
@@ -58,25 +66,28 @@ class RecycleObserver implements \SplObserver
                 $subject->getParams()->getController()->trigger( 'prerecycle', $results[ 'items' ] );
                 $subject->getParams()->getController()->trigger( 'recycle', $results[ 'items' ] );
                 $subject->getParams()->getController()->trigger( 'postrecycle', $results[ 'items' ] );
-                $url = $subject->getSaurlBack( $subject->getParams()->fromQuery( 'back' ) );
+                $url = $subject->getParams()->fromPost( 'saurl' )['back'];
                 if ( !isset( $url ) )
                 {
-                    $url = $subject->getParams()->getController()->url()->fromRoute( $results[ 'modelname' ], [
+                    $url = $subject->getParams()->getController()->url()->fromRoute( $modelRoute, [
                         'action' => $results[ 'action' ] == 'delete' ? 'list' : 'recyclelist'
                     ] );
                 }
-                $subject->setRedirect($subject->getParams()->getController()->refresh( ucfirst( $results[ 'action' ] ) . ' was successfull ', $url ));
+                $subject->setRedirect( $subject->getParams()->getController()
+                                               ->refresh( ucfirst( $results[ 'action' ] ) . ' was successfull ',
+                                                          $url ) );
                 return;
+
             }
             if ( $delno !== null )
             {
-                $subject->setRedirect($subject->getParams()->getController()->redirect()->toRoute( $results[ 'modelname' ], [
+                $subject->setRedirect( $subject->getParams()->getController()->redirect()->toRoute( $modelRoute, [
                     'action' => $results[ 'action' ] == 'delete' ? 'list' : 'recyclelist'
-                ] ));
+                ] ) );
                 return;
             }
         }
-        $subject -> setData($results);
+        $subject->setData( $results );
     }
 
 }
