@@ -38,7 +38,9 @@ class ModelView
     private $_user = null;
     private $_redirect = null;
 
-    protected $allowed_observers = [ 'ListObserver', 'ViewObserver', 'FormObserver', 'RecycleObserver' ];
+    protected $allowed_observers = [
+        'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver'
+    ];
     protected $observers = [ ];
 
     public function attach( \SplObserver $observer )
@@ -144,48 +146,6 @@ class ModelView
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
         $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
-////        $result[ 'permission' ]   = 1;
-//        $result[ 'search_query' ] = $searchQuery = $this->getParam( 'q', '' );
-//        if ( $searchQuery )
-//        {
-//            $result[ 'params' ][ 'q' ] = $searchQuery;
-//        }
-//
-//        # :TODO: add permissions query
-////        if ( $permission == Auth::OWN )
-////        {
-////            $field = [ 'owner_id' => (string) $this->user()->id() ];
-////        }
-//
-//        $permissionQuery = [];
-//        $_where = $viewConfig->query;
-//        $_dataWhere = $permissionQuery + $_where;
-//        if ( empty( $searchQuery ) )
-//        {
-//            $_where = $_dataWhere;
-//        }
-//        else
-//        {
-//            $_where = [
-//                '$and' => [ $_dataWhere, [ '$text' => [ '$search' => $searchQuery ] ] ]
-//            ];
-//        }
-//        $result[ 'paginator' ] =
-//            $this
-//                ->getGatewayVerify()
-//                ->getPages( $this->fields(), $_where, $this->getData()[ 'order' ] );
-//        if ( $result[ 'paginator' ]->count() > 0 )
-//        {
-//            $result[ 'paginator' ]->setCurrentPageNumber( $this->getParam( 'page', 1 ) )
-//                                  ->setItemCountPerPage( $viewConfig->rows );
-//        }
-//        $result[ 'rows' ]         = [ 5, 10, 25, 50, 100 ];
-//        $result[ 'params' ]       = [
-//            'action' => $viewConfig->mode,
-//            'model'  => $viewConfig->model,
-//            'sort'   => $this->getParams()->fromRoute( 'sort', null ),
-//            'desc'   => (int) $this->getParams()->fromRoute( 'desc', 0 )
-//        ];
         $result[ 'user' ]      = $this->getUser();
         $result[ 'saurl' ]     = '?back=' . $this->generateLabel();
         $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
