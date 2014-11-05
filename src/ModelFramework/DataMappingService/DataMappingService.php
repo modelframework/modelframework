@@ -29,48 +29,59 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
      */
     protected $_dbConfig = [
         'Lead' => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Lead',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'map'       => 'Contact',
-            'fields'    => [
-                'title'         => 'title',
-                'owner_login'   => 'owner_login',
-                'owner_id'      => 'owner_id',
-                'fname'         => 'fname',
-                'lname'         => 'lname',
-                'phone'         => 'phone',
-                'mobile'        => 'mobile',
-                'email'         => 'email',
-                'birth_date'    => 'birth_date',
-                'changer_login' => 'changer_login',
-                'changer_id'    => 'changer_id',
-                'changed_dtm'   => 'changed_dtm',
-                'created_dtm'   => 'created_dtm',
-                'status_status' => 'status_status',
-                'status_id'     => 'status_id'
+            'name'    => 'Lead',
+            'source'  => 'Lead',
+            'targets' => [
+                'Contact' => [
+                    'title'         => 'title',
+                    'owner_login'   => 'owner_login',
+                    'owner_id'      => 'owner_id',
+                    'fname'         => 'fname',
+                    'lname'         => 'lname',
+                    'phone'         => 'phone',
+                    'mobile'        => 'mobile',
+                    'email'         => 'email',
+                    'birth_date'    => 'birth_date',
+                    'changer_login' => 'changer_login',
+                    'changer_id'    => 'changer_id',
+                    'changed_dtm'   => 'changed_dtm',
+                    'created_dtm'   => 'created_dtm',
+                    'status_status' => 'status_status',
+                    'status_id'     => 'status_id'
+                ],
+                'Account' => [
+                    'title'         => 'title',
+                    'owner_login'   => 'owner_login',
+                    'owner_id'      => 'owner_id',
+                    'fname'         => 'fname',
+                    'lname'         => 'lname',
+                    'phone'         => 'phone',
+                    'mobile'        => 'mobile',
+                    'email'         => 'email',
+                    'birth_date'    => 'birth_date',
+                    'changer_login' => 'changer_login',
+                    'changer_id'    => 'changer_id',
+                    'changed_dtm'   => 'changed_dtm',
+                    'created_dtm'   => 'created_dtm',
+                    'status_status' => 'status_status',
+                    'status_id'     => 'status_id'
+                ]
             ]
         ]
     ];
 
-    protected function getKeyName( $modelName, $viewName )
-    {
-        return $modelName . '.' . $viewName;
-    }
-
-    protected function getConfigFromDb( $modelName )
+    protected function getConfigFromDb( $mappingName )
     {
 
-        $dataSchema = $this->getGatewayServiceVerify()->getGateway( 'ModelView', new DataMapping() )->findOne(
-            [ 'model' => $modelName ]
+        $dataSchema = $this->getGatewayServiceVerify()->getGateway( 'DataMapping', new DataMapping() )->findOne(
+            [ 'name' => $mappingName ]
         );
         if ( $dataSchema == null )
         {
-            $configArray = Arr::getDoubtField( $this->_dbConfig, $modelName, null );
+            $configArray = Arr::getDoubtField( $this->_dbConfig, $mappingName, null );
             if ( $configArray == null )
             {
-                throw new \Exception( ' unknown config for model ' . $modelName );
+                throw new \Exception( ' unknown config for the mapping ' . $mappingName );
             }
             $dataMapping = new DataMapping( $configArray );
 //            $configData->exchangeArray( $configArray );
