@@ -17,7 +17,7 @@ class ConvertObserver implements \SplObserver
     {
         prn('Convert Observer');
         $convertConfig = $subject -> getDataMappingServiceVerify()-> get('Lead');
-        prn($convertConfig);
+        prn($convertConfig -> targets);
         exit();
         $viewConfig = $subject->getViewConfigDataVerify();
 

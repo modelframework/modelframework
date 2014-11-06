@@ -8,6 +8,7 @@
 
 namespace ModelFramework\DataMappingService;
 
+use ModelFramework\DataModel\Custom\DataMapping;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\Utility\Arr;
@@ -25,48 +26,7 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
     /**
      * @var array
      */
-    protected $_dbConfig = [
-        'Lead' => [
-            'name'    => 'Lead',
-            'source'  => 'Lead',
-            'targets' => [
-                'Contact' => [
-                    'title'         => 'title',
-                    'owner_login'   => 'owner_login',
-                    'owner_id'      => 'owner_id',
-                    'fname'         => 'fname',
-                    'lname'         => 'lname',
-                    'phone'         => 'phone',
-                    'mobile'        => 'mobile',
-                    'email'         => 'email',
-                    'birth_date'    => 'birth_date',
-                    'changer_login' => 'changer_login',
-                    'changer_id'    => 'changer_id',
-                    'changed_dtm'   => 'changed_dtm',
-                    'created_dtm'   => 'created_dtm',
-                    'status_status' => 'status_status',
-                    'status_id'     => 'status_id'
-                ],
-                'Account' => [
-                    'title'         => 'title',
-                    'owner_login'   => 'owner_login',
-                    'owner_id'      => 'owner_id',
-                    'fname'         => 'fname',
-                    'lname'         => 'lname',
-                    'phone'         => 'phone',
-                    'mobile'        => 'mobile',
-                    'email'         => 'email',
-                    'birth_date'    => 'birth_date',
-                    'changer_login' => 'changer_login',
-                    'changer_id'    => 'changer_id',
-                    'changed_dtm'   => 'changed_dtm',
-                    'created_dtm'   => 'created_dtm',
-                    'status_status' => 'status_status',
-                    'status_id'     => 'status_id'
-                ]
-            ]
-        ]
-    ];
+    protected $_dbConfig = [ ];
 
     /**
      * @param array $systemConfig
@@ -98,6 +58,7 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
             {
                 throw new \Exception( ' unknown config for the mapping ' . $mappingName );
             }
+            prn( 'DataMAppingService', $configArray );
             $dataMapping = new DataMapping( $configArray );
 //            $configData->exchangeArray( $configArray );
 //            $this->getGatewayServiceVerify()->get( 'ConfigData', $viewConfigData )->save( $viewConfigData );
@@ -116,6 +77,7 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
     {
 
         $dataMapping = $this->getConfigFromDb( $mappingName );
+
         return $dataMapping;
     }
 
