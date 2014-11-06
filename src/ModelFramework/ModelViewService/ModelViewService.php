@@ -9,6 +9,8 @@ namespace ModelFramework\ModelViewService;
 
 use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
+use ModelFramework\DataMappingService\DataMappingServiceAwareInterface;
+use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
@@ -22,10 +24,11 @@ use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 
 class ModelViewService
     implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface,
-               GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface, FormServiceAwareInterface
+               GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface,
+               FormServiceAwareInterface, DataMappingServiceAwareInterface
 {
 
-    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait;
+    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -64,7 +67,7 @@ class ModelViewService
         $modelView = new ModelView();
 
         // we want modelView get to know what to show and how
-        $viewConfigData   = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
+        $viewConfigData = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
         $modelView->setViewConfigData( $viewConfigData );
 
         // info about model - how it is organized. it will be useful
@@ -74,7 +77,7 @@ class ModelViewService
         // model view should deal with acl enabled model
         $aclModel = $this->getAclServiceVerify()->getAclModel( $modelName );
         // primary gateway for data ops
-        $gateway  = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
+        $gateway = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
         $modelView->setGateway( $gateway );
 
         // gateway service for queries
@@ -82,6 +85,8 @@ class ModelViewService
 
         // form service for form creation
         $modelView->setFormService( $this->getFormServiceVerify() );
+
+        $modelView->setDataMappingService( $this->getDataMappingServiceVerify() );
 
         // initialize stuff. observers as primary
         $modelView->init();

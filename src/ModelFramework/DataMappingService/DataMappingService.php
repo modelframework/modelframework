@@ -8,11 +8,9 @@
 
 namespace ModelFramework\DataMappingService;
 
-use ModelFramework\DataModel\Custom\ViewConfigData;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\Utility\Arr;
-use Wepo\Model\Status;
 
 class DataMappingService implements DataMappingServiceInterface, GatewayServiceAwareInterface
 {
@@ -69,6 +67,23 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
             ]
         ]
     ];
+
+    /**
+     * @param array $systemConfig
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setSystemConfig( $systemConfig )
+    {
+        if ( !is_array( $systemConfig ) )
+        {
+            throw new \Exception( 'SystemConfig must be an array' );
+        }
+        $this->_dbConfig = $systemConfig;
+
+        return $this;
+    }
 
     protected function getConfigFromDb( $mappingName )
     {

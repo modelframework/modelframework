@@ -8,6 +8,8 @@
 
 namespace ModelFramework\ModelViewService;
 
+use ModelFramework\DataMappingService\DataMappingServiceAwareInterface;
+use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
 use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\DataModel\Custom\ModelConfigAwareInterface;
 use ModelFramework\DataModel\Custom\ModelConfigAwareTrait;
@@ -29,10 +31,10 @@ use Wepo\Model\Table;
 class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
-               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface, \SplSubject
+               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface, DataMappingServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait;
+    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait;
 
     private $_data = [ ];
     private $_user = null;

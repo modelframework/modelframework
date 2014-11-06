@@ -19,9 +19,9 @@ trait DataMappingServiceAwareTrait
      *
      * @return $this
      */
-    public function setDataSchemaService( DataMappingServiceInterface $dataMappingService )
+    public function setDataMappingService( DataMappingServiceInterface $dataMappingService )
     {
-        $this->_dataSchemaService = $dataMappingService;
+        $this->_dataMappingService = $dataMappingService;
 
         return $this;
     }
