@@ -12,10 +12,10 @@ interface DataMappingServiceInterface
 {
 
     /**
-     * @param $modelName
+     * @param $mappingName
      *
      * @return DataMapping
      * @throws \Exception
      */
-    public function getDataMapping( $modelName );
+    public function getDataMapping( $mappingName );
 }
