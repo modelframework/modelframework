@@ -92,33 +92,20 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
     }
 
     /**
-     * @param $modelName
+     * @param $mappingName
      *
      * @return DataMapping
      * @throws \Exception
      */
-    public function getDataMapping( $modelName )
+    public function getDataMapping( $mappingName )
     {
 
-        $dataMapping = $this->getDataMappingService( $modelName );
-        if ( $dataMapping == null )
-        {
-            $dataMappingArray = $this->_dataMapping[ $modelName ];
-            if ( $dataMappingArray !== null )
-            {
-                $dataMapping = new DataMapping( $dataMappingArray );
-            }
-            else
-            {
-                throw new \Exception( 'Unknown data mapping for ' . $modelName );
-            }
-        }
-
+        $dataMapping = $this->getConfigFromDb( $mappingName );
         return $dataMapping;
     }
 
-    public function get( $modelName )
+    public function get( $mappingName )
     {
-        return $this->getDataMapping( $modelName );
+        return $this->getDataMapping( $mappingName );
     }
 }
