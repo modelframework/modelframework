@@ -8,41 +8,66 @@
 
 namespace ModelFramework\ModelViewService\Observer;
 
+use ModelFramework\ModelViewService\ModelView;
 use Wepo\Lib\Acl;
 
 class ConvertObserver implements \SplObserver
 {
 
+    /**
+     * @param \SplSubject|ModelView $subject
+     */
     public function update( \SplSubject $subject )
     {
-        prn('Convert Observer');
-        $convertConfig = $subject -> getDataMappingServiceVerify()-> get('Lead');
-        prn($convertConfig -> targets);
-        exit();
+        $result = [];
+        prn( 'Convert Observer' );
+        $request             = $subject->getParams()->getController()->getRequest();
+
         $viewConfig = $subject->getViewConfigDataVerify();
 
-        $modelName  = $viewConfig->model;
-        $route      = strtolower($viewConfig->model);
-
-        $id         = (string) $subject->getParams()->fromRoute( 'id', 0 );
+        $modelName = $viewConfig->model;
+        $route     = strtolower( $modelName );
+        $id        = (string) $subject->getParams()->fromRoute( 'id', 0 );
         if ( !$id )
         {
             return $this->redirect()->toRoute( $route );
         }
-        $lead = $this->table( $transport )->get( $id );
+        $object        = $subject->getGatewayServiceVerify()->get($modelName)->get( $id );
+        $convertConfig = $subject->getDataMappingServiceVerify()->get( 'Lead' );
+        $result['convertedObjects'] = [];
+        foreach ( $convertConfig->targets as $_key => $_value )
+        {
+            $convertObject = $subject->getGatewayServiceVerify()->get( $_key )->model();
+            foreach ( $_value as $_k => $_v )
+            {
+                $convertObject->$_v = $object->$_k;
+            }
+            $result['convertedObjects'][$_key] = $convertObject;
+        }
+        prn( $result );
+        $result['model'] = $object;
+        $result['route'] = $route;
+        $result['id'] = $id;
+        $subject->setData( $result );
+        if ( $request->isPost() )
+        {
+           prn('request is post');
+            exit;
+        }
+        return;
+        exit();
 
         $model = $subject->getGateway()->get( $id );
         $mode  = Acl::MODE_EDIT;
 
-        prn('ConvertObserver', $modelName);
+        prn( 'ConvertObserver', $modelName );
         exit;
-        $form = $subject->getFormServiceVerify()->get( $model, $mode );
+        $form       = $subject->getFormServiceVerify()->get( $model, $mode );
         $form       = $this->form( 'ContactForm' );
         $contact    = $this->model( 'Contact' );
         $transport  = 'Lead';
         $transport2 = 'Contact';
         $transport3 = 'Client';
-
 
         if ( $lead->status_id == Status::CONVERTED )
         {
@@ -127,8 +152,7 @@ class ConvertObserver implements \SplObserver
 
         return $results;
 
-
-        $id         = (string) $subject->getParam( 'id', '0' );
+        $id = (string) $subject->getParam( 'id', '0' );
         if ( $id == '0' )
         {
             // :FIXME: check create permission
