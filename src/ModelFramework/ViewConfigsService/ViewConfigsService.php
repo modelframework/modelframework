@@ -151,7 +151,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'name'      => 'Lead.edit',
             'custom'    => 0,
             'model'     => 'Lead',
-            'mode'      => 'add',
+            'mode'      => 'edit',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
             ],

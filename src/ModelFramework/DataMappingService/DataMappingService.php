@@ -58,7 +58,7 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
             {
                 throw new \Exception( ' unknown config for the mapping ' . $mappingName );
             }
-            prn( 'DataMAppingService', $configArray );
+//            prn( 'DataMAppingService', $configArray );
             $dataMapping = new DataMapping( $configArray );
 //            $configData->exchangeArray( $configArray );
 //            $this->getGatewayServiceVerify()->get( 'ConfigData', $viewConfigData )->save( $viewConfigData );

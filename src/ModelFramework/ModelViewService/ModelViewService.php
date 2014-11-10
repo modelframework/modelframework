@@ -9,6 +9,8 @@ namespace ModelFramework\ModelViewService;
 
 use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\DataMappingService\DataMappingServiceAwareInterface;
 use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
@@ -25,10 +27,10 @@ use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 class ModelViewService
     implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface,
-               FormServiceAwareInterface, DataMappingServiceAwareInterface
+               FormServiceAwareInterface, DataMappingServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait;
+    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -65,6 +67,8 @@ class ModelViewService
     {
         // this object will deal with all view of model stuff
         $modelView = new ModelView();
+
+        $modelView->setAuthService( $this -> getAuthServiceVerify() );
 
         // we want modelView get to know what to show and how
         $viewConfigData = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );

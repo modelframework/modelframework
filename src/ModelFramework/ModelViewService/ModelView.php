@@ -8,6 +8,8 @@
 
 namespace ModelFramework\ModelViewService;
 
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\DataMappingService\DataMappingServiceAwareInterface;
 use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
 use ModelFramework\DataModel\AclDataModel;
@@ -15,7 +17,6 @@ use ModelFramework\DataModel\Custom\ModelConfigAwareInterface;
 use ModelFramework\DataModel\Custom\ModelConfigAwareTrait;
 use ModelFramework\DataModel\Custom\ViewConfigDataAwareInterface;
 use ModelFramework\DataModel\Custom\ViewConfigDataAwareTrait;
-use ModelFramework\DataModel\DataModel;
 use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
@@ -31,13 +32,13 @@ use Wepo\Model\Table;
 class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
-               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface, DataMappingServiceAwareInterface, \SplSubject
+               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface,
+               DataMappingServiceAwareInterface, AuthServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait;
+    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait;
 
     private $_data = [ ];
-    private $_user = null;
     private $_redirect = null;
 
     protected $allowed_observers = [
@@ -89,14 +90,7 @@ class ModelView
 
     public function getUser()
     {
-        return $this->_user;
-    }
-
-    public function setUser( DataModel $user )
-    {
-        $this->_user = $user;
-
-        return $this;
+        return $this->getAuthServiceVerify()->getUser();
     }
 
     public function getData()
@@ -144,6 +138,7 @@ class ModelView
     {
         $viewConfig            = $this->getViewConfigDataVerify();
         $result                = [ ];
+        $result[ 'mode' ]      = $viewConfig->mode;
         $result[ 'fields' ]    = $this->fields();
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
@@ -192,7 +187,6 @@ class ModelView
 
     public function process()
     {
-        $this->setUser( $this->getParams()->getController()->User() );
         $this->checkPermissions();
         $this->setDataFields();
         $this->notify();
