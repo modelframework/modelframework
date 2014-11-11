@@ -31,7 +31,8 @@ class FormObserver implements \SplObserver
             $mode  = Acl::MODE_EDIT;
         }
         $form = $subject->getFormServiceVerify()->get( $model, $mode );
-        $form->setRoute( strtolower( $modelName ) )->setAction( $subject->getParams()->fromRoute( 'action', 'edit' ) );
+        $form->setRoute( 'common' );
+        $form->setActionParams( [ 'data' => strtolower( $modelName ), 'view' => 'list' ] );
         if ( $id != '0' )
         {
             $form->setActionParams( [ 'id' => $id ] );
@@ -39,9 +40,7 @@ class FormObserver implements \SplObserver
         $results = [ ];
         try
         {
-            prn( 'AddObserver123' );
             $old_data = $model->split( $form->getValidationGroup() );
-            prn( 'AddObserver', $old_data );
             //Это жесть конечно и забавно, но на время сойдет :)
             $model_bind = $model->toArray();
             foreach ( $model_bind as $_k => $_v )
@@ -88,20 +87,13 @@ class FormObserver implements \SplObserver
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     $subject->getParams()->getController()->trigger( 'postsave', $model->getDataModel() );
-                    $url = $subject->getParams()->getController()->getBackUrl();
+                    $url = $subject->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {
-                        $actionParams = [ 'action' => $form->getBackAction() ];
-                        if ( $form->getActionParams() !== null )
-                        {
-                            $actionParams += $form->getActionParams();
-                        }
                         $url = $subject->getParams()->getController()->url()
-                                       ->fromRoute( $form->getRoute(), $actionParams );
+                                       ->fromRoute( $form->getRoute(), $form->getActionParams() );
                     }
-                    $subject->setRedirect( $subject->getParams()->getController()->refresh( $modelName .
-                                                                                            ' data was successfully saved',
-                                                                                            $url ) );
+                    $subject->setRedirect( $subject->refresh( $modelName . ' data was successfully saved', $url ) );
 
                     return;
                 }

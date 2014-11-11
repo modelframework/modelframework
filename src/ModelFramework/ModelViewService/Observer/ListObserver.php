@@ -36,7 +36,7 @@ class ListObserver
         {
             $_where = $_dataWhere;
         }
-    else
+        else
         {
             $_where = [
                 '$and' => [ $_dataWhere, [ '$text' => [ '$search' => $searchQuery ] ] ]
@@ -53,10 +53,10 @@ class ListObserver
         }
         $result[ 'rows' ]   = [ 5, 10, 25, 50, 100 ];
         $result[ 'params' ] = [
-            'action' => $viewConfig->mode,
-            'model'  => $viewConfig->model,
-            'sort'   => $subject->getParams()->fromRoute( 'sort', null ),
-            'desc'   => (int) $subject->getParams()->fromRoute( 'desc', 0 )
+            'data' => $viewConfig->model,
+            'view' => $viewConfig->mode,
+            'sort' => $subject->getParams()->fromRoute( 'sort', null ),
+            'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
         ];
         $subject->setData( $result );
     }

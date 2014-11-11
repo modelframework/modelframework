@@ -28,6 +28,7 @@ use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\FormService\FormServiceAwareTrait;
 use Wepo\Model\Table;
+use Zend\View\Model\ViewModel;
 
 class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface,
@@ -139,6 +140,7 @@ class ModelView
         $viewConfig            = $this->getViewConfigDataVerify();
         $result                = [ ];
         $result[ 'mode' ]      = $viewConfig->mode;
+        $result[ 'title' ]      = $viewConfig->title;
         $result[ 'fields' ]    = $this->fields();
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
@@ -257,6 +259,16 @@ class ModelView
 
             return $saUrl->label;
         }
+    }
+
+    public function refresh( $message = null, $toUrl = null, $seconds = 0 )
+    {
+        $viewModel = new ViewModel( array(
+                                        'message' => $message, 'user' => $this->getUser(), 'toUrl' => $toUrl,
+                                        'seconds' => $seconds
+                                    ) );
+
+        return $viewModel->setTemplate( 'wepo/partial/refresh.twig' );
     }
 
 }

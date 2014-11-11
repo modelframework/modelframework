@@ -15,8 +15,8 @@ class DataForm extends Form
 
     private $_route = null;
     private $_action = null;
-    private $_backaction = 'list';
-    private $_actionparams = null;
+    private $_backAction = 'list';
+    private $_actionParams = null;
     protected $_name = '';
 
 
@@ -111,6 +111,7 @@ class DataForm extends Form
                 }
             }
         }
+
         return $inputFilter;
     }
 
@@ -271,16 +272,16 @@ class DataForm extends Form
         return $this;
     }
 
-    public function setActionParams( $actionparams )
+    public function setActionParams( $actionParams )
     {
-        $this->_actionparams = $actionparams;
+        $this->_actionParams = $actionParams;
 
         return $this;
     }
 
     public function setBackAction( $action )
     {
-        $this->_backaction = $action;
+        $this->_backAction = $action;
 
         return $this;
     }
@@ -295,15 +296,15 @@ class DataForm extends Form
         return $this->_action;
     }
 
-    public function getActionParams( $paramname = null )
+    public function getActionParams( $paramName = null )
     {
-        return isset( $paramname ) && array_key_exists( $paramname, $this->_actionparams ) ?
-            $this->_actionparams[ $paramname ] : $this->_actionparams;
+        return isset( $paramName ) && array_key_exists( $paramName, $this->_actionParams ) ?
+            $this->_actionParams[ $paramName ] : $this->_actionParams;
     }
 
     public function getBackAction()
     {
-        return $this->_backaction;
+        return $this->_backAction;
     }
 
 }

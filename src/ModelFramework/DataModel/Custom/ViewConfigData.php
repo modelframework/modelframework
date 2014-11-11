@@ -20,6 +20,7 @@ class ViewConfigData extends DataModel
     public $_fields = [
         '_id'       => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
         'name'      => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'title'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'observers' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'custom'    => [ 'type' => 'field', 'datatype' => 'integer', 'default' => 0 ],
         'model'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],

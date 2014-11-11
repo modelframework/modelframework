@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/30/14
- * Time: 5:09 PM
+ * Class ViewConfigsService
+ * @package ModelFramework\ViewConfigsService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\ViewConfigsService;
@@ -42,9 +42,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
      */
     protected $_dbConfig = [
 
-        'Lead.list' => [
+        'Lead.list'        => [
             'observers' => [ 'ListObserver' ],
             'name'      => 'Lead.list',
+            'title'     => 'Leads',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'list',
@@ -71,6 +72,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
         'Lead.recyclelist' => [
             'observers' => [ 'ListObserver' ],
             'name'      => 'Lead.recyclelist',
+            'title'     => 'Recycle: Leads',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'recyclelist',
@@ -94,9 +96,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.view' => [
+        'Lead.view'        => [
             'observers' => [ 'ViewObserver' ],
             'name'      => 'Lead.view',
+            'title'     => 'Lead view',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'view',
@@ -120,9 +123,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.add' => [
+        'Lead.add'         => [
             'observers' => [ 'FormObserver' ],
             'name'      => 'Lead.add',
+            'title'     => 'Add Lead',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'add',
@@ -146,9 +150,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.edit' => [
+        'Lead.edit'        => [
             'observers' => [ 'FormObserver' ],
             'name'      => 'Lead.edit',
+            'title'     => 'Edit Lead',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'edit',
@@ -172,9 +177,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.convert' => [
+        'Lead.convert'     => [
             'observers' => [ 'ConvertObserver' ],
             'name'      => 'Lead.convert',
+            'title'     => 'Convert Lead',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'convert',
@@ -198,9 +204,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.delete' => [
+        'Lead.delete'      => [
             'observers' => [ 'RecycleObserver' ],
             'name'      => 'Lead.delete',
+            'title'     => 'Delete Lead(s)',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'delete',
@@ -224,9 +231,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.restore' => [
+        'Lead.restore'     => [
             'observers' => [ 'RecycleObserver' ],
             'name'      => 'Lead.restore',
+            'title'     => 'Restore Lead(s)',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'restore',
@@ -250,9 +258,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.clean' => [
+        'Lead.clean'       => [
             'observers' => [ 'RecycleObserver' ],
             'name'      => 'Lead.clean',
+            'title'     => 'Clean Lead(s)',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'clean',
