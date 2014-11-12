@@ -1,6 +1,6 @@
 <?php
 /**
- * Class ListObserver
+ * Class WidgetObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -16,6 +16,7 @@ class WidgetObserver
 
     public function update( \SplSubject $subject )
     {
+        prn(123);
         $viewConfig = $subject->getViewConfigDataVerify();
         $result     = [ ];
 //        $result[ 'widgets' ] = $this->widgets( $viewConfig->model, $model );

@@ -42,7 +42,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
      */
     protected $_dbConfig = [
 
-        'Lead.list'        => [
+        'Lead.list'           => [
             'observers' => [ 'ListObserver' ],
             'name'      => 'Lead.list',
             'title'     => 'Leads',
@@ -69,7 +69,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.recyclelist' => [
+        'Lead.recyclelist'    => [
             'observers' => [ 'ListObserver' ],
             'name'      => 'Lead.recyclelist',
             'title'     => 'Recycle: Leads',
@@ -96,10 +96,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.view'        => [
+        'Lead.view'           => [
             'observers' => [ 'ViewObserver' ],
             'name'      => 'Lead.view',
-            'title'     => 'Lead view',
+            'title'     => 'View Lead',
             'custom'    => 0,
             'model'     => 'Lead',
             'mode'      => 'view',
@@ -123,7 +123,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.add'         => [
+        'Lead.add'            => [
             'observers' => [ 'FormObserver' ],
             'name'      => 'Lead.add',
             'title'     => 'Add Lead',
@@ -150,7 +150,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.edit'        => [
+        'Lead.edit'           => [
             'observers' => [ 'FormObserver' ],
             'name'      => 'Lead.edit',
             'title'     => 'Edit Lead',
@@ -177,7 +177,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.convert'     => [
+        'Lead.convert'        => [
             'observers' => [ 'ConvertObserver' ],
             'name'      => 'Lead.convert',
             'title'     => 'Convert Lead',
@@ -204,7 +204,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.delete'      => [
+        'Lead.delete'         => [
             'observers' => [ 'RecycleObserver' ],
             'name'      => 'Lead.delete',
             'title'     => 'Delete Lead(s)',
@@ -231,7 +231,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.restore'     => [
+        'Lead.restore'        => [
             'observers' => [ 'RecycleObserver' ],
             'name'      => 'Lead.restore',
             'title'     => 'Restore Lead(s)',
@@ -258,12 +258,228 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.clean'       => [
+        'Lead.clean'          => [
             'observers' => [ 'RecycleObserver' ],
             'name'      => 'Lead.clean',
             'title'     => 'Clean Lead(s)',
             'custom'    => 0,
             'model'     => 'Lead',
+            'mode'      => 'clean',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.list'        => [
+            'observers' => [ 'ListObserver' ],
+            'name'      => 'Contact.list',
+            'title'     => 'Contacts',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'list',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.recyclelist' => [
+            'observers' => [ 'ListObserver' ],
+            'name'      => 'Contact.recyclelist',
+            'title'     => 'Recycle: Contacts',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'recyclelist',
+            'query'     => [
+                'status_id' => [ Status::DELETED ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.view'        => [
+            'observers' => [ 'ViewObserver' ],
+            'name'      => 'Contact.view',
+            'title'     => 'View Contact',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'view',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.add'         => [
+            'observers' => [ 'FormObserver' ],
+            'name'      => 'Contact.add',
+            'title'     => 'Add Contact',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'add',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.edit'        => [
+            'observers' => [ 'FormObserver' ],
+            'name'      => 'Contact.edit',
+            'title'     => 'Edit Contact',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'edit',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.delete'      => [
+            'observers' => [ 'RecycleObserver' ],
+            'name'      => 'Contact.delete',
+            'title'     => 'Delete Contact(s)',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'delete',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.restore'     => [
+            'observers' => [ 'RecycleObserver' ],
+            'name'      => 'Contact.restore',
+            'title'     => 'Restore Contact(s)',
+            'custom'    => 0,
+            'model'     => 'Contact',
+            'mode'      => 'restore',
+            'query'     => [
+                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            ],
+            'fields'    => [
+                'owner_login',
+                'fname',
+                'lname',
+                'phone',
+                'mobile',
+                'email',
+                'birth_date',
+                'changer_login',
+                'changed_dtm',
+                'created_dtm',
+                'status_status'
+            ],
+            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'    => [ ],
+            'rows'      => 10,
+        ],
+        'Contact.clean'       => [
+            'observers' => [ 'RecycleObserver' ],
+            'name'      => 'Contact.clean',
+            'title'     => 'Clean Contact(s)',
+            'custom'    => 0,
+            'model'     => 'Contact',
             'mode'      => 'clean',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]

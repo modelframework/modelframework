@@ -45,6 +45,9 @@ class ViewObserver
         }
         foreach ( $widgetConfigs as $wConf )
         {
+            //FIXME EMAIL WIDGET
+            if ($wConf->data_model == 'Mail') continue;
+            if ($wConf->data_model == 'EventLog') continue;
             $result[ 'widgets' ][ $wConf->name ] = $this->getWidget( $subject, $wConf, $model );
         }
         $subject->setData( $result );
