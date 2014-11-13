@@ -53,8 +53,8 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
             ],
             'fields'    => [
-                'owner_login',
                 'fname',
+                'owner_login',
                 'lname',
                 'phone',
                 'mobile',
