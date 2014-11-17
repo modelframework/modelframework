@@ -149,6 +149,7 @@ class ModelView
         $result[ 'saurl' ]     = '?back=' . $this->generateLabel();
         $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
         $result[ 'user' ]      = $this->getUser();
+        $result[ 'actions' ]      = $this->getViewConfigDataVerify()->actions;
 
         $this->setData( $result );
     }

@@ -33,6 +33,8 @@ class ViewConfigData extends DataModel
         ],
         'groups'    => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'rows'      => [ 'type' => 'field', 'datatype' => 'integer', 'default' => 10 ],
+        'actions'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+
     ];
     protected $_joins = [ ];
     public $_unique = [ 'model' ];
@@ -46,6 +48,7 @@ class ViewConfigData extends DataModel
     public $fields = [ ];
     public $params = [ ];
     public $groups = [ ];
+    public $actions = [ ];
     public $rows = 10;
 
 }
