@@ -179,7 +179,7 @@ class FormConfigParserService
         {
             $name .= '_id';
             //$conf[ 'fields' ] это не совесем порядок сортировки
-            prn( 'createFormElement', $conf[ 'model' ], $conf[ 'fields' ] );
+//            prn( 'createFormElement', $conf[ 'model' ], $conf[ 'fields' ] );
 //            prn('createFormElement', $this->getModelConfigsServiceVerify()->get());
 //            exit;
 
