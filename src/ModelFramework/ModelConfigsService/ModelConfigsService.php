@@ -65,7 +65,7 @@ class ModelConfigsService implements ModelConfigsServiceInterface, GatewayServic
             }
             $configData = new ConfigData( $configArray );
 //            $configData->exchangeArray( $configArray );
-            $this->getGatewayServiceVerify()->get( 'ConfigData', $configData )->save( $configData );
+//            $this->getGatewayServiceVerify()->get( 'ConfigData', $configData )->save( $configData );
         }
 
         return $configData;

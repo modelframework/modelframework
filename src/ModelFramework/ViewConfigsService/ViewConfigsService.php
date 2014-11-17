@@ -54,6 +54,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             ],
             'fields'    => [
                 'owner_login',
+                'owner_lname',
                 'title',
                 'fname',
                 'lname',
