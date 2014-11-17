@@ -181,6 +181,31 @@ class AuthService
                 $this->_user =
                     $this->getGateway( 'User' )->findOne( [ 'main_id' => $this->_mainUser->_id ] );
                 $this->_role = $this->getGateway( 'Role' )->get( $this->_user->role_id );
+                if ( strlen( $this->_user->theme ) )
+                {
+                    $config = $this->getServiceLocator()->get( 'Config' );
+                    if ( is_array( $config ) && isset( $config[ 'view_manager' ] ) )
+                    {
+                        $config = $config[ 'view_manager' ];
+                        if ( is_array( $config ) && isset( $config[ 'template_path_stack' ] ) )
+                        {
+                            $config[ 'template_path_stack' ][ 'wepo' ] =
+                                __DIR__ . '/../../../../../../module/Wepo/themes/' . $this->_user->theme;
+
+                            $config[ 'template_path_stack' ]['partial'] =
+                                __DIR__ . '/../../../../../../module/Wepo/themes/' . $this->_user->theme . '/wepo';
+//                                    __DIR__ . '/../themes/view/wepo',
+                        }
+
+//                        prn(__DIR__ . '/../../../view/' . 'wepo1', $config[ 'template_path_stack' ]['wepo']);
+
+                        $zZfcTwigLoaderTemplatePathStack =
+                            $this->getServiceLocator()->get( 'ZfcTwigLoaderTemplatePathStack' );
+                        $paths                           = $zZfcTwigLoaderTemplatePathStack->getPaths();
+                        $zZfcTwigLoaderTemplatePathStack->setPaths( $config[ 'template_path_stack' ] );
+//                        prn($zZfcTwigLoaderTemplatePathStack, $paths );
+                    }
+                }
 //                    $cacheHandler->setUser($this -> _user -> id() );
             }
             else
