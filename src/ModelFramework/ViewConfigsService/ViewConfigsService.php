@@ -42,7 +42,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
      */
     protected $_dbConfig = [
 
-        'Lead.list'           => [
+        'Lead.list'        => [
             'observers' => [ 'ListObserver' ],
             'name'      => 'Lead.list',
             'title'     => 'Leads',
@@ -72,7 +72,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'rows'      => 10,
             'actions'   => [ 'convert' => 'Convert' ]
         ],
-        'Lead.recyclelist'    => [
+        'Lead.recyclelist' => [
             'observers' => [ 'ListObserver' ],
             'name'      => 'Lead.recyclelist',
             'title'     => 'Recycle: Leads',
@@ -99,17 +99,17 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Lead.view'           => [
-            'observers' => [ 'ViewObserver' ],
-            'name'      => 'Lead.view',
-            'title'     => 'View Lead',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'view',
-            'query'     => [
+        'Lead.view'        => [
+            'observers'           => [ 'ViewObserver' ],
+            'name'                => 'Lead.view',
+            'title'               => 'View Lead',
+            'custom'              => 0,
+            'model'               => 'Lead',
+            'mode'                => 'view',
+            'query'               => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
             ],
-            'fields'    => [
+            'fields'              => [
                 'owner_login',
                 'fname',
                 'lname',
@@ -122,390 +122,416 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'created_dtm',
                 'status_status'
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-            'actions'   => [ 'convert' => 'Convert' ]
-        ],
-        'Lead.add'            => [
-            'observers' => [ 'FormObserver' ],
-            'name'      => 'Lead.add',
-            'title'     => 'Add Lead',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'add',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'params'              => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+            'groups'              => [ ],
+            'rows'                => 10,
+            'actions'             => [
+                'convert'  => 'Convert',
+//                'call'     => [
+//                    'url'     => 'activity', 'action' => 'add', 'activity' => 'call', 'id' => '~model.id()',
+//                    'tableid' => 'table_id', 'class' => 'call btn-icon', 'label' => 'Call'
+//                ],
+//                'task'     => [
+//                    'url'     => 'activity', 'action' => 'add', 'activity' => 'task', 'id' => '~model.id()',
+//                    'tableid' => 'table_id', 'class' => 'task btn-icon', 'label' => 'Task'
+//                ],
+//                'event'    => [
+//                    'url'     => 'activity', 'action' => 'add', 'activity' => 'event', 'id' => '~model.id()',
+//                    'tableid' => 'table_id', 'class' => 'event btn-icon', 'label' => 'Event'
+//                ],
+//                'document' => [
+//                    'url'   => 'document', 'action' => 'add', 'id' => '~model.id()', 'tableid' => 'table_id',
+//                    'class' => 'attach btn-icon', 'label' => 'Attach'
+//                ],
+//                'delete'   => [
+//                    'url'   => 'lead', 'action' => 'delete', 'id' => '~model.id()', 'class' => 'delete btn-icon',
+//                    'label' => 'Delete'
+//                ],
+//                'convert2' => [
+//                    'url'   => 'lead', 'action' => 'convert', 'id' => '~model.id()', 'class' => 'convert btn-icon',
+//                    'label' => 'Convert'
+//                ]
+                ]
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Lead.add'            => [
+                'observers' => [ 'FormObserver' ],
+                'name'      => 'Lead.add',
+                'title'     => 'Add Lead',
+                'custom'    => 0,
+                'model'     => 'Lead',
+                'mode'      => 'add',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Lead.edit'           => [
-            'observers' => [ 'FormObserver' ],
-            'name'      => 'Lead.edit',
-            'title'     => 'Edit Lead',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'edit',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'Lead.edit'           => [
+                'observers' => [ 'FormObserver' ],
+                'name'      => 'Lead.edit',
+                'title'     => 'Edit Lead',
+                'custom'    => 0,
+                'model'     => 'Lead',
+                'mode'      => 'edit',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Lead.convert'        => [
+                'observers' => [ 'ConvertObserver' ],
+                'name'      => 'Lead.convert',
+                'title'     => 'Convert Lead',
+                'custom'    => 0,
+                'model'     => 'Lead',
+                'mode'      => 'convert',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Lead.convert'        => [
-            'observers' => [ 'ConvertObserver' ],
-            'name'      => 'Lead.convert',
-            'title'     => 'Convert Lead',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'convert',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'Lead.delete'         => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Lead.delete',
+                'title'     => 'Delete Lead(s)',
+                'custom'    => 0,
+                'model'     => 'Lead',
+                'mode'      => 'delete',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Lead.restore'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Lead.restore',
+                'title'     => 'Restore Lead(s)',
+                'custom'    => 0,
+                'model'     => 'Lead',
+                'mode'      => 'restore',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Lead.delete'         => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Lead.delete',
-            'title'     => 'Delete Lead(s)',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'delete',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'Lead.clean'          => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Lead.clean',
+                'title'     => 'Clean Lead(s)',
+                'custom'    => 0,
+                'model'     => 'Lead',
+                'mode'      => 'clean',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Patient.list'        => [
+                'observers' => [ 'ListObserver' ],
+                'name'      => 'Patient.list',
+                'title'     => 'Patients',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'list',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Lead.restore'        => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Lead.restore',
-            'title'     => 'Restore Lead(s)',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'restore',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'Patient.recyclelist' => [
+                'observers' => [ 'ListObserver' ],
+                'name'      => 'Patient.recyclelist',
+                'title'     => 'Recycle: Patients',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'recyclelist',
+                'query'     => [
+                    'status_id' => [ Status::DELETED ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Patient.view'        => [
+                'observers' => [ 'ViewObserver' ],
+                'name'      => 'Patient.view',
+                'title'     => 'View Patient',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'view',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Lead.clean'          => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Lead.clean',
-            'title'     => 'Clean Lead(s)',
-            'custom'    => 0,
-            'model'     => 'Lead',
-            'mode'      => 'clean',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'Patient.add'         => [
+                'observers' => [ 'FormObserver' ],
+                'name'      => 'Patient.add',
+                'title'     => 'Add Patient',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'add',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Patient.edit'        => [
+                'observers' => [ 'FormObserver' ],
+                'name'      => 'Patient.edit',
+                'title'     => 'Edit Patient',
+                'custom'    => 0,
+                'model'     => 'Contact',
+                'mode'      => 'edit',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.list'        => [
-            'observers' => [ 'ListObserver' ],
-            'name'      => 'Patient.list',
-            'title'     => 'Patients',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'list',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+            'Patient.delete'      => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Patient.delete',
+                'title'     => 'Delete Patient(s)',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'delete',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
+            'Patient.restore'     => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Patient.restore',
+                'title'     => 'Restore Patient(s)',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'restore',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
             ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.recyclelist' => [
-            'observers' => [ 'ListObserver' ],
-            'name'      => 'Patient.recyclelist',
-            'title'     => 'Recycle: Patients',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'recyclelist',
-            'query'     => [
-                'status_id' => [ Status::DELETED ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.view'        => [
-            'observers' => [ 'ViewObserver' ],
-            'name'      => 'Patient.view',
-            'title'     => 'View Patient',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'view',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.add'         => [
-            'observers' => [ 'FormObserver' ],
-            'name'      => 'Patient.add',
-            'title'     => 'Add Patient',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'add',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.edit'        => [
-            'observers' => [ 'FormObserver' ],
-            'name'      => 'Patient.edit',
-            'title'     => 'Edit Patient',
-            'custom'    => 0,
-            'model'     => 'Contact',
-            'mode'      => 'edit',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.delete'      => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Patient.delete',
-            'title'     => 'Delete Patient(s)',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'delete',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.restore'     => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Patient.restore',
-            'title'     => 'Restore Patient(s)',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'restore',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ],
-        'Patient.clean'       => [
-            'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Patient.clean',
-            'title'     => 'Clean Patient(s)',
-            'custom'    => 0,
-            'model'     => 'Patient',
-            'mode'      => 'clean',
-            'query'     => [
-                'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
-            ],
-            'fields'    => [
-                'owner_login',
-                'fname',
-                'lname',
-                'phone',
-                'mobile',
-                'email',
-                'birth_date',
-                'changer_login',
-                'changed_dtm',
-                'created_dtm',
-                'status_status'
-            ],
-            'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
-            'groups'    => [ ],
-            'rows'      => 10,
-        ]
-    ];
+            'Patient.clean'       => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Patient.clean',
+                'title'     => 'Clean Patient(s)',
+                'custom'    => 0,
+                'model'     => 'Patient',
+                'mode'      => 'clean',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'birth_date',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10,
+            ]
+        ];
 
     protected function getKeyName( $modelName, $viewName )
     {
