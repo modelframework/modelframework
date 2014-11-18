@@ -289,12 +289,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.list'        => [
+        'Patient.list'        => [
             'observers' => [ 'ListObserver' ],
-            'name'      => 'Contact.list',
-            'title'     => 'Contacts',
+            'name'      => 'Patient.list',
+            'title'     => 'Patients',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'list',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
@@ -316,12 +316,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.recyclelist' => [
+        'Patient.recyclelist' => [
             'observers' => [ 'ListObserver' ],
-            'name'      => 'Contact.recyclelist',
-            'title'     => 'Recycle: Contacts',
+            'name'      => 'Patient.recyclelist',
+            'title'     => 'Recycle: Patients',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'recyclelist',
             'query'     => [
                 'status_id' => [ Status::DELETED ]
@@ -343,12 +343,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.view'        => [
+        'Patient.view'        => [
             'observers' => [ 'ViewObserver' ],
-            'name'      => 'Contact.view',
-            'title'     => 'View Contact',
+            'name'      => 'Patient.view',
+            'title'     => 'View Patient',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'view',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
@@ -370,12 +370,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.add'         => [
+        'Patient.add'         => [
             'observers' => [ 'FormObserver' ],
-            'name'      => 'Contact.add',
-            'title'     => 'Add Contact',
+            'name'      => 'Patient.add',
+            'title'     => 'Add Patient',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'add',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
@@ -397,10 +397,10 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.edit'        => [
+        'Patient.edit'        => [
             'observers' => [ 'FormObserver' ],
-            'name'      => 'Contact.edit',
-            'title'     => 'Edit Contact',
+            'name'      => 'Patient.edit',
+            'title'     => 'Edit Patient',
             'custom'    => 0,
             'model'     => 'Contact',
             'mode'      => 'edit',
@@ -424,12 +424,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.delete'      => [
+        'Patient.delete'      => [
             'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Contact.delete',
-            'title'     => 'Delete Contact(s)',
+            'name'      => 'Patient.delete',
+            'title'     => 'Delete Patient(s)',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'delete',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
@@ -451,12 +451,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.restore'     => [
+        'Patient.restore'     => [
             'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Contact.restore',
-            'title'     => 'Restore Contact(s)',
+            'name'      => 'Patient.restore',
+            'title'     => 'Restore Patient(s)',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'restore',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
@@ -478,12 +478,12 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'groups'    => [ ],
             'rows'      => 10,
         ],
-        'Contact.clean'       => [
+        'Patient.clean'       => [
             'observers' => [ 'RecycleObserver' ],
-            'name'      => 'Contact.clean',
-            'title'     => 'Clean Contact(s)',
+            'name'      => 'Patient.clean',
+            'title'     => 'Clean Patient(s)',
             'custom'    => 0,
-            'model'     => 'Contact',
+            'model'     => 'Patient',
             'mode'      => 'clean',
             'query'     => [
                 'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
