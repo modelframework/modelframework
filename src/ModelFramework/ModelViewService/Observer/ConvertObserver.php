@@ -26,7 +26,7 @@ class ConvertObserver implements \SplObserver
         $id        = (string) $subject->getParams()->fromRoute( 'id', 0 );
         if ( !$id )
         {
-            return $this->redirect()->toRoute( $route );
+            return $subjest->redirect()->toRoute( $route );
         }
         $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
         $convertConfig                = $subject->getDataMappingServiceVerify()->get( 'Lead' );

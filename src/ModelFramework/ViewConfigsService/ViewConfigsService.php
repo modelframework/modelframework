@@ -125,6 +125,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
             'groups'    => [ ],
             'rows'      => 10,
+            'actions'   => [ 'convert' => 'Convert' ]
         ],
         'Lead.add'            => [
             'observers' => [ 'FormObserver' ],
