@@ -530,7 +530,34 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
                 'groups'    => [ ],
                 'rows'      => 10,
-            ]
+            ],
+            'Account.list'        => [
+                'observers' => [ 'ListObserver' ],
+                'name'      => 'Account.list',
+                'title'     => 'Accounts',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'list',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'fname',
+                    'lname',
+                    'phone',
+                    'mobile',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
         ];
 
     protected function getKeyName( $modelName, $viewName )
