@@ -544,10 +544,55 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'fields'    => [
                     'owner_login',
                     'title',
-                    'fname',
-                    'lname',
                     'phone',
-                    'mobile',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Account.add'        => [
+                'observers' => [ 'FormObserver' ],
+                'name'      => 'Account.add',
+                'title'     => 'Add Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'add',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Account.view'        => [
+                'observers' => [ 'ViewObserver' ],
+                'name'      => 'Account.view',
+                'title'     => 'View Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'view',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
                     'email',
                     'changer_login',
                     'changed_dtm',
