@@ -428,7 +428,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'name'      => 'Patient.edit',
                 'title'     => 'Edit Patient',
                 'custom'    => 0,
-                'model'     => 'Contact',
+                'model'     => 'Patient',
                 'mode'      => 'edit',
                 'query'     => [
                     'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
