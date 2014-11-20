@@ -37,19 +37,26 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
         return $modelName . '.' . $viewName;
     }
 
-    protected function getConfigFromDb( $modelName, $viewName )
+    /**
+     * @param string $documentName
+     * @param string $viewName
+     *
+     * @return ViewConfigData|\ModelFramework\DataModel\DataModelInterface
+     * @throws \Exception
+     */
+    protected function getConfigFromDb( $documentName, $viewName )
     {
 
         $viewConfigData = $this->getGatewayServiceVerify()->getGateway( 'ModelView', new ViewConfigData() )->findOne(
-            [ 'model' => $modelName, 'mode' => $viewName ]
+            [ 'document' => $documentName, 'mode' => $viewName ]
         );
         if ( $viewConfigData == null )
         {
-            $configArray = Arr::getDoubtField( $this->getConfigPart('custom'), $this->getKeyName( $modelName, $viewName ), null );
+            $configArray = Arr::getDoubtField( $this->getConfigPart('custom'), $this->getKeyName( $documentName, $viewName ), null );
 
             if ( $configArray == null )
             {
-                throw new \Exception( ' unknown view config for model ' . $modelName . ' in the view ' . $viewName );
+                throw new \Exception( ' unknown view config for document ' . $documentName . ' in the view ' . $viewName );
             }
             $viewConfigData = new ViewConfigData( $configArray );
 //            $configData->exchangeArray( $configArray );
@@ -60,35 +67,35 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
     }
 
     /**
-     * @param $modelName
-     * @param $viewName
+     * @param string $documentName
+     * @param string $viewName
      *
      * @return ViewConfigData
      * @throws \Exception
      */
-    public function getViewConfigData( $modelName, $viewName )
+    public function getViewConfigData( $documentName, $viewName )
     {
 
-        $viewConfigData = $this->getConfigFromDb( $modelName, $viewName );
+        $viewConfigData = $this->getConfigFromDb( $documentName, $viewName );
         if ( $viewConfigData == null )
         {
             $viewConfigArray =
-                Arr::getDoubtField( $this->getConfigPart('system'), $this->getKeyName( $modelName, $viewName ), null );
+                Arr::getDoubtField( $this->getConfigPart('system'), $this->getKeyName( $documentName, $viewName ), null );
             if ( $viewConfigArray !== null )
             {
                 $viewConfigData = new ViewConfigData( $viewConfigArray );
             }
             else
             {
-                throw new \Exception( 'Unknown view config for ' . $modelName . '.' . $viewName );
+                throw new \Exception( 'Unknown view config for ' . $documentName . '.' . $viewName );
             }
         }
 
         return $viewConfigData;
     }
 
-    public function get( $modelName, $viewName )
+    public function get( $documentName, $viewName )
     {
-        return $this->getViewConfigData( $modelName, $viewName );
+        return $this->getViewConfigData( $documentName, $viewName );
     }
 }

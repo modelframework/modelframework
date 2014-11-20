@@ -54,6 +54,18 @@ trait FieldTypesServiceAwareTrait
         return $this->getFieldTypesServiceVerify()->getUtilityFields( $modelName );
     }
 
+    /**
+     * @param string $type
+     * @param string $part
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getFieldPart( $type, $part )
+    {
+        return $this->getFieldTypesServiceVerify()->getFieldPart( $type, $part );
+    }
+
     protected function getField( $type )
     {
         return $this->getFieldTypesServiceVerify()->getField( $type );

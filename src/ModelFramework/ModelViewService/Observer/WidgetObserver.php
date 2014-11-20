@@ -8,7 +8,7 @@
 
 namespace ModelFramework\ModelViewService\Observer;
 
-use Wepo\Model\Table;
+use ModelFramework\ModelViewService\ModelView;
 
 class WidgetObserver
     implements \SplObserver
@@ -17,12 +17,12 @@ class WidgetObserver
     public function update( \SplSubject $subject )
     {
 
-        $data = $this->getData();
+        $data = $subject->getData();
 
-        if ( !isset($data['model']) )
+        if ( !isset( $data[ 'model' ] ) )
         {
-            $id                  = (string) $subject->getParams()->fromRoute( 'id', 0 );
-            if ( $id == 0 )
+            $id = (string) $subject->getParams()->fromRoute( 'id', 0 );
+            if ( $id != 0 )
             {
                 $result              = [ ];
                 $result[ 'widgets' ] = [ ];
@@ -36,6 +36,7 @@ class WidgetObserver
                 $result[ 'params' ][ 'id' ] = $id;
                 $result[ 'title' ]          = $subject->getViewConfigDataVerify()->title . ' ' . $model->title;
 
+                $subject->setData( $result );
             }
             else
             {
@@ -44,23 +45,24 @@ class WidgetObserver
         }
         else
         {
-            $model = $data['model'];
+            $model = $data[ 'model' ];
         }
 
-
         $this->widgets( $subject, $model );
-        $subject->setData( $result );
+
     }
 
     public function widgets( \SplSubject $subject, $model )
     {
-        $viewConfig          = $subject->getViewConfigDataVerify();
-        $result              = [ ];
-        $pageName            = strtolower( $viewConfig->model );
+        $viewConfig = $subject->getViewConfigDataVerify();
+        $result     = [ ];
+
+        $pageName            = strtolower( $viewConfig->document );
         $result[ 'widgets' ] = [ ];
         $widgetConfigs       =
             $subject->getGatewayServiceVerify()->get( 'Widget' )
                     ->find( [ 'path' => $pageName ], [ 'output_order' => 'asc' ] );
+
         if ( !count( $widgetConfigs ) )
         {
             return [ ];
@@ -72,18 +74,31 @@ class WidgetObserver
             if ( $wConf->data_model == 'EventLog' ) continue;
             $result[ 'widgets' ][ $wConf->name ] = $this->getWidget( $subject, $wConf, $model );
         }
+
         $subject->setData( $result );
     }
 
     public function getWidget( $subject, $conf, $inModel )
     {
-        $conf               = $conf->toArray();
-        $modelName          = $conf[ 'data_model' ];
+        /**
+         * @var ModelView $subject
+         */
+
+        $conf      = $conf->toArray();
+        $modelName = $conf[ 'data_model' ];
+        $modelConfig = $subject->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
         $where              = $conf[ 'where' ];
         $model              = $subject->getGatewayServiceVerify()->get( $modelName )->model();
         $result             = [ ];
         $result[ 'fields' ] = $conf[ 'fields' ];
-        $result[ 'labels' ] = [ 'subject' => 'Subject', 'description' => 'Description' ];
+        $result[ 'labels' ] = [  ];
+        foreach ( $conf['fields'] as $field )
+        {
+            if ( isset($modelConfig['labels'][ $field ]) )
+            {
+                $result[ 'labels' ][ $field ] = $modelConfig['labels'][ $field ];
+            }
+        }
         foreach ( $where as $_f => $_v )
         {
             if ( is_array( $_v ) )
@@ -155,9 +170,9 @@ class WidgetObserver
                 $result[ 'model_link' ][ $modelkey ] = $link;
             }
         }
-        $result[ 'data' ]  =
+        $result[ 'data' ]      =
             $subject->getGatewayServiceVerify()->get( $modelName )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
-        $result[ 'model' ] = strtolower( $modelName );
+        $result[ 'model' ]     = strtolower( $modelName );
 
         return $result;
     }

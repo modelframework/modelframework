@@ -19,7 +19,7 @@ class ViewConfigData extends DataModel
 
     public $_fields = [
         '_id'       => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
-        'name'      => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'document'      => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'title'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'observers' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'custom'    => [ 'type' => 'field', 'datatype' => 'integer', 'default' => 0 ],
@@ -40,7 +40,7 @@ class ViewConfigData extends DataModel
     public $_unique = [ 'model' ];
 
     public $_id = '';
-    public $name = '';
+    public $document = '';
     public $custom = 0;
     public $model = '';
     public $mode = '';

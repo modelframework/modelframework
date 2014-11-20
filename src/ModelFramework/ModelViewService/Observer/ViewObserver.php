@@ -25,7 +25,7 @@ class ViewObserver
         $result[ 'model' ]          = $model;
         $result[ 'params' ][ 'id' ] = $id;
         $result[ 'title' ]          = $subject->getViewConfigDataVerify()->title . ' ' . $model->title;
-        $this->widgets( $subject, $model );
+//        $this->widgets( $subject, $model );
         $subject->setData( $result );
     }
 

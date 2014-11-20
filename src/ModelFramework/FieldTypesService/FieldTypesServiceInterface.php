@@ -42,4 +42,12 @@ interface FieldTypesServiceInterface {
      */
     public function getUtilityFields( $modelName = '' );
 
+    /**
+     * @param string $type
+     * @param string $part
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getFieldPart( $type, $part );
 } 

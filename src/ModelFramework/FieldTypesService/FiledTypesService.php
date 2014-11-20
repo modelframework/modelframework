@@ -71,7 +71,7 @@ class FiledTypesService implements FieldTypesServiceInterface, SystemConfigAware
     /**
      * @param string $modelName
      *
-     * @return mixed
+     * @return array
      */
     public function getUtilityFields( $modelName = '' )
     {

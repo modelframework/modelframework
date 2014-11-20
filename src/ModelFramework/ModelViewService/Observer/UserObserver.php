@@ -20,7 +20,7 @@ class UserObserver
          * @var ModelView $subject
          */
         $result              = [ ];
-        $model               = $subject -> getAuthServiceVerify() -> getUser();
+        $model               = $subject -> getUser();
         if ( !$model )
         {
             throw new \Exception( 'User not found' );

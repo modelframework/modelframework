@@ -142,6 +142,12 @@ class ModelConfigParserService
             $_fieldconf[ 'source' ] = $name;
             $_fields                = [ $name => $_fieldconf ];
             $_labels                = [ $name => $_fieldconf[ 'label' ] ];
+
+            $_utility = $this->getFieldPart( $conf[ 'type' ], 'utility');
+            if ( count($_utility  ))
+            {
+                $_fields = array_merge( $_fields, $_utility  );
+            }
         }
         $_infilter = $this->getInputFilter( $type );
         if ( isset( $conf[ 'required' ] ) )

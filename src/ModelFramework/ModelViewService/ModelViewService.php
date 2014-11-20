@@ -68,18 +68,21 @@ class ModelViewService
         // this object will deal with all view of model stuff
         $modelView = new ModelView();
 
-        $modelView->setAuthService( $this -> getAuthServiceVerify() );
+        $modelView->setAuthService( $this->getAuthServiceVerify() );
 
         // we want modelView get to know what to show and how
         $viewConfigData = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
         $modelView->setViewConfigData( $viewConfigData );
 
+        // config parser service
+        $modelView->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
+
         // info about model - how it is organized. it will be useful
-        $modelConfigArray = $this->getModelConfigParserService()->getModelConfig( $viewConfigData -> model );
+        $modelConfigArray = $this->getModelConfigParserServiceVerify()->getModelConfig( $viewConfigData->model );
         $modelView->setModelConfig( $modelConfigArray );
 
         // model view should deal with acl enabled model
-        $aclModel = $this->getAclServiceVerify()->getAclModel( $viewConfigData -> model );
+        $aclModel = $this->getAclServiceVerify()->getAclModel( $viewConfigData->model );
         // primary gateway for data ops
         $gateway = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
         $modelView->setGateway( $gateway );
