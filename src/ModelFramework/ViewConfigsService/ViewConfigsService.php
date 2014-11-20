@@ -603,6 +603,102 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                 'groups'    => [ ],
                 'rows'      => 10
             ],
+            'Account.edit'        => [
+                'observers' => [ 'FormObserver' ],
+                'name'      => 'Account.edit',
+                'title'     => 'Edit Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'edit',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Account.recyclelist'        => [
+                'observers' => [ 'ListObserver' ],
+                'name'      => 'Account.recyclelist',
+                'title'     => 'Recucle: Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'recyclelist',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Account.restore'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Account.restore',
+                'title'     => 'Restore Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'restore',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Account.clean'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Account.clean',
+                'title'     => 'Clean Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'clean',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
         ];
 
     protected function getKeyName( $modelName, $viewName )
