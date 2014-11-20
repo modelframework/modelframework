@@ -75,11 +75,11 @@ class ModelViewService
         $modelView->setViewConfigData( $viewConfigData );
 
         // info about model - how it is organized. it will be useful
-        $modelConfigArray = $this->getModelConfigParserService()->getModelConfig( $modelName );
+        $modelConfigArray = $this->getModelConfigParserService()->getModelConfig( $viewConfigData -> model );
         $modelView->setModelConfig( $modelConfigArray );
 
         // model view should deal with acl enabled model
-        $aclModel = $this->getAclServiceVerify()->getAclModel( $modelName );
+        $aclModel = $this->getAclServiceVerify()->getAclModel( $viewConfigData -> model );
         // primary gateway for data ops
         $gateway = $this->getGatewayServiceVerify()->get( $modelName, $aclModel );
         $modelView->setGateway( $gateway );

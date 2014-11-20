@@ -70,7 +70,7 @@ class AclService
         $acl        = $aclGateway->findOne( [ 'role_id' => $user->role_id, 'resource' => $modelName ] );
         if ( $acl == null )
         {
-            throw new \Exception( $modelName . ' Acl for role ' . $user->role . ' not found ' );
+            throw new \Exception( $modelName . ' - Acl for role ' . $user->role . ' not found ' );
         }
 
         return $acl;

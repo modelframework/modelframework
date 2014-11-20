@@ -43,7 +43,7 @@ class ModelView
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver'
+        'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver', 'UserObserver', 'WidgetObserver'
     ];
     protected $observers = [ ];
 
