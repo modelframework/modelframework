@@ -632,7 +632,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             'Account.recyclelist'        => [
                 'observers' => [ 'ListObserver' ],
                 'name'      => 'Account.recyclelist',
-                'title'     => 'Recucle: Account',
+                'title'     => 'Recycle: Account',
                 'custom'    => 0,
                 'model'     => 'Account',
                 'mode'      => 'recyclelist',
@@ -697,6 +697,121 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
                     'created_dtm',
                     'status_status'
                 ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Account.delete'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Account.delete',
+                'title'     => 'Delete Account',
+                'custom'    => 0,
+                'model'     => 'Account',
+                'mode'      => 'delete',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'phone',
+                    'email',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Document.list'        => [
+                'observers' => [ 'ListObserver' ],
+                'name'      => 'Document.list',
+                'title'     => 'Documents',
+                'custom'    => 0,
+                'model'     => 'Document',
+                'mode'      => 'list',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'title',
+                    'document_name',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Document.view'        => [
+                'observers' => [ 'ViewObserver' ],
+                'name'      => 'Document.view',
+                'title'     => 'Documents',
+                'custom'    => 0,
+                'model'     => 'Document',
+                'mode'      => 'view',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [
+                    'owner_login',
+                    'document_name',
+                    'title',
+                    'changer_login',
+                    'changed_dtm',
+                    'created_dtm',
+                    'status_status'
+                ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Document.delete'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Document.delete',
+                'title'     => 'Documents',
+                'custom'    => 0,
+                'model'     => 'Document',
+                'mode'      => 'delete',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [ ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Document.clean'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Document.clean',
+                'title'     => 'Documents',
+                'custom'    => 0,
+                'model'     => 'Document',
+                'mode'      => 'clean',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [ ],
+                'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
+                'groups'    => [ ],
+                'rows'      => 10
+            ],
+            'Document.clean'        => [
+                'observers' => [ 'RecycleObserver' ],
+                'name'      => 'Document.clean',
+                'title'     => 'Documents',
+                'custom'    => 0,
+                'model'     => 'Document',
+                'mode'      => 'clean',
+                'query'     => [
+                    'status_id' => [ Status::NEW_, Status::NORMAL, Status::CONVERTED, Status::DEAD ]
+                ],
+                'fields'    => [ ],
                 'params'    => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
                 'groups'    => [ ],
                 'rows'      => 10
