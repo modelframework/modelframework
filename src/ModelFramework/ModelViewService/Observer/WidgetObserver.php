@@ -16,10 +16,46 @@ class WidgetObserver
 
     public function update( \SplSubject $subject )
     {
-        prn(123);
-        $viewConfig = $subject->getViewConfigDataVerify();
-        $result     = [ ];
-//        $result[ 'widgets' ] = $this->widgets( $viewConfig->model, $model );
+
+        $data = $this->getData();
+
+        if ( !isset($data['model']) )
+        {
+            $id                  = (string) $subject->getParams()->fromRoute( 'id', 0 );
+            if ( $id == 0 )
+            {
+                $result              = [ ];
+                $result[ 'widgets' ] = [ ];
+                $model               = $subject->getGatewayVerify()->findOne( [ '_id' => $id ] );
+
+                if ( !$model )
+                {
+                    throw new \Exception( 'Data not found' );
+                }
+                $result[ 'model' ]          = $model;
+                $result[ 'params' ][ 'id' ] = $id;
+                $result[ 'title' ]          = $subject->getViewConfigDataVerify()->title . ' ' . $model->title;
+
+            }
+            else
+            {
+                $model = $subject->getGatewayVerify()->model();
+            }
+        }
+        else
+        {
+            $model = $data['model'];
+        }
+
+
+        $this->widgets( $subject, $model );
+        $subject->setData( $result );
+    }
+
+    public function widgets( \SplSubject $subject, $model )
+    {
+        $viewConfig          = $subject->getViewConfigDataVerify();
+        $result              = [ ];
         $pageName            = strtolower( $viewConfig->model );
         $result[ 'widgets' ] = [ ];
         $widgetConfigs       =
@@ -31,29 +67,23 @@ class WidgetObserver
         }
         foreach ( $widgetConfigs as $wConf )
         {
-            $result[ 'widgets' ][ $wConf->name ] = $this->getWidget( $subject, $wConf, $subject->getAclModelVerify() );
+            //FIXME EMAIL WIDGET
+            if ( $wConf->data_model == 'Mail' ) continue;
+            if ( $wConf->data_model == 'EventLog' ) continue;
+            $result[ 'widgets' ][ $wConf->name ] = $this->getWidget( $subject, $wConf, $model );
         }
         $subject->setData( $result );
     }
 
     public function getWidget( $subject, $conf, $inModel )
     {
-        $result = [ ];
-
-        $conf = $conf->toArray();
-
-        $modelName = $conf[ 'data_model' ];
-        $where     = $conf[ 'where' ];
-        $model     = $subject->getGatewayServiceVerify()->get( $modelName )->model();
-        $fieldType = $subject->getGatewayServiceVerify()->get( 'Field' )->model();
-        prn( 'Widget observer', $fieldType );
-        exit;
-        $tableId = Table::getTableId( $modelName );
-        $result += $this->fields( [
-                                      'table_id' => $fieldType->table_id( $tableId ),
-                                      'visible'  => $fieldType->visible( 1 ),
-                                      'target'   => 'widget'
-                                  ], [ 'order' => 'asc' ] );
+        $conf               = $conf->toArray();
+        $modelName          = $conf[ 'data_model' ];
+        $where              = $conf[ 'where' ];
+        $model              = $subject->getGatewayServiceVerify()->get( $modelName )->model();
+        $result             = [ ];
+        $result[ 'fields' ] = $conf[ 'fields' ];
+        $result[ 'labels' ] = [ 'subject' => 'Subject', 'description' => 'Description' ];
         foreach ( $where as $_f => $_v )
         {
             if ( is_array( $_v ) )
@@ -68,44 +98,73 @@ class WidgetObserver
                     }
                 }
             }
+            elseif ( $_v == ':_id' )
+            {
+                $where[ $_f ] = $inModel->id();
+            }
             elseif ( $_v{0} == ':' )
             {
                 $_m           = substr( $_v, 1 );
                 $where[ $_f ] = $model->$_f( $inModel->{$_m} );
             }
+            elseif ( $_v{0} == '!' )
+            {
+                //FIXME
+                $func = substr( $_v, 1 );
+                unset( $where[ $_f ] );
+                $_f = substr( $_f, 2 );
+                if ( method_exists( $this, $func ) )
+                {
+                    $where[ $_f ] = $this->$func();
+                    unset( $where[ $_f ] );
+                }
+                //
+            }
         }
-
         if ( isset( $conf[ 'action' ] ) )
         {
             foreach ( $conf[ 'action' ] as $action => $config )
             {
+                foreach ( $config as $_key => $_val )
+                {
+                    if ( $_val{0} == ":" )
+                    {
+                        $_m              = substr( $_val, 1 );
+                        $config[ $_key ] = (string) $inModel->$_m;
+                    }
+                }
                 $result[ 'action' ][ $action ] = $config;
             }
         }
         if ( isset( $conf[ 'model_link' ] ) )
         {
-            foreach ( $conf[ 'model_link' ] as $link )
+            foreach ( $conf[ 'model_link' ] as $modelkey => $link )
             {
                 if ( !isset( $link[ 'params' ] ) )
                 {
-                    continue;
+                    $link[ 'params' ] = [ ];
                 }
                 foreach ( $link[ 'params' ] as $_key => $_v )
                 {
                     if ( $_v{0} == ':' )
                     {
-                        $_m = substr( $_v, 1 );
-//                        $link[ 'params' ][ $_key ] = $model->$_m( $inmodel->{$_m} );
-                        $link[ 'params' ][ $_key ] = (string) $inmodel->{$_m};
+                        $_m                        = substr( $_v, 1 );
+                        $link[ 'params' ][ $_key ] = (string) $inModel->{$_m};
                     }
                 }
-                $result[ 'model_link' ][ ] = $link;
+                $result[ 'model_link' ][ $modelkey ] = $link;
             }
         }
-        $result[ 'data' ]  = $this->table( $modelName )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
+        $result[ 'data' ]  =
+            $subject->getGatewayServiceVerify()->get( $modelName )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
         $result[ 'model' ] = strtolower( $modelName );
 
         return $result;
+    }
+
+    public function curdate()
+    {
+        return date( 'Y-m-d\TH(idea)' );
     }
 
 }

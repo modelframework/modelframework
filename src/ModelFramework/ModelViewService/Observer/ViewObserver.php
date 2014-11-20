@@ -8,8 +8,6 @@
 
 namespace ModelFramework\ModelViewService\Observer;
 
-use Wepo\Model\Table;
-
 class ViewObserver
     implements \SplObserver
 {
@@ -24,17 +22,17 @@ class ViewObserver
         {
             throw new \Exception( 'Data not found' );
         }
-        $result[ 'model' ] = $model;
+        $result[ 'model' ]          = $model;
         $result[ 'params' ][ 'id' ] = $id;
-        $result[ 'title' ] = $subject->getViewConfigDataVerify()->title . ' ' . $model -> title;
+        $result[ 'title' ]          = $subject->getViewConfigDataVerify()->title . ' ' . $model->title;
         $this->widgets( $subject, $model );
         $subject->setData( $result );
     }
 
     public function widgets( \SplSubject $subject, $model )
     {
-        $viewConfig = $subject->getViewConfigDataVerify();
-        $result     = [ ];
+        $viewConfig          = $subject->getViewConfigDataVerify();
+        $result              = [ ];
         $pageName            = strtolower( $viewConfig->model );
         $result[ 'widgets' ] = [ ];
         $widgetConfigs       =
@@ -47,8 +45,8 @@ class ViewObserver
         foreach ( $widgetConfigs as $wConf )
         {
             //FIXME EMAIL WIDGET
-            if ($wConf->data_model == 'Mail') continue;
-            if ($wConf->data_model == 'EventLog') continue;
+            if ( $wConf->data_model == 'Mail' ) continue;
+            if ( $wConf->data_model == 'EventLog' ) continue;
             $result[ 'widgets' ][ $wConf->name ] = $this->getWidget( $subject, $wConf, $model );
         }
         $subject->setData( $result );
@@ -56,10 +54,10 @@ class ViewObserver
 
     public function getWidget( $subject, $conf, $inModel )
     {
-        $conf = $conf->toArray();
-        $modelName = $conf[ 'data_model' ];
-        $where     = $conf[ 'where' ];
-        $model     = $subject->getGatewayServiceVerify()->get( $modelName )->model();
+        $conf               = $conf->toArray();
+        $modelName          = $conf[ 'data_model' ];
+        $where              = $conf[ 'where' ];
+        $model              = $subject->getGatewayServiceVerify()->get( $modelName )->model();
         $result             = [ ];
         $result[ 'fields' ] = $conf[ 'fields' ];
         $result[ 'labels' ] = [ 'subject' => 'Subject', 'description' => 'Description' ];
@@ -90,12 +88,12 @@ class ViewObserver
             {
                 //FIXME
                 $func = substr( $_v, 1 );
-                unset($where[ $_f ]);
-                $_f   = substr( $_f, 2 );
+                unset( $where[ $_f ] );
+                $_f = substr( $_f, 2 );
                 if ( method_exists( $this, $func ) )
                 {
                     $where[ $_f ] = $this->$func();
-                    unset($where[ $_f ]);
+                    unset( $where[ $_f ] );
                 }
                 //
             }
@@ -117,7 +115,7 @@ class ViewObserver
         }
         if ( isset( $conf[ 'model_link' ] ) )
         {
-            foreach ( $conf[ 'model_link' ] as $link )
+            foreach ( $conf[ 'model_link' ] as $modelkey => $link )
             {
                 if ( !isset( $link[ 'params' ] ) )
                 {
@@ -127,11 +125,11 @@ class ViewObserver
                 {
                     if ( $_v{0} == ':' )
                     {
-                        $_m = substr( $_v, 1 );
+                        $_m                        = substr( $_v, 1 );
                         $link[ 'params' ][ $_key ] = (string) $inModel->{$_m};
                     }
                 }
-                $result[ 'model_link' ][ ] = $link;
+                $result[ 'model_link' ][ $modelkey ] = $link;
             }
         }
         $result[ 'data' ]  =
