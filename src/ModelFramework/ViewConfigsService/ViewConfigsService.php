@@ -621,7 +621,7 @@ class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceA
             $configArray = Arr::getDoubtField( $this->_dbConfig, $this->getKeyName( $modelName, $viewName ), null );
             if ( $configArray == null )
             {
-                throw new \Exception( ' unknown config for model ' . $modelName . ' view ' . $viewName );
+                throw new \Exception( ' unknown view config for model ' . $modelName . ' in the view ' . $viewName );
             }
             $viewConfigData = new ViewConfigData( $configArray );
 //            $configData->exchangeArray( $configArray );

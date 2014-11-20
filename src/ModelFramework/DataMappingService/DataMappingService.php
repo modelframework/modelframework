@@ -12,38 +12,13 @@ use ModelFramework\DataModel\Custom\DataMapping;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\Utility\Arr;
+use ModelFramework\SystemConfig\SystemConfigAwareInterface;
+use ModelFramework\SystemConfig\SystemConfigAwareTrait;
 
-class DataMappingService implements DataMappingServiceInterface, GatewayServiceAwareInterface
+class DataMappingService implements DataMappingServiceInterface, GatewayServiceAwareInterface, SystemConfigAwareInterface
 {
 
-    use GatewayServiceAwareTrait;
-
-    /**
-     * @var array
-     */
-    protected $_dataSchemas = [ ];
-
-    /**
-     * @var array
-     */
-    protected $_dbConfig = [ ];
-
-    /**
-     * @param array $systemConfig
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    public function setSystemConfig( $systemConfig )
-    {
-        if ( !is_array( $systemConfig ) )
-        {
-            throw new \Exception( 'SystemConfig must be an array' );
-        }
-        $this->_dbConfig = $systemConfig;
-
-        return $this;
-    }
+    use GatewayServiceAwareTrait, SystemConfigAwareTrait;
 
     protected function getConfigFromDb( $mappingName )
     {
@@ -53,7 +28,7 @@ class DataMappingService implements DataMappingServiceInterface, GatewayServiceA
         );
         if ( $dataSchema == null )
         {
-            $configArray = Arr::getDoubtField( $this->_dbConfig, $mappingName, null );
+            $configArray = Arr::getDoubtField( $this->getSystemConfigVerify(), $mappingName, null );
             if ( $configArray == null )
             {
                 throw new \Exception( ' unknown config for the mapping ' . $mappingName );
