@@ -16,28 +16,6 @@ class FiledTypesService implements FieldTypesServiceInterface, SystemConfigAware
 {
     use SystemConfigAwareTrait;
 
-//    /**
-//     * @var array
-//     */
-//    protected $_fieldTypes = [ ];
-//
-//    /**
-//     * @param array $systemConfig
-//     *
-//     * @return $this
-//     * @throws \Exception
-//     */
-//    public function setSystemConfig( $systemConfig )
-//    {
-//        if ( !is_array( $systemConfig ) )
-//        {
-//            throw new \Exception( 'SystemConfig must be an array' );
-//        }
-//        $this->_fieldTypes = $systemConfig;
-//
-//        return $this;
-//    }
-
     /**
      * @param string $type
      * @param string $part
@@ -47,13 +25,13 @@ class FiledTypesService implements FieldTypesServiceInterface, SystemConfigAware
      */
     public function getFieldPart( $type, $part )
     {
-        $_systemConfig = $this->getSystemConfigVerify();
-        if ( !isset( $_systemConfig[ $type ][ $part ] ) )
+        $_config = $this->getConfigPart( $type );
+        if ( !isset( $_config[ $part ] ) )
         {
             throw new \Exception( 'Unknown type "' . $type . '" for ' .  $part );
         }
 
-        return $_systemConfig[ $type ][ $part ];
+        return $_config[ $part ];
     }
 
 

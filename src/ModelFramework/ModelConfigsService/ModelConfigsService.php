@@ -11,39 +11,30 @@ namespace ModelFramework\ModelConfigsService;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ConfigData;
+use ModelFramework\SystemConfig\SystemConfigAwareInterface;
+use ModelFramework\SystemConfig\SystemConfigAwareTrait;
 use ModelFramework\Utility\Arr;
 
-class ModelConfigsService implements ModelConfigsServiceInterface, GatewayServiceAwareInterface
+class ModelConfigsService implements ModelConfigsServiceInterface, GatewayServiceAwareInterface, SystemConfigAwareInterface
 {
 
-    use GatewayServiceAwareTrait;
+    use GatewayServiceAwareTrait, SystemConfigAwareTrait;
+
 
     /**
-     * @var array
+     * @return array
      */
-    protected $_systemConfig = [ ];
-
-    /**
-     * @var array
-     */
-    protected $_customConfig = [ ];
-
-    /**
-     * @param array $systemConfig
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    public function setSystemConfig( $systemConfig )
+    public function getConfigSystemModels()
     {
-        if ( !is_array( $systemConfig ) )
-        {
-            throw new \Exception( 'SystemConfig must be an array' );
-        }
-        $this->_systemConfig = isset( $systemConfig[ 'system' ] ) ? $systemConfig[ 'system' ] : [ ];
-        $this->_customConfig = isset( $systemConfig[ 'custom' ] ) ? $systemConfig[ 'custom' ] : [ ];
+        return $this->getConfigPart( 'system' );
+    }
 
-        return $this;
+    /**
+     * @return array
+     */
+    public function getConfigCustomModels()
+    {
+        return $this->getConfigPart( 'custom' );
     }
 
     /**
@@ -58,7 +49,7 @@ class ModelConfigsService implements ModelConfigsServiceInterface, GatewayServic
                            ->findOne( [ 'model' => $modelName ] );
         if ( $configData == null )
         {
-            $configArray = Arr::getDoubtField( $this->_customConfig, $modelName, null );
+            $configArray = Arr::getDoubtField( $this->getConfigCustomModels(), $modelName, null );
             if ( $configArray == null )
             {
                 throw new \Exception( ' unknown config for model ' . $modelName );
@@ -79,7 +70,7 @@ class ModelConfigsService implements ModelConfigsServiceInterface, GatewayServic
      */
     public function getModelConfig( $modelName )
     {
-        $configArray = Arr::getDoubtField( $this->_systemConfig, $modelName, null );
+        $configArray = Arr::getDoubtField( $this->getConfigSystemModels(), $modelName, null );
 
         if ( $configArray == null )
         {

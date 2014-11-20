@@ -23,4 +23,12 @@ interface SystemConfigAwareInterface {
      * @throws \Exception
      */
     public function getSystemConfigVerify();
+
+    /**
+     * @param string $type
+     * @throws \Exception
+     *
+     * @return array
+     */
+    public function getConfigPart( $type );
 }

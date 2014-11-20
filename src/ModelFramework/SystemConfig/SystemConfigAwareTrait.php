@@ -50,4 +50,19 @@ trait SystemConfigAwareTrait
         return $_systemConfig;
     }
 
+    /**
+     * @param string $type
+     *
+     * @return array
+     */
+    public function getConfigPart( $type )
+    {
+        $_systemConfig = $this->getSystemConfigVerify();
+        if ( !isset($_systemConfig[ $type ] ))
+        {
+            return [];
+        }
+        return $_systemConfig[ $type ];
+    }
+
 }
