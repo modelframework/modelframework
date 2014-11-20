@@ -9,30 +9,53 @@
 
 namespace ModelFramework\FieldTypesService;
 
-class FiledTypesService implements FieldTypesServiceInterface
+use ModelFramework\SystemConfig\SystemConfigAwareInterface;
+use ModelFramework\SystemConfig\SystemConfigAwareTrait;
+
+class FiledTypesService implements FieldTypesServiceInterface, SystemConfigAwareInterface
 {
+    use SystemConfigAwareTrait;
+
+//    /**
+//     * @var array
+//     */
+//    protected $_fieldTypes = [ ];
+//
+//    /**
+//     * @param array $systemConfig
+//     *
+//     * @return $this
+//     * @throws \Exception
+//     */
+//    public function setSystemConfig( $systemConfig )
+//    {
+//        if ( !is_array( $systemConfig ) )
+//        {
+//            throw new \Exception( 'SystemConfig must be an array' );
+//        }
+//        $this->_fieldTypes = $systemConfig;
+//
+//        return $this;
+//    }
 
     /**
-     * @var array
-     */
-    protected $_fieldTypes = [ ];
-
-    /**
-     * @param array $systemConfig
+     * @param string $type
+     * @param string $part
      *
-     * @return $this
+     * @return array
      * @throws \Exception
      */
-    public function setSystemConfig( $systemConfig )
+    public function getFieldPart( $type, $part )
     {
-        if ( !is_array( $systemConfig ) )
+        $_systemConfig = $this->getSystemConfigVerify();
+        if ( !isset( $_systemConfig[ $type ][ $part ] ) )
         {
-            throw new \Exception( 'SystemConfig must be an array' );
+            throw new \Exception( 'Unknown type "' . $type . '" for ' .  $part );
         }
-        $this->_fieldTypes = $systemConfig;
 
-        return $this;
+        return $_systemConfig[ $type ][ $part ];
     }
+
 
     /**
      * @param string $type
@@ -42,12 +65,7 @@ class FiledTypesService implements FieldTypesServiceInterface
      */
     public function getInputFilter( $type )
     {
-        if ( !isset( $this->_fieldTypes[ $type ][ 'inputFilter' ] ) )
-        {
-            throw new \Exception( 'Unknown type "' . $type . '" for getInputFilter' );
-        }
-
-        return $this->_fieldTypes[ $type ][ 'inputFilter' ];
+        return $this->getFieldPart( $type, 'inputFilter' );
     }
 
     /**
@@ -58,12 +76,7 @@ class FiledTypesService implements FieldTypesServiceInterface
      */
     public function getField( $type )
     {
-        if ( !isset( $this->_fieldTypes[ $type ][ 'field' ] ) )
-        {
-            throw new \Exception( 'Unknown type "' . $type . '" for getField' );
-        }
-
-        return $this->_fieldTypes[ $type ][ 'field' ];
+        return $this->getFieldPart( $type, 'field'  );
     }
 
     /**
@@ -74,12 +87,7 @@ class FiledTypesService implements FieldTypesServiceInterface
      */
     public function getFormElement( $type )
     {
-        if ( !isset( $this->_fieldTypes[ $type ][ 'formElement' ] ) )
-        {
-            throw new \Exception( 'Unknown type "' . $type . '" for getFormElement' );
-        }
-
-        return $this->_fieldTypes[ $type ][ 'formElement' ];
+        return $this->getFieldPart( $type, 'formElement'  );
     }
 
     /**
