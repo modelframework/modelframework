@@ -101,7 +101,8 @@ class ModelView
 
     public function setData( array $data )
     {
-        $this->_data += $data;
+        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data ) ;
+//        $this->_data += $data;
     }
 
     protected function clearData()
