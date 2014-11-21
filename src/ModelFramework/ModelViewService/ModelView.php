@@ -43,7 +43,8 @@ class ModelView
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver', 'UserObserver', 'WidgetObserver'
+        'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver', 'UserObserver',
+        'WidgetObserver'
     ];
     protected $observers = [ ];
 
@@ -101,7 +102,7 @@ class ModelView
 
     public function setData( array $data )
     {
-        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data ) ;
+        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data );
 //        $this->_data += $data;
     }
 
@@ -147,7 +148,8 @@ class ModelView
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
         $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
         $result[ 'user' ]      = $this->getUser();
-        $result[ 'saurl' ]     = '?back=' . $this->generateLabel();
+        $result[ 'saurlhash' ] = $this->generateLabel();
+        $result[ 'saurl' ]     = '?back=' . $result[ 'saurlhash' ];
         $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
         $result[ 'user' ]      = $this->getUser();
         $result[ 'actions' ]   = $this->getViewConfigDataVerify()->actions;

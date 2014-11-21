@@ -71,7 +71,7 @@ class WidgetObserver
         {
             //FIXME EMAIL WIDGET
             if ( $wConf->data_model == 'Mail' ) continue;
-            if ( $wConf->data_model == 'EventLog' ) continue;
+//            if ( $wConf->data_model == 'EventLog' ) continue;
             $result[ 'widgets' ][ $wConf->name ] = $this->getWidget( $subject, $wConf, $model );
         }
 
@@ -84,19 +84,20 @@ class WidgetObserver
          * @var ModelView $subject
          */
 
-        $conf      = $conf->toArray();
-        $modelName = $conf[ 'data_model' ];
-        $modelConfig = $subject->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
+        $conf = $conf->toArray();
+
+        $modelName          = $conf[ 'data_model' ];
+        $modelConfig        = $subject->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
         $where              = $conf[ 'where' ];
         $model              = $subject->getGatewayServiceVerify()->get( $modelName )->model();
         $result             = [ ];
         $result[ 'fields' ] = $conf[ 'fields' ];
-        $result[ 'labels' ] = [  ];
-        foreach ( $conf['fields'] as $field )
+        $result[ 'labels' ] = [ ];
+        foreach ( $conf[ 'fields' ] as $field )
         {
-            if ( isset($modelConfig['labels'][ $field ]) )
+            if ( isset( $modelConfig[ 'labels' ][ $field ] ) )
             {
-                $result[ 'labels' ][ $field ] = $modelConfig['labels'][ $field ];
+                $result[ 'labels' ][ $field ] = $modelConfig[ 'labels' ][ $field ];
             }
         }
         foreach ( $where as $_f => $_v )
@@ -136,16 +137,19 @@ class WidgetObserver
                 //
             }
         }
-        if ( isset( $conf[ 'action' ] ) )
+        if ( isset( $conf[ 'action' ] ) && is_array( $conf[ 'action' ] ) )
         {
             foreach ( $conf[ 'action' ] as $action => $config )
             {
-                foreach ( $config as $_key => $_val )
+                foreach ( [ 'routeparams', 'queryparams' ] as $paramKey )
                 {
-                    if ( $_val{0} == ":" )
+                    foreach ( $config[ $paramKey ] as $_key => $_val )
                     {
-                        $_m              = substr( $_val, 1 );
-                        $config[ $_key ] = (string) $inModel->$_m;
+                        if ( $_val{0} == ":" )
+                        {
+                            $_m                           = substr( $_val, 1 );
+                            $config[ $paramKey ][ $_key ] = (string) $inModel->$_m;
+                        }
                     }
                 }
                 $result[ 'action' ][ $action ] = $config;
@@ -170,10 +174,14 @@ class WidgetObserver
                 $result[ 'model_link' ][ $modelkey ] = $link;
             }
         }
-        $result[ 'data' ]      =
+        $result[ 'data' ]  =
             $subject->getGatewayServiceVerify()->get( $modelName )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
-        $result[ 'model' ]     = strtolower( $modelName );
+        $result[ 'model' ] = strtolower( $modelName );
 
+//        if ( $modelName == 'Document' )
+//        {
+//            prn( $where );
+//        }
         return $result;
     }
 
