@@ -189,7 +189,7 @@ class WidgetObserver
 
 //        if ( $modelName == 'Document' )
 //        {
-//            prn( $where );
+            prn( $modelName, $where );
 //        }
         return $result;
     }
