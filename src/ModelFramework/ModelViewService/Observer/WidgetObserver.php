@@ -8,6 +8,7 @@
 
 namespace ModelFramework\ModelViewService\Observer;
 
+use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\ModelViewService\ModelView;
 
 class WidgetObserver
@@ -86,6 +87,11 @@ class WidgetObserver
 
         $conf = $conf->toArray();
 
+        if ( $inModel instanceof AclDataModel )
+        {
+            $inModel = $inModel->getDataModel();
+        }
+
         $modelName          = $conf[ 'data_model' ];
         $modelConfig        = $subject->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
         $where              = $conf[ 'where' ];
@@ -159,16 +165,19 @@ class WidgetObserver
         {
             foreach ( $conf[ 'model_link' ] as $modelkey => $link )
             {
-                if ( !isset( $link[ 'params' ] ) )
+                foreach ( [ 'routeparams', 'queryparams' ] as $paramKey )
                 {
-                    $link[ 'params' ] = [ ];
-                }
-                foreach ( $link[ 'params' ] as $_key => $_v )
-                {
-                    if ( $_v{0} == ':' )
+                    if ( !isset( $link[ $paramKey] ) )
                     {
-                        $_m                        = substr( $_v, 1 );
-                        $link[ 'params' ][ $_key ] = (string) $inModel->{$_m};
+                        $link[ $paramKey ] = [ ];
+                    }
+                    foreach ( $link[ $paramKey ] as $_key => $_v )
+                    {
+                        if ( $_v{0} == ':' )
+                        {
+                            $_m                        = substr( $_v, 1 );
+                            $link[ $paramKey ][ $_key ] = (string) $inModel->{$_m};
+                        }
                     }
                 }
                 $result[ 'model_link' ][ $modelkey ] = $link;
