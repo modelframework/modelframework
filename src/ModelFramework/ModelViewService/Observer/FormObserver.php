@@ -62,6 +62,8 @@ class FormObserver implements \SplObserver
         {
 //            $form->addInputFilter( $model->getInputFilter() );
             $form->setData( $request->getPost() );
+
+//            prn($form -> getValidationGroup());
             if ( $form->isValid() )
             {
                 $model_data = array();

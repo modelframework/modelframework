@@ -11,14 +11,17 @@ namespace ModelFramework\FormConfigParserService;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\ConfigForm;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
 use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
 
 class FormConfigParserService
-    implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface
+    implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface,
+               GatewayServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait, GatewayServiceAwareTrait;
 
     protected $_utilityFieldsetsConfigs = [
         'ButtonFieldset' => [
@@ -162,6 +165,7 @@ class FormConfigParserService
             $formConfig[ 'fieldsets_configs' ][ $fieldset[ 'name' ] ] = $fieldset;
         }
         $cf = new ConfigForm();
+
         $cf->exchangeArray( $formConfig );
 
         return $cf;
@@ -178,29 +182,24 @@ class FormConfigParserService
         if ( $type == 'lookup' )
         {
             $name .= '_id';
-            //$conf[ 'fields' ] это не совесем порядок сортировки
-//            prn( 'createFormElement', $conf[ 'model' ], $conf[ 'fields' ] );
-//            prn('createFormElement', $this->getModelConfigsServiceVerify()->get());
-//            exit;
-
-//            $_lall    = $this->table( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
+            $filter[ 'name' ]                     = $name;
+            $_lall    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
             $_options = [ ];
-//            foreach ( $_lall as $_lrow )
-//            {
-//                $_llabel = '';
-//                $_lvalue = $_lrow->id();
-//                foreach ( array_keys( $conf[ 'fields' ] ) as $_k )
-//                {
-//                    if ( strlen( $_llabel ) )
-//                    {
-//                        $_llabel .= ' ';
-//                    }
-//                    $_llabel .= $_lrow->$_k;
-//                }
-//                $_options[ $_lvalue ] = $_llabel;
-//            }
+            foreach ( $_lall as $_lrow )
+            {
+                $_llabel = '';
+                $_lvalue = $_lrow->id();
+                foreach ( array_keys( $conf[ 'fields' ] ) as $_k )
+                {
+                    if ( strlen( $_llabel ) )
+                    {
+                        $_llabel .= ' ';
+                    }
+                    $_llabel .= $_lrow->$_k;
+                }
+                $_options[ $_lvalue ] = $_llabel;
+            }
             $_elementconf[ 'options' ][ 'value_options' ] += $_options;
-
         }
         $_elementconf[ 'attributes' ][ 'name' ] = $name;
         if ( isset( $conf[ 'required' ] ) )
