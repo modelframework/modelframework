@@ -14,7 +14,6 @@ use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\SystemConfig\SystemConfigAwareInterface;
 use ModelFramework\SystemConfig\SystemConfigAwareTrait;
 use ModelFramework\Utility\Arr;
-use Wepo\Model\Status;
 
 class ViewConfigsService implements ViewConfigsServiceInterface, GatewayServiceAwareInterface, SystemConfigAwareInterface
 {
