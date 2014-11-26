@@ -165,6 +165,7 @@ class FormConfigParserService
             $formConfig[ 'fieldsets_configs' ][ $fieldset[ 'name' ] ] = $fieldset;
         }
         $cf = new ConfigForm();
+
         $cf->exchangeArray( $formConfig );
 
         return $cf;
@@ -181,6 +182,7 @@ class FormConfigParserService
         if ( $type == 'lookup' )
         {
             $name .= '_id';
+            $filter[ 'name' ]                     = $name;
             $_lall    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
             $_options = [ ];
             foreach ( $_lall as $_lrow )
