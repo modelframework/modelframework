@@ -10,7 +10,6 @@ namespace ModelFramework\ModelViewBoxService;
 
 use ModelFramework\DataModel\Custom\ViewBoxConfigDataAwareInterface;
 use ModelFramework\DataModel\Custom\ViewBoxConfigDataAwareTrait;
-use ModelFramework\ModelViewService\ModelView;
 use ModelFramework\ModelViewService\ModelViewServiceAwareInterface;
 use ModelFramework\ModelViewService\ModelViewServiceAwareTrait;
 use ModelFramework\ModelViewService\ParamsAwareInterface;
@@ -82,6 +81,7 @@ class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterf
 
         foreach ( $this->getViewBoxConfigDataVerify()->blocks as $blockName => $viewNames )
         {
+            prn( $blockName, $viewNames );
             foreach ( $viewNames as $viewName )
             {
                 $vDoc      = explode( '.', $viewName );
@@ -93,7 +93,7 @@ class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterf
 //
 //                $result = $modelView->getData();
 
-                $viewResults = [ 'data' => [ $blockName => [ $modelView->getData() ] ] ];
+                $viewResults = [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
                 $this->setData( $viewResults );
             }
 
@@ -101,7 +101,7 @@ class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterf
 
         prn( $this->getData() );
 
-        return $this->output();
+        return $this;
 //        return $this;
     }
 
