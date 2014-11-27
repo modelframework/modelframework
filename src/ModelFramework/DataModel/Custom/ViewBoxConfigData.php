@@ -21,6 +21,8 @@ class ViewBoxConfigData extends DataModel
         '_id'      => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
         'document' => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'title'    => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'mode'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'template' => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'blocks'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
     ];
 

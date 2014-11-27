@@ -143,6 +143,7 @@ class ModelView
         $result                = [ ];
         $result[ 'mode' ]      = $viewConfig->mode;
         $result[ 'title' ]     = $viewConfig->title;
+        $result[ 'template' ]  = $viewConfig->template;
         $result[ 'fields' ]    = $this->fields();
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );

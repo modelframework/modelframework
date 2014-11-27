@@ -15,6 +15,7 @@ use ModelFramework\ModelViewService\ModelViewServiceAwareInterface;
 use ModelFramework\ModelViewService\ModelViewServiceAwareTrait;
 use ModelFramework\ModelViewService\ParamsAwareInterface;
 use ModelFramework\ModelViewService\ParamsAwareTrait;
+use Zend\View\Model\ViewModel;
 
 class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterface, ModelViewServiceAwareInterface
 {
@@ -39,36 +40,82 @@ class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterf
         $this->_data = [ ];
     }
 
+    public function setDataFields()
+    {
+        $viewBoxConfig = $this->getViewBoxConfigDataVerify();
+
+        $result           = [ ];
+        $result[ 'data' ] = [ ];
+
+        $result[ 'document' ] = $viewBoxConfig->document;
+        $result[ 'blocks' ]   = $viewBoxConfig->blocks;
+        $result[ 'template' ] = $viewBoxConfig->template;
+        $result[ 'title' ]    = $viewBoxConfig->title;
+        $result[ 'mode' ]     = $viewBoxConfig->mode;
+
+//        $result[ 'fields' ]    = $this->fields();
+//        $result[ 'labels' ]    = $this->labels();
+//        $result[ 'modelname' ] = strtolower( $viewConfig->model );
+//        $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
+//        $result[ 'user' ]      = $this->getUser();
+//        $result[ 'saurlhash' ] = $this->generateLabel();
+//        $result[ 'saurl' ]     = '?back=' . $result[ 'saurlhash' ];
+//        $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
+//        $result[ 'user' ]      = $this->getUser();
+//        $result[ 'actions' ]   = $this->getViewConfigDataVerify()->actions;
+
+        $this->setData( $result );
+    }
+
+    public function init()
+    {
+        $this->setDataFields();
+    }
+
     public function process()
     {
-        // !!!! FIXME !!!!
+        $this->init();
 
+        // !!!! FIXME !!!!
 
         // should i use init ?
 
-        foreach ( $this -> getViewBoxConfigDataVerify()->blocks as $blockName => $viewNames )
+        foreach ( $this->getViewBoxConfigDataVerify()->blocks as $blockName => $viewNames )
         {
             foreach ( $viewNames as $viewName )
             {
-                $vDoc = explode('.', $viewName );
-                $modelView =  $this->getModelViewServiceVerify()->get( $vDoc[0], $vDoc[1] );
-                prn( $modelView );
+                $vDoc      = explode( '.', $viewName );
+                $modelView = $this->getModelViewServiceVerify()->get( $vDoc[ 0 ], $vDoc[ 1 ] );
 
+                prn( $modelView, $modelView->getViewConfigData() );
                 $modelView->setParams( $this->getParamsVerify() );
                 $modelView->process();
-//                if ( $modelView->hasRedirect() )
-//                {
-//                    return $modelView->getRedirect();
-//                }
+//
 //                $result = $modelView->getData();
 
-                $this->setData( [ $blockName => $modelView->getData() ] );
+                $viewResults = [ 'data' => [ $blockName => [ $modelView->getData() ] ] ];
+                $this->setData( $viewResults );
             }
 
         }
 
         prn( $this->getData() );
-        return $this;
+
+        return $this->output();
+//        return $this;
+    }
+
+    public function output()
+    {
+//        if ( $modelView->hasRedirect() )
+//        {
+//            return $modelView->getRedirect();
+//        }
+
+        $data      = $this->getData();
+        $viewModel = new ViewModel( $data );
+
+        return $viewModel->setTemplate( $data[ 'template' ] );
     }
 
 }

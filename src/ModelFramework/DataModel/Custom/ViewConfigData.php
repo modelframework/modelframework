@@ -25,6 +25,7 @@ class ViewConfigData extends DataModel
         'custom'    => [ 'type' => 'field', 'datatype' => 'integer', 'default' => 0 ],
         'model'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'mode'      => [ 'type' => 'field', 'datatype' => 'string', 'default' => 'list' ],
+        'template'  => [ 'type' => 'field', 'datatype' => 'string', 'default' => 'common/index.twig' ],
         'query'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'fields'    => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'params'    => [
@@ -44,6 +45,7 @@ class ViewConfigData extends DataModel
     public $custom = 0;
     public $model = '';
     public $mode = '';
+    public $template = 'common/index.twig';
     public $query = [ ];
     public $fields = [ ];
     public $params = [ ];
