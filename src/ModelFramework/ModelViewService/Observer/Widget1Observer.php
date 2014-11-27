@@ -11,7 +11,7 @@ namespace ModelFramework\ModelViewService\Observer;
 use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\ModelViewService\ModelView;
 
-class WidgetObserver
+class Widget1Observer
     implements \SplObserver
 {
 
@@ -20,38 +20,36 @@ class WidgetObserver
 
         $data = $subject->getData();
 
-//        prn( 'WidgetData', $data,  $subject->getGatewayVerify()->model()->getDataModel() );
+        if ( !isset( $data[ 'model' ] ) )
+        {
+            $id = (string) $subject->getParams()->fromRoute( 'id', 0 );
+            if ( $id != 0 )
+            {
+                $result              = [ ];
+                $result[ 'widgets' ] = [ ];
+                $model               = $subject->getGatewayVerify()->findOne( [ '_id' => $id ] );
 
-//        if ( !isset( $data[ 'model' ] ) )
-//        {
-//            $id = (string) $subject->getParams()->fromRoute( 'id', 0 );
-//            if ( $id != 0 )
-//            {
-//                $result              = [ ];
-//                $result[ 'widgets' ] = [ ];
-//                $model               = $subject->getGatewayVerify()->findOne( [ '_id' => $id ] );
-//
-//                if ( !$model )
-//                {
-//                    throw new \Exception( 'Data not found' );
-//                }
-//                $result[ 'model' ]          = $model;
-//                $result[ 'params' ][ 'id' ] = $id;
-//                $result[ 'title' ]          = $subject->getViewConfigDataVerify()->title . ' ' . $model->title;
-//
-//                $subject->setData( $result );
-//            }
-//            else
-//            {
-//                $model = $subject->getGatewayVerify()->model();
-//            }
-//        }
-//        else
-//        {
-//            $model = $data[ 'model' ];
-//        }
+                if ( !$model )
+                {
+                    throw new \Exception( 'Data not found' );
+                }
+                $result[ 'model' ]          = $model;
+                $result[ 'params' ][ 'id' ] = $id;
+                $result[ 'title' ]          = $subject->getViewConfigDataVerify()->title . ' ' . $model->title;
 
-        $subject->setData( $this->getWidget( $subject, null ) );
+                $subject->setData( $result );
+            }
+            else
+            {
+                $model = $subject->getGatewayVerify()->model();
+            }
+        }
+        else
+        {
+            $model = $data[ 'model' ];
+        }
+
+        $this->widgets( $subject, $model );
 
     }
 
@@ -81,34 +79,33 @@ class WidgetObserver
         $subject->setData( $result );
     }
 
-    public function getWidget( $subject, $inModel )
+    public function getWidget( $subject, $conf, $inModel )
     {
         /**
          * @var ModelView $subject
          */
 
-        $conf = $subject->getData();
+        $conf = $conf->toArray();
 
         if ( $inModel instanceof AclDataModel )
         {
             $inModel = $inModel->getDataModel();
         }
 
-        $where              = $conf[ 'query' ];
-        $model              = $subject->getGatewayServiceVerify()->get( $conf['model'] )->model();
-
+        $modelName          = $conf[ 'data_model' ];
+        $modelConfig        = $subject->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
+        $where              = $conf[ 'where' ];
+        $model              = $subject->getGatewayServiceVerify()->get( $modelName )->model();
         $result             = [ ];
         $result[ 'fields' ] = $conf[ 'fields' ];
         $result[ 'labels' ] = [ ];
-
         foreach ( $conf[ 'fields' ] as $field )
         {
-            if ( isset( $conf[ 'labels' ][ $field ] ) )
+            if ( isset( $modelConfig[ 'labels' ][ $field ] ) )
             {
-                $result[ 'fieldsLabels' ][ $field ] = $conf[ 'labels' ][ $field ];
+                $result[ 'labels' ][ $field ] = $modelConfig[ 'labels' ][ $field ];
             }
         }
-
         foreach ( $where as $_f => $_v )
         {
             if ( is_array( $_v ) )
@@ -146,10 +143,9 @@ class WidgetObserver
                 //
             }
         }
-
-        if ( isset( $conf[ 'actions' ] ) && is_array( $conf[ 'actions' ] ) )
+        if ( isset( $conf[ 'action' ] ) && is_array( $conf[ 'action' ] ) )
         {
-            foreach ( $conf[ 'actions' ] as $action => $config )
+            foreach ( $conf[ 'action' ] as $action => $config )
             {
                 foreach ( [ 'routeparams', 'queryparams' ] as $paramKey )
                 {
@@ -162,12 +158,12 @@ class WidgetObserver
                         }
                     }
                 }
-                $result[ 'actions' ][ $action ] = $config;
+                $result[ 'action' ][ $action ] = $config;
             }
         }
-        if ( isset( $conf[ 'links' ] ) )
+        if ( isset( $conf[ 'model_link' ] ) )
         {
-            foreach ( $conf[ 'links' ] as $modelkey => $link )
+            foreach ( $conf[ 'model_link' ] as $modelkey => $link )
             {
                 foreach ( [ 'routeparams', 'queryparams' ] as $paramKey )
                 {
@@ -184,20 +180,17 @@ class WidgetObserver
                         }
                     }
                 }
-                $result[ 'links' ][ $modelkey ] = $link;
+                $result[ 'model_link' ][ $modelkey ] = $link;
             }
         }
         $result[ 'data' ]  =
-            $subject->getGatewayServiceVerify()->get( $conf['model'] )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
-        $result[ 'model' ] = strtolower( $conf['model'] );
+            $subject->getGatewayServiceVerify()->get( $modelName )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
+        $result[ 'model' ] = strtolower( $modelName );
 
-//        prn( $result['data']->toArray() );
 //        if ( $modelName == 'Document' )
 //        {
 //            prn( $modelName, $where );
 //        }
-
-
         return $result;
     }
 

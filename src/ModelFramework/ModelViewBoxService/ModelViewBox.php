@@ -81,13 +81,13 @@ class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterf
 
         foreach ( $this->getViewBoxConfigDataVerify()->blocks as $blockName => $viewNames )
         {
-            prn( $blockName, $viewNames );
+//            prn( $blockName, $viewNames );
             foreach ( $viewNames as $viewName )
             {
                 $vDoc      = explode( '.', $viewName );
                 $modelView = $this->getModelViewServiceVerify()->get( $vDoc[ 0 ], $vDoc[ 1 ] );
 
-                prn( $modelView, $modelView->getViewConfigData() );
+//                prn( $modelView, $modelView->getViewConfigData() );
                 $modelView->setParams( $this->getParamsVerify() );
                 $modelView->process();
 //
@@ -99,7 +99,7 @@ class ModelViewBox implements ViewBoxConfigDataAwareInterface, ParamsAwareInterf
 
         }
 
-        prn( $this->getData() );
+//        prn( $this->getData() );
 
         return $this;
 //        return $this;

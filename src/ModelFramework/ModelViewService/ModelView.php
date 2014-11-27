@@ -44,7 +44,7 @@ class ModelView
 
     protected $allowed_observers = [
         'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver', 'UserObserver',
-        'WidgetObserver'
+        'WidgetObserver', 'Widget1Observer'
     ];
     protected $observers = [ ];
 
@@ -140,11 +140,10 @@ class ModelView
     public function setDataFields()
     {
         $viewConfig            = $this->getViewConfigDataVerify();
-        $result                = [ ];
-        $result[ 'mode' ]      = $viewConfig->mode;
-        $result[ 'title' ]     = $viewConfig->title;
-        $result[ 'template' ]  = $viewConfig->template;
-        $result[ 'fields' ]    = $this->fields();
+
+
+        $result                = $viewConfig -> toArray( );
+
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
         $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
@@ -152,8 +151,6 @@ class ModelView
         $result[ 'saurlhash' ] = $this->generateLabel();
         $result[ 'saurl' ]     = '?back=' . $result[ 'saurlhash' ];
         $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
-        $result[ 'user' ]      = $this->getUser();
-        $result[ 'actions' ]   = $this->getViewConfigDataVerify()->actions;
 
         $this->setData( $result );
     }
