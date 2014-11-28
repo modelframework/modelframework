@@ -13,7 +13,7 @@ use ModelFramework\DataModel\DataModel;
 class LogicConfigData extends DataModel
 {
 
-    public $_model = 'LogicConfigData';
+    public $_model = 'LogicConfig';
     public $_label = 'Logic Config Data';
     public $_adapter = 'wepo_company';
 

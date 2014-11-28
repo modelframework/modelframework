@@ -2,18 +2,16 @@
 
 namespace ModelFramework\LogicService;
 
-use ModelFramework\BaseService\ServiceLocatorAwareTrait;
-use ModelFramework\DataModel\DataModel;
+use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
+use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\DataModel\Custom\LogicConfigData;
 use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\LogicConfigsService\LogicConfigsServiceAwareInterface;
-use ModelFramework\LogicConfigsService\LogicConfigsServiceAwareTrait;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 class LogicService
-    implements LogicServiceInterface, ServiceLocatorAwareInterface, LogicConfigsServiceAwareInterface
+    implements LogicServiceInterface, ConfigsServiceAwareInterface
 {
 
-    use ServiceLocatorAwareTrait, LogicConfigsServiceAwareTrait;
+    use ConfigsServiceAwareTrait;
 
 //    public function get( $modelName )
 //    {
@@ -36,7 +34,7 @@ class LogicService
         {
             $model = array_shift( $model );
         }
-        if ( $model instanceof DataModel )
+        if ( $model instanceof DataModelInterface )
         {
             $modelName = $model->getModelName();
         }
@@ -44,24 +42,31 @@ class LogicService
         {
             throw new \Exception( 'Event Params must be instance of DataModel' );
         }
-        $dataLogic = $this->get( $modelName );
+        $dataLogic = $this->get( $modelName, $model );
 
-        call_user_func( [ $dataLogic, $event->getName() ], $event );
-        exit;
+        return call_user_func( [ $dataLogic, $event->getName() ], $event );
 //        return call_user_func( [ $dataLogic, $event->getName() ], $event );
     }
 
     /**
-     * @param array|\ModelFramework\DataModel\DataModelInterface $eventName
-     * @param                                                    $model
+     * @param string                   $eventName
+     * @param array|DataModelInterface $model
      *
      * @return DataLogic|void
+     * @throws \Exception
      */
     public function get( $eventName, $model )
     {
         return $this->trigger( $eventName, $model );
     }
 
+    /**
+     * @param string                   $eventName
+     * @param array|DataModelInterface $model
+     *
+     * @return DataLogic|void
+     * @throws \Exception
+     */
     public function trigger( $eventName, $model )
     {
         $oModel = $model;
@@ -75,15 +80,14 @@ class LogicService
             throw new \Exception( 'Event Param must implement DataModelInterface ' );
         }
 
-        $logicConfig = $this->getLogicConfigsServiceVerify()->get( $oModel->getModelName() . '.' . $eventName );
+
+        $logicConfig = $this->getConfigsServiceVerify() -> getByObject( $oModel->getModelName() . '.' . $eventName, new LogicConfigData() );
 
         if ( $logicConfig == null )
         {
             return null;
         }
 
-
-        prn('$logicConfig', $logicConfig );
 //        $dataLogic   = new DataLogic();
 //        $dataLogic->setLogicConfigData( $logicConfig );
 //        $dataLogic->setServiceLocator( $this->getServiceLocator() );
@@ -94,7 +98,6 @@ class LogicService
 //
 //        return $dataLogic;
 
-        $model->title = 'booboo';
     }
 
 }

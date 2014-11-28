@@ -16,6 +16,10 @@ class ListObserver
 
     public function update( \SplSubject $subject )
     {
+
+        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
+            ->getGatewayVerify()->model()->getDataModel() );
+
         $viewConfig = $subject->getViewConfigDataVerify();
         $this->order( $subject );
 //        $result[ 'permission' ]   = 1;
@@ -53,7 +57,7 @@ class ListObserver
         }
         $result[ 'rows' ]   = [ 5, 10, 25, 50, 100 ];
         $result[ 'params' ] = [
-            'data' => lcfirst($viewConfig->model),
+            'data' => lcfirst( $viewConfig->model ),
             'view' => $viewConfig->mode,
             'sort' => $subject->getParams()->fromRoute( 'sort', null ),
             'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )

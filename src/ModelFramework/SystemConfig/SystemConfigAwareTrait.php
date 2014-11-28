@@ -2,8 +2,11 @@
 
 namespace ModelFramework\SystemConfig;
 
+use ModelFramework\Utility\Arr;
+
 trait SystemConfigAwareTrait
 {
+
     /**
      * @var array
      */
@@ -41,7 +44,7 @@ trait SystemConfigAwareTrait
     public function getSystemConfigVerify()
     {
         $_systemConfig = $this->getSystemConfig();
-        if ( $_systemConfig == null || ! is_array( $_systemConfig )  )
+        if ( $_systemConfig == null || !is_array( $_systemConfig ) )
         {
             throw new \Exception( 'System config array does not set in the SystemConfigAware instance of ' .
                                   get_class( $this ) );
@@ -57,12 +60,48 @@ trait SystemConfigAwareTrait
      */
     public function getConfigPart( $type )
     {
-        $_systemConfig = $this->getSystemConfigVerify();
-        if ( !isset($_systemConfig[ $type ] ))
+        return Arr::getDoubtField( $this->getSystemConfigVerify(), $type, [ ] );
+    }
+
+    /**
+     * @param string $domain
+     * @param string $key
+     *
+     * @return array
+     */
+    public function getConfigDomainPart( $domain, $key, $subKey = null )
+    {
+        $domainConfig = Arr::getDoubtField( $this->getConfigPart( $domain ), $key, [ ] );
+
+        if ( $subKey !== null )
         {
-            return [];
+            $domainConfig = Arr::getDoubtField( $domainConfig, $subKey, [ ] );
         }
-        return $_systemConfig[ $type ];
+
+        return $domainConfig;
+
+    }
+
+    /**
+     * @param string $domain
+     * @param string $key
+     *
+     * @return array
+     */
+    public function getConfigDomainSystem( $domain, $key = null )
+    {
+        return $this->getConfigDomainPart( $domain, 'system', $key );
+    }
+
+    /**
+     * @param string $domain
+     * @param string $key
+     *
+     * @return array
+     */
+    public function getConfigDomainCustom( $domain, $key = null )
+    {
+        return $this->getConfigDomainPart( $domain, 'custom', $key );
     }
 
 }
