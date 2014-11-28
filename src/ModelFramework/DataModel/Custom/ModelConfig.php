@@ -10,10 +10,10 @@ use ModelFramework\DataModel\DataModel;
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
-class ConfigData extends DataModel
+class ModelConfig extends DataModel
 {
-    public $_model = 'ConfigData';
-    public $_label = 'Config Data';
+    public $_model = 'ModelConfig';
+    public $_label = 'Model Config';
     public $_adapter = 'wepo_company';
 
     public $_fields = [

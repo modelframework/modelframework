@@ -13,15 +13,13 @@ use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\ConfigForm;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
 
 class FormConfigParserService
-    implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface,
+    implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface,
                GatewayServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait, GatewayServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, GatewayServiceAwareTrait;
 
     protected $_utilityFieldsetsConfigs = [
         'ButtonFieldset' => [

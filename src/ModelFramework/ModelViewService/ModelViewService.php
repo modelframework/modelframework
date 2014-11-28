@@ -11,8 +11,11 @@ use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
+use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
 use ModelFramework\DataMappingService\DataMappingServiceAwareInterface;
 use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
+use ModelFramework\DataModel\Custom\ViewBoxConfigDataAwareInterface;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
@@ -23,6 +26,7 @@ use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareTrait;
+use ModelFramework\ViewBoxConfigsService\ViewBoxConfigsServiceAwareTrait;
 use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareInterface;
 use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 
@@ -74,6 +78,7 @@ class ModelViewService
         $modelView->setLogicService( $this->getLogicServiceVerify() );
 
         // we want modelView get to know what to show and how
+//        $viewConfigData = $this->getConfigsServiceVerify()->get( 'ViewConfig', $modelName, new ViewConfig() );
         $viewConfigData = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
         $modelView->setViewConfigData( $viewConfigData );
 

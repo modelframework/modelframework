@@ -10,7 +10,7 @@ use ModelFramework\DataModel\DataModel;
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
-class LogicConfigData extends DataModel
+class LogicConfig extends DataModel
 {
 
     public $_model = 'LogicConfig';

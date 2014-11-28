@@ -12,6 +12,9 @@ use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
+use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\DataModel\Custom\ModelConfig;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
@@ -21,17 +24,15 @@ use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
 use Wepo\Lib\Acl;
 
-class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface,
+class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ConfigsServiceAwareInterface,
                              ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
                              GatewayServiceAwareInterface, AuthServiceAwareInterface,
                              FormConfigParserServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
+    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ConfigsServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
 
     /**
      * @param DataModelInterface $model
@@ -76,7 +77,8 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     {
         $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
-        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
+        $cd = $this->getConfigsServiceVerify()->get( 'ModelConfig', $model->getModelName(), new ModelConfig() );
+//        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
 
         $allowedFields = [ ];
         foreach ( $cd->fields as $k => $v )

@@ -8,17 +8,18 @@
 
 namespace ModelFramework\ModelConfigParserService;
 
+use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
+use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\DataModel\Custom\ModelConfig;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareInterface;
-use ModelFramework\ModelConfigsService\ModelConfigsServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ConfigData;
 
 class ModelConfigParserService
-    implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ModelConfigsServiceAwareInterface
+    implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ConfigsServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, ModelConfigsServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, ConfigsServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -27,17 +28,18 @@ class ModelConfigParserService
      */
     public function getModelConfig( $modelName )
     {
-        $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
+        $cd = $this->getConfigsServiceVerify()->get( 'ModelConfig', $modelName, new ModelConfig() );
+//        $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
 
         return $this->pullModelConfig( $cd );
     }
 
     /**
-     * @param ConfigData $cm
+     * @param ModelConfig $cm
      *
      * @return array
      */
-    public function pullModelConfig( ConfigData $cm )
+    public function pullModelConfig( ModelConfig $cm )
     {
         $start_config = [
             'fields'    => [ ],
