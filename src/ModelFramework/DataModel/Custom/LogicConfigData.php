@@ -18,13 +18,13 @@ class LogicConfigData extends DataModel
     public $_adapter = 'wepo_company';
 
     public $_fields = [
-        '_id'   => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
-        'model' => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
-        'rules' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        '_id'       => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
+        'key'       => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'observers' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
     ];
 
     public $_id = '';
-    public $model = '';
-    public $rules = [ ];
+    public $key = '';
+    public $observers = [ ];
 
 }

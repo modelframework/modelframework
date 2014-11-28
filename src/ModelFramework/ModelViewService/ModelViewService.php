@@ -16,6 +16,8 @@ use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
+use ModelFramework\LogicService\LogicServiceAwareInterface;
+use ModelFramework\LogicService\LogicServiceAwareTrait;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
@@ -27,10 +29,10 @@ use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 class ModelViewService
     implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface,
-               FormServiceAwareInterface, DataMappingServiceAwareInterface, AuthServiceAwareInterface
+               FormServiceAwareInterface, DataMappingServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface
 {
 
-    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait;
+    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -69,6 +71,7 @@ class ModelViewService
         $modelView = new ModelView();
 
         $modelView->setAuthService( $this->getAuthServiceVerify() );
+        $modelView->setLogicService( $this->getLogicServiceVerify() );
 
         // we want modelView get to know what to show and how
         $viewConfigData = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );

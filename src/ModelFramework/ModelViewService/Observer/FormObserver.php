@@ -74,7 +74,11 @@ class FormObserver implements \SplObserver
                 $model->merge( $model_data );
                 $model->merge( $old_data );
 
-                $subject->getParams()->getController()->trigger( 'presave', $model->getDataModel() );
+                $subject->getLogicServiceVerify()->trigger( 'preinsert', $model->getDataModel() );
+                prn( $model->getDataModel() );
+//                exit();
+
+//                $subject->getParams()->getController()->trigger( 'presave', $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     try
@@ -86,9 +90,12 @@ class FormObserver implements \SplObserver
                         $results[ 'message' ] = 'Invalid input data.' . $ex->getMessage();
                     }
                 }
+
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
-                    $subject->getParams()->getController()->trigger( 'postsave', $model->getDataModel() );
+                    $subject->getLogicServiceVerify()->trigger( 'postinsert', $model->getDataModel() );
+//                    $subject->getParams()->getController()->trigger( 'postsave', $model->getDataModel() );
+
                     $url = $subject->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {

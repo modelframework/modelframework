@@ -8,6 +8,7 @@
 
 namespace ModelFramework\LogicConfigsService;
 
+use ModelFramework\DataModel\Custom\ConfigData;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\DataModel\Custom\LogicConfigData;
@@ -38,43 +39,45 @@ class LogicConfigsService implements LogicConfigsServiceInterface, GatewayServic
     }
 
     /**
-     * @param string $modelName
+     * @param string $keyName
      *
-     * @return ConfigData|\ModelFramework\DataModel\DataModelInterface
+     * @return null|ConfigData|\ModelFramework\DataModel\DataModelInterface
      * @throws \Exception
      */
-    protected function getConfigFromDb( $modelName )
+    protected function getConfigFromDb( $keyName )
     {
-        $configData = $this->getGatewayServiceVerify()->get( 'LogicData', new LogicConfigData() )
-                           ->findOne( [ 'model' => $modelName ] );
+        $configData =  new LogicConfigData();
+        $configData = $this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData )
+                           ->findOne( [ 'key' => $keyName ] );
         if ( $configData == null )
         {
-            $configArray = Arr::getDoubtField( $this->getCustomLogicConfig(), $modelName, null );
+            $configArray = Arr::getDoubtField( $this->getCustomLogicConfig(), $keyName, null );
             if ( $configArray == null )
             {
-                throw new \Exception( ' unknown config for model ' . $modelName );
+                return null;
+//                throw new \Exception( ' unknown config for model ' . $keyName );
             }
-            $configData = new LogicConfigData( $configArray );
+//            $configData = new LogicConfigData( $configArray );
 //            $configData->exchangeArray( $configArray );
-//            $this->getGatewayServiceVerify()->get( 'ConfigData', $configData )->save( $configData );
+//            $this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData )->save( $configData );
         }
 
         return $configData;
     }
 
     /**
-     * @param string $modelName
+     * @param string $keyName
      *
-     * @return Config
+     * @return ConfigData
      * @throws \Exception
      */
-    public function getLogicConfig( $modelName )
+    public function getLogicConfig( $keyName )
     {
-        $configArray = Arr::getDoubtField( $this->getSystemLogicConfig(), $modelName, null );
+        $configArray = Arr::getDoubtField( $this->getSystemLogicConfig(), $keyName, null );
 
         if ( $configArray == null )
         {
-            $configData = $this->getConfigFromDb( $modelName );
+            $configData = $this->getConfigFromDb( $keyName );
         }
         else
         {
@@ -84,7 +87,8 @@ class LogicConfigsService implements LogicConfigsServiceInterface, GatewayServic
 
         if ( $configData == null )
         {
-            throw new \Exception( 'Can\'t find configuration for the ' . $modelName . 'model' );
+            return null;
+//            throw new \Exception( 'Can\'t find configuration for the ' . $keyName . 'model' );
         }
 
         return $configData;

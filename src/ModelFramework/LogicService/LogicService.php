@@ -3,6 +3,8 @@
 namespace ModelFramework\LogicService;
 
 use ModelFramework\BaseService\ServiceLocatorAwareTrait;
+use ModelFramework\DataModel\DataModel;
+use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\LogicConfigsService\LogicConfigsServiceAwareInterface;
 use ModelFramework\LogicConfigsService\LogicConfigsServiceAwareTrait;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
@@ -13,37 +15,86 @@ class LogicService
 
     use ServiceLocatorAwareTrait, LogicConfigsServiceAwareTrait;
 
-    protected $_logics = [ 'default' => '\ModelFramework\LogicService\DataLogic' ];
-
-    public function get( $model )
-    {
-
-        $logicName = ucfirst( $model->_model );
-        $logic     = '\Wepo\Model\Logic\\' . $logicName;
-
-        if ( !class_exists( $logic ) )
-        {
-            $this->_logics[ $logicName ] = $this->_logics[ 'default' ];
-        }
-        else
-        {
-            $this->_logics[ $logicName ] = $logic;
-        }
-
-        $dataLogic = new $this->_logics[ $logicName ]( $logicName );
-
-        $dataLogic->setServiceLocator( $this->getServiceLocator() );
-        $dataLogic->setModelService( $this->getServiceLocator()->get( 'ModelFramework\ModelService' ) );
-        $dataLogic->setGatewayService( $this->getServiceLocator()->get( 'ModelFramework\GatewayService' ) );
-        $dataLogic->setModelConfigParserService( $this->getServiceLocator()
-                                                      ->get( 'ModelFramework\ModelConfigParserService' ) );
-
-        return $dataLogic;
-    }
+//    public function get( $modelName )
+//    {
+//        $logicConfig = $this->getLogicConfigsServiceVerify()->get( $modelName );
+//        $dataLogic   = new DataLogic();
+//        $dataLogic->setLogicConfigData( $logicConfig );
+//        $dataLogic->setServiceLocator( $this->getServiceLocator() );
+//        $dataLogic->setModelService( $this->getServiceLocator()->get( 'ModelFramework\ModelService' ) );
+//        $dataLogic->setGatewayService( $this->getServiceLocator()->get( 'ModelFramework\GatewayService' ) );
+//        $dataLogic->setModelConfigParserService( $this->getServiceLocator()
+//                                                      ->get( 'ModelFramework\ModelConfigParserService' ) );
+//
+//        return $dataLogic;
+//    }
 
     public function dispatch( $event )
     {
-        return call_user_func( [ $this->get( $event->getParams() ), $event->getName() ], $event );
+        $model = $event->getParams();
+        if ( is_array( $model ) )
+        {
+            $model = array_shift( $model );
+        }
+        if ( $model instanceof DataModel )
+        {
+            $modelName = $model->getModelName();
+        }
+        else
+        {
+            throw new \Exception( 'Event Params must be instance of DataModel' );
+        }
+        $dataLogic = $this->get( $modelName );
+
+        call_user_func( [ $dataLogic, $event->getName() ], $event );
+        exit;
+//        return call_user_func( [ $dataLogic, $event->getName() ], $event );
+    }
+
+    /**
+     * @param array|\ModelFramework\DataModel\DataModelInterface $eventName
+     * @param                                                    $model
+     *
+     * @return DataLogic|void
+     */
+    public function get( $eventName, $model )
+    {
+        return $this->trigger( $eventName, $model );
+    }
+
+    public function trigger( $eventName, $model )
+    {
+        $oModel = $model;
+        if ( is_array( $model ) )
+        {
+            $oModel = reset( $model );
+        }
+
+        if ( !$oModel instanceof DataModelInterface )
+        {
+            throw new \Exception( 'Event Param must implement DataModelInterface ' );
+        }
+
+        $logicConfig = $this->getLogicConfigsServiceVerify()->get( $oModel->getModelName() . '.' . $eventName );
+
+        if ( $logicConfig == null )
+        {
+            return null;
+        }
+
+
+        prn('$logicConfig', $logicConfig );
+//        $dataLogic   = new DataLogic();
+//        $dataLogic->setLogicConfigData( $logicConfig );
+//        $dataLogic->setServiceLocator( $this->getServiceLocator() );
+//        $dataLogic->setModelService( $this->getServiceLocator()->get( 'ModelFramework\ModelService' ) );
+//        $dataLogic->setGatewayService( $this->getServiceLocator()->get( 'ModelFramework\GatewayService' ) );
+//        $dataLogic->setModelConfigParserService( $this->getServiceLocator()
+//                                                      ->get( 'ModelFramework\ModelConfigParserService' ) );
+//
+//        return $dataLogic;
+
+        $model->title = 'booboo';
     }
 
 }

@@ -21,6 +21,8 @@ use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
+use ModelFramework\LogicService\LogicServiceAwareInterface;
+use ModelFramework\LogicService\LogicServiceAwareTrait;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
@@ -34,10 +36,10 @@ class ModelView
     implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
                ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface,
-               DataMappingServiceAwareInterface, AuthServiceAwareInterface, \SplSubject
+               DataMappingServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait;
+    use ViewConfigDataAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;

@@ -9,16 +9,19 @@ interface LogicServiceInterface
 {
 
     /**
+     * @param string $eventName
      * @param array|DataModelInterface $model
      *
      * @return DataLogic
      */
-    public function get( $model );
+    public function get( $eventName, $model );
 
     /**
-     * @param $event
+     * @param string $eventName
+     * @param array|DataModelInterface $model
      *
-     * @return mixed
+     * @return DataLogic
      */
-    public function dispatch( $event );
+    public function trigger( $eventName, $model );
+
 }
