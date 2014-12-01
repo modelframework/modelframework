@@ -66,8 +66,9 @@ trait SystemConfigAwareTrait
     /**
      * @param string $domain
      * @param string $key
+     * @param null $subKey
      *
-     * @return array
+     * @return null
      */
     public function getConfigDomainPart( $domain, $key, $subKey = null )
     {
