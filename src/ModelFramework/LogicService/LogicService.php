@@ -81,16 +81,17 @@ class LogicService
             throw new \Exception( 'Event Param must implement DataModelInterface ' );
         }
 
-
-        $logicConfig = $this->getConfigServiceVerify() -> getByObject( $oModel->getModelName() . '.' . $eventName, new LogicConfig() );
+        $logicConfig = $this->getConfigServiceVerify()->getByObject( $oModel->getModelName() . '.' . $eventName,
+                                                                     new LogicConfig() );
 
         if ( $logicConfig == null )
         {
             return null;
         }
 
-//        $dataLogic   = new DataLogic();
-//        $dataLogic->setLogicConfigData( $logicConfig );
+        $dataLogic = new DataLogic();
+        $dataLogic->setLogicConfig( $logicConfig );
+        $dataLogic->process();
 //        $dataLogic->setServiceLocator( $this->getServiceLocator() );
 //        $dataLogic->setModelService( $this->getServiceLocator()->get( 'ModelFramework\ModelService' ) );
 //        $dataLogic->setGatewayService( $this->getServiceLocator()->get( 'ModelFramework\GatewayService' ) );
