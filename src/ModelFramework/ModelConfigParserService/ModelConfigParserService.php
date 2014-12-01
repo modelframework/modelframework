@@ -8,18 +8,18 @@
 
 namespace ModelFramework\ModelConfigParserService;
 
-use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
-use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ModelConfig;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ConfigData;
 
 class ModelConfigParserService
-    implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ConfigsServiceAwareInterface
+    implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ConfigServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, ConfigsServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, ConfigServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -28,7 +28,7 @@ class ModelConfigParserService
      */
     public function getModelConfig( $modelName )
     {
-        $cd = $this->getConfigsServiceVerify()->get( 'ModelConfig', $modelName, new ModelConfig() );
+        $cd = $this->getConfigServiceVerify()->get( 'ModelConfig', $modelName, new ModelConfig() );
 //        $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
 
         return $this->pullModelConfig( $cd );

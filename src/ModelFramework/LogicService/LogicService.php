@@ -2,17 +2,17 @@
 
 namespace ModelFramework\LogicService;
 
-use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
-use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\Custom\LogicConfig;
 use ModelFramework\DataModel\Custom\LogicConfigData;
 use ModelFramework\DataModel\DataModelInterface;
 
 class LogicService
-    implements LogicServiceInterface, ConfigsServiceAwareInterface
+    implements LogicServiceInterface, ConfigServiceAwareInterface
 {
 
-    use ConfigsServiceAwareTrait;
+    use ConfigServiceAwareTrait;
 
 //    public function get( $modelName )
 //    {
@@ -82,7 +82,7 @@ class LogicService
         }
 
 
-        $logicConfig = $this->getConfigsServiceVerify() -> getByObject( $oModel->getModelName() . '.' . $eventName, new LogicConfig() );
+        $logicConfig = $this->getConfigServiceVerify() -> getByObject( $oModel->getModelName() . '.' . $eventName, new LogicConfig() );
 
         if ( $logicConfig == null )
         {

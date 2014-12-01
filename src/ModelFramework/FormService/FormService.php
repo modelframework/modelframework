@@ -12,8 +12,8 @@ use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
-use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
-use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ModelConfig;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
@@ -26,13 +26,13 @@ use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterfa
 use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use Wepo\Lib\Acl;
 
-class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ConfigsServiceAwareInterface,
+class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ConfigServiceAwareInterface,
                              ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
                              GatewayServiceAwareInterface, AuthServiceAwareInterface,
                              FormConfigParserServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ConfigsServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
+    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ConfigServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
 
     /**
      * @param DataModelInterface $model
@@ -77,7 +77,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     {
         $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
-        $cd = $this->getConfigsServiceVerify()->get( 'ModelConfig', $model->getModelName(), new ModelConfig() );
+        $cd = $this->getConfigServiceVerify()->get( 'ModelConfig', $model->getModelName(), new ModelConfig() );
 //        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
 
         $allowedFields = [ ];

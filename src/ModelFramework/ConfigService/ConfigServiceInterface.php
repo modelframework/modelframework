@@ -1,16 +1,16 @@
 <?php
 /**
- * Class ConfigsServiceInterface
- * @package ModelFramework\ConfigsService
+ * Class ConfigServiceInterface
+ * @package ModelFramework\ConfigService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\ConfigsService;
+namespace ModelFramework\ConfigService;
 
 use ModelFramework\DataModel\DataModelInterface;
 
-interface ConfigsServiceInterface
+interface ConfigServiceInterface
 {
 
     /**

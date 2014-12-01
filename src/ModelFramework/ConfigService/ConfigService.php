@@ -1,12 +1,12 @@
 <?php
 /**
- * Class ConfigsService
- * @package ModelFramework\ConfigsService
+ * Class ConfigService
+ * @package ModelFramework\ConfigService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\ConfigsService;
+namespace ModelFramework\ConfigService;
 
 use ModelFramework\DataModel\Custom\ConfigData;
 use ModelFramework\DataModel\DataModelInterface;
@@ -17,7 +17,7 @@ use ModelFramework\SystemConfig\SystemConfigAwareInterface;
 use ModelFramework\SystemConfig\SystemConfigAwareTrait;
 use ModelFramework\Utility\Arr;
 
-class ConfigsService implements ConfigsServiceInterface, GatewayServiceAwareInterface, SystemConfigAwareInterface
+class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterface, SystemConfigAwareInterface
 {
 
     use GatewayServiceAwareTrait, SystemConfigAwareTrait;
