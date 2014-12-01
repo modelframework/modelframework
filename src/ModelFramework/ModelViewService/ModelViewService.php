@@ -11,8 +11,8 @@ use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
-use ModelFramework\ConfigsService\ConfigsServiceAwareInterface;
-use ModelFramework\ConfigsService\ConfigsServiceAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataMappingService\DataMappingServiceAwareInterface;
 use ModelFramework\DataMappingService\DataMappingServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ViewBoxConfigDataAwareInterface;
@@ -27,16 +27,14 @@ use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareTrait;
 use ModelFramework\ViewBoxConfigsService\ViewBoxConfigsServiceAwareTrait;
-use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareInterface;
-use ModelFramework\ViewConfigsService\ViewConfigsServiceAwareTrait;
 
 class ModelViewService
-    implements ModelViewServiceInterface, ViewConfigsServiceAwareInterface, ModelConfigParserServiceAwareInterface,
+    implements ModelViewServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface,
                FormServiceAwareInterface, DataMappingServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface
 {
 
-    use ViewConfigsServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait;
+    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, DataMappingServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -78,9 +76,9 @@ class ModelViewService
         $modelView->setLogicService( $this->getLogicServiceVerify() );
 
         // we want modelView get to know what to show and how
-//        $viewConfigData = $this->getConfigsServiceVerify()->get( 'ViewConfig', $modelName, new ViewConfig() );
-        $viewConfigData = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
-        $modelView->setViewConfigData( $viewConfigData );
+        $viewConfig = $this->getConfigsServiceVerify()->get( 'ViewConfig', $modelName, new ViewConfig() );
+//      $viewConfig = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
+        $modelView->setViewConfig( $viewConfig );
 
         // config parser service
         $modelView->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );

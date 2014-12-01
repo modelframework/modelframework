@@ -33,7 +33,7 @@ use Wepo\Model\Table;
 use Zend\View\Model\ViewModel;
 
 class ModelView
-    implements ModelViewInterface, ViewConfigDataAwareInterface, ModelConfigAwareInterface,
+    implements ModelViewInterface, ViewConfigAwa, ModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
                ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface,
                DataMappingServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface, \SplSubject

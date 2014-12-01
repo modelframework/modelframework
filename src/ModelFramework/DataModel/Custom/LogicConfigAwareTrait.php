@@ -1,6 +1,6 @@
 <?php
 /**
- * Class LogicConfigDataAwareTrait
+ * Class LogicConfigAwareTrait
  * @package ModelFramework\DataModel\Custom
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -8,41 +8,41 @@
 
 namespace ModelFramework\DataModel\Custom;
 
-trait LogicConfigDataAwareTrait
+trait LogicConfigAwareTrait
 {
 
     /**
-     * @var LogicConfigData
+     * @var LogicConfig
      */
     private $_logicConfig = null;
 
     /**
-     * @param LogicConfigData $logicConfig
+     * @param LogicConfig $logicConfig
      *
      * @return $this
      */
-    public function setLogicConfigData( LogicConfigData $logicConfig )
+    public function setLogicConfig( LogicConfig $logicConfig )
     {
         $this->_logicConfig = $logicConfig;
     }
 
     /**
-     * @return LogicConfigData
+     * @return LogicConfig
      *
      */
-    public function getLogicConfigData()
+    public function getLogicConfig()
     {
         return $this->_logicConfig;
     }
 
     /**
-     * @return LogicConfigData
+     * @return LogicConfig
      * @throws \Exception
      */
-    public function getLogicConfigDataVerify()
+    public function getLogicConfigVerify()
     {
-        $logicConfig = $this->getLogicConfigData();
-        if ( $logicConfig == null || !$logicConfig instanceof LogicConfigData )
+        $logicConfig = $this->getLogicConfig();
+        if ( $logicConfig == null || !$logicConfig instanceof LogicConfig )
         {
             throw new \Exception( 'Logic Config Data does not set set in DataLogic' );
         }
