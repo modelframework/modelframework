@@ -9,12 +9,12 @@
 
 namespace ModelFramework\FieldTypesService;
 
-use ModelFramework\SystemConfig\SystemConfigAwareInterface;
-use ModelFramework\SystemConfig\SystemConfigAwareTrait;
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
 
-class FiledTypesService implements FieldTypesServiceInterface, SystemConfigAwareInterface
+class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterface
 {
-    use SystemConfigAwareTrait;
+    use ConfigAwareTrait;
 
     /**
      * @param string $type
@@ -25,13 +25,16 @@ class FiledTypesService implements FieldTypesServiceInterface, SystemConfigAware
      */
     public function getFieldPart( $type, $part )
     {
-        $_config = $this->getConfigPart( $type );
-        if ( !isset( $_config[ $part ] ) )
-        {
-            throw new \Exception( 'Unknown type "' . $type . '" for ' .  $part );
-        }
 
-        return $_config[ $part ];
+        return $this->getConfigDomainPart( 'fieldTypes', $type, $part );
+
+//        $_config = $this->getConfigPart( $type );
+//        if ( !isset( $_config[ $part ] ) )
+//        {
+//            throw new \Exception( 'Unknown type "' . $type . '" for ' .  $part );
+//        }
+//
+//        return $_config[ $part ];
     }
 
 

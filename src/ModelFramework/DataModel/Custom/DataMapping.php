@@ -19,6 +19,7 @@ class DataMapping extends DataModel
 
     public $_fields = [
         '_id'     => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
+        'key'    => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'name'    => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'source'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'targets' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
@@ -27,6 +28,7 @@ class DataMapping extends DataModel
     public $_unique = [ 'model' ];
 
     public $_id = '';
+    public $key = '';
     public $name = '';
     public $source = '';
     public $targets = [ ];

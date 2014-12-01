@@ -13,14 +13,12 @@ use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\DataModel\Custom\LogicConfigData;
-use ModelFramework\SystemConfig\SystemConfigAwareInterface;
-use ModelFramework\SystemConfig\SystemConfigAwareTrait;
 use ModelFramework\Utility\Arr;
 
-class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterface, SystemConfigAwareInterface
+class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterface, ConfigAwareInterface
 {
 
-    use GatewayServiceAwareTrait, SystemConfigAwareTrait;
+    use GatewayServiceAwareTrait, ConfigAwareTrait;
 
 
     /**
@@ -46,6 +44,7 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
             }
             $configData = clone $configObject;
             $configData->exchangeArray( $configArray );
+            $configData->key = $keyName;
 //            $this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData )->save( $configData );
         }
 
