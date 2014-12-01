@@ -43,16 +43,18 @@ interface SystemConfigAwareInterface {
 
     /**
      * @param string $domain
+     * @param string $key
      *
      * @return array
      */
-    public function getConfigDomainSystem( $domain );
+    public function getConfigDomainSystem( $domain, $key = null );
 
     /**
      * @param string $domain
+     * @param string $key
      *
      * @return array
      */
-    public function getConfigDomainCustom($domain);
+    public function getConfigDomainCustom( $domain, $key = null );
 
 }
