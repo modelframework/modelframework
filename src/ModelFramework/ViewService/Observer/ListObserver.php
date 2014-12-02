@@ -16,10 +16,6 @@ class ListObserver
 
     public function update( \SplSubject $subject )
     {
-
-        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
-            ->getGatewayVerify()->model()->getDataModel() );
-
         $viewConfig = $subject->getViewConfigVerify();
         $this->order( $subject );
 //        $result[ 'permission' ]   = 1;
@@ -55,6 +51,17 @@ class ListObserver
             $result[ 'paginator' ]->setCurrentPageNumber( $subject->getParam( 'page', 1 ) )
                                   ->setItemCountPerPage( $viewConfig->rows );
         }
+
+
+//        prn($result['paginator']->getCurrentItems());
+        $subject->getLogicServiceVerify()->trigger( 'prelist', $result['paginator']->getCurrentItems() );
+
+
+//        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
+//            ->getGatewayVerify()->model()->getDataModel() );
+
+
+
         $result[ 'rows' ]   = [ 5, 10, 25, 50, 100 ];
         $result[ 'params' ] = [
             'data' => lcfirst( $viewConfig->model ),

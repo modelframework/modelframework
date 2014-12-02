@@ -22,11 +22,16 @@ class ViewObserver
         {
             throw new \Exception( 'Data not found' );
         }
+
+        $subject->getLogicServiceVerify()->trigger( 'preview', $model );
+
         $result[ 'model' ]          = $model;
         $result[ 'params' ][ 'id' ] = $id;
         $result[ 'title' ]          = $subject->getViewConfigVerify()->title . ' ' . $model->title;
 //        $this->widgets( $subject, $model );
         $subject->setData( $result );
+
+        $subject->getLogicServiceVerify()->trigger( 'postview', $model );
     }
 
 }

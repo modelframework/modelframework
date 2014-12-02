@@ -20,6 +20,7 @@ class LogicConfig extends DataModel
     public $_fields = [
         '_id'       => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
         'key'       => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'model'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'observers' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
     ];
 

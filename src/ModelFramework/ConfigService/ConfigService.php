@@ -51,6 +51,24 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
         return $configData;
     }
 
+
+    /**
+     * @param DataModelInterface $configObject
+     *
+     * @return array|bool|int|mixed
+     * @throws \Exception
+     */
+    public function saveByObject( DataModelInterface $configObject )
+    {
+        if ( ! isset($configObject->key ) )
+        {
+            throw new \Exception( '"key" field must be set in ' . $configObject ->getModelName() . ' configuration' );
+        }
+        return $this->getGatewayServiceVerify()
+                    ->get( $configObject->getModelName(), $configObject )
+                    ->save( $configObject );
+    }
+
     /**
      * @param string             $domain
      * @param string             $keyName

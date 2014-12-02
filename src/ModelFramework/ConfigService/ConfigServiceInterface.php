@@ -42,4 +42,11 @@ interface ConfigServiceInterface
      */
     public function getByObject( $keyName, DataModelInterface $configObject );
 
+    /**
+     * @param DataModelInterface $configObject
+     *
+     * @return array|bool|int|mixed
+     * @throws \Exception
+     */
+    public function saveByObject( DataModelInterface $configObject );
 }

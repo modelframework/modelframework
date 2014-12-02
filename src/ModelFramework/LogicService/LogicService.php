@@ -1,4 +1,10 @@
 <?php
+/**
+ * Class LogicService
+ * @package ModelFramework\LogicService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
+ */
 
 namespace ModelFramework\LogicService;
 
@@ -7,12 +13,17 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\Custom\LogicConfig;
 use ModelFramework\DataModel\Custom\LogicConfigData;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareTrait;
+use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use Zend\Db\ResultSet\ResultSetInterface;
 
 class LogicService
-    implements LogicServiceInterface, ConfigServiceAwareInterface
+    implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface, GatewayServiceAwareInterface
 {
 
-    use ConfigServiceAwareTrait;
+    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait;
 
 //    public function get( $modelName )
 //    {
@@ -51,52 +62,54 @@ class LogicService
 
     /**
      * @param string                   $eventName
-     * @param array|DataModelInterface $model
+     * @param array|DataModelInterface $eventObject
      *
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function get( $eventName, $model )
+    public function get( $eventName, $eventObject )
     {
-        return $this->trigger( $eventName, $model );
+        return $this->trigger( $eventName, $eventObject );
     }
 
     /**
      * @param string                   $eventName
-     * @param array|DataModelInterface $model
+     * @param array|DataModelInterface $eventObject
      *
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function trigger( $eventName, $model )
+    public function trigger( $eventName, $eventObject )
     {
-        $oModel = $model;
-        if ( is_array( $model ) )
+        $model = $eventObject;
+        if ( is_array( $eventObject ) )
         {
-            $oModel = reset( $model );
+            $model = reset( $eventObject );
         }
-
-        if ( !$oModel instanceof DataModelInterface )
+        if ( $eventObject instanceof ResultSetInterface )
+        {
+            $model = $eventObject->getArrayObjectPrototype();
+        }
+        if ( !$model instanceof DataModelInterface )
         {
             throw new \Exception( 'Event Param must implement DataModelInterface ' );
         }
-
-        $logicConfig = $this->getConfigServiceVerify()->getByObject( $oModel->getModelName() . '.' . $eventName,
+        $logicConfig = $this->getConfigServiceVerify()->getByObject( $model->getModelName() . '.' . $eventName,
                                                                      new LogicConfig() );
-
         if ( $logicConfig == null )
         {
             return null;
         }
-
-        $dataLogic = new DataLogic();
-        $dataLogic->setLogicConfig( $logicConfig );
-        $dataLogic->process();
+        $logic = new Logic();
+        $logic->setLogicConfig( $logicConfig );
+        $logic->setEventObject( $eventObject );
+        $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
+        $logic->setGatewayService( $this->getGatewayServiceVerify() );
+        $logic->init();
+        $logic->process();
 //        $dataLogic->setServiceLocator( $this->getServiceLocator() );
 //        $dataLogic->setModelService( $this->getServiceLocator()->get( 'ModelFramework\ModelService' ) );
-//        $dataLogic->setGatewayService( $this->getServiceLocator()->get( 'ModelFramework\GatewayService' ) );
-//        $dataLogic->setModelConfigParserService( $this->getServiceLocator()
-//                                                      ->get( 'ModelFramework\ModelConfigParserService' ) );
+
 //
 //        return $dataLogic;
 

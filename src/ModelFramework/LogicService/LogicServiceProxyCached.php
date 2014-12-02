@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 15.07.14
- * Time: 20:41
+ * Class LogicServiceProxyCached
+ * @package ModelFramework\LogicService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\LogicService;
@@ -19,7 +19,7 @@ class LogicServiceProxyCached
     use LogicServiceAwareTrait, CacheServiceAwareTrait;
 
     /**
-     * @param string $eventName
+     * @param string                   $eventName
      * @param array|DataModelInterface $model
      *
      * @return DataLogic
@@ -30,14 +30,15 @@ class LogicServiceProxyCached
     }
 
     /**
-     * @param string $eventName
+     * @param string                   $eventName
      * @param array|DataModelInterface $model
      *
      * @return DataLogic
      */
     public function trigger( $eventName, $model )
     {
-        return $this->getCacheService()->getCachedObjMethod( $this->getLogicService(), 'trigger', [ $eventName, $model ] );
+        return $this->getCacheService()
+                    ->getCachedObjMethod( $this->getLogicService(), 'trigger', [ $eventName, $model ] );
     }
 
     /**

@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 15.07.14
- * Time: 19:48
+ * Class LogicServiceAwareInterface
+ * @package ModelFramework\LogicService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\LogicService;
