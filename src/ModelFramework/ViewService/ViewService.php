@@ -70,7 +70,6 @@ class ViewService
         $view->setLogicService( $this->getLogicServiceVerify() );
 
         // we want modelView get to know what to show and how
-        prn( $viewName );
         $viewConfig = $this->getConfigServiceVerify()->get( 'ViewConfig', $viewName, new ViewConfig() );
 //      $viewConfig = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
         $view->setViewConfig( $viewConfig );

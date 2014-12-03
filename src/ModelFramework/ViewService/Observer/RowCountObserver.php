@@ -1,6 +1,6 @@
 <?php
 /**
- * Class ListObserver
+ * Class RowCountObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -8,7 +8,6 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-use ModelFramework\Utility\Arr;
 use ModelFramework\ViewService\View;
 
 class RowCountObserver
@@ -20,12 +19,12 @@ class RowCountObserver
      */
     public function update( \SplSubject $subject )
     {
-        $viewConfig = $subject->getViewConfigVerify();
+        $viewConfig           = $subject->getViewConfigVerify();
         $result[ 'rowcount' ] = $subject->getParam( 'rowcount', $viewConfig->rows );
         if ( $result[ 'rowcount' ] != $viewConfig->rows )
         {
-            $viewConfig -> rows = $result['rowcount'];
-            $subject -> getConfigServiceVerify() ->saveByObject( $viewConfig );
+            $viewConfig->rows = $result[ 'rowcount' ];
+            $subject->getConfigServiceVerify()->saveByObject( $viewConfig );
         }
         $subject->setData( $result );
     }
