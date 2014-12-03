@@ -45,6 +45,7 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
             $configData = clone $configObject;
             $configData->exchangeArray( $configArray );
             $configData->key = $keyName;
+//            prn($this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData ));
 //            $this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData )->save( $configData );
         }
 

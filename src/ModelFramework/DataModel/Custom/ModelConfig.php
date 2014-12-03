@@ -12,12 +12,14 @@ use ModelFramework\DataModel\DataModel;
  */
 class ModelConfig extends DataModel
 {
+
     public $_model = 'ModelConfig';
     public $_label = 'Model Config';
     public $_adapter = 'wepo_company';
 
     public $_fields = [
         '_id'     => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
+        'key'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'label'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'adapter' => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'model'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
@@ -26,14 +28,14 @@ class ModelConfig extends DataModel
         'unique'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
     ];
     protected $_joins = [ ];
-    public $_unique   = [ 'model' ];
+    public $_unique = [ 'model' ];
 
-    public $_id     = '';
-    public $label   = '';
+    public $_id = '';
+    public $label = '';
     public $adapter = '';
-    public $model   = '';
-    public $fields  = [ ];
-    public $groups  = [ ];
-    public $unique  = [ ];
+    public $model = '';
+    public $fields = [ ];
+    public $groups = [ ];
+    public $unique = [ ];
 
 }
