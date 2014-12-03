@@ -56,6 +56,10 @@ class ViewBoxService
 
         $viewBoxConfig = $this->getConfigServiceVerify()->getByObject( $viewBoxName, new ViewBoxConfig() );
 
+        if ( $viewBoxConfig == null )
+        {
+            throw new \Exception('Please fill ViewBoxConfig for the ' . $viewBoxName. '. I can\'t work on' );
+        }
         $viewBox->setViewBoxConfig( $viewBoxConfig );
 
         $viewBox->setViewService( $this->getViewServiceVerify() );

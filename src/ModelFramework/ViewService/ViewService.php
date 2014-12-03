@@ -72,6 +72,11 @@ class ViewService
         // we want modelView get to know what to show and how
         $viewConfig = $this->getConfigServiceVerify()->get( 'ViewConfig', $viewName, new ViewConfig() );
 //      $viewConfig = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
+
+        if ( $viewConfig == null )
+        {
+            throw new \Exception('Please fill ViewConfig for the ' . $viewName. '. I can\'t work on');
+        }
         $view->setViewConfig( $viewConfig );
 
         // config parser service
