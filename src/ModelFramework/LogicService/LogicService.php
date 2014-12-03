@@ -8,6 +8,8 @@
 
 namespace ModelFramework\LogicService;
 
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\Custom\LogicConfig;
@@ -20,10 +22,10 @@ use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use Zend\Db\ResultSet\ResultSetInterface;
 
 class LogicService
-    implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface, GatewayServiceAwareInterface
+    implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface, GatewayServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait;
+    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
 
 //    public function get( $modelName )
 //    {
@@ -105,6 +107,7 @@ class LogicService
         $logic->setEventObject( $eventObject );
         $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
         $logic->setGatewayService( $this->getGatewayServiceVerify() );
+        $logic->setAuthService( $this->getAuthServiceVerify() );
         $logic->init();
         $logic->process();
 //        $dataLogic->setServiceLocator( $this->getServiceLocator() );

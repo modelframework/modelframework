@@ -8,6 +8,8 @@
 
 namespace ModelFramework\LogicService;
 
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\BaseService\AbstractService;
 use ModelFramework\DataModel\Custom\LogicConfigAwareInterface;
 use ModelFramework\DataModel\Custom\LogicConfigAwareTrait;
@@ -19,11 +21,11 @@ use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 
 class Logic extends AbstractService
-    implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
+    implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface, AuthServiceAwareInterface,
                \SplSubject
 {
 
-    use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait;
+    use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,  AuthServiceAwareTrait;
 
     /**
      * @var array|DataModel|null
@@ -31,7 +33,7 @@ class Logic extends AbstractService
     private $_eventObject = null;
 
     protected $allowed_observers = [
-        'FillJoinsObserver', 'ChangerObserver'
+        'FillJoinsObserver', 'ChangerObserver', 'OwnerObserver', 'ConstantObserver', 'ConcatenationObserver', 'DateObserver'
     ];
 
     protected $observers = [ ];

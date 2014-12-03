@@ -7,6 +7,8 @@
 
 namespace ModelFramework\ViewBoxService;
 
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\Custom\ViewBoxConfig;
@@ -14,10 +16,10 @@ use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
 
 class ViewBoxService
-    implements ViewBoxServiceInterface, ConfigServiceAwareInterface, ViewServiceAwareInterface
+    implements ViewBoxServiceInterface, ConfigServiceAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ViewServiceAwareTrait, ConfigServiceAwareTrait;
+    use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
      * @param string $viewBoxName
@@ -57,6 +59,7 @@ class ViewBoxService
         $viewBox->setViewBoxConfig( $viewBoxConfig );
 
         $viewBox->setViewService( $this->getViewServiceVerify() );
+        $viewBox->setAuthService( $this->getAuthServiceVerify() );
 
         return $viewBox;
     }

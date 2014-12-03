@@ -23,11 +23,7 @@ class FillJoinsObserver
      */
     public function update( \SplSubject $subject )
     {
-//        prn( "FillJoinsObserver", $subject );
-//        $eventObject = $subject->getEventObject();
         $this->fillJoins( $subject );
-//        prn( $eventObject );
-
     }
 
     /**
