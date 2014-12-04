@@ -1,12 +1,12 @@
 <?php
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\LogicService\LogicConfig;
 
 use ModelFramework\DataModel\DataModel;
 
 /**
- * Class ConfigData
- * @package ModelFramework\ModelService
+ * Class LogicConfig
+ * @package ModelFramework\LogicService\LogicConfig
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
@@ -26,6 +26,7 @@ class LogicConfig extends DataModel
 
     public $_id = '';
     public $key = '';
+    public $model = '';
     public $observers = [ ];
 
 }

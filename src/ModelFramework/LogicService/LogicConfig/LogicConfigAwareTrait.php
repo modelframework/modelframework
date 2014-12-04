@@ -6,18 +6,20 @@
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\LogicService\LogicConfig;
+
+use ModelFramework\DataModel\DataModelInterface;
 
 trait LogicConfigAwareTrait
 {
 
     /**
-     * @var LogicConfig
+     * @var LogicConfig|DataModelInterface
      */
     private $_logicConfig = null;
 
     /**
-     * @param LogicConfig $logicConfig
+     * @param LogicConfig|DataModelInterface $logicConfig
      *
      * @return $this
      */
@@ -27,7 +29,7 @@ trait LogicConfigAwareTrait
     }
 
     /**
-     * @return LogicConfig
+     * @return LogicConfig|DataModelInterface
      *
      */
     public function getLogicConfig()
@@ -36,7 +38,7 @@ trait LogicConfigAwareTrait
     }
 
     /**
-     * @return LogicConfig
+     * @return LogicConfig|DataModelInterface
      * @throws \Exception
      */
     public function getLogicConfigVerify()

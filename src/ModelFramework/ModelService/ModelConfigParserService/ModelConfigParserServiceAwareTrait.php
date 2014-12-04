@@ -6,7 +6,7 @@
  * Time: 11:19 AM
  */
 
-namespace ModelFramework\ModelConfigParserService;
+namespace ModelFramework\ModelService\ModelConfigParserService;
 
 trait ModelConfigParserServiceAwareTrait
 {

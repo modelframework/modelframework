@@ -13,17 +13,17 @@ use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
-use ModelFramework\DataModel\Custom\ViewConfig;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicServiceAwareInterface;
 use ModelFramework\LogicService\LogicServiceAwareTrait;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareTrait;
+use ModelFramework\ViewService\ViewConfig\ViewConfig;
 
 class ViewService
     implements ViewServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
@@ -70,7 +70,7 @@ class ViewService
         $view->setLogicService( $this->getLogicServiceVerify() );
 
         // we want modelView get to know what to show and how
-        $viewConfig = $this->getConfigServiceVerify()->get( 'ViewConfig', $viewName, new ViewConfig() );
+        $viewConfig = $this->getConfigServiceVerify()->getByObject( $viewName, new ViewConfig() );
 //      $viewConfig = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
 
         if ( $viewConfig == null )

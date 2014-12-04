@@ -2,18 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: vlad
- * Date: 8/1/14
- * Time: 12:53 PM
+ * Date: 7/31/14
+ * Time: 5:48 PM
  */
 
-namespace ModelFramework\ModelConfigParserService;
+namespace ModelFramework\ModelService\ModelConfig;
 
-trait ModelConfigAwareTrait
-{
 
-    /**
-     * @var array
-     */
+trait ModelConfigAwareTrait {
+
     private $_modelConfig = null;
 
     /**
@@ -21,10 +18,9 @@ trait ModelConfigAwareTrait
      *
      * @return $this
      */
-    public function setModelConfig( array $modelConfig )
+    public function setModelConfig(array $modelConfig )
     {
         $this->_modelConfig = $modelConfig;
-
         return $this;
     }
 
@@ -43,11 +39,10 @@ trait ModelConfigAwareTrait
     public function getModelConfigVerify()
     {
         $modelConfig = $this->getModelConfig();
-        if ( $modelConfig == null || !is_array( $modelConfig ) )
+        if ( $modelConfig == null || !is_array($modelConfig))
         {
-            throw new \Exception( 'ModelConfig does not set in the GatewayAware instance of ' . get_class( $this ) );
+            throw new \Exception('ModelConfig does not set in ModelView');
         }
-
-        return $modelConfig;
+        return $this->getModelConfig();
     }
 } 

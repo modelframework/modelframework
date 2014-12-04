@@ -6,7 +6,7 @@
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\LogicService\LogicConfig;
 
 interface LogicConfigAwareInterface
 {

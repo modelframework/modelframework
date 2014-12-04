@@ -14,7 +14,6 @@ use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
-use ModelFramework\DataModel\Custom\ModelConfig;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
@@ -22,8 +21,9 @@ use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareInterface
 use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use Wepo\Lib\Acl;
 
 class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ConfigServiceAwareInterface,
@@ -77,7 +77,7 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     {
         $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
-        $cd = $this->getConfigServiceVerify()->get( 'ModelConfig', $model->getModelName(), new ModelConfig() );
+        $cd = $this->getConfigServiceVerify()->getByObject( $model->getModelName(), new ModelConfig() );
 //        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
 
         $allowedFields = [ ];

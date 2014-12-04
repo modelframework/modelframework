@@ -1,16 +1,16 @@
 <?php
 /**
- * Class DataMapping
- * @package ModelFramework\DataModel\Custom
+ * Class DataMappingConfig
+ * @package ModelFramework\DataMapping\DataMappingConfig
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\DataMapping\DataMappingConfig;
 
 use ModelFramework\DataModel\DataModel;
 
-class DataMapping extends DataModel
+class DataMappingConfig extends DataModel
 {
 
     public $_model = 'DataMapping';

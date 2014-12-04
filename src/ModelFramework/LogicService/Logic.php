@@ -11,13 +11,13 @@ namespace ModelFramework\LogicService;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\BaseService\AbstractService;
-use ModelFramework\DataModel\Custom\LogicConfigAwareInterface;
-use ModelFramework\DataModel\Custom\LogicConfigAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\LogicService\LogicConfig\LogicConfigAwareInterface;
+use ModelFramework\LogicService\LogicConfig\LogicConfigAwareTrait;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 
 class Logic extends AbstractService

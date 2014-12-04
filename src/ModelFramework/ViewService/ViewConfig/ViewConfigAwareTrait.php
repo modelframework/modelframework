@@ -6,18 +6,20 @@
  * Time: 5:42 PM
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ViewService\ViewConfig;
 
+
+use ModelFramework\DataModel\DataModelInterface;
 
 trait ViewConfigAwareTrait {
 
     /**
-     * @var ViewConfig
+     * @var ViewConfig|DataModelInterface
      */
     private $_viewConfig = null;
 
     /**
-     * @param ViewConfig $viewConfig
+     * @param ViewConfig|DataModelInterface $viewConfig
      *
      * @return $this
      */
@@ -27,7 +29,7 @@ trait ViewConfigAwareTrait {
     }
 
     /**
-     * @return ViewConfig
+     * @return ViewConfig|DataModelInterface
      *
      */
     public function getViewConfig( )
@@ -36,7 +38,7 @@ trait ViewConfigAwareTrait {
     }
 
     /**
-     * @return ViewConfig
+     * @return ViewConfig|DataModelInterface
      * @throws \Exception
      */
     public function getViewConfigVerify( )
@@ -44,7 +46,8 @@ trait ViewConfigAwareTrait {
         $viewConfig = $this->getViewConfig();
         if ( $viewConfig==null || ! $viewConfig instanceof ViewConfig )
         {
-            throw new \Exception( 'View Config Data does not set set in ModelView' );
+            throw new \Exception( 'ViewConfig does not set in ViewConfigAware instance of ' .
+                                  get_class( $this ) );
         }
         return $viewConfig;
     }

@@ -6,25 +6,27 @@
  * Time: 6:29 PM
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ViewService\ViewConfig;
 
+
+use ModelFramework\DataModel\DataModelInterface;
 
 interface ViewConfigAwareInterface {
 
     /**
-     * @param ViewConfig $viewConfig
+     * @param ViewConfig|DataModelInterface $viewConfig
      *
      * @return $this
      */
     public function setViewConfig( ViewConfig $viewConfig );
 
     /**
-     * @return ViewConfig
+     * @return ViewConfig|DataModelInterface
      */
     public function getViewConfig( );
 
     /**
-     * @return ViewConfig
+     * @return ViewConfig|DataModelInterface
      * @throws \Exception
      */
     public function getViewConfigVerify( );

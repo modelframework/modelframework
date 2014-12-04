@@ -1,12 +1,12 @@
 <?php
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ModelService\ModelConfig;
 
 use ModelFramework\DataModel\DataModel;
 
 /**
- * Class ConfigData
- * @package ModelFramework\ModelService
+ * Class ModelConfig
+ * @package ModelFramework\ModelService\ModelConfig
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */

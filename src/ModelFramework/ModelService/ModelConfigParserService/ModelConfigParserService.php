@@ -6,14 +6,13 @@
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\ModelConfigParserService;
+namespace ModelFramework\ModelService\ModelConfigParserService;
 
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
-use ModelFramework\DataModel\Custom\ModelConfig;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\DataModel\Custom\ConfigData;
+use ModelFramework\ModelService\ModelConfig\ModelConfig;
 
 class ModelConfigParserService
     implements ModelConfigParserServiceInterface, FieldTypesServiceAwareInterface, ConfigServiceAwareInterface
@@ -28,9 +27,7 @@ class ModelConfigParserService
      */
     public function getModelConfig( $modelName )
     {
-        $cd = $this->getConfigServiceVerify()->get( 'ModelConfig', $modelName, new ModelConfig() );
-//        $cd = $this->getModelConfigsServiceVerify()->get( $modelName );
-
+        $cd = $this->getConfigServiceVerify()->getByObject( $modelName, new ModelConfig() );
         return $this->pullModelConfig( $cd );
     }
 

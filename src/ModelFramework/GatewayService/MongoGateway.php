@@ -2,23 +2,22 @@
 
 namespace ModelFramework\GatewayService;
 
-use ModelFramework\BaseService\AbstractService;
 use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigAwareInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigAwareTrait;
-use ModelFramework\ModelService\Config;
-use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
+use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
+
+use \MonZend\Paginator\Adapter\MongoCursor;
+
 use \Zend\Db\Adapter\AdapterInterface;
 use \Zend\Db\Adapter\Profiler\ProfilerInterface;
-use Zend\Db\Exception\InvalidArgumentException;
+use \Zend\Db\Exception\InvalidArgumentException;
 use \Zend\Db\ResultSet\ResultSet;
 use \Zend\Db\ResultSet\ResultSetInterface;
 use \Zend\Db\Sql\TableIdentifier;
-use Zend\Db\TableGateway\Exception\RuntimeException;
+use \Zend\Db\TableGateway\Exception\RuntimeException;
 use \Zend\Db\TableGateway\Feature\FeatureSet;
 use \Zend\Db\TableGateway\Feature\AbstractFeature;
 use \Zend\Paginator\Paginator;
-use \MonZend\Paginator\Adapter\MongoCursor;
 
 class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
 {

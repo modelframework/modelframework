@@ -6,18 +6,20 @@
  * Time: 5:42 PM
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ViewBoxService\ViewBoxConfig;
 
+
+use ModelFramework\DataModel\DataModelInterface;
 
 trait ViewBoxConfigAwareTrait {
 
     /**
-     * @var ViewBoxConfig
+     * @var ViewBoxConfig|DataModelInterface
      */
     private $_viewBoxConfig = null;
 
     /**
-     * @param ViewBoxConfig $viewBoxConfig
+     * @param ViewBoxConfig|DataModelInterface $viewBoxConfig
      *
      * @return $this
      */
@@ -27,7 +29,7 @@ trait ViewBoxConfigAwareTrait {
     }
 
     /**
-     * @return ViewBoxConfig
+     * @return ViewBoxConfig|DataModelInterface
      *
      */
     public function getViewBoxConfig( )
@@ -44,7 +46,8 @@ trait ViewBoxConfigAwareTrait {
         $viewBoxConfig = $this->getViewBoxConfig();
         if ( $viewBoxConfig==null || ! $viewBoxConfig instanceof ViewBoxConfig )
         {
-            throw new \Exception( 'View Config Data does not set set in ModelView' );
+            throw new \Exception( 'View Config Data does not set set in ModelViewAware instance of ' .
+                                  get_class( $this ) );
         }
         return $viewBoxConfig;
     }

@@ -1,12 +1,12 @@
 <?php
 /**
  * Class ViewConfig
- * @package ModelFramework\ViewConfigsService
+ * @package ModelFramework\ViewService\ViewConfig
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ViewService\ViewConfig;
 
 use ModelFramework\DataModel\DataModel;
 

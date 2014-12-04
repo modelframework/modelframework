@@ -8,7 +8,7 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-use ModelFramework\DataModel\Custom\DataMapping;
+use ModelFramework\DataMapping\DataMappingConfig\DataMappingConfig;
 use ModelFramework\ViewService\View;
 
 class ConvertObserver implements \SplObserver
@@ -30,7 +30,7 @@ class ConvertObserver implements \SplObserver
             return $subject->redirect()->toRoute( $route );
         }
         $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
-        $convertConfig                = $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMapping() );
+        $convertConfig                = $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
 //        $convertConfig                = $subject->getDataMappingServiceVerify()->get( 'Lead' );
         $result[ 'convertedObjects' ] = [ ];
         foreach ( $convertConfig->targets as $_key => $_value )

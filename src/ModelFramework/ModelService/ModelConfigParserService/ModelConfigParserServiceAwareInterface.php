@@ -6,7 +6,7 @@
  * Time: 11:18 AM
  */
 
-namespace ModelFramework\ModelConfigParserService;
+namespace ModelFramework\ModelService\ModelConfigParserService;
 
 
 interface ModelConfigParserServiceAwareInterface {

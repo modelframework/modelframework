@@ -6,7 +6,7 @@
  * Time: 6:29 PM
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ViewBoxService\ViewBoxConfig;
 
 
 interface ViewBoxConfigAwareInterface {

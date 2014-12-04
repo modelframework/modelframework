@@ -6,7 +6,7 @@
  * Time: 5:45 PM
  */
 
-namespace ModelFramework\DataModel\Custom;
+namespace ModelFramework\ModelService\ModelConfig;
 
 
 interface ModelConfigAwareInterface {
@@ -16,7 +16,7 @@ interface ModelConfigAwareInterface {
      *
      * @return $this
      */
-    public function setModelConfig(array $modelConfig );
+    public function setModelConfig( array $modelConfig );
 
     /**
      * @return array

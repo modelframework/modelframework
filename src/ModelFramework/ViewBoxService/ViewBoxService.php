@@ -11,7 +11,7 @@ use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
-use ModelFramework\DataModel\Custom\ViewBoxConfig;
+use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfig;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
 

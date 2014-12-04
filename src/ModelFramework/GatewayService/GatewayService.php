@@ -8,10 +8,10 @@
 
 namespace ModelFramework\GatewayService;
 
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 
 class GatewayService extends GatewayServiceRaw

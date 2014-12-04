@@ -4,8 +4,8 @@ namespace ModelFramework\ModelService;
 
 use ModelFramework\DataModel\DataModel;
 use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
+use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 
 /**
  * Class ModelService
@@ -22,7 +22,7 @@ class ModelService
     /**
      * @param string $modelName
      *
-     * @return DataModel
+     * @return DataModelInterface
      */
     public function get( $modelName )
     {
@@ -32,7 +32,7 @@ class ModelService
     /**
      * @param string $modelName
      *
-     * @return DataModel
+     * @return DataModelInterface
      */
     public function getModel( $modelName )
     {

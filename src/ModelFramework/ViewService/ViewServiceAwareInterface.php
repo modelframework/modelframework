@@ -6,11 +6,11 @@ namespace ModelFramework\ViewService;
 interface ViewServiceAwareInterface {
 
     /**
-     * @param ViewServiceInterface $modelViewService
+     * @param ViewServiceInterface $viewService
      *
      * @return $this
      */
-    public function setViewService( ViewServiceInterface $modelViewService );
+    public function setViewService( ViewServiceInterface $viewService );
 
     /**
      * @return ViewServiceInterface

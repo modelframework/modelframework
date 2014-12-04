@@ -1,14 +1,14 @@
 <?php
 /**
- * Class ConcatenationObserver
- * @package ModelFramework\ModelViewService
+ * Class AbstractObserver
+ * @package ModelFramework\QueryService\Observer
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\LogicService\Observer;
+namespace ModelFramework\QueryService\Observer;
 
-use ModelFramework\LogicService\Logic;
+use ModelFramework\QueryService\Query;
 
 abstract class AbstractObserver
     implements \SplObserver
@@ -17,7 +17,7 @@ abstract class AbstractObserver
     use ConfigAwareTrait, SubjectAwareTrait;
 
     /**
-     * @param \SplSubject|Logic $subject
+     * @param \SplSubject|Query $subject
      *
      * @throws \Exception
      */
@@ -69,6 +69,13 @@ abstract class AbstractObserver
     }
 
 
+    /**
+     * @param $model
+     * @param $key
+     * @param $value
+     *
+     * @return mixed
+     */
     abstract public function process( $model, $key, $value );
 
 }
