@@ -24,6 +24,9 @@ class FillJoinsObserver
     public function update( \SplSubject $subject )
     {
         $this->fillJoins( $subject );
+//        FIXME This is a place for debugging results of Observers
+//        prn($subject->getEventObject());
+//        exit;
     }
 
     /**

@@ -75,10 +75,6 @@ class FormObserver implements \SplObserver
                 $model->merge( $old_data );
 
                 $subject->getLogicServiceVerify()->trigger( 'preinsert', $model->getDataModel() );
-                prn( $model->getDataModel() );
-//                exit();
-
-//                $subject->getParams()->getController()->trigger( 'presave', $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     try
@@ -94,8 +90,6 @@ class FormObserver implements \SplObserver
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     $subject->getLogicServiceVerify()->trigger( 'postinsert', $model->getDataModel() );
-//                    $subject->getParams()->getController()->trigger( 'postsave', $model->getDataModel() );
-
                     $url = $subject->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {

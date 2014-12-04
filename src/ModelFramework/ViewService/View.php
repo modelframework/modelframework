@@ -48,7 +48,8 @@ class View
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'RowCountObserver', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver', 'UserObserver',
+        'RowCountObserver', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver',
+        'UserObserver',
         'WidgetObserver', 'Widget1Observer'
     ];
     protected $observers = [ ];
@@ -141,10 +142,9 @@ class View
 
     public function setDataFields()
     {
-        $viewConfig            = $this->getViewConfigVerify();
+        $viewConfig = $this->getViewConfigVerify();
 
-
-        $result                = $viewConfig -> toArray( );
+        $result = $viewConfig->toArray();
 
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
@@ -267,10 +267,10 @@ class View
 
     public function refresh( $message = null, $toUrl = null, $seconds = 0 )
     {
-        $viewModel = new ZendViewModel( array(
-                                        'message' => $message, 'user' => $this->getUser(), 'toUrl' => $toUrl,
-                                        'seconds' => $seconds
-                                    ) );
+        $viewModel = new ZendViewModel( [
+                                            'message' => $message, 'user' => $this->getUser(), 'toUrl' => $toUrl,
+                                            'seconds' => $seconds
+                                        ] );
 
         return $viewModel->setTemplate( 'wepo/partial/refresh.twig' );
     }

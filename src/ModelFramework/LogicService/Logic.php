@@ -21,11 +21,12 @@ use ModelFramework\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 
 class Logic extends AbstractService
-    implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface, AuthServiceAwareInterface,
+    implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
+               AuthServiceAwareInterface,
                \SplSubject
 {
 
-    use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,  AuthServiceAwareTrait;
+    use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait, AuthServiceAwareTrait;
 
     /**
      * @var array|DataModel|null
@@ -33,7 +34,14 @@ class Logic extends AbstractService
     private $_eventObject = null;
 
     protected $allowed_observers = [
-        'FillJoinsObserver', 'ChangerObserver', 'OwnerObserver', 'ConstantObserver', 'ConcatenationObserver', 'DateObserver'
+        'ConcatenationObserver',
+        'FillJoinsObserver',
+        'ConstantObserver',
+        'NewItemObserver',
+        'ChangerObserver',
+        'OwnerObserver',
+        'DateObserver',
+        'AgeObserver'
     ];
 
     protected $observers = [ ];
@@ -64,7 +72,7 @@ class Logic extends AbstractService
     {
         foreach ( $this->getLogicConfigVerify()->observers as $observer => $obConfig )
         {
-            if ( is_numeric( $observer  ) )
+            if ( is_numeric( $observer ) )
             {
                 $observer = $obConfig;
                 $obConfig = null;
@@ -74,10 +82,10 @@ class Logic extends AbstractService
                 throw new \Exception( $observer . ' is not allowed in ' . get_class( $this ) );
             }
             $observerClassName = 'ModelFramework\LogicService\Observer\\' . $observer;
-            $_obs = new $observerClassName();
+            $_obs              = new $observerClassName();
             if ( !empty( $obConfig ) )
             {
-                $_obs -> setConfig( $obConfig );
+                $_obs->setConfig( $obConfig );
             }
             $this->attach( $_obs );
         }
@@ -108,7 +116,7 @@ class Logic extends AbstractService
     /**
      * @return array|DataModel|null
      */
-    public  function getEventObject()
+    public function getEventObject()
     {
         return $this->_eventObject;
     }
