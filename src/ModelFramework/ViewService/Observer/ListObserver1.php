@@ -9,13 +9,31 @@
 namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\Utility\Arr;
+use ModelFramework\ViewService\View;
 
-class ListObserver
+class ListObserver1
     implements \SplObserver
 {
 
+    private $_subject = null;
+
+    public function setSubject( \SplSubject $subject )
+    {
+        $this->_subject = $subject;
+    }
+
+    public function getSubject( )
+    {
+        return $this->_subject;
+    }
+
+    /**
+     * @param \SplSubject|View $subject
+     */
     public function update( \SplSubject $subject )
     {
+        $this->setSubject( $subject );
+
         $viewConfig = $subject->getViewConfigVerify();
         $this->order( $subject );
 //        $result[ 'permission' ]   = 1;
@@ -30,8 +48,22 @@ class ListObserver
 //            $field = [ 'owner_id' => (string) $this->user()->id() ];
 //        }
         $permissionQuery = [ ];
+
+
         $_where          = $viewConfig->query;
+
+
+
+        prn($viewConfig->query);
+        prn($subject->getQueryServiceVerify()->get($viewConfig->query));
+        exit;
+
+
+        $_where = $this->processWhere( $_where );
+//        prn($_where);
+
         $_dataWhere      = $permissionQuery + $_where;
+
         if ( empty( $searchQuery ) )
         {
             $_where = $_dataWhere;
@@ -42,6 +74,7 @@ class ListObserver
                 '$and' => [ $_dataWhere, [ '$text' => [ '$search' => $searchQuery ] ] ]
             ];
         }
+
         $result[ 'paginator' ] =
             $subject
                 ->getGatewayVerify()
@@ -92,6 +125,52 @@ class ListObserver
 
         }
         $subject->setData( $result );
+    }
+
+
+    private function processWhere($where)
+    {
+        foreach ( $where as $_f => $_v )
+        {
+            if ( is_array( $_v ) )
+            {
+                /*
+                foreach ( $_v as $_key => $_value )
+                {
+                    if ( $_value{0} == ':' && ( $_d =  $this->getSubject()->getParam( substr( $_value, 1 ), null) !== null ) )
+                    {
+                        $_m                                            = substr( $_value, 1 );
+                        $where[ $_f . "." . $inModel->getModelName() ] = [ $model->$_f( $inModel->{$_m} ) ];
+                        unset( $where[ $_f ] );
+                    }
+                }
+                */
+            }
+            elseif ( $_v{0} == ':' )
+            {
+                $_m           = substr( $_v, 1 );
+                $_d =  $this->getSubject()->getParam( substr( $_v, 1 ), null) ;
+                if ( $_d !== null )
+                {
+                    $where[ $_f ] = $_d;
+                }
+            }
+//            elseif ( $_v{0} == '!' )
+//            {
+//                //FIXME
+//                $func = substr( $_v, 1 );
+//                unset( $where[ $_f ] );
+//                $_f = substr( $_f, 2 );
+//                if ( method_exists( $this, $func ) )
+//                {
+//                    $where[ $_f ] = $this->$func();
+//                    unset( $where[ $_f ] );
+//                }
+//                //
+//            }
+        }
+
+        return $where;
     }
 
 }
