@@ -23,15 +23,18 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareTrait;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfig;
 
 class ViewService
     implements ViewServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface,
-               FormServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface
+               FormServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface,
+               QueryServiceAwareInterface
 {
 
-    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait;
+    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait;
 
     /**
      * @param string $viewName
@@ -75,7 +78,7 @@ class ViewService
 
         if ( $viewConfig == null )
         {
-            throw new \Exception('Please fill ViewConfig for the ' . $viewName. '. I can\'t work on');
+            throw new \Exception( 'Please fill ViewConfig for the ' . $viewName . '. I can\'t work on' );
         }
         $view->setViewConfig( $viewConfig );
 
@@ -98,7 +101,8 @@ class ViewService
         // form service for form creation
         $view->setFormService( $this->getFormServiceVerify() );
 
-        $view -> setConfigService( $this->getConfigServiceVerify() );
+        $view->setConfigService( $this->getConfigServiceVerify() );
+        $view->setQueryService( $this->getQueryServiceVerify() );
 //        $view->setDataMappingService( $this->getDataMappingServiceVerify() );
 
         // initialize stuff. observers as primary

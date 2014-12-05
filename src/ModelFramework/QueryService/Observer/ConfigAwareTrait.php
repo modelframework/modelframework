@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: PROG-3
- * Date: 02.12.2014
- * Time: 17:05
+ * Class ConfigAwareTrait
+ * @package ModelFramework\QueryService\Observer
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\QueryService\Observer;

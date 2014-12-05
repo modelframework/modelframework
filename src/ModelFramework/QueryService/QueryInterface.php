@@ -1,14 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/31/14
- * Time: 5:44 PM
+ * Class QueryInterface
+ * @package ModelFramework\QueryService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\QueryService;
 
-
-interface QueryInterface {
+interface QueryInterface
+{
 
 } 

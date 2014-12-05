@@ -18,6 +18,7 @@ class Query
     use QueryConfigAwareTrait;
 
     protected $allowed_observers = [
+        'RouteParamObserver'
     ];
 
     protected $observers = [ ];
@@ -47,7 +48,7 @@ class Query
 
     public function  init()
     {
-        foreach ( $this->getQueryConfigVerify()->query as $observer => $obConfig )
+        foreach ( $this->getQueryConfigVerify()->observers as $observer => $obConfig )
         {
             if ( is_numeric( $observer ) )
             {

@@ -1,15 +1,15 @@
 <?php
+/**
+ * Class QueryConfig
+ * @package ModelFramework\QueryService\QueryConfig
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
+ */
 
 namespace ModelFramework\QueryService\QueryConfig;
 
 use ModelFramework\DataModel\DataModel;
 
-/**
- * Class QueryConfig
- * @package ModelFramework\ModelService
- * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
- * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
- */
 class QueryConfig extends DataModel
 {
 
@@ -22,9 +22,9 @@ class QueryConfig extends DataModel
         'key'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'model'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'fields'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'actions'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'links'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'order'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
+        'actions' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'links'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'order'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
 
     ];
 

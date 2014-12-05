@@ -9,6 +9,7 @@
 namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\Utility\Arr;
+use ModelFramework\ViewService\View;
 
 class ListObserver
     implements \SplObserver
@@ -26,6 +27,9 @@ class ListObserver
         return $this->_subject;
     }
 
+    /**
+     * @param \SplSubject|View $subject
+     */
     public function update( \SplSubject $subject )
     {
         $this->setSubject( $subject );
@@ -45,10 +49,18 @@ class ListObserver
 //        }
         $permissionQuery = [ ];
 
+
         $_where          = $viewConfig->query;
 
+
+
+        prn($viewConfig->query);
+        prn($subject->getQueryServiceVerify()->get($viewConfig->query));
+        exit;
+
+
         $_where = $this->processWhere( $_where );
-        prn($_where);
+//        prn($_where);
 
         $_dataWhere      = $permissionQuery + $_where;
 

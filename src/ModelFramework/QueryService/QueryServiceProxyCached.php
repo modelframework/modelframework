@@ -1,44 +1,44 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/29/14
- * Time: 7:03 PM
+ * Class QueryServiceProxyCached
+ * @package ModelFramework\QueryService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\ViewService;
+namespace ModelFramework\QueryService;
 
 use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
 
-class ViewServiceProxyCached
-    implements ViewServiceInterface, CacheServiceAwareInterface, ViewServiceAwareInterface
+class QueryServiceProxyCached
+    implements QueryServiceInterface, CacheServiceAwareInterface, QueryServiceAwareInterface
 {
 
-    use CacheServiceAwareTrait, ViewServiceAwareTrait;
+    use CacheServiceAwareTrait, QueryServiceAwareTrait;
 
 
     /**
-     * @param string $viewName
+     * @param string $key
      *
-     * @return View|ViewInterface
+     * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function getView( $viewName )
+    public function getQuery( $key )
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod( $this->getViewServiceVerify(), 'getView', [ $viewName ] );
+                    ->getCachedObjMethod( $this->getQueryServiceVerify(), 'getQuery', [ $key ] );
     }
 
     /**
-     * @param string $viewName
+     * @param string $key
      *
-     * @return View|ViewInterface
+     * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function get( $viewName )
+    public function get( $key )
     {
-        return $this->getView( $viewName );
+        return $this->getQuery( $key );
     }
 
 } 

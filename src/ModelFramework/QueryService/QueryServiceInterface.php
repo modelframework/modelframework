@@ -1,9 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vlad
- * Date: 7/29/14
- * Time: 6:26 PM
+ * Class QueryServiceInterface
+ * @package ModelFramework\QueryService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
 namespace ModelFramework\QueryService;
@@ -12,19 +12,19 @@ interface QueryServiceInterface
 {
 
     /**
-     * @param string $queryName
+     * @param string $key
      *
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function getQuery( $queryName );
+    public function getQuery( $key );
 
     /**
-     * @param string $queryName
+     * @param string $key
      *
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function get( $queryName );
+    public function get( $key );
 
 }

@@ -27,6 +27,8 @@ use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\FormService\FormServiceAwareTrait;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareInterface;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareTrait;
 use Wepo\Model\Table;
@@ -37,10 +39,10 @@ class View
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
                ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface,
                ConfigServiceAwareInterface,
-               AuthServiceAwareInterface, LogicServiceAwareInterface, \SplSubject
+               AuthServiceAwareInterface, LogicServiceAwareInterface, QueryServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigAwareTrait, ModelConfigAwareTrait, ConfigServiceAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait;
+    use ViewConfigAwareTrait, ModelConfigAwareTrait, ConfigServiceAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
