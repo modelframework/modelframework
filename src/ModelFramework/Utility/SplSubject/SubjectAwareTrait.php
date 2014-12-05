@@ -1,12 +1,12 @@
 <?php
 /**
  * Class SubjectAwareTrait
- * @package ModelFramework\QueryService\Observer
+ * @package ModelFramework\Utility\SplSubject
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\QueryService\Observer;
+namespace ModelFramework\Utility\SplSubject;
 
 trait SubjectAwareTrait
 {

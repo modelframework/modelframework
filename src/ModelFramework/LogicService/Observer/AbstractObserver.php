@@ -8,10 +8,12 @@
 
 namespace ModelFramework\LogicService\Observer;
 
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\LogicService\Logic;
 
 abstract class AbstractObserver
-    implements \SplObserver
+    implements \SplObserver, ConfigAwareInterface
 {
 
     use ConfigAwareTrait, SubjectAwareTrait;
@@ -43,7 +45,7 @@ abstract class AbstractObserver
                 $dataModel = $model;
             }
 
-            foreach ( $this->getConfig() as $key => $value )
+            foreach ( $this->getRootConfig() as $key => $value )
             {
                 if ( is_numeric($key ) )
                 {

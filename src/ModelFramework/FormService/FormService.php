@@ -73,6 +73,13 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     }
 
 
+    /**
+     * @param $model
+     * @param $mode
+     *
+     * @return DataModelInterface|null
+     * @throws \Exception
+     */
     public function getPermittedConfig( $model, $mode )
     {
         $fieldPermissions = $this->getFieldPermissions( $model, $mode );
@@ -93,6 +100,13 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
         return $cd;
     }
 
+    /**
+     * @param $model
+     * @param $mode
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function getFieldPermissions( $model, $mode )
     {
         $user = $this->getAuthServiceVerify()->getUser();

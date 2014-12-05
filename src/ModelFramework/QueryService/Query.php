@@ -8,17 +8,25 @@
 
 namespace ModelFramework\QueryService;
 
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\QueryService\Observer\AbstractObserver;
 use ModelFramework\QueryService\QueryConfig\QueryConfigAwareInterface;
 use ModelFramework\QueryService\QueryConfig\QueryConfigAwareTrait;
+use ModelFramework\Utility\Arr;
+use ModelFramework\Utility\Params\ParamsAwareInterface;
+use ModelFramework\Utility\Params\ParamsAwareTrait;
 
 class Query
-    implements QueryInterface, QueryConfigAwareInterface, \SplSubject
+    implements QueryInterface, QueryConfigAwareInterface, \SplSubject, ParamsAwareInterface, AuthServiceAwareInterface
 {
 
-    use QueryConfigAwareTrait;
+    use QueryConfigAwareTrait, ParamsAwareTrait, AuthServiceAwareTrait;
+
+    private $_data = [ ];
 
     protected $allowed_observers = [
-        'RouteParamObserver'
+        'RouteParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver', 'PermissionObserver'
     ];
 
     protected $observers = [ ];
@@ -45,9 +53,43 @@ class Query
         }
     }
 
+    public function getData()
+    {
+        return $this->_data;
+    }
+
+    public function setData( array $data )
+    {
+        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data );
+//        $this->_data += $data;
+    }
+
+    protected function clearData()
+    {
+        $this->_data = [ ];
+    }
+
+    public function swipeDataKey( $key )
+    {
+        $ar = Arr::getDoubtField( $this->getData(), $key, [ ] );
+        unset ( $this->_data[ $key ] );
+        return $ar;
+    }
+
+    public function getWhere()
+    {
+        return Arr::getDoubtField( $this->getData(), 'where', [ ] );
+    }
+
+    public function getOrder()
+    {
+        return Arr::getDoubtField( $this->getData(), 'order', [ ] );
+    }
+
 
     public function  init()
     {
+
         foreach ( $this->getQueryConfigVerify()->observers as $observer => $obConfig )
         {
             if ( is_numeric( $observer ) )
@@ -60,10 +102,13 @@ class Query
                 throw new \Exception( $observer . ' is not allowed in ' . get_class( $this ) );
             }
             $observerClassName = 'ModelFramework\QueryService\Observer\\' . $observer;
-            $_obs              = new $observerClassName();
+            /**
+             * @var AbstractObserver $_obs
+             */
+            $_obs = new $observerClassName();
             if ( !empty( $obConfig ) )
             {
-                $_obs->setConfig( $obConfig );
+                $_obs->setRootConfig( $obConfig );
             }
             $this->attach( $_obs );
         }

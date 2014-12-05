@@ -18,13 +18,14 @@ class QueryConfig extends DataModel
     public $_adapter = 'wepo_company';
 
     public $_fields = [
-        '_id'     => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
-        'key'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
-        'model'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
-        'fields'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'actions' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'links'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'order'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
+        '_id'       => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
+        'key'       => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'model'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'observers' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'fields'    => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'actions'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'links'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'order'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
 
     ];
 
@@ -33,6 +34,7 @@ class QueryConfig extends DataModel
     public $_id = '';
     public $key = '';
     public $model = '';
+    public $observers = [ ];
     public $fields = [ ];
     public $actions = [ ];
     public $links = [ ];

@@ -16,8 +16,6 @@ class FillJoinsObserver
     implements \SplObserver
 {
 
-    use ConfigAwareTrait;
-
     /**
      * @param \SplSubject|Logic $subject
      */

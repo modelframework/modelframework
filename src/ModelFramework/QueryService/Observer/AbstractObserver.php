@@ -8,10 +8,13 @@
 
 namespace ModelFramework\QueryService\Observer;
 
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\QueryService\Query;
+use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
 abstract class AbstractObserver
-    implements \SplObserver
+    implements \SplObserver, ConfigAwareInterface
 {
 
     use ConfigAwareTrait, SubjectAwareTrait;
@@ -25,57 +28,18 @@ abstract class AbstractObserver
     {
         $this->setSubject( $subject );
 
-        $models = $subject->getEventObject();
-        if ( !( is_array( $models ) || $models instanceof ResultSetInterface ) )
-        {
-            $models = [ $models ];
-        }
+//        $this->process( $subject, '$key', '$value' );
 
-        $aModels = [];
-        foreach ( $models as $_k => $model )
-        {
-            if ( $model instanceof AclDataModel )
-            {
-                $dataModel = $model->getDataModel();
-            }
-            else
-            {
-                $dataModel = $model;
-            }
-
-            foreach ( $this->getConfig() as $key => $value )
-            {
-                if ( is_numeric($key ) )
-                {
-                    $key = $value;
-                    $value = '';
-                }
-                if ( !isset( $dataModel->$key ) )
-                {
-                    throw new \Exception( 'Field ' . $key . ' does not exist in model ' . $dataModel->getModelName() );
-                }
-
-                $this->process( $dataModel, $key, $value);
-
-            }
-
-            $aModels[ ] = $model->getArrayCopy();
-        }
-
-        if ( $models instanceof ResultSetInterface )
-        {
-            $models->initialize( $aModels );
-        }
     }
 
-
-    /**
-     * @param $model
-     * @param $key
-     * @param $value
-     *
-     * @return mixed
-     */
-    abstract public function process( $model, $key, $value );
+//
+//    /**
+//     * @param $model
+//     * @param $key
+//     * @param $value
+//     *
+//     * @return mixed
+//     */
+//    abstract public function process( $model, $key, $value );
 
 }

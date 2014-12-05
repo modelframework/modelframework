@@ -29,6 +29,8 @@ use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\FormService\FormServiceAwareTrait;
 use ModelFramework\QueryService\QueryServiceAwareInterface;
 use ModelFramework\QueryService\QueryServiceAwareTrait;
+use ModelFramework\Utility\Params\ParamsAwareInterface;
+use ModelFramework\Utility\Params\ParamsAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareInterface;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareTrait;
 use Wepo\Model\Table;
@@ -48,7 +50,7 @@ class View
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'RowCountObserver', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver',
+        'RowCountObserver', 'List1Observer', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver',
         'UserObserver',
         'WidgetObserver', 'Widget1Observer'
     ];
@@ -144,28 +146,23 @@ class View
     {
         $viewConfig = $this->getViewConfigVerify();
 
-        $result = $viewConfig->toArray();
-
+        $result = [];
+        $result[ 'title' ]    = $viewConfig->title;
+        $result[ 'template' ]    = $viewConfig->template;
+        $result[ 'fields' ]    = $viewConfig->fields;
+        $result[ 'actions' ]    = $viewConfig->actions;
+        $result[ 'links' ]    = $viewConfig->links;
         $result[ 'labels' ]    = $this->labels();
         $result[ 'modelname' ] = strtolower( $viewConfig->model );
-        $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
+        $result[ 'queryparams' ] = [];
+
+//        $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
         $result[ 'user' ]      = $this->getUser();
         $result[ 'saurlhash' ] = $this->generateLabel();
         $result[ 'saurl' ]     = '?back=' . $result[ 'saurlhash' ];
         $result[ 'saurlback' ] = $this->getSaUrlBack( $this->getParams()->fromQuery( 'back', 'home' ) );
 
         $this->setData( $result );
-    }
-
-    public function getParam( $name, $default = '' )
-    {
-        $param = $this->getParamsVerify()->fromQuery( $name, $default );
-        if ( $param === $default )
-        {
-            $param = $this->getParamsVerify()->fromRoute( $name, $default );
-        }
-
-        return $param;
     }
 
     public function getAclModelVerify()

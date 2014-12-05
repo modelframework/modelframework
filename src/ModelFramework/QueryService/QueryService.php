@@ -6,15 +6,17 @@
 
 namespace ModelFramework\QueryService;
 
+use ModelFramework\AuthService\AuthServiceAwareInterface;
+use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\QueryService\QueryConfig\QueryConfig;
 
 class QueryService
-    implements QueryServiceInterface, ConfigServiceAwareInterface
+    implements QueryServiceInterface, ConfigServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ConfigServiceAwareTrait;
+    use ConfigServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
      * @param string $queryName
@@ -47,6 +49,8 @@ class QueryService
             throw new \Exception('Please fill QueryConfig for the ' . $queryName. '. I can\'t get it out');
         }
         $query->setQueryConfig( $queryConfig );
+
+        $query->setAuthService( $this->getAuthServiceVerify() );
 
         $query->init();
 

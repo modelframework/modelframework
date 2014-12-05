@@ -10,12 +10,12 @@ namespace ModelFramework\ViewBoxService;
 
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\Utility\Params\ParamsAwareInterface;
+use ModelFramework\Utility\Params\ParamsAwareTrait;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareInterface;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareTrait;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
-use ModelFramework\ViewService\ParamsAwareInterface;
-use ModelFramework\ViewService\ParamsAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
 
 class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface
@@ -111,8 +111,6 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
             return $this->getRedirect();
         }
         $data = $this->getData();
-
-//        prn($data['data']['details']['PricebookDetail.list']['paginator']->getCurrentItems()->toArray());
 
         $viewModel = new ZendViewModel( $data );
 

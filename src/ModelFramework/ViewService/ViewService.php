@@ -102,6 +102,7 @@ class ViewService
         $view->setFormService( $this->getFormServiceVerify() );
 
         $view->setConfigService( $this->getConfigServiceVerify() );
+
         $view->setQueryService( $this->getQueryServiceVerify() );
 //        $view->setDataMappingService( $this->getDataMappingServiceVerify() );
 

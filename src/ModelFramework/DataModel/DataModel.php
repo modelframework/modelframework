@@ -73,10 +73,6 @@ class DataModel implements DataModelInterface
                 }
                 elseif ( !$_properties[ 'datatype' ] == 'date' && !$_properties[ 'datatype' ] == 'datetime' )
                 {
-                    if ( $_field == 'changed_dtm' )
-                    {
-                        prn( 'date', $this->$_field );
-                    }
                     settype( $this->$_field, $_properties[ 'datatype' ] );
                 }
             }
@@ -218,7 +214,6 @@ class DataModel implements DataModelInterface
             {
                 return (string) $this->_id;
             }
-            prn( 'ololo512' );
             throw new \Exception( " Missed property $name in model {$this->getModelName()}" );
 //            $trace = debug_backtrace();
 //            trigger_error(

@@ -101,8 +101,10 @@ class WidgetObserver
             $inModel = $inModel->getDataModel();
         }
 
-        $where              = $conf[ 'query' ];
-        $model              = $subject->getGatewayServiceVerify()->get( $conf['model'] )->model();
+        $conf = $subject->getViewConfig()->toArray();
+
+        $where              = $subject->getViewConfig()->query;
+        $model              = $subject->getGatewayServiceVerify()->get( $subject->getViewConfig()->model )->model();
 
         $result             = [ ];
         $result[ 'fields' ] = $conf[ 'fields' ];
@@ -195,7 +197,7 @@ class WidgetObserver
             }
         }
         $result[ 'data' ]  =
-            $subject->getGatewayServiceVerify()->get( $conf['model'] )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
+            $subject->getGatewayServiceVerify()->get( $subject->getViewConfig()->model )->find( $where, $conf[ 'order' ], $conf[ 'limit' ] );
         $result[ 'model' ] = strtolower( $conf['model'] );
 
 //        prn( $result['data']->toArray() );

@@ -6,7 +6,7 @@
  * Time: 4:15 PM
  */
 
-namespace ModelFramework\ViewService;
+namespace ModelFramework\Utility\Params;
 
 
 use Zend\Mvc\Controller\Plugin\Params;
@@ -47,5 +47,17 @@ trait ParamsAwareTrait {
         }
 
         return $params;
+    }
+
+
+    public function getParam( $name, $default = '' )
+    {
+        $param = $this->getParamsVerify()->fromQuery( $name, $default );
+        if ( $param === $default )
+        {
+            $param = $this->getParamsVerify()->fromRoute( $name, $default );
+        }
+
+        return $param;
     }
 }

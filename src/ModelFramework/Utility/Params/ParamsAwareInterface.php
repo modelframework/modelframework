@@ -1,6 +1,6 @@
 <?php
 
-namespace ModelFramework\ViewService;
+namespace ModelFramework\Utility\Params;
 
 
 use Zend\Mvc\Controller\Plugin\Params;
