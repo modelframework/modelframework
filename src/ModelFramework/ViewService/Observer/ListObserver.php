@@ -9,88 +9,61 @@
 namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\Utility\Arr;
+use ModelFramework\ViewService\View;
+use Wepo\Lib\Acl;
 
 class ListObserver
     implements \SplObserver
 {
 
+    /**
+     * @param \SplSubject|View $subject
+     */
     public function update( \SplSubject $subject )
     {
+
         $viewConfig = $subject->getViewConfigVerify();
-        $this->order( $subject );
-//        $result[ 'permission' ]   = 1;
-        $result[ 'search_query' ] = $searchQuery = $subject->getParam( 'q', '' );
-        if ( $searchQuery )
-        {
-            $result[ 'params' ][ 'q' ] = $searchQuery;
-        }
-//        # :TODO: add permissions query
-//        if ( $permission == Auth::OWN )
-//        {
-//            $field = [ 'owner_id' => (string) $this->user()->id() ];
-//        }
-        $permissionQuery = [ ];
-        $_where          = $viewConfig->query;
-        $_dataWhere      = $permissionQuery + $_where;
-        if ( empty( $searchQuery ) )
-        {
-            $_where = $_dataWhere;
-        }
-        else
-        {
-            $_where = [
-                '$and' => [ $_dataWhere, [ '$text' => [ '$search' => $searchQuery ] ] ]
-            ];
-        }
+
+//        prn( $subject -> getGatewayVerify() -> model()-> getDataModel () );
+
+        $model = $subject->getGatewayVerify()->model();
+
+//        prn( $subject -> getFormServiceVerify() -> getPermittedConfig($model, Acl::MODE_READ ) );
+//        prn( $subject -> getFormServiceVerify() -> getFieldPermissions($model, Acl::MODE_READ ) );
+
+        $query =
+            $subject->getQueryServiceVerify()
+                    ->get( $viewConfig->query )
+                    ->setParams( $subject->getParams() )
+                    ->process();
+
+//        prn( $subject -> getData() );
+
+        $subject->setData( $query->getData() );
+
         $result[ 'paginator' ] =
             $subject
                 ->getGatewayVerify()
-                ->getPages( $subject->fields(), $_where, $subject->getData()[ 'order' ] );
+                ->getPages( $subject->fields(), $query->getWhere(), $query->getOrder() );
         if ( $result[ 'paginator' ]->count() > 0 )
         {
             $result[ 'paginator' ]->setCurrentPageNumber( $subject->getParam( 'page', 1 ) )
                                   ->setItemCountPerPage( $viewConfig->rows );
         }
 
-
-//        prn($result['paginator']->getCurrentItems());
-        $subject->getLogicServiceVerify()->trigger( 'prelist', $result['paginator']->getCurrentItems() );
-
+        $subject->getLogicServiceVerify()->trigger( 'prelist', $result[ 'paginator' ]->getCurrentItems() );
 
 //        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
 //            ->getGatewayVerify()->model()->getDataModel() );
 
-
-
         $result[ 'rows' ]   = [ 5, 10, 25, 50, 100 ];
+
         $result[ 'params' ] = [
             'data' => lcfirst( $viewConfig->model ),
             'view' => $viewConfig->mode,
-            'sort' => $subject->getParams()->fromRoute( 'sort', null ),
-            'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
+            //            'sort' => $subject->getParams()->fromRoute( 'sort', null ),
+            //            'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
         ];
-        $subject->setData( $result );
-    }
-
-    protected function order( \SplSubject $subject )
-    {
-        $result[ 'order' ] = [ ];
-        $s                 = (int) $subject->getParam( 'desc', 0 );
-        $sort              = $subject->getParam( 'sort', '' );
-        if ( $sort != '' )
-        {
-            $result[ 'order' ][ $sort ] = ( $s == 1 ) ? 'desc' : 'asc';
-        }
-        if ( !in_array( $sort, $subject->fields() ) )
-        {
-            $defaults = $subject->getViewConfigVerify()->params;
-
-            $result[ 'order' ] =
-                Arr::addNotNull( $result[ 'order' ], 'sort', Arr::getDoubtField( $defaults, 'sort', null ) );
-            $result[ 'order' ] =
-                Arr::addNotNull( $result[ 'order' ], 'desc', Arr::getDoubtField( $defaults, 'desc', null ) );
-
-        }
         $subject->setData( $result );
     }
 
