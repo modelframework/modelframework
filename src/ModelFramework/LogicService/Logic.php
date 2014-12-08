@@ -85,7 +85,7 @@ class Logic extends AbstractService
             $_obs              = new $observerClassName();
             if ( !empty( $obConfig ) )
             {
-                $_obs->setConfig( $obConfig );
+                $_obs->setRootConfig( $obConfig );
             }
             $this->attach( $_obs );
         }
