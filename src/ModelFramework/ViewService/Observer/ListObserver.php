@@ -59,7 +59,7 @@ class ListObserver
         $result[ 'rows' ]   = [ 5, 10, 25, 50, 100 ];
 
         $result[ 'params' ] = [
-            'data' => lcfirst( $viewConfig->model ),
+            'data' => strtolower( $viewConfig->model ),
             'view' => $viewConfig->mode,
             //            'sort' => $subject->getParams()->fromRoute( 'sort', null ),
             //            'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
