@@ -26,7 +26,7 @@ class Query
     private $_data = [ ];
 
     protected $allowed_observers = [
-        'RouteParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver', 'PermissionObserver'
+        'RouteParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver', 'PermissionObserver', 'AclObserver'
     ];
 
     protected $observers = [ ];

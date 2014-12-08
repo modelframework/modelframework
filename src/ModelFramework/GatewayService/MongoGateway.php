@@ -294,6 +294,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         $_where = [ ];
         foreach ( $where as $_key => $_value )
         {
+//            prn($_key, $_value);
             if ( $_key{0} == '$' || is_numeric( $_key ) )
             {
                 if ( is_array( $_value ) )
@@ -311,9 +312,17 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
                 $_value = [ '$ne' => $_value ];
                 $_key   = substr( $_key, 1 );
             }
-            elseif ( is_array( $_value ) )
+            elseif ( is_array( $_value ) && count( $_value ) )
             {
-                $_value = [ '$in' => $_value ];
+                $_1key = array_keys($_value)[0];
+                if ($_1key{0}=='$')
+                {
+                    $_value = $this->_mongoWhere( $_value );
+                }
+                else
+                {
+                    $_value = [ '$in' => $_value ];
+                }
             }
             $_where[ $_key ] = $_value;
         }
@@ -503,6 +512,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         // apply preSelect features
         // $this -> featureSet -> apply( 'preSelect', array( $select ) );
 
+        prn($this->collection,  $this->_where( $where ));
         $return = $this->collection->findOne( $this->_where( $where ) );
 
         if ( $this->profiler )
@@ -672,6 +682,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function getPages( $fields = array(), $where = array(), $orders = array() /* $params = array( ) */ )
     {
+        prn('Paginator ', $this->_where( $where ));
         $cursor = $this->collection->find( $this->_where( $where ) );
 //        $cursor->fields($fields);
         if ( !empty( $orders ) )

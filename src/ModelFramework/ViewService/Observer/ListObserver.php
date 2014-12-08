@@ -51,6 +51,12 @@ class ListObserver
                                   ->setItemCountPerPage( $viewConfig->rows );
         }
 
+        prn('gw', $subject->getGatewayVerify()->findOne(
+                $query->getWhere()
+            )
+        );
+//        prn($subject->getGatewayVerify()->findOne($query->getWhere()));
+
         $subject->getLogicServiceVerify()->trigger( 'prelist', $result[ 'paginator' ]->getCurrentItems() );
 
 //        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
