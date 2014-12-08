@@ -27,12 +27,12 @@ class AclObserver extends AbstractObserver
         {
             $user            = $subject->getAuthServiceVerify()->getUser();
 //            $where [ 'acl.role_id' ] = [$user->id(), $user->role_id];
-            prn($user);
+//            prn($user);
 //            $where [ 'acl.permissions' ] = $config[ 'permissions' ];
             $where [ 'acl' ] = [ '$elemMatch'=>
                                      [
                                          'role_id'=> [ $user->id(), $user->role_id ],
-                                         'permission'=> $config[ 'permissions' ],
+                                         'permissions'=> $config[ 'permissions' ],
                                      ]
             ];
 //            $where [ 'acl.role_id' ] = [$user->id()
@@ -42,8 +42,8 @@ class AclObserver extends AbstractObserver
         }
         $subject->setData( [ 'where' => $where ] );
 
-        prn($subject);
-        prn( $subject->getData() );
+//        prn($subject);
+//        prn( $subject->getData() );
 //        exit;
 
 //        $user = $subject->getAuthServiceVerify()->getUser();

@@ -294,7 +294,6 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         $_where = [ ];
         foreach ( $where as $_key => $_value )
         {
-//            prn($_key, $_value);
             if ( $_key{0} == '$' || is_numeric( $_key ) )
             {
                 if ( is_array( $_value ) )
@@ -512,7 +511,6 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         // apply preSelect features
         // $this -> featureSet -> apply( 'preSelect', array( $select ) );
 
-        prn($this->collection,  $this->_where( $where ));
         $return = $this->collection->findOne( $this->_where( $where ) );
 
         if ( $this->profiler )
@@ -603,7 +601,6 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         $result    = $this->adapter->getDriver()->createResult( $return, $this->getTable() );
         $resultSet = clone $this->resultSetPrototype;
         $resultSet->initialize( $result );
-//        prn("MongoGateway", $this -> model()->_model,$resultSet);
 
         // apply postSelect features
 //        $this -> featureSet -> apply( 'postSelect', array( $result, $resultSet ) );
@@ -682,7 +679,6 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function getPages( $fields = array(), $where = array(), $orders = array() /* $params = array( ) */ )
     {
-        prn('Paginator ', $this->_where( $where ));
         $cursor = $this->collection->find( $this->_where( $where ) );
 //        $cursor->fields($fields);
         if ( !empty( $orders ) )
