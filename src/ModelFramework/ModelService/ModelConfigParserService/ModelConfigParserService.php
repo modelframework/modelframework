@@ -24,10 +24,16 @@ class ModelConfigParserService
      * @param string $modelName
      *
      * @return array
+     * @throws \Exception
      */
     public function getModelConfig( $modelName )
     {
         $cd = $this->getConfigServiceVerify()->getByObject( $modelName, new ModelConfig() );
+        if ( $cd == null )
+        {
+            throw new \Exception( 'Please fill ModelConfig for the ' . $modelName . '. I can\'t work on' );
+        }
+
         return $this->pullModelConfig( $cd );
     }
 
@@ -142,10 +148,10 @@ class ModelConfigParserService
             $_fields                = [ $name => $_fieldconf ];
             $_labels                = [ $name => $_fieldconf[ 'label' ] ];
 
-            $_utility = $this->getFieldPart( $conf[ 'type' ], 'utility');
-            if ( count($_utility  ))
+            $_utility = $this->getFieldPart( $conf[ 'type' ], 'utility' );
+            if ( count( $_utility ) )
             {
-                $_fields = array_merge( $_fields, $_utility  );
+                $_fields = array_merge( $_fields, $_utility );
             }
         }
         $_infilter = $this->getInputFilter( $type );
