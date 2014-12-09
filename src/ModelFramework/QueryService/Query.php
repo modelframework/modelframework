@@ -24,6 +24,8 @@ class Query
     use QueryConfigAwareTrait, ParamsAwareTrait, AuthServiceAwareTrait;
 
     private $_data = [ ];
+    private $_where = [ ];
+    private $_order = [ ];
 
     protected $allowed_observers = [
         'RouteParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver', 'PermissionObserver', 'AclObserver'
@@ -73,17 +75,32 @@ class Query
     {
         $ar = Arr::getDoubtField( $this->getData(), $key, [ ] );
         unset ( $this->_data[ $key ] );
+
         return $ar;
+    }
+
+    public function setWhere( array $where )
+    {
+        $this->_where = \Zend\Stdlib\ArrayUtils::merge( $this->_where, $where );
+
+        return $this;
     }
 
     public function getWhere()
     {
-        return Arr::getDoubtField( $this->getData(), 'where', [ ] );
+        return $this->_where;
+    }
+
+    public function setOrder( array $order )
+    {
+        $this->_order = \Zend\Stdlib\ArrayUtils::merge( $this->_order, $order );
+
+        return $this;
     }
 
     public function getOrder()
     {
-        return Arr::getDoubtField( $this->getData(), 'order', [ ] );
+        return $this->_order;
     }
 
 

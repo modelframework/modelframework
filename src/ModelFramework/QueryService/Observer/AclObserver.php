@@ -40,7 +40,7 @@ class AclObserver extends AbstractObserver
 //                    'permissions' => [ '$in' => $config[ 'permissions' ] ]
 //            ];
         }
-        $subject->setData( [ 'where' => $where ] );
+        $subject->setWhere( $where );
 
 //        prn($subject);
 //        prn( $subject->getData() );

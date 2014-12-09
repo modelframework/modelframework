@@ -31,8 +31,7 @@ class PermissionObserver extends AbstractObserver
             }
         }
 
-        # I need to know permissions !
-        $subject->setData( [ 'where' => $where ] );
+        $subject->setWhere( $where );
 
     }
 

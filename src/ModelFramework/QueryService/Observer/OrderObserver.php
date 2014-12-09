@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AbstractObserver
+ * Class OrderObserver
  * @package ModelFramework\QueryService\Observer
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -21,11 +21,11 @@ class OrderObserver extends AbstractObserver
     public function update( \SplSubject $subject )
     {
         $this->setSubject( $subject );
-        $data = [
-            'order'  => [ ],
+        $data  = [
             'params' => [ ],
             'column' => [ ]
         ];
+        $order = [ ];
 
         $queryConfig = $subject->getQueryConfig();
         $defaults    = $queryConfig->order;
@@ -54,7 +54,8 @@ class OrderObserver extends AbstractObserver
             $data[ 'params' ][ 'desc' ] = $s;
         }
 
-        $data[ 'order' ][ $sort ]   = ( $s == 1 ) ? 'desc' : 'asc';
+        $order[ $sort ] = ( $s == 1 ) ? 'desc' : 'asc';
+        $subject->setOrder( $order );
         $data[ 'column' ][ 'sort' ] = $sort;
         $data[ 'column' ][ 'desc' ] = $s;
 

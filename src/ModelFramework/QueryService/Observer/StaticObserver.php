@@ -25,7 +25,7 @@ class StaticObserver extends AbstractObserver
         {
             $where[ $field ] = $value;
         }
-        $subject->setData( [ 'where' => $where ] );
+        $subject->setWhere( $where );
 
     }
 
