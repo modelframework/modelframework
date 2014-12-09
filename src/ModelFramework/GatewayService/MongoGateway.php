@@ -311,9 +311,17 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
                 $_value = [ '$ne' => $_value ];
                 $_key   = substr( $_key, 1 );
             }
-            elseif ( is_array( $_value ) )
+            elseif ( is_array( $_value ) && count( $_value ) )
             {
-                $_value = [ '$in' => $_value ];
+                $_1key = array_keys($_value)[0];
+                if ($_1key{0}=='$')
+                {
+                    $_value = $this->_mongoWhere( $_value );
+                }
+                else
+                {
+                    $_value = [ '$in' => $_value ];
+                }
             }
             $_where[ $_key ] = $_value;
         }
@@ -593,7 +601,6 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         $result    = $this->adapter->getDriver()->createResult( $return, $this->getTable() );
         $resultSet = clone $this->resultSetPrototype;
         $resultSet->initialize( $result );
-//        prn("MongoGateway", $this -> model()->_model,$resultSet);
 
         // apply postSelect features
 //        $this -> featureSet -> apply( 'postSelect', array( $result, $resultSet ) );

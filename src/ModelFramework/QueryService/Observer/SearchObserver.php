@@ -21,9 +21,6 @@ class SearchObserver extends AbstractObserver
         $this->setSubject( $subject );
 
         $data = [
-            'where' => [],
-//            'order' => [],
-//            'result' => [],
             'params' => []
         ];
 
@@ -37,16 +34,11 @@ class SearchObserver extends AbstractObserver
         $data['search_query'] = $searchQuery;
         $data['params'][$config['param']] = $searchQuery;
 
-
-//        $data['where'] = [
-//            '$and' => [ $subject->swipeDataKey('where'), [ '$text' => [ '$search' => $searchQuery ] ] ]
-//        ];
-
-        $data['where'] = [
+        $where = [
             '$and' => [ [ '$text' => [ '$search' => $searchQuery ] ] ]
         ];
 
-
+        $subject->setWhere( $where );
         $subject->setData( $data );
 
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class ConcatenationObserver
+ * Class AbstractObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -10,7 +10,9 @@ namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
+use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\LogicService\Logic;
+use Zend\Db\ResultSet\ResultSetInterface;
 
 abstract class AbstractObserver
     implements \SplObserver, ConfigAwareInterface
@@ -33,7 +35,7 @@ abstract class AbstractObserver
             $models = [ $models ];
         }
 
-        $aModels = [];
+        $aModels = [ ];
         foreach ( $models as $_k => $model )
         {
             if ( $model instanceof AclDataModel )
@@ -47,9 +49,9 @@ abstract class AbstractObserver
 
             foreach ( $this->getRootConfig() as $key => $value )
             {
-                if ( is_numeric($key ) )
+                if ( is_numeric( $key ) )
                 {
-                    $key = $value;
+                    $key   = $value;
                     $value = '';
                 }
                 if ( !isset( $dataModel->$key ) )
@@ -57,7 +59,7 @@ abstract class AbstractObserver
                     throw new \Exception( 'Field ' . $key . ' does not exist in model ' . $dataModel->getModelName() );
                 }
 
-                $this->process( $dataModel, $key, $value);
+                $this->process( $dataModel, $key, $value );
 
             }
 
@@ -69,7 +71,6 @@ abstract class AbstractObserver
             $models->initialize( $aModels );
         }
     }
-
 
     abstract public function process( $model, $key, $value );
 

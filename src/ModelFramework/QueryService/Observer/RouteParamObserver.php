@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AbstractObserver
+ * Class RouteParamObserver
  * @package ModelFramework\QueryService\Observer
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -25,7 +25,7 @@ class RouteParamObserver extends AbstractObserver
         {
             $where[ $field ] = $subject->getParam( $param, 'null' );
         }
-        $subject->setData( [ 'where' => $where ] );
+        $subject->setWhere( $where );
 
     }
 
