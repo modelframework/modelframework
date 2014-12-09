@@ -41,7 +41,8 @@ class Logic extends AbstractService
         'ChangerObserver',
         'OwnerObserver',
         'DateObserver',
-        'AgeObserver'
+        'AgeObserver',
+        'MainUserObserver'
     ];
 
     protected $observers = [ ];
