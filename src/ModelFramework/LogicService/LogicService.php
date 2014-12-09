@@ -18,13 +18,18 @@ use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicConfig\LogicConfig;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\ModelService\ModelServiceAwareInterface;
+use ModelFramework\ModelService\ModelServiceAwareTrait;
 use Zend\Db\ResultSet\ResultSetInterface;
 
 class LogicService
-    implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface, GatewayServiceAwareInterface, AuthServiceAwareInterface
+    implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
+               GatewayServiceAwareInterface,
+               AuthServiceAwareInterface, ModelServiceAwareInterface
 {
 
-    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
+    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait,
+        AuthServiceAwareTrait, ModelServiceAwareTrait;
 
     public function dispatch( $event )
     {
@@ -93,6 +98,7 @@ class LogicService
         $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
         $logic->setGatewayService( $this->getGatewayServiceVerify() );
         $logic->setAuthService( $this->getAuthServiceVerify() );
+        $logic->setModelService($this->getModelService());
         $logic->init();
         $logic->process();
 //        $dataLogic->setServiceLocator( $this->getServiceLocator() );
