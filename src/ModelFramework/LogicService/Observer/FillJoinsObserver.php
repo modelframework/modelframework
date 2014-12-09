@@ -23,7 +23,8 @@ class FillJoinsObserver
     {
         $this->fillJoins( $subject );
 //        FIXME This is a place for debugging results of Observers
-//        prn($subject->getEventObject());
+//        prn( 'Logic Service FillJoinsObserver' );
+//        prn( $subject->getEventObject()->toArray() );
 //        exit;
     }
 
@@ -39,7 +40,7 @@ class FillJoinsObserver
             $models = [ $models ];
         }
 
-        $aModels = [];
+        $aModels = [ ];
         foreach ( $models as $_k => $aclModel )
         {
             if ( $aclModel instanceof AclDataModel )

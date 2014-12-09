@@ -39,10 +39,12 @@ class Logic extends AbstractService
         'ConstantObserver',
         'NewItemObserver',
         'ChangerObserver',
+        'RefreshObserver',
+        'UploadObserver',
         'OwnerObserver',
         'DateObserver',
-        'UploadObserver',
-        'AgeObserver'
+        'AgeObserver',
+        'AclObserver'
     ];
 
     protected $observers = [ ];
