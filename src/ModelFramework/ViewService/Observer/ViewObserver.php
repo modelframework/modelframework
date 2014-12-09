@@ -14,10 +14,19 @@ class ViewObserver
 
     public function update( \SplSubject $subject )
     {
-        $id                  = (string) $subject->getParams()->fromRoute( 'id', 0 );
+        $viewConfig = $subject->getViewConfigVerify();
+
+        $query =
+            $subject->getQueryServiceVerify()
+                    ->get( $viewConfig->query )
+                    ->setParams( $subject->getParams() )
+                    ->process();
+
+        $subject->setData( $query->getData() );
+
+
         $result              = [ ];
-        $result[ 'widgets' ] = [ ];
-        $model               = $subject->getGatewayVerify()->findOne( [ '_id' => $id ] );
+        $model               = $subject->getGatewayVerify()->findOne( $query -> getWhere() );
         if ( !$model )
         {
             throw new \Exception( 'Data not found' );
@@ -26,9 +35,7 @@ class ViewObserver
         $subject->getLogicServiceVerify()->trigger( 'preview', $model );
 
         $result[ 'model' ]          = $model;
-        $result[ 'params' ][ 'id' ] = $id;
-        $result[ 'title' ]          = $subject->getViewConfigVerify()->title . ' ' . $model->title;
-//        $this->widgets( $subject, $model );
+        $result[ 'title' ]          = $viewConfig->title . ' ' . $model->title;
         $subject->setData( $result );
 
         $subject->getLogicServiceVerify()->trigger( 'postview', $model );

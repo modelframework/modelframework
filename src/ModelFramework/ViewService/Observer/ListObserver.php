@@ -24,20 +24,11 @@ class ListObserver
 
         $viewConfig = $subject->getViewConfigVerify();
 
-//        prn( $subject -> getGatewayVerify() -> model()-> getDataModel () );
-
-        $model = $subject->getGatewayVerify()->model();
-
-//        prn( $subject -> getFormServiceVerify() -> getPermittedConfig($model, Acl::MODE_READ ) );
-//        prn( $subject -> getFormServiceVerify() -> getFieldPermissions($model, Acl::MODE_READ ) );
-
         $query =
             $subject->getQueryServiceVerify()
                     ->get( $viewConfig->query )
                     ->setParams( $subject->getParams() )
                     ->process();
-
-//        prn( $subject -> getData() );
 
         $subject->setData( $query->getData() );
 
@@ -51,7 +42,7 @@ class ListObserver
                                   ->setItemCountPerPage( $viewConfig->rows );
         }
 
-        $subject->getLogicServiceVerify()->trigger( 'prelist', $result[ 'paginator' ]->getCurrentItems() );
+        $subject->getLogicServiceVerify()->trigger( 'prelist',  $result[ 'paginator' ]->getCurrentItems() );
         $subject->getLogicServiceVerify()->trigger( 'postlist', $result[ 'paginator' ]->getCurrentItems() );
 
 //        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
@@ -62,9 +53,10 @@ class ListObserver
         $result[ 'params' ] = [
             'data' => strtolower( $viewConfig->model ),
             'view' => $viewConfig->mode,
-            //            'sort' => $subject->getParams()->fromRoute( 'sort', null ),
-            //            'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
+            //  'sort' => $subject->getParams()->fromRoute( 'sort', null ),
+            //  'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
         ];
+
         $subject->setData( $result );
     }
 

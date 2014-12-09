@@ -38,6 +38,11 @@ class QueryService
     public function getQuery( $queryName )
     {
 
+        if ( is_array( $queryName ) )
+        {
+            throw new \Exception('Change QueryConfig to the valid QueryName. I have got array ');
+        }
+
         // this object will deal with all view of model stuff
         $query = new Query();
 

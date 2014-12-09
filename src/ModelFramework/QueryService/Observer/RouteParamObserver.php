@@ -20,11 +20,22 @@ class RouteParamObserver extends AbstractObserver
     {
         $this->setSubject( $subject );
 
+        $data = [
+            'params' => []
+        ];
+
         $where = [ ];
         foreach ( $this->getRootConfig() as $field => $param )
         {
             $where[ $field ] = $subject->getParam( $param, 'null' );
+            if ( $where[ $field ]!== null )
+            {
+                $data['params'][$param] = $where[ $field ];
+            }
         }
+
+
+        $subject->setData($data);
         $subject->setWhere( $where );
 
     }
