@@ -8,17 +8,20 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
-
 class AclObserver extends AbstractObserver
 {
-
-    use SubjectAwareTrait;
 
     public function process( $model, $key, $value )
     {
         $user = $this->getSubject()->getAuthService()->getUser();
-        $acl  = [ ];
+        $acl  = $model->acl;
+        foreach ( $acl as $_key => $_aclArray )
+        {
+            if ( $_aclArray[ 'type' ] == 'owner' || $_aclArray[ 'type' ] == 'hierarchy' )
+            {
+                unset( $acl[ $_key ] );
+            }
+        }
         if ( isset( $value[ 'owner' ] ) )
         {
             $acl[ ] = [

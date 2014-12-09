@@ -16,8 +16,9 @@ class FormObserver implements \SplObserver
     public function update( \SplSubject $subject )
     {
         $viewConfig = $subject->getViewConfigVerify();
-        $modelName  = $viewConfig->model;
-        $id         = (string) $subject->getParam( 'id', '0' );
+        prn( $viewConfig );
+        $modelName = $viewConfig->model;
+        $id        = (string) $subject->getParam( 'id', '0' );
         if ( $id == '0' )
         {
             // :FIXME: check create permission
@@ -74,7 +75,7 @@ class FormObserver implements \SplObserver
                 $model->merge( $model_data );
                 $model->merge( $old_data );
 
-                $subject->getLogicServiceVerify()->trigger( 'preinsert', $model->getDataModel() );
+                $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     try
@@ -89,7 +90,8 @@ class FormObserver implements \SplObserver
 
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
-                    $subject->getLogicServiceVerify()->trigger( 'postinsert', $model->getDataModel() );
+                    $subject->getLogicServiceVerify()->trigger( 'post' . $viewConfig->mode,
+                                                                $model->getDataModel() );
                     $url = $subject->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {
