@@ -80,6 +80,8 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
     {
         $this->setDataFields();
 
+        $params = [];
+
         foreach ( $this->getViewBoxConfigVerify()->blocks as $blockName => $viewNames )
         {
             foreach ( $viewNames as $viewName )
@@ -93,11 +95,20 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
                     return;
                 }
+
+                $data = $modelView->getData();
+                $params = \Zend\Stdlib\ArrayUtils::merge( $params, $data['params'] );
+
                 $viewResults = [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
                 $this->setData( $viewResults );
             }
 
         }
+
+        $params['data'] = strtolower( $this -> getViewBoxConfigVerify()->document );
+        $params['view'] = strtolower( $this -> getViewBoxConfigVerify()->mode );
+
+        $this->setData( [ 'viewboxparams' => $params ] );
 
         return $this;
     }

@@ -39,7 +39,7 @@ class QueryService
     {
         if ( is_array( $queryName ) )
         {
-            throw new \Exception('Change QueryConfig to the valid QueryName. I have got array ');
+            throw new \Exception('Change QueryConfig to the valid QueryName. I have got an array ');
         }
 
         // this object will deal with all view of model stuff

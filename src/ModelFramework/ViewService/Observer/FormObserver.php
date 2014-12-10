@@ -16,7 +16,7 @@ class FormObserver implements \SplObserver
     public function update( \SplSubject $subject )
     {
         $viewConfig = $subject->getViewConfigVerify();
-        prn( $viewConfig );
+//        prn( $viewConfig );
         $modelName = $viewConfig->model;
         $id        = (string) $subject->getParam( 'id', '0' );
         if ( $id == '0' )

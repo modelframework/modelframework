@@ -11,7 +11,7 @@ namespace ModelFramework\ViewService\Observer;
 use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\ViewService\View;
 
-class WidgetObserver
+class Widget2Observer
     implements \SplObserver
 {
 
