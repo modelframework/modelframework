@@ -78,8 +78,6 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
     public function process()
     {
-
-        // should i use init ?
         $this->setDataFields();
 
         foreach ( $this->getViewBoxConfigVerify()->blocks as $blockName => $viewNames )

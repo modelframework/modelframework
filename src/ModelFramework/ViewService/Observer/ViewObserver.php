@@ -24,7 +24,6 @@ class ViewObserver
 
         $subject->setData( $query->getData() );
 
-
         $result              = [ ];
         $model               = $subject->getGatewayVerify()->findOne( $query -> getWhere() );
         if ( !$model )

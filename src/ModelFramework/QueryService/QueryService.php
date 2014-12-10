@@ -37,7 +37,6 @@ class QueryService
      */
     public function getQuery( $queryName )
     {
-
         if ( is_array( $queryName ) )
         {
             throw new \Exception('Change QueryConfig to the valid QueryName. I have got array ');
