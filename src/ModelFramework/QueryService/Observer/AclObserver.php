@@ -21,26 +21,56 @@ class AclObserver extends AbstractObserver
         $this->setSubject( $subject );
 //        prn( $subject->getData());
         $config = $this->getRootConfig();
+        $user            = $subject->getAuthServiceVerify()->getUser();
         $where  = [ ];
+        $match = [
+//            'type'=> [ 'owner', 'shared', 'hieararhy' ],
+//            'role_id'=> [ $user->id(), $user->role_id ],
+            'permissions'=> $this->getConfigPart( 'permissions' )
+        ];
 
-        if ( $config[ 'owner' ] )
+        prn($this->getConfigPart( 'type' ));
+
+        if ( !count( $this->getConfigPart( 'type' ) ) )
         {
+            $match[ 'type' ]  = [ 'owner', 'shared', 'hieararhy' ];
+            $match[ 'role_id' ] = [ $user->id(), $user->role_id ];
+//            'type'=> [ 'owner', 'shared', 'hieararhy' ],
+//            'role_id'
+        }
+
+        if ( in_array( 'owner', $this->getConfigPart( 'type' ) ) )
+        {
+            $match[ 'type' ][] = 'owner';
+            $match[ 'role_id' ][] = $user->id();
+        }
+
+        if ( in_array( 'hierarchy', $this->getConfigPart( 'type' ) ) )
+        {
+            $match[ 'type' ][] = 'hierarchy';
+            $match[ 'role_id' ][] = $user->role_id();
+
+        }
+
+        if ( in_array( 'shared', $this->getConfigPart( 'type' ) ) )
+        {
+            $match[ 'type' ][] = 'shared';
+            $match[ 'role_id' ] = [ $user->id(), $user->role_id ];
+        }
+
             $user            = $subject->getAuthServiceVerify()->getUser();
 //            $where [ 'acl.role_id' ] = [$user->id(), $user->role_id];
 //            prn($user);
 //            $where [ 'acl.permissions' ] = $config[ 'permissions' ];
-            $where [ 'acl' ] = [ '$elemMatch'=>
-                                     [
-                                         'role_id'=> [ $user->id(), $user->role_id ],
-                                         'permissions'=> $config[ 'permissions' ],
-                                     ]
-            ];
+
+            $where [ 'acl' ] = [ '$elemMatch' => $match ];
 //            $where [ 'acl.role_id' ] = [$user->id()
 //                '$elemMatch' => [ 'role_id' => $user->id() ], 'permissions' => [ '$in' => [ $config[ 'permissions' ] ] ]
 //                    'permissions' => [ '$in' => $config[ 'permissions' ] ]
 //            ];
-        }
+//        }
         $subject->setWhere( $where );
+        prn($where);
 
 //        prn($subject);
 //        prn( $subject->getData() );
