@@ -29,7 +29,7 @@ class AclObserver extends AbstractObserver
             'permissions'=> $this->getConfigPart( 'permissions' )
         ];
 
-        prn($this->getConfigPart( 'type' ));
+//        prn($this->getConfigPart( 'type' ));
 
         if ( !count( $this->getConfigPart( 'type' ) ) )
         {
@@ -70,7 +70,7 @@ class AclObserver extends AbstractObserver
 //            ];
 //        }
         $subject->setWhere( $where );
-        prn($where);
+//        prn($where);
 
 //        prn($subject);
 //        prn( $subject->getData() );
