@@ -19,19 +19,19 @@ class ConvertObserver implements \SplObserver
      */
     public function update( \SplSubject $subject )
     {
-        $result  = [ ];
-        $request = $subject->getParams()->getController()->getRequest();
+        $result     = [ ];
+        $request    = $subject->getParams()->getController()->getRequest();
         $viewConfig = $subject->getViewConfigVerify();
-        $modelName = $viewConfig->model;
-        $route     = strtolower( $modelName );
-        $id        = (string) $subject->getParams()->fromRoute( 'id', 0 );
+        $modelName  = $viewConfig->model;
+        $route      = strtolower( $modelName );
+        $id         = (string) $subject->getParams()->fromRoute( 'id', 0 );
         if ( !$id )
         {
             return $subject->redirect()->toRoute( $route );
         }
         $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
-        $convertConfig                = $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
-//        $convertConfig                = $subject->getDataMappingServiceVerify()->get( 'Lead' );
+        $convertConfig                =
+            $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
         $result[ 'convertedObjects' ] = [ ];
         foreach ( $convertConfig->targets as $_key => $_value )
         {
@@ -51,7 +51,7 @@ class ConvertObserver implements \SplObserver
             foreach ( $result[ 'convertedObjects' ] as $object )
             {
 //                $subject->getParams()->getController()->trigger( 'presave', $object );
-                $subject->getGatewayServiceVerify()->get($object -> getModelName())->save($object);
+                $subject->getGatewayServiceVerify()->get( $object->getModelName() )->save( $object );
 //                $subject->getParams()->getController()->trigger( 'postsave', $object );
             }
             $url = $subject->getParams()->getController()->getBackUrl();
@@ -63,6 +63,7 @@ class ConvertObserver implements \SplObserver
             $subject->setRedirect( $subject->getParams()->getController()->refresh( $modelName .
                                                                                     ' data was successfully converted',
                                                                                     $url ) );
+
             return;
         }
 
