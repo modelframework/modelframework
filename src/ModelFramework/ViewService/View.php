@@ -13,6 +13,8 @@ use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\AclDataModel;
+use ModelFramework\FileService\FileServiceAwareInterface;
+use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
@@ -41,18 +43,18 @@ class View
     implements ViewInterface, ViewConfigAwareInterface, ModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
                ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface,
-               ConfigServiceAwareInterface,
+               ConfigServiceAwareInterface, FileServiceAwareInterface,
                AuthServiceAwareInterface, LogicServiceAwareInterface, QueryServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigAwareTrait, ModelConfigAwareTrait, ConfigServiceAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait;
+    use ViewConfigAwareTrait, ModelConfigAwareTrait, ConfigServiceAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
 
     protected $allowed_observers = [
         'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver',
-        'UserObserver', 'ListDetailsObserver',
+        'UserObserver', 'ListDetailsObserver', 'UploadObserver',
         'WidgetObserver', 'Widget1Observer'
     ];
     protected $observers = [ ];
