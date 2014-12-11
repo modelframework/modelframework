@@ -8,11 +8,15 @@
 
 namespace ModelFramework\ViewService\Observer;
 
+use ModelFramework\ViewService\View;
 use Wepo\Lib\Acl;
 
 class FormObserver implements \SplObserver
 {
 
+    /**
+     * @param \SplSubject|View $subject
+     */
     public function update( \SplSubject $subject )
     {
         $viewConfig = $subject->getViewConfigVerify();
