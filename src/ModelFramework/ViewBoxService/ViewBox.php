@@ -10,6 +10,7 @@ namespace ModelFramework\ViewBoxService;
 
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareInterface;
@@ -54,7 +55,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
     public function setData( array $data )
     {
-        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data );
+        $this->_data = Arr::merge( $this->_data, $data );
     }
 
     protected function clearData()
@@ -97,7 +98,12 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
                 }
 
                 $data = $modelView->getData();
-                $params = \Zend\Stdlib\ArrayUtils::merge( $params, $data['params'] );
+
+                $vParams = Arr::getDoubtField( $data, 'params', [ ] );
+                if ( count( $vParams ) )
+                {
+                    $params = Arr::merge( $params, $vParams );
+                }
 
                 $viewResults = [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
                 $this->setData( $viewResults );

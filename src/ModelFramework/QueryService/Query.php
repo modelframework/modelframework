@@ -62,7 +62,7 @@ class Query
 
     public function setData( array $data )
     {
-        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data );
+        $this->_data = Arr::merge( $this->_data, $data );
 //        $this->_data += $data;
     }
 
@@ -81,7 +81,7 @@ class Query
 
     public function setWhere( array $where )
     {
-        $this->_where = \Zend\Stdlib\ArrayUtils::merge( $this->_where, $where );
+        $this->_where = Arr::merge( $this->_where, $where );
 
         return $this;
     }
@@ -93,7 +93,7 @@ class Query
 
     public function setOrder( array $order )
     {
-        $this->_order = \Zend\Stdlib\ArrayUtils::merge( $this->_order, $order );
+        $this->_order = Arr::merge( $this->_order, $order );
 
         return $this;
     }

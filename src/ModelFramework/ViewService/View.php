@@ -29,6 +29,7 @@ use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\FormService\FormServiceAwareTrait;
 use ModelFramework\QueryService\QueryServiceAwareInterface;
 use ModelFramework\QueryService\QueryServiceAwareTrait;
+use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareInterface;
@@ -110,7 +111,7 @@ class View
 
     public function setData( array $data )
     {
-        $this->_data = \Zend\Stdlib\ArrayUtils::merge( $this->_data, $data );
+        $this->_data = Arr::merge( $this->_data, $data );
 //        $this->_data += $data;
     }
 
