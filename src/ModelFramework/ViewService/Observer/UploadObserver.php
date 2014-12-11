@@ -81,7 +81,7 @@ class UploadObserver implements \SplObserver
                 $model = $aclModel;
                 $aclModel = null;
             }
-            
+
             $data[ 'model' ] = $model;
             $subject->setData( $data );
 
