@@ -13,7 +13,7 @@ use ModelFramework\DataModel\DataModel;
 class DataMappingConfig extends DataModel
 {
 
-    public $_model = 'DataMapping';
+    public $_model = 'DataMappingConfig';
     public $_label = 'Data Mapping';
     public $_adapter = 'wepo_company';
 

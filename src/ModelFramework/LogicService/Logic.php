@@ -45,6 +45,7 @@ class Logic extends AbstractService
         'DateObserver',
         'AgeObserver',
         'MainUserObserver',
+        'ConditionObserver',
         'AclObserver'
     ];
 

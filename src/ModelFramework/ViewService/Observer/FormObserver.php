@@ -16,67 +16,76 @@ class FormObserver implements \SplObserver
 
     /**
      * @param \SplSubject|View $subject
+     *
+     * @throws \Exception
      */
     public function update( \SplSubject $subject )
     {
         $viewConfig = $subject->getViewConfigVerify();
-//        prn( $viewConfig );
-        $modelName = $viewConfig->model;
-        $data = $subject->getData();
-        if ( isset($data['model']))
+        $modelName  = $viewConfig->model;
+        $data       = $subject->getData();
+        if ( $viewConfig->mode == 'insert' )
         {
-            $model = $data['model'];
+            $mode = Acl::MODE_CREATE;
+        }
+        elseif ( $viewConfig->mode == 'update' )
+        {
+            $mode = Acl::MODE_EDIT;
         }
         else
         {
-            $id        = (string) $subject->getParam( 'id', '0' );
-            if ( $id == '0' )
+            throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+                                  ' View Config for the FormObserver ' );
+        }
+        if ( isset( $data[ 'model' ] ) )
+        {
+            $model = $data[ 'model' ];
+
+        }
+        else
+        {
+            if ( $viewConfig->mode == 'insert' )
             {
-                // :FIXME: check create permission
                 $model = $subject->getGateway()->model();
-                $mode  = Acl::MODE_CREATE;
             }
-            else
+            elseif ( $viewConfig->mode == 'update' )
             {
-                // :FIXME: add security filter
-                $model = $subject->getGateway()->get( $id );
-                $mode  = Acl::MODE_EDIT;
+                $query =
+                    $subject->getQueryServiceVerify()
+                            ->get( $viewConfig->query )
+                            ->setParams( $subject->getParams() )
+                            ->process();
+                $model = $subject->getGateway()->findOne( $query->getWhere() );
+                if ( $model == null )
+                {
+                    throw new \Exception( 'Data is not accessible' );
+                }
             }
         }
         $form = $subject->getFormServiceVerify()->get( $model, $mode );
         $form->setRoute( 'common' );
         $form->setActionParams( [ 'data' => strtolower( $modelName ), 'view' => 'list' ] );
+        $id = (string) $subject->getParam( 'id', '0' );
         if ( $id != '0' )
         {
             $form->setActionParams( [ 'id' => $id ] );
         }
-        $results = [ ];
-        try
+        $results  = [ ];
+        $old_data = $model->split( $form->getValidationGroup() );
+        //Это жесть конечно и забавно, но на время сойдет :)
+        $model_bind = $model->toArray();
+        foreach ( $model_bind as $_k => $_v )
         {
-            $old_data = $model->split( $form->getValidationGroup() );
-            //Это жесть конечно и забавно, но на время сойдет :)
-            $model_bind = $model->toArray();
-            foreach ( $model_bind as $_k => $_v )
+            if ( substr( $_k, -4 ) == '_dtm' )
             {
-                if ( substr( $_k, -4 ) == '_dtm' )
-                {
-                    $model->$_k = str_replace( ' ', 'T', $_v );
-                }
+                $model->$_k = str_replace( ' ', 'T', $_v );
             }
-            //Конец жести
         }
-        catch ( \Exception $ex )
-        {
-//            return $subject->getParams()->getController()->redirect()
-//                           ->toRoute( $form->getRoute(), array( 'action' => 'list' ) );
-        }
+        //Конец жести
         $request = $subject->getParams()->getController()->getRequest();
         if ( $request->isPost() )
         {
-//            $form->addInputFilter( $model->getInputFilter() );
             $form->setData( $request->getPost() );
-
-//            prn($form -> getValidationGroup());
             if ( $form->isValid() )
             {
                 $model_data = array();
@@ -86,7 +95,6 @@ class FormObserver implements \SplObserver
                 }
                 $model->merge( $model_data );
                 $model->merge( $old_data );
-
                 $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
@@ -99,7 +107,6 @@ class FormObserver implements \SplObserver
                         $results[ 'message' ] = 'Invalid input data.' . $ex->getMessage();
                     }
                 }
-
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     $subject->getLogicServiceVerify()->trigger( 'post' . $viewConfig->mode,

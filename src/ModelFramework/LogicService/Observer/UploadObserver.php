@@ -16,8 +16,8 @@ class UploadObserver extends AbstractObserver
         $modelName = $model->getModelName();
         $id        = $model->$key;
 //        $fs = $this->getServiceLocator()->get('\Wepo\Lib\FileService');
-        prn($this->getSubject());
-        exit();
+//        prn($this->getSubject());
+//        exit();
         $user      =
             $this->getSubject()->getGatewayServiceVerify()->get( 'User' )->findOne( [ '_id' => $id ] );
         $newItems  = $user->newitems;
