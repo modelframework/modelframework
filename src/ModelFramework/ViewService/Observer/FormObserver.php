@@ -24,16 +24,29 @@ class FormObserver implements \SplObserver
         $viewConfig = $subject->getViewConfigVerify();
         $modelName  = $viewConfig->model;
         $data       = $subject->getData();
+        if ( $viewConfig->mode == 'insert' )
+        {
+            $mode = Acl::MODE_CREATE;
+        }
+        elseif ( $viewConfig->mode == 'update' )
+        {
+            $mode = Acl::MODE_EDIT;
+        }
+        else
+        {
+            throw new \Exception( "Unknown mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+                                  ' View Config' );
+        }
         if ( isset( $data[ 'model' ] ) )
         {
             $model = $data[ 'model' ];
+
         }
         else
         {
             if ( $viewConfig->mode == 'insert' )
             {
                 $model = $subject->getGateway()->model();
-                $mode  = Acl::MODE_CREATE;
             }
             elseif ( $viewConfig->mode == 'update' )
             {
@@ -47,12 +60,6 @@ class FormObserver implements \SplObserver
                 {
                     throw new \Exception( 'Data is not accessible' );
                 }
-                $mode = Acl::MODE_EDIT;
-            }
-            else
-            {
-                throw new \Exception( "Unknown mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
-                                      ' View Config' );
             }
         }
         $form = $subject->getFormServiceVerify()->get( $model, $mode );

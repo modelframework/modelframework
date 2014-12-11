@@ -8,6 +8,8 @@
 
 namespace ModelFramework\ViewService\Observer;
 
+use ModelFramework\DataModel\AclDataModel;
+use ModelFramework\ModelService\ModelConfig\ModelConfig;
 use Wepo\Lib\Acl;
 
 class UploadObserver implements \SplObserver
@@ -15,146 +17,74 @@ class UploadObserver implements \SplObserver
 
     public function update( \SplSubject $subject )
     {
-//        $request = $subject->getParams()->getController()->getRequest();
         $files = $subject->getParams()->fromFiles();
-        if(count($files)){
+        if ( count( $files ) )
+        {
+            $fileService = $subject->getFileServiceVerify();
             $data = $subject->getData();
-            if ( isset($data['model']))
+            if ( isset( $data[ 'model' ] ) )
             {
-              $model = $data['model'];
+                $model = $data[ 'model' ];
             }
             else
             {
-                $id        = (string) $subject->getParam( 'id', '0' );
+                $id = (string) $subject->getParam( 'id', '0' );
                 if ( $id == '0' )
                 {
                     // :FIXME: check create permission
                     $model = $subject->getGateway()->model();
-                    $mode  = Acl::MODE_CREATE;
+//                    $mode  = Acl::MODE_CREATE;
                 }
                 else
                 {
                     // :FIXME: add security filter
                     $model = $subject->getGateway()->get( $id );
-                    $mode  = Acl::MODE_EDIT;
+//                    $mode  = Acl::MODE_EDIT;
                 }
             }
-//        if ( $request->isPost() )
-//        {
-//            $viewConfig = $subject->getViewConfigVerify();
-//            $files = $request->getFiles();
-            prn($files, $model->toArray() ,$subject->getFileServiceVerify());
-            exit();
-//        prn( $viewConfig );
-            $modelName = $viewConfig->model;
 
-
-            $data['model'] = $model;
-            $subject->setData($data);
-
-        }
-//        }
-    }
-
-public function  getfile(){
-    $id        = (string) $subject->getParam( 'id', '0' );
-        if ( $id == '0' )
-        {
-            // :FIXME: check create permission
-            $model = $subject->getGateway()->model();
-            $mode  = Acl::MODE_CREATE;
-        }
-        else
-        {
-            // :FIXME: add security filter
-            $model = $subject->getGateway()->get( $id );
-            $mode  = Acl::MODE_EDIT;
-        }
-        $form = $subject->getFormServiceVerify()->get( $model, $mode );
-        $form->setRoute( 'common' );
-        $form->setActionParams( [ 'data' => strtolower( $modelName ), 'view' => 'list' ] );
-        if ( $id != '0' )
-        {
-            $form->setActionParams( [ 'id' => $id ] );
-        }
-        $results = [ ];
-        try
-        {
-            $old_data = $model->split( $form->getValidationGroup() );
-            //Это жесть конечно и забавно, но на время сойдет :)
-            $model_bind = $model->toArray();
-            foreach ( $model_bind as $_k => $_v )
+            $aclModel = null;
+            if ( $model instanceof AclDataModel )
             {
-                if ( substr( $_k, -4 ) == '_dtm' )
-                {
-                    $model->$_k = str_replace( ' ', 'T', $_v );
-                }
+                $aclModel = $model;
+                $model = $aclModel->getDataModel();
             }
-            //Конец жести
-        }
-        catch ( \Exception $ex )
-        {
-//            return $subject->getParams()->getController()->redirect()
-//                           ->toRoute( $form->getRoute(), array( 'action' => 'list' ) );
-        }
-        $request = $subject->getParams()->getController()->getRequest();
-        if ( $request->isPost() )
-        {
-//            $form->addInputFilter( $model->getInputFilter() );
-            $form->setData( $request->getPost() );
-
-//            prn($form -> getValidationGroup());
-            if ( $form->isValid() )
+            foreach ( $files as $_group => $_filefields )
             {
-                $model_data = array();
-                foreach ( $form->getData() as $_k => $_data )
+                foreach ( $_filefields as $_fieldname => $_file )
                 {
-                    $model_data += is_array( $_data ) ? $_data : array( $_k => $_data );
-                }
-                $model->merge( $model_data );
-                $model->merge( $old_data );
-
-                $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
-                if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
-                {
-                    try
+                    if ( isset( $model->$_fieldname ) )
                     {
-                        $subject->getGateway()->save( $model );
+                        $realname = $_fieldname . '_real_name';
+                        $size     = $_fieldname . '_size';
+                        $extension     = $_fieldname . '_extension';
+                        if ( isset( $model->$size ) )
+                        {
+                            $model->$size = (string) ( round((float) $_file['size'] / 1048576, 2) ) . ' MB';
+                        }
+                        if ( isset( $model->$realname ) )
+                        {
+                            $model->$realname = basename($_file['name']);
+                        }
+                        if ( isset( $model->$extension ) )
+                        {
+                            $model->$extension = $fileService->getFileExtension($_file['name']);
+                        }
+                        $model->$_fieldname = $fileService->saveFile($_file['name'], $_file['tmp_name']);
                     }
-                    catch ( \Exception $ex )
-                    {
-                        $results[ 'message' ] = 'Invalid input data.' . $ex->getMessage();
-                    }
-                }
-
-                if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
-                {
-                    $subject->getLogicServiceVerify()->trigger( 'post' . $viewConfig->mode,
-                                                                $model->getDataModel() );
-                    $url = $subject->getBackUrl();
-                    if ( $url == null || $url == '/' )
-                    {
-                        $url = $subject->getParams()->getController()->url()
-                                       ->fromRoute( $form->getRoute(), $form->getActionParams() );
-                    }
-                    $subject->setRedirect( $subject->refresh( $modelName . ' data was successfully saved', $url ) );
-
-                    return;
                 }
             }
-        }
-        else
-        {
-            $form->bind( $model );
-        }
-        $form->prepare();
-        $results[ 'form' ] = $form;
-        if ( isset( $form->getFieldsets()[ 'saurl' ] ) )
-        {
-            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()
-                                                                               ->fromQuery( 'back', 'home' ) );
-        }
-        $subject->setData( $results );
-    }
 
+            if ( $aclModel !== null && $aclModel instanceof AclDataModel )
+            {
+                $aclModel->setDataModel($model);
+                $model = $aclModel;
+                $aclModel = null;
+            }
+            
+            $data[ 'model' ] = $model;
+            $subject->setData( $data );
+
+        }
+    }
 }
