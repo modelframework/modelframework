@@ -22,6 +22,15 @@ class FormObserver implements \SplObserver
         if ( isset($data['model']))
         {
             $model = $data['model'];
+            $id        = (string) $subject->getParam( 'id', '0' );
+            if ( $id == '0' )
+            {
+                $mode  = Acl::MODE_CREATE;
+            }
+            else
+            {
+                $mode  = Acl::MODE_EDIT;
+            }
         }
         else
         {
