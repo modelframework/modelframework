@@ -34,8 +34,8 @@ class FormObserver implements \SplObserver
         }
         else
         {
-            throw new \Exception( "Unknown mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
-                                  ' View Config' );
+            throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+                                  ' View Config for the FormObserver ' );
         }
         if ( isset( $data[ 'model' ] ) )
         {
