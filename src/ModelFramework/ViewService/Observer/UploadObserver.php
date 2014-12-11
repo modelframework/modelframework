@@ -10,34 +10,65 @@ namespace ModelFramework\ViewService\Observer;
 
 use Wepo\Lib\Acl;
 
-class FormObserver implements \SplObserver
+class UploadObserver implements \SplObserver
 {
 
     public function update( \SplSubject $subject )
     {
-        $viewConfig = $subject->getViewConfigVerify();
-//        prn( $viewConfig );
-        $modelName = $viewConfig->model;
-        $data = $subject->getData();
-        if ( isset($data['model']))
-        {
-            $model = $data['model'];
-        }
-        else
-        {
-            $id        = (string) $subject->getParam( 'id', '0' );
-            if ( $id == '0' )
+//        $request = $subject->getParams()->getController()->getRequest();
+        $files = $subject->getParams()->fromFiles();
+        if(count($files)){
+            $data = $subject->getData();
+            if ( isset($data['model']))
             {
-                // :FIXME: check create permission
-                $model = $subject->getGateway()->model();
-                $mode  = Acl::MODE_CREATE;
+              $model = $data['model'];
             }
             else
             {
-                // :FIXME: add security filter
-                $model = $subject->getGateway()->get( $id );
-                $mode  = Acl::MODE_EDIT;
+                $id        = (string) $subject->getParam( 'id', '0' );
+                if ( $id == '0' )
+                {
+                    // :FIXME: check create permission
+                    $model = $subject->getGateway()->model();
+                    $mode  = Acl::MODE_CREATE;
+                }
+                else
+                {
+                    // :FIXME: add security filter
+                    $model = $subject->getGateway()->get( $id );
+                    $mode  = Acl::MODE_EDIT;
+                }
             }
+//        if ( $request->isPost() )
+//        {
+//            $viewConfig = $subject->getViewConfigVerify();
+//            $files = $request->getFiles();
+            prn($files, $model->toArray() ,$subject->getFileServiceVerify());
+            exit();
+//        prn( $viewConfig );
+            $modelName = $viewConfig->model;
+
+
+            $data['model'] = $model;
+            $subject->setData($data);
+
+        }
+//        }
+    }
+
+public function  getfile(){
+    $id        = (string) $subject->getParam( 'id', '0' );
+        if ( $id == '0' )
+        {
+            // :FIXME: check create permission
+            $model = $subject->getGateway()->model();
+            $mode  = Acl::MODE_CREATE;
+        }
+        else
+        {
+            // :FIXME: add security filter
+            $model = $subject->getGateway()->get( $id );
+            $mode  = Acl::MODE_EDIT;
         }
         $form = $subject->getFormServiceVerify()->get( $model, $mode );
         $form->setRoute( 'common' );

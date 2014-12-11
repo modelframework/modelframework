@@ -13,6 +13,8 @@ use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
+use ModelFramework\FileService\FileServiceAwareInterface;
+use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
@@ -31,10 +33,10 @@ class ViewService
     implements ViewServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, AclServiceAwareInterface, ModelServiceAwareInterface,
                FormServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface,
-               QueryServiceAwareInterface
+               QueryServiceAwareInterface, FileServiceAwareInterface
 {
 
-    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait;
+    use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait;
 
     /**
      * @param string $viewName
@@ -104,6 +106,8 @@ class ViewService
         $view->setConfigService( $this->getConfigServiceVerify() );
 
         $view->setQueryService( $this->getQueryServiceVerify() );
+
+        $view->setFileService( $this->getFileServiceVerify() );
 //        $view->setDataMappingService( $this->getDataMappingServiceVerify() );
 
         // initialize stuff. observers as primary
