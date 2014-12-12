@@ -45,6 +45,7 @@ class AclObserver extends AbstractObserver
                 ];
             }
         }
+        $acl         = array_values( $acl );
         $model->$key = $acl;
     }
 
