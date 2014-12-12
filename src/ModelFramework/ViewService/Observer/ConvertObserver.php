@@ -19,16 +19,12 @@ class ConvertObserver implements \SplObserver
      */
     public function update( \SplSubject $subject )
     {
-        $result     = [ ];
-        $request    = $subject->getParams()->getController()->getRequest();
-        $viewConfig = $subject->getViewConfigVerify();
-        $modelName  = $viewConfig->model;
-        $route      = strtolower( $modelName );
-        $id         = (string) $subject->getParams()->fromRoute( 'id', 0 );
-        if ( !$id )
-        {
-            return $subject->redirect()->toRoute( $route );
-        }
+        $result                       = [ ];
+        $request                      = $subject->getParams()->getController()->getRequest();
+        $viewConfig                   = $subject->getViewConfigVerify();
+        $modelName                    = $viewConfig->model;
+        $data                         = strtolower( $modelName );
+        $id                           = (string) $subject->getParams()->fromRoute( 'id', 0 );
         $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
         $convertConfig                =
             $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
@@ -43,7 +39,6 @@ class ConvertObserver implements \SplObserver
             $result[ 'convertedObjects' ][ $_key ] = $convertObject;
         }
         $result[ 'model' ] = $object;
-        $result[ 'route' ] = $route;
         $result[ 'id' ]    = $id;
         $subject->setData( $result );
         if ( $request->isPost() )
@@ -54,17 +49,15 @@ class ConvertObserver implements \SplObserver
                 $subject->getGatewayServiceVerify()->get( $object->getModelName() )->save( $object );
 //                $subject->getParams()->getController()->trigger( 'postsave', $object );
             }
-            $url = $subject->getParams()->getController()->getBackUrl();
+            $url = $subject->getBackUrl();
             if ( $url == null || $url == '/' )
             {
                 $url = $subject->getParams()->getController()->url()
-                               ->fromRoute( $route, [ 'action' => 'list' ] );
+                               ->fromRoute( 'common', [ 'data' => $data, 'view' => 'list' ] );
             }
-            $subject->setRedirect( $subject->getParams()->getController()->refresh( $modelName .
-                                                                                    ' data was successfully converted',
-                                                                                    $url ) );
-
-            return;
+            $subject->setRedirect( $subject->refresh( $modelName .
+                                                      ' data was successfully converted',
+                                                      $url ) );
         }
 
         return;
