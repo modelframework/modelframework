@@ -21,7 +21,7 @@ class UploadObserver implements \SplObserver
         if ( count( $files ) )
         {
             $fileService = $subject->getFileServiceVerify();
-            $data = $subject->getData();
+            $data        = $subject->getData();
             if ( isset( $data[ 'model' ] ) )
             {
                 $model = $data[ 'model' ];
@@ -47,7 +47,7 @@ class UploadObserver implements \SplObserver
             if ( $model instanceof AclDataModel )
             {
                 $aclModel = $model;
-                $model = $aclModel->getDataModel();
+                $model    = $aclModel->getDataModel();
             }
             foreach ( $files as $_group => $_filefields )
             {
@@ -55,30 +55,38 @@ class UploadObserver implements \SplObserver
                 {
                     if ( isset( $model->$_fieldname ) )
                     {
-                        $realname = $_fieldname . '_real_name';
-                        $size     = $_fieldname . '_size';
-                        $extension     = $_fieldname . '_extension';
+                        $realname  = $_fieldname . '_real_name';
+                        $size      = $_fieldname . '_size';
+                        $extension = $_fieldname . '_extension';
                         if ( isset( $model->$size ) )
                         {
-                            $model->$size = (string) ( round((float) $_file['size'] / 1048576, 2) ) . ' MB';
+                            $model->$size = (string) ( round( (float) $_file[ 'size' ] / 1048576, 2 ) ) . ' MB';
                         }
                         if ( isset( $model->$realname ) )
                         {
-                            $model->$realname = basename($_file['name']);
+                            $model->$realname = basename( $_file[ 'name' ] );
                         }
                         if ( isset( $model->$extension ) )
                         {
-                            $model->$extension = $fileService->getFileExtension($_file['name']);
+                            $model->$extension = $fileService->getFileExtension( $_file[ 'name' ] );
                         }
-                        $model->$_fieldname = $fileService->saveFile($_file['name'], $_file['tmp_name']);
+                        if ( $_fieldname != 'avatar' )
+                        {
+
+                            $model->$_fieldname = $fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ] );
+                        }
+                        else
+                        {
+                            $model->$_fieldname = basename($fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ], true, lcfirst($model->getModelName() )));
+                        }
                     }
                 }
             }
 
             if ( $aclModel !== null && $aclModel instanceof AclDataModel )
             {
-                $aclModel->setDataModel($model);
-                $model = $aclModel;
+                $aclModel->setDataModel( $model );
+                $model    = $aclModel;
                 $aclModel = null;
             }
 
