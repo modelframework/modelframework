@@ -16,6 +16,11 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclDa
         return $this->getDataModelVerify()->getModelName();
     }
 
+    public function getTableName()
+    {
+        return $this->getDataModelVerify()->getTableName();
+    }
+
     public function exchangeArray( array $data )
     {
         $this->getDataModelVerify()->exchangeArray( $data );

@@ -12,6 +12,7 @@ class DataModel implements DataModelInterface
 {
 
     public $_model = '';
+    public $_table = '';
     public $_label = '';
     public $_adapter = '';
     protected $_fields = [ ];
@@ -40,6 +41,15 @@ class DataModel implements DataModelInterface
 
     public function getModelName()
     {
+        return $this->_model;
+    }
+
+    public function getTableName()
+    {
+        if ( !empty( $this->_table ) )
+        {
+            return $this->_table;
+        }
         return $this->_model;
     }
 

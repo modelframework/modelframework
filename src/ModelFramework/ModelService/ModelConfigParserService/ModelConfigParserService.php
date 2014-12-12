@@ -51,7 +51,7 @@ class ModelConfigParserService
             'adapter'   => $cm->adapter,
             'model'     => $cm->model,
             'label'     => $cm->label,
-            'table'     => $cm->model,
+            'table'     => $cm->table,
             'fieldsets' => [ ],
             'unique'    => $cm->unique,
         ];
@@ -146,9 +146,9 @@ class ModelConfigParserService
             }
             //FIXME this does not work for lookup fields, only for source fields. Need update.
             $_fieldconf[ 'default' ] = isset( $conf[ 'default' ] ) ? $conf[ 'default' ] : '';
-            $_fieldconf[ 'source' ] = $name;
-            $_fields                = [ $name => $_fieldconf ];
-            $_labels                = [ $name => $_fieldconf[ 'label' ] ];
+            $_fieldconf[ 'source' ]  = $name;
+            $_fields                 = [ $name => $_fieldconf ];
+            $_labels                 = [ $name => $_fieldconf[ 'label' ] ];
 
             $_utility = $this->getFieldPart( $conf[ 'type' ], 'utility' );
             if ( count( $_utility ) )
