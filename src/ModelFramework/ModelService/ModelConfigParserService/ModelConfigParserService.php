@@ -144,6 +144,8 @@ class ModelConfigParserService
             {
                 $_fieldsets[ $conf[ 'group' ] ][ 'elements' ][ $name ] = $_fieldconf[ 'label' ];
             }
+            //FIXME this does not work for lookup fields, only for source fields. Need update.
+            $_fieldconf[ 'default' ] = isset( $conf[ 'default' ] ) ? $conf[ 'default' ] : '';
             $_fieldconf[ 'source' ] = $name;
             $_fields                = [ $name => $_fieldconf ];
             $_labels                = [ $name => $_fieldconf[ 'label' ] ];
