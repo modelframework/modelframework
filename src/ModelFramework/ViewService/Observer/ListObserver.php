@@ -77,8 +77,6 @@ class ListObserver
         $result[ 'params' ] = [
             'data' => strtolower( $viewConfig->model ),
             'view' => $viewConfig->mode,
-            //  'sort' => $subject->getParams()->fromRoute( 'sort', null ),
-            //  'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
         ];
 
         $subject->setData( $result );

@@ -12,10 +12,12 @@ use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\LogicService\Logic;
+use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
+use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use Zend\Db\ResultSet\ResultSetInterface;
 
 abstract class AbstractObserver
-    implements \SplObserver, ConfigAwareInterface
+    implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
 
     use ConfigAwareTrait, SubjectAwareTrait;

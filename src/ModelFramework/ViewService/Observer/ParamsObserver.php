@@ -19,6 +19,13 @@ class ParamsObserver implements \SplObserver, ConfigAwareInterface
 
     public function update( \SplSubject $subject )
     {
+        $viewConfig = $subject->getViewConfigVerify();
+        $query =
+            $subject->getQueryServiceVerify()
+                    ->get( $viewConfig->query )
+                    ->setParams( $subject->getParams() )
+                    ->process();
+
         $config = $this->getRootConfig();
         $data   = $subject->getData();
         if ( isset( $data[ 'model' ] ) )
@@ -34,7 +41,11 @@ class ParamsObserver implements \SplObserver, ConfigAwareInterface
             }
             else
             {
-                $model = $subject->getGateway()->get( $id );
+                $model = $subject->getGateway()->findOne( $query->getWhere() );
+                if ( $model == null )
+                {
+                    throw new \Exception( 'Can\'t find data for edit' );
+                }
             }
         }
 

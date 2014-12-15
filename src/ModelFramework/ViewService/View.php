@@ -53,7 +53,7 @@ class View
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver',
+        'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'Form0Observer', 'FormObserver', 'ConvertObserver',
         'RecycleObserver',
         'UserObserver', 'ListDetailsObserver', 'UploadObserver',
         'WidgetObserver', 'Widget1Observer', 'ParamsObserver'
