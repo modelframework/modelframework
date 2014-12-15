@@ -106,6 +106,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
                 }
 
                 $viewResults = [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
+
                 $this->setData( $viewResults );
             }
 

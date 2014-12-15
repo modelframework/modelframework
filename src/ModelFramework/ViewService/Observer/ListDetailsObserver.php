@@ -73,9 +73,10 @@ class ListDetailsObserver
 
 //        $subject->setData( $data );
 
+        $result['actions'] = $data['actions'];
+        $result['links'] = $data['links'];
+
         $result[ 'params' ] = [
-            'actions' => $data['actions'],
-            'links' => $data['links']
 //            'data' => strtolower( $viewConfig->model ),
 //            'view' => $viewConfig->mode,
             //  'sort' => $subject->getParams()->fromRoute( 'sort', null ),

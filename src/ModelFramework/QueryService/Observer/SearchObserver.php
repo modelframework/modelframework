@@ -32,6 +32,7 @@ class SearchObserver extends AbstractObserver
             return;
 
         $data['search_query'] = $searchQuery;
+        $data['params']['search_query'] = $searchQuery;
         $data['params'][$config['param']] = $searchQuery;
 
         $where = [
