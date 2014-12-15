@@ -36,8 +36,8 @@ use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareInterface;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareTrait;
-use Wepo\Model\Table;
 use Zend\View\Model\ViewModel as ZendViewModel;
+use ModelFramework\ConfigService\ConfigAwareInterface;
 
 class View
     implements ViewInterface, ViewConfigAwareInterface, ModelConfigAwareInterface,
@@ -53,9 +53,10 @@ class View
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver', 'RecycleObserver',
+        'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver',
+        'RecycleObserver',
         'UserObserver', 'ListDetailsObserver', 'UploadObserver',
-        'WidgetObserver', 'Widget1Observer'
+        'WidgetObserver', 'Widget1Observer', 'ParamsObserver'
     ];
     protected $observers = [ ];
 
@@ -122,16 +123,39 @@ class View
         $this->_data = [ ];
     }
 
+//    public function  init()
+//    {
+//        foreach ( $this->getViewConfigVerify()->observers as $observer )
+//        {
+//            if ( !in_array( $observer, $this->allowed_observers ) )
+//            {
+//                throw new \Exception( $observer . ' is not allowed in ' . get_class( $this ) );
+//            }
+//            $observerClassName = 'ModelFramework\ViewService\Observer\\' . $observer;
+//            $this->attach( new $observerClassName() );
+//        }
+//    }
+
     public function  init()
     {
-        foreach ( $this->getViewConfigVerify()->observers as $observer )
+        foreach ( $this->getViewConfigVerify()->observers as $observer => $obConfig )
         {
+            if ( is_numeric( $observer ) )
+            {
+                $observer = $obConfig;
+                $obConfig = null;
+            }
             if ( !in_array( $observer, $this->allowed_observers ) )
             {
                 throw new \Exception( $observer . ' is not allowed in ' . get_class( $this ) );
             }
             $observerClassName = 'ModelFramework\ViewService\Observer\\' . $observer;
-            $this->attach( new $observerClassName() );
+            $_obs              = new $observerClassName();
+            if ( !empty( $obConfig ) && $_obs instanceof ConfigAwareInterface )
+            {
+                $_obs->setRootConfig( $obConfig );
+            }
+            $this->attach( $_obs );
         }
     }
 
@@ -149,15 +173,15 @@ class View
     {
         $viewConfig = $this->getViewConfigVerify();
 
-        $result = [];
-        $result[ 'title' ]    = $viewConfig->title;
+        $result                  = [ ];
+        $result[ 'title' ]       = $viewConfig->title;
         $result[ 'template' ]    = $viewConfig->template;
-        $result[ 'fields' ]    = $viewConfig->fields;
-        $result[ 'actions' ]    = $viewConfig->actions;
-        $result[ 'links' ]    = $viewConfig->links;
-        $result[ 'labels' ]    = $this->labels();
-        $result[ 'modelname' ] = strtolower( $viewConfig->model );
-        $result[ 'queryparams' ] = [];
+        $result[ 'fields' ]      = $viewConfig->fields;
+        $result[ 'actions' ]     = $viewConfig->actions;
+        $result[ 'links' ]       = $viewConfig->links;
+        $result[ 'labels' ]      = $this->labels();
+        $result[ 'modelname' ]   = strtolower( $viewConfig->model );
+        $result[ 'queryparams' ] = [ ];
 
 //        $result[ 'table' ]     = [ 'id' => Table::getTableId( $viewConfig->model ) ];
         $result[ 'user' ]      = $this->getUser();

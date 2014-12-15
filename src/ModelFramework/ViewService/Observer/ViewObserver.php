@@ -31,6 +31,29 @@ class ViewObserver
             throw new \Exception( 'Data not found' );
         }
 
+        $data = $subject->getData();
+
+        foreach ( [ 'actions', 'links' ] as $datapartam )
+        {
+            foreach ( $data[ $datapartam ] as $key => $link )
+            {
+                foreach ( [ 'routeparams', 'queryparams' ] as $keyparams )
+                {
+                    foreach ( $link[ $keyparams ] as $paramkey => $param )
+                    {
+                        if ( $param{0} == ':' )
+                        {
+                            $data[ $datapartam ][ $key ][ $keyparams ][ $paramkey ] =
+                                $subject->getParam( substr( $param, 1 ), '' );
+                        }
+                    }
+
+                }
+            }
+        }
+
+        $subject->setData( $data );
+
         $subject->getLogicServiceVerify()->trigger( 'preview', $model );
 
         $result[ 'model' ]          = $model;

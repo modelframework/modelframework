@@ -27,8 +27,9 @@ class OrderObserver extends AbstractObserver
         ];
         $order = [ ];
 
-        $queryConfig = $subject->getQueryConfig();
-        $defaults    = $queryConfig->order;
+//        $queryConfig = $subject->getQueryConfig();
+//        $defaults    = $queryConfig->order;
+        $defaults    =  $this->getRootConfig();
 
         $sort = $subject->getParam( 'sort', null );
         if ( $sort == null || !in_array( $sort, $queryConfig->fields ) )

@@ -11,6 +11,7 @@ namespace ModelFramework\LogicService;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\BaseService\AbstractService;
+use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
@@ -89,7 +90,7 @@ class Logic extends AbstractService
             }
             $observerClassName = 'ModelFramework\LogicService\Observer\\' . $observer;
             $_obs              = new $observerClassName();
-            if ( !empty( $obConfig ) )
+            if ( !empty( $obConfig ) && $_obs instanceof ConfigAwareInterface )
             {
                 $_obs->setRootConfig( $obConfig );
             }
