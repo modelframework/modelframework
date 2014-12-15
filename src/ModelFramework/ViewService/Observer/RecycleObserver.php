@@ -8,9 +8,16 @@
 
 namespace ModelFramework\ViewService\Observer;
 
+use ModelFramework\ViewService\View;
+
 class RecycleObserver implements \SplObserver
 {
 
+    /**
+     * @param \SplSubject|View $subject
+     *
+     * @throws \Exception
+     */
     public function update( \SplSubject $subject )
     {
         $viewConfig        = $subject->getViewConfigVerify();
@@ -67,9 +74,14 @@ class RecycleObserver implements \SplObserver
             $delno  = $request->getPost( 'delno', null );
             if ( $delyes !== null )
             {
-                $subject->getParams()->getController()->trigger( 'prerecycle', $results[ 'items' ] );
-                $subject->getParams()->getController()->trigger( 'recycle', $results[ 'items' ] );
-                $subject->getParams()->getController()->trigger( 'postrecycle', $results[ 'items' ] );
+                $view = $subject->getParam( 'view', 'delete' );
+                if ( !in_array( $view, [ 'delete', 'clean', 'restore' ] ) )
+                {
+                    throw new \Exception( 'Action is not allowed' );
+                }
+                $subject->getLogicServiceVerify()->trigger( 'pre' . $view, $results[ 'items' ] );
+                $subject->getLogicServiceVerify()->trigger( $view, $results[ 'items' ] );
+                $subject->getLogicServiceVerify()->trigger( 'post' . $view, $results[ 'items' ] );
                 $url = $subject->getParams()->fromPost( 'saurl' )[ 'back' ];
                 if ( !isset( $url ) )
                 {

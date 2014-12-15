@@ -1,6 +1,6 @@
 <?php
 /**
- * Class RefreshObserver
+ * Class SaveObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -12,7 +12,7 @@ use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\LogicService\Logic;
 use Zend\Db\ResultSet\ResultSetInterface;
 
-class RefreshObserver
+class SaveObserver
     implements \SplObserver
 {
 

@@ -39,13 +39,14 @@ class Logic extends AbstractService
         'ConstantObserver',
         'NewItemObserver',
         'ChangerObserver',
-        'RefreshObserver',
+        'SaveObserver',
         'UploadObserver',
         'OwnerObserver',
         'DateObserver',
         'AgeObserver',
         'MainUserObserver',
         'ConditionObserver',
+        'RecycleObserver',
         'AclObserver'
     ];
 
