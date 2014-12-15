@@ -24,8 +24,8 @@ class ViewObserver
 
         $subject->setData( $query->getData() );
 
-        $result              = [ ];
-        $model               = $subject->getGatewayVerify()->findOne( $query -> getWhere() );
+        $result = [ ];
+        $model  = $subject->getGatewayVerify()->findOne( $query->getWhere() );
         if ( !$model )
         {
             throw new \Exception( 'Data not found' );
@@ -52,12 +52,15 @@ class ViewObserver
             }
         }
 
-        $subject->setData( $data );
+//        $subject->setData( $data );
 
         $subject->getLogicServiceVerify()->trigger( 'preview', $model );
 
-        $result[ 'model' ]          = $model;
-        $result[ 'title' ]          = $viewConfig->title . ' ' . $model->title;
+        $result[ 'model' ]   = $model;
+        $result[ 'title' ]   = $viewConfig->title . ' ' . $model->title;
+        $result[ 'actions' ] = $data[ 'actions' ];
+        $result[ 'links' ]   = $data[ 'links' ];
+
         $subject->setData( $result );
 
         $subject->getLogicServiceVerify()->trigger( 'postview', $model );

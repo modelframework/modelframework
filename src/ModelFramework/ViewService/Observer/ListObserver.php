@@ -70,10 +70,12 @@ class ListObserver
             }
         }
 
-        $subject->setData( $data );
+//        $subject->setData( $data );
         $result[ 'params' ] = [
             'data' => strtolower( $viewConfig->model ),
             'view' => $viewConfig->mode,
+            'actions' => $data['actions'],
+            'links' => $data['links']
             //  'sort' => $subject->getParams()->fromRoute( 'sort', null ),
             //  'desc' => (int) $subject->getParams()->fromRoute( 'desc', 0 )
         ];
