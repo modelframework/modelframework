@@ -1,0 +1,94 @@
+<?php
+/**
+ * Class AclObserver
+ * @package ModelFramework\ModelViewService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
+ */
+
+namespace ModelFramework\LogicService\Observer;
+
+
+//fixme test needs after quote, order, invoice add functionality created
+class PriceObserver extends AbstractObserver
+{
+    private $defaultConfigs = [
+        'raw_price'     => [ 'value' => 0, 'field' => 'sub_total' ],
+        'discount_type' => [ 'value' => 'Direct Price Reduction', 'field' => 'discount_type' ],
+        'discount'      => [ 'value' => 0, 'field' => 'discount' ],
+        'tax'           => [ 'value' => 0, 'fields' => [ 'vat', 'sales_tax' ], 'field' => 'tax' ],
+        'adjustment'    => [ 'value' => 0, 'field' => 'adjustment' ],
+        'qty'           => [ 'value' => 1, 'field' => 'qty' ],
+        'result_price'  => [ 'value' => 0, 'field' => 'grand_total' ],
+    ];
+
+    public function update( \SplSubject $subject )
+    {
+        $this->setSubject( $subject );
+
+        $models = $subject->getEventObject();
+        if ( !( is_array( $models ) || $models instanceof ResultSetInterface ) )
+        {
+            $models = [ $models ];
+        }
+
+        $aModels = [ ];
+        foreach ( $models as $_k => $model )
+        {
+            $config = $this->updateDefaultConfigs( $model );
+
+            $total_price = $config[ 'discount_type' ][ 'value' ] == '% of Price' ?
+                $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ] * $config[ 'discount' ][ 'value' ] /
+                100 :
+                $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ] - $config[ 'discount' ][ 'value' ];
+
+            $total_price = round( max( [ $total_price, 0 ] ), 2 );
+
+            $taxes       = $total_price * $config[ 'tax' ][ 'value' ] / 100;
+            $total_price = max( [ $total_price + $taxes + $config[ 'adjustment' ][ 'value' ], 0 ] );
+
+            $model->$config[ 'tax' ][ 'field' ]          = $taxes;
+            $model->$config[ 'result_price' ][ 'field' ] = $total_price;
+
+            $aModels[ ] = $model->getArrayCopy();
+        }
+
+        if ( $models instanceof ResultSetInterface )
+        {
+            $models->initialize( $aModels );
+        }
+    }
+
+    protected function updateDefaultConfigs( $model )
+    {
+        $config     = $this->defaultConfigs;
+        $usrConfigs = $this->getRootConfig();
+        foreach ( $config as $key => $value )
+        {
+            if ( isset( $usrConfigs[ $key ] ) )
+            {
+                $config[ $key ][ 'field' ] = $value[ 'field' ];
+                if ( $key == 'tax' )
+                {
+                    foreach ( $value[ 'fields' ] as $field )
+                    {
+                        $config[ $key ][ 'value' ] += $model->$field;
+                    }
+                }
+                else
+                {
+                    $config[ $key ][ 'value' ] =
+                        isset( $model->$value[ 'field' ] ) ? $model->$value[ 'field' ] : $config[ $key ][ 'value' ];
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    public function process( $model, $key, $value )
+    {
+
+    }
+
+}
