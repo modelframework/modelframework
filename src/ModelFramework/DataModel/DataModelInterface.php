@@ -7,6 +7,8 @@ interface DataModelInterface
 
     public function getModelName();
 
+    public function getTableName();
+
     public function exchangeArray( array $data );
 
     public function getArrayCopy();

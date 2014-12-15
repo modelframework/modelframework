@@ -26,7 +26,7 @@ class GatewayServiceRaw
 
 
     /**
-     * @param string    $name
+     * @param string             $name
      * @param DataModelInterface $model
      *
      * @return null|MongoGateway
@@ -37,7 +37,7 @@ class GatewayServiceRaw
     }
 
     /**
-     * @param string    $name
+     * @param string             $name
      * @param DataModelInterface $model
      *
      * @return null|MongoGateway
@@ -76,7 +76,7 @@ class GatewayServiceRaw
         }
         $gw = Obj::create( '\\ModelFramework\\GatewayService\\MongoGateway',
                            [
-                               'table'              => $model->getModelName(), 'adapter' => $dbAdapter,
+                               'table'              => $model->getTableName(), 'adapter' => $dbAdapter,
                                'resultSetPrototype' => $resultSetPrototype
                            ] );
 

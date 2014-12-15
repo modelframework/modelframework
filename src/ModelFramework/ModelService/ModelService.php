@@ -50,6 +50,7 @@ class ModelService
         $model           = new DataModel();
         $model->_fields  = $modelConfig[ 'fields' ];
         $model->_model   = $modelConfig[ 'model' ];
+        $model->_table   = $modelConfig[ 'table' ];
         $model->_label   = $modelConfig[ 'label' ];
         $model->_adapter = $modelConfig[ 'adapter' ];
         $model->exchangeArray( [ ] );

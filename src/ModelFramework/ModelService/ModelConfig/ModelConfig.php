@@ -23,6 +23,7 @@ class ModelConfig extends DataModel
         'label'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'adapter' => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'model'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'table'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'fields'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'groups'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'unique'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
@@ -34,6 +35,7 @@ class ModelConfig extends DataModel
     public $label = '';
     public $adapter = '';
     public $model = '';
+    public $table = '';
     public $fields = [ ];
     public $groups = [ ];
     public $unique = [ ];
