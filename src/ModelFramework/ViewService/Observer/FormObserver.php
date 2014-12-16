@@ -10,7 +10,7 @@ namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\DataModel\AclDataModel;
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;

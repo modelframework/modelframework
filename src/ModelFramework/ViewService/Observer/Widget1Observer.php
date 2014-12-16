@@ -8,7 +8,7 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-use ModelFramework\DataModel\AclDataModel;
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\ViewService\View;
 
 class Widget1Observer

@@ -4,7 +4,6 @@ namespace ModelFramework\AclService;
 
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
-use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\DataModel\DataModelInterface;
 
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;

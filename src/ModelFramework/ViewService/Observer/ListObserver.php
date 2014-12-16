@@ -21,7 +21,6 @@ class ListObserver
      */
     public function update( \SplSubject $subject )
     {
-
         $viewConfig = $subject->getViewConfigVerify();
 
         $query =

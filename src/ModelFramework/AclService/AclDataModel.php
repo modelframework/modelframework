@@ -1,15 +1,21 @@
 <?php
 
-namespace ModelFramework\DataModel;
+namespace ModelFramework\AclService;
 
-use ModelFramework\AclService\AclDataAwareInterface;
-use ModelFramework\AclService\AclDataAwareTrait;
+use ModelFramework\DataModel\DataModelAwareInterface;
+use ModelFramework\DataModel\DataModelAwareTrait;
+use ModelFramework\DataModel\DataModelInterface;
 
 class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclDataAwareInterface
 {
 
     use DataModelAwareTrait, AclDataAwareTrait;
 
+    public function __clone()
+    {
+        $this->setDataModel( clone $this->getDataModel() );
+        $this->setAclData( clone $this->getAclData() );
+    }
 
     public function getModelName()
     {
@@ -77,7 +83,7 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclDa
 
     public function __get( $name )
     {
-        if ( in_array( $name, [ '_model', '_label', '_adapter' ] ) )
+        if ( in_array( $name, [ '_model', '_label', '_adapter', 'acl' ] ) )
         {
             return $this->getDataModelVerify()->{$name};
         }

@@ -9,6 +9,8 @@
 namespace ModelFramework\LogicService\Observer;
 
 
+use ModelFramework\AclService\AclDataModel;
+
 class ConstantObserver extends AbstractObserver
 {
 
