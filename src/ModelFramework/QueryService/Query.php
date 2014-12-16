@@ -140,4 +140,10 @@ class Query
         return $this;
     }
 
+
+    public function model()
+    {
+
+    }
+
 }

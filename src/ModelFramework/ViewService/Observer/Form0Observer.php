@@ -46,6 +46,12 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
 
     public function getModel()
     {
+        if ( $this->_aclModel !== null ) return $this->_aclModel;
+        return $this->_model;
+    }
+
+    public function getModelData()
+    {
         return $this->_model;
     }
 
@@ -68,7 +74,8 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
         {
             if ( $viewConfig->mode == 'insert' )
             {
-                $model = $query->model();
+                $model = $subject->getGateway()->model();
+                $model = $query-> setDefaults( $model );
             }
             elseif ( $viewConfig->mode == 'update' )
             {
