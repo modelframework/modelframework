@@ -101,7 +101,10 @@ class LogicService
         $logic->setGatewayService( $this->getGatewayServiceVerify() );
         $logic->setAuthService( $this->getAuthServiceVerify() );
         $logic->setModelService( $this->getModelService() );
-        $logic->setParams( $this->getParams() );
+        if ( $this->getParams() != null )
+        {
+            $logic->setParams( $this->getParams() );
+        }
         $logic->init();
         $logic->process();
 //        $dataLogic->setServiceLocator( $this->getServiceLocator() );
