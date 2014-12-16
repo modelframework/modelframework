@@ -38,7 +38,7 @@ class CleanObserver
             {
                 $dataModel = $model;
             }
-            $subject->getGatewayServiceVerify()->get( $dataModel->getModelName() )->delete( $dataModel->id() );
+            $subject->getGatewayServiceVerify()->get( $dataModel->getModelName() )->delete( ['_id' => $dataModel->id()] );
         }
     }
 

@@ -16,21 +16,25 @@ class NewItemObserver extends AbstractObserver
     public function process( $model, $key, $value )
     {
         $modelName = $model->getModelName();
-        if($value < 0 && isset ($model->status_id) && $model->status_id != Status::NEW_ )
+        if ( $value < 0 && isset ( $model->status_id ) && $model->status_id != Status::NEW_ )
         {
             return;
         }
-        $id        = $model->$key;
-        $user      =
+        $id       = $model->$key;
+        $user     =
             $this->getSubject()->getGatewayServiceVerify()->get( 'User' )->findOne( [ '_id' => $id ] );
-        $newItems  = $user->newitems;
+        $newItems = [ ];
+        if ( isset( $user->newitems ) )
+        {
+            $newItems = $user->newitems;
+        }
         if ( !isset( $newItems[ $modelName ] ) )
         {
             $newItems[ $modelName ] = 0;
         }
         $newItems[ $modelName ] = (int) $newItems[ $modelName ];
 
-        if($newItems[ $modelName ] + $value < 0)
+        if ( $newItems[ $modelName ] + $value < 0 )
         {
             return;
         }

@@ -83,7 +83,7 @@ class RecycleObserver implements \SplObserver
                 $subject->getLogicServiceVerify()->trigger( $view, $results[ 'items' ] );
                 $subject->getLogicServiceVerify()->trigger( 'post' . $view, $results[ 'items' ] );
                 $url = $subject->getParams()->fromPost( 'saurl' )[ 'back' ];
-                if ( !isset( $url ) )
+                if ( !isset( $url ) || $view == 'clean' )
                 {
                     $url = $subject->getParams()->getController()->url()->fromRoute( 'common', [
                         'data' => $modelRoute, 'view' => $results[ 'view' ] == 'delete' ? 'list' : 'recyclelist'

@@ -10,7 +10,7 @@ namespace ModelFramework\LogicService\Observer;
 
 
 //fixme test needs after quote, order, invoice add functionality created
-class PriceObserver extends AbstractObserver
+class PriceObserver
 {
     private $defaultConfigs = [
         'raw_price'     => [ 'value' => 0, 'field' => 'sub_total' ],
@@ -84,11 +84,6 @@ class PriceObserver extends AbstractObserver
         }
 
         return $config;
-    }
-
-    public function process( $model, $key, $value )
-    {
-
     }
 
 }

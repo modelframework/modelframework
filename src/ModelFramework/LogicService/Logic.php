@@ -43,6 +43,7 @@ class Logic extends AbstractService
         'NewItemObserver',
         'ChangerObserver',
         'ParamsObserver',
+        'CleanObserver',
         'SaveObserver',
         'UploadObserver',
         'OwnerObserver',
