@@ -20,14 +20,16 @@ use ModelFramework\LogicService\LogicConfig\LogicConfigAwareTrait;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\Utility\Params\ParamsAwareInterface;
+use ModelFramework\Utility\Params\ParamsAwareTrait;
 
 class Logic extends AbstractService
     implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
-               AuthServiceAwareInterface,
-               \SplSubject
+               AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject
 {
 
-    use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait, AuthServiceAwareTrait;
+    use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
+        AuthServiceAwareTrait, ParamsAwareTrait;
 
     /**
      * @var array|DataModel|null
@@ -40,6 +42,7 @@ class Logic extends AbstractService
         'ConstantObserver',
         'NewItemObserver',
         'ChangerObserver',
+        'ParamsObserver',
         'SaveObserver',
         'UploadObserver',
         'OwnerObserver',

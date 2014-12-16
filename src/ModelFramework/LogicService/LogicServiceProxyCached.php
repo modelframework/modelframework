@@ -11,9 +11,11 @@ namespace ModelFramework\LogicService;
 use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\Utility\Params\ParamsAwareInterface;
+use Zend\Mvc\Controller\Plugin\Params;
 
 class LogicServiceProxyCached
-    implements LogicServiceInterface, LogicServiceAwareInterface, CacheServiceAwareInterface
+    implements LogicServiceInterface, LogicServiceAwareInterface, CacheServiceAwareInterface, ParamsAwareInterface
 {
 
     use LogicServiceAwareTrait, CacheServiceAwareTrait;
@@ -49,5 +51,32 @@ class LogicServiceProxyCached
     public function dispatch( $event )
     {
         return $this->getLogicService()->dispatch( $event );
+    }
+
+    /**
+     * @param Params $params
+     *
+     * @return $this
+     */
+    public function setParams( Params $params )
+    {
+        return $this->getLogicService()->setParams( $params );
+    }
+
+    /**
+     * @return Params
+     */
+    public function getParams()
+    {
+        return $this->getLogicService()->getParams();
+    }
+
+    /**
+     * @return Params
+     * @throws \Exception
+     */
+    public function getParamsVerify()
+    {
+        return $this->getLogicService()->getParamsVerify();
     }
 } 

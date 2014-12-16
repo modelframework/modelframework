@@ -8,22 +8,11 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-use ModelFramework\ConfigService\ConfigAwareInterface;
-use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\DataModel\AclDataModel;
-use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
-use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
 use Wepo\Lib\Acl;
 
-class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
+class FormObserver implements \SplObserver
 {
-
-    use ConfigAwareTrait, SubjectAwareTrait;
-
-    private $_aclModel = null;
-    private $_model = null;
 
     /**
      * @param \SplSubject|View $subject
@@ -32,87 +21,15 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
      */
     public function update( \SplSubject $subject )
     {
-        $this->setSubject( $subject );
-
-        $dataModel = $this->initModel();
-
-        $form = $this->initForm();
-
-        $this->process( $form, $this->getModel() );
-
-        $model = $this->setModel( $dataModel );
-
-    }
-
-    public function getModel()
-    {
-        if ( $this->_aclModel !== null ) return $this->_aclModel;
-        return $this->_model;
-    }
-
-    public function getModelData()
-    {
-        return $this->_model;
-    }
-
-    public function initModel()
-    {
-        $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        $query      =
+        $query =
             $subject->getQueryServiceVerify()
                     ->get( $viewConfig->query )
                     ->setParams( $subject->getParams() )
                     ->process();
 
-        $data = $subject->getData();
-        if ( isset( $data[ 'model' ] ) && $data[ 'model' ] instanceof DataModelInterface )
-        {
-            $model = $data[ 'model' ];
-        }
-        else
-        {
-            if ( $viewConfig->mode == 'insert' )
-            {
-                $model = $subject->getGateway()->model();
-                $model = $query-> setDefaults( $model );
-            }
-            elseif ( $viewConfig->mode == 'update' )
-            {
-                $model = $subject->getGateway()->findOne( $query->getWhere() );
-                if ( $model == null )
-                {
-                    throw new \Exception( 'Data is not accessible' );
-                }
-            }
-        }
-
-        if ( $model instanceof AclDataModel )
-        {
-            $this->_aclModel = $model;
-            $this->_model    = $this->_aclModel->getDataModel();
-        }
-
-        return $this->_model;
-    }
-
-    public function setModel( DataModelInterface $model )
-    {
-        if ( $this->_aclModel !== null && $this->_aclModel instanceof AclDataModel )
-        {
-            $this->_aclModel->setDataModel( $model );
-            $model = $this->_aclModel;
-        }
-
-        $this->getSubject()->setData( [ 'model' => $model ] );
-
-        return $model;
-    }
-
-    public function initForm()
-    {
-        $subject    = $this->getSubject();
-        $viewConfig = $subject->getViewConfigVerify();
+        $modelName  = $viewConfig->model;
+        $data       = $subject->getData();
         if ( $viewConfig->mode == 'insert' )
         {
             $mode = Acl::MODE_CREATE;
@@ -124,40 +41,41 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
         else
         {
             throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
-                                  ' View Config for the ' . get_class() );
+                                  ' View Config for the FormObserver ' );
+        }
+        if ( isset( $data[ 'model' ] ) )
+        {
+            $model = $data[ 'model' ];
+
+        }
+        else
+        {
+            if ( $viewConfig->mode == 'insert' )
+            {
+                $model = $subject->getGateway()->model();
+            }
+            elseif ( $viewConfig->mode == 'update' )
+            {
+                $model = $subject->getGateway()->findOne( $query->getWhere() );
+                if ( $model == null )
+                {
+                    throw new \Exception( 'Data is not accessible' );
+                }
+            }
         }
 
-        $form = $subject->getFormServiceVerify()->get( $this->getModel(), $mode );
+        $form = $subject->getFormServiceVerify()->get( $model, $mode );
         $form->setRoute( 'common' );
-        $form->setActionParams( [ 'data' => strtolower( $viewConfig->model ), 'view' => $viewConfig->mode ] );
+        $form->setActionParams( [ 'data' => strtolower( $modelName ), 'view' => $viewConfig->mode ] );
 
-        if ( $this->getModel()->id() !== '' )
+        $id = (string) $subject->getParam( 'id', '0' );
+        if ( $id != '0' )
         {
-            $form->setActionParams( [ 'id' =>  $this->getModel()->id() ] );
+            $form->setActionParams( [ 'id' => $id ] );
         }
-
-        if ( isset( $form->getFieldsets()[ 'saurl' ] ) )
-        {
-            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()
-                                                                               ->fromQuery( 'back', 'home' ) );
-        }
-
-        return $form;
-    }
-
-
-    /**
-     * @param $form
-     * @param $model
-     */
-    public function process( $form, $model )
-    {
-        $subject    = $this->getSubject();
-        $viewConfig = $subject->getViewConfigVerify();
 
         $results  = [ ];
         $old_data = $model->split( $form->getValidationGroup() );
-
         //Это жесть конечно и забавно, но на время сойдет :)
         $model_bind = $model->toArray();
         foreach ( $model_bind as $_k => $_v )
@@ -168,7 +86,6 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
             }
         }
         //Конец жести
-
         $request = $subject->getParams()->getController()->getRequest();
         if ( $request->isPost() )
         {
@@ -204,7 +121,7 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
                         $url = $subject->getParams()->getController()->url()
                                        ->fromRoute( $form->getRoute(), $form->getActionParams() );
                     }
-                    $subject->setRedirect( $subject->refresh( $model->getModelName() . ' data was successfully saved', $url ) );
+                    $subject->setRedirect( $subject->refresh( $modelName . ' data was successfully saved', $url ) );
 
                     return;
                 }
@@ -214,11 +131,13 @@ class Form0Observer implements \SplObserver, ConfigAwareInterface, SubjectAwareI
         {
             $form->bind( $model );
         }
-
         $form->prepare();
-
         $results[ 'form' ] = $form;
-
+        if ( isset( $form->getFieldsets()[ 'saurl' ] ) )
+        {
+            $form->getFieldsets()[ 'saurl' ]->get( 'back' )->setValue( $subject->getParams()
+                                                                               ->fromQuery( 'back', 'home' ) );
+        }
         $subject->setData( $results );
     }
 
