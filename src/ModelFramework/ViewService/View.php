@@ -8,11 +8,11 @@
 
 namespace ModelFramework\ViewService;
 
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
-use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayAwareInterface;

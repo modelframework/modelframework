@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-use ModelFramework\DataModel\AclDataModel;
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\LogicService\Logic;
 use Zend\Db\ResultSet\ResultSetInterface;
 

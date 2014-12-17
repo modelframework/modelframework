@@ -10,7 +10,7 @@ namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\DataModel\AclDataModel;
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
@@ -87,6 +87,11 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
                     throw new \Exception( 'Data is not accessible' );
                 }
             }
+            else
+            {
+                throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+                                      ' View Config for the ' . get_class() );
+            }
         }
 
         if ( $model instanceof AclDataModel )
@@ -121,14 +126,10 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
         {
             $mode = Acl::MODE_CREATE;
         }
-        elseif ( $viewConfig->mode == 'update' )
+
+        if ( $viewConfig->mode == 'update' )
         {
             $mode = Acl::MODE_EDIT;
-        }
-        else
-        {
-            throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
-                                  ' View Config for the ' . get_class() );
         }
 
         $form = $subject->getFormServiceVerify()->get( $this->getModel(), $mode );

@@ -8,9 +8,9 @@
 
 namespace ModelFramework\LogicService\Observer;
 
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\DataModel\AclDataModel;
 use ModelFramework\LogicService\Logic;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
