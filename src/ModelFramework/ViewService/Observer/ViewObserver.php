@@ -58,7 +58,7 @@ class ViewObserver
         $subject->getLogicServiceVerify()->trigger( 'preview', $model );
 
         $result[ 'model' ]   = $model;
-        $result[ 'title' ]   = $viewConfig->title . ' ' . $model->title;
+        $result[ 'title' ]   = $viewConfig->title . ': ' . $model->title;
         $result[ 'actions' ] = $data[ 'actions' ];
         $result[ 'links' ]   = $data[ 'links' ];
 

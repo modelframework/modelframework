@@ -10,8 +10,17 @@ namespace ModelFramework\LogicService\Observer;
 
 
 //fixme test needs after quote, order, invoice add functionality created
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
+use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
+use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
+
 class PriceObserver
+    implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
+
+    use ConfigAwareTrait, SubjectAwareTrait;
+
     private $defaultConfigs = [
         'raw_price'     => [ 'value' => 0, 'field' => 'sub_total' ],
         'discount_type' => [ 'value' => 'Direct Price Reduction', 'field' => 'discount_type' ],
@@ -67,19 +76,19 @@ class PriceObserver
         {
             if ( isset( $usrConfigs[ $key ] ) )
             {
-                $config[ $key ][ 'field' ] = $value[ 'field' ];
-                if ( $key == 'tax' )
+                $config[ $key ][ 'field' ] = $usrConfigs[ $key ];
+            }
+            if ( $key == 'tax' )
+            {
+                foreach ( $value['fields'] as $field )
                 {
-                    foreach ( $value[ 'fields' ] as $field )
-                    {
-                        $config[ $key ][ 'value' ] += $model->$field;
-                    }
+                    $config[ $key ][ 'value' ] += $model->$field;
                 }
-                else
-                {
-                    $config[ $key ][ 'value' ] =
-                        isset( $model->$value[ 'field' ] ) ? $model->$value[ 'field' ] : $config[ $key ][ 'value' ];
-                }
+            }
+            else
+            {
+                $config[ $key ][ 'value' ] =
+                    isset( $model->$config[ $key ][ 'field' ] ) ? $model->$config[ $key ][ 'field' ] : $config[ $key ][ 'value' ];
             }
         }
 
