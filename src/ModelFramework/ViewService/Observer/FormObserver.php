@@ -187,6 +187,8 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
                 }
                 $model->merge( $model_data );
                 $model->merge( $old_data );
+//                prn($viewConfig->mode);
+//                exit;
                 $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {

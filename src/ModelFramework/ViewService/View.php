@@ -9,6 +9,8 @@
 namespace ModelFramework\ViewService;
 
 use ModelFramework\AclService\AclDataModel;
+use ModelFramework\AclService\AclServiceAwareInterface;
+use ModelFramework\AclService\AclServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
@@ -42,20 +44,22 @@ use ModelFramework\ConfigService\ConfigAwareInterface;
 class View
     implements ViewInterface, ViewConfigAwareInterface, ModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
-               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface,
-               ConfigServiceAwareInterface, FileServiceAwareInterface,
-               AuthServiceAwareInterface, LogicServiceAwareInterface, QueryServiceAwareInterface, \SplSubject
+               ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface, FileServiceAwareInterface,
+               AclServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface,
+               QueryServiceAwareInterface, ConfigServiceAwareInterface, \SplSubject
 {
 
-    use ViewConfigAwareTrait, ModelConfigAwareTrait, ConfigServiceAwareTrait, GatewayAwareTrait, ParamsAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait;
+    use ViewConfigAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
+        GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait,
+        AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
+        AclServiceAwareTrait, ConfigServiceAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
 
     protected $allowed_observers = [
-        'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'Form0Observer', 'FormObserver', 'ConvertObserver',
-        'RecycleObserver',
-        'UserObserver', 'ListDetailsObserver', 'UploadObserver',
+        'RowCountObserver', 'List0Observer', 'ListObserver', 'ViewObserver', 'Form0Observer', 'FormObserver',
+        'ConvertObserver', 'RecycleObserver', 'FieldObserver', 'UserObserver', 'ListDetailsObserver', 'UploadObserver',
         'WidgetObserver', 'Widget1Observer', 'ParamsObserver'
     ];
     protected $observers = [ ];

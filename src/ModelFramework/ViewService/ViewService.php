@@ -68,22 +68,17 @@ class ViewService
      */
     protected function createView( $viewName )
     {
-        // this object will deal with all view of model stuff
         $view = new View();
-
         $view->setAuthService( $this->getAuthServiceVerify() );
+        $view->setAclService( $this->getAclServiceVerify() );
         $view->setLogicService( $this->getLogicServiceVerify() );
-
-        // we want modelView get to know what to show and how
+        $view->setConfigService( $this->getConfigServiceVerify() );
         $viewConfig = $this->getConfigServiceVerify()->getByObject( $viewName, new ViewConfig() );
-//      $viewConfig = $this->getViewConfigsServiceVerify()->get( $modelName, $viewName );
-
         if ( $viewConfig == null )
         {
             throw new \Exception( 'Please fill ViewConfig for the ' . $viewName . '. I can\'t work on' );
         }
         $view->setViewConfig( $viewConfig );
-
         // config parser service
         $view->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
 
