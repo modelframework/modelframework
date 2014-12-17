@@ -15,6 +15,8 @@ class FieldObserver
     implements \SplObserver
 {
 
+    private $viewViewConfig = null;
+
     /**
      * @param \SplSubject|View $subject
      *
@@ -22,7 +24,7 @@ class FieldObserver
      */
     public function update( \SplSubject $subject )
     {
-        prn( 'ViewService FieldObserver' );
+//        prn( 'ViewService FieldObserver' );
         $data = $subject->getParam( 'data', null );
         $view = $subject->getParam( 'view', null );
         if ( $data == null || $view == null )
@@ -35,9 +37,11 @@ class FieldObserver
         {
             throw new \Exception( 'Please fill ViewConfig for the ' . $data . '.' . $view );
         }
-        prn( $viewConfig );
-        prn( $modelConfig = $subject->getModelConfigParserService()->getModelConfig( $data ) );
-        prn( $aclData = $subject->getAclServiceVerify()->getAclData( $data ) );
+
+        $this->viewViewConfig = $viewConfig;
+
+        $modelConfig  = $subject->getModelConfigParserService()->getModelConfig( $data );
+        $aclData      = $subject->getAclServiceVerify()->getAclData( $data );
         $fieldConfigs =
             [
                 'fields' => [ ],
@@ -48,10 +52,60 @@ class FieldObserver
             $fieldConfigs[ 'fields' ][ $field ] = in_array( $field, $viewConfig->fields ) ? true : false;
             $fieldConfigs[ 'labels' ][ $field ] = $modelConfig[ 'labels' ][ $field ];
         }
-        prn( $fieldConfigs );
+//        prn( $fieldConfigs );
         $result                   = [ ];
         $result[ 'fieldconfigs' ] = $fieldConfigs;
+        $result[ 'params' ]       = [
+            'data' => $data,
+            'view' => $view
+        ];
+
         $subject->setData( $result );
+
+        $this->postVerify( $subject );
+
+    }
+
+    public function postVerify( View $subject )
+    {
+
+        $fields  = [ ];
+        $request = $subject->getParams()->getController()->getRequest();
+        if ( $request->isPost() )
+        {
+            $_rows = $subject->getParams()->fromPost( 'row' );
+
+            if ( is_array( $_rows ) )
+            {
+                foreach ( $_rows as $_k => $_row )
+                {
+                    if ( !empty( $_row[ 'visible' ] ) && $_row[ 'visible' ] == 1 )
+                    {
+                        $fields[ ] = $_k;
+                    }
+                }
+
+                if ( count( $fields ) )
+                {
+                    $this->viewViewConfig->fields = $fields;
+                    $subject->getConfigServiceVerify()->saveByObject( $this->viewViewConfig );
+                }
+            }
+
+            $url = $subject->getBackUrl();
+            if ( $url == null || $url == '/' )
+            {
+                $url = $subject->getParams()->getController()->url()
+                               ->fromRoute( 'common', [ 'action' => 'index', 'data' => $this->viewViewConfig->document,
+                                                        'mode'   => $this->viewViewConfig->mode
+                               ] );
+            }
+
+            $subject->setRedirect( $subject->refresh( 'FieldConfig was successfully saved', $url ) );
+
+            return;
+        }
+
     }
 
 }
