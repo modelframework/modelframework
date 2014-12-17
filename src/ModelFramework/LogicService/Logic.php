@@ -25,11 +25,11 @@ use ModelFramework\Utility\Params\ParamsAwareTrait;
 
 class Logic extends AbstractService
     implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
-               AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject
+               AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject, LogicServiceAwareInterface
 {
 
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
-        AuthServiceAwareTrait, ParamsAwareTrait;
+        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait;
 
     /**
      * @var array|DataModel|null
@@ -52,7 +52,10 @@ class Logic extends AbstractService
         'MainUserObserver',
         'ConditionObserver',
         'RecycleObserver',
-        'AclObserver'
+        'AclObserver',
+        'PriceObserver',
+        'DetailsSumObserver',
+        'TriggerObserver'
     ];
 
     protected $observers = [ ];
