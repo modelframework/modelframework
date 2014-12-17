@@ -61,6 +61,11 @@ class FileService implements FileServiceInterface
         return strtolower(@pathinfo( $filename )[ 'extension' ]);
     }
 
+    public function getBucket( )
+    {
+        return $this -> service -> get( 'ModelFramework\AuthService' ) -> getMainUser() -> company_id;
+    }
+
     public function checkDestenation( $filename, $ispublic = FALSE, $userdir = null )
     {
         $auth = $this -> service -> get( 'ModelFramework\AuthService' );
