@@ -210,7 +210,6 @@ class View
     protected function checkPermissions()
     {
         $model    = $this->getAclModelVerify();
-        prn($model -> getAclDataVerify());
         $_aclData = $model->getAclDataVerify();
         if ( !is_array( $_aclData->permissions ) || !in_array( 'r', $_aclData->permissions ) )
         {
