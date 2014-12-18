@@ -52,7 +52,7 @@ class CacheService implements CacheServiceInterface, ServiceLocatorAwareInterfac
         if ( $this->exists( $cacheKey ) )
         {
             $_temp  = $this->get( $cacheKey );
-            $result = clone $_temp;
+            $result = is_object($_temp)? clone $_temp : $_temp;
         }
         else
         {
