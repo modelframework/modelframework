@@ -82,6 +82,8 @@ class ViewService
         // config parser service
         $view->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
 
+        $view->setModelService( $this->getModelServiceVerify() );
+
         // info about model - how it is organized. it will be useful
         $modelConfigArray = $this->getModelConfigParserServiceVerify()->getModelConfig( $viewConfig->model );
         $view->setModelConfig( $modelConfigArray );
