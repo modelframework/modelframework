@@ -89,7 +89,7 @@ class LogicService
             throw new \Exception( 'Event Param must implement DataModelInterface ' );
         }
         $logicConfig = $this->getConfigServiceVerify()->getByObject( $model->getModelName() . '.' . $eventName,
-                                                                     new LogicConfig() );
+                                                                     new LogicConfig( ) );
         if ( $logicConfig == null )
         {
             return null;

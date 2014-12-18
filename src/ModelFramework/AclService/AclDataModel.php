@@ -2,14 +2,16 @@
 
 namespace ModelFramework\AclService;
 
+use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
+use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
 use ModelFramework\DataModel\DataModelAwareInterface;
 use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 
-class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclDataAwareInterface
+class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclConfigAwareInterface
 {
 
-    use DataModelAwareTrait, AclDataAwareTrait;
+    use DataModelAwareTrait, AclConfigAwareTrait;
 
     public function __clone()
     {
