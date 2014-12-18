@@ -54,7 +54,9 @@ class ViewObserver
 
 //        $subject->setData( $data );
 
-        $subject->getLogicServiceVerify()->trigger( 'preview', $model );
+        $subject->getLogicServiceVerify()->get( 'preview', $viewConfig->model )
+                ->trigger( $model );
+//        $subject->getLogicServiceVerify()->trigger( 'preview', $model );
 
         $result[ 'model' ]   = $model;
         $result[ 'title' ]   = $viewConfig->title . ': ' . $model->title;
@@ -63,7 +65,9 @@ class ViewObserver
 
         $subject->setData( $result );
 
-        $subject->getLogicServiceVerify()->trigger( 'postview', $model );
+        $subject->getLogicServiceVerify()->get( 'postview', $viewConfig->model )
+                ->trigger( $model );
+//        $subject->getLogicServiceVerify()->trigger( 'postview', $model );
     }
 
 }

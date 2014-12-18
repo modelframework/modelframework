@@ -79,9 +79,16 @@ class RecycleObserver implements \SplObserver
                 {
                     throw new \Exception( 'Action is not allowed' );
                 }
-                $subject->getLogicServiceVerify()->trigger( 'pre' . $view, $results[ 'items' ] );
-                $subject->getLogicServiceVerify()->trigger( $view, $results[ 'items' ] );
-                $subject->getLogicServiceVerify()->trigger( 'post' . $view, $results[ 'items' ] );
+
+                $subject->getLogicServiceVerify()->get( 'pre' . $view, $viewConfig->model )
+                        ->trigger( $results[ 'items' ] );
+                $subject->getLogicServiceVerify()->get( $view, $viewConfig->model )->trigger( $results[ 'items' ] );
+                $subject->getLogicServiceVerify()->get( 'post' . $view, $viewConfig->model )
+                        ->trigger( $results[ 'items' ] );
+
+//                $subject->getLogicServiceVerify()->trigger( 'pre' . $view, $results[ 'items' ] );
+//                $subject->getLogicServiceVerify()->trigger( $view, $results[ 'items' ] );
+//                $subject->getLogicServiceVerify()->trigger( 'post' . $view, $results[ 'items' ] );
                 $url = $subject->getParams()->fromPost( 'saurl' )[ 'back' ];
                 if ( !isset( $url ) || $view == 'clean' )
                 {

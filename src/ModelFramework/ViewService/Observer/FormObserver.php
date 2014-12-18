@@ -100,7 +100,7 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
             $this->_model    = $this->_aclModel->getDataModel();
         }
 
-        $subject->getLogicServiceVerify()->trigger( 'setDefaults', $this->_model );
+        $subject->getLogicServiceVerify()->get( 'setDefaults', $model->getModelName() )->trigger( $this->_model );
 
         return $this->_model;
     }
@@ -189,7 +189,8 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
                 $model->merge( $old_data );
 //                prn($viewConfig->mode);
 //                exit;
-                $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
+//                $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
+                $subject->getLogicServiceVerify()->get( 'pre' . $viewConfig->mode, $model->getModelName() )->trigger( $model->getDataModel() );
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
                     try
@@ -203,8 +204,8 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
                 }
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
-                    $subject->getLogicServiceVerify()->trigger( 'post' . $viewConfig->mode,
-                                                                $model->getDataModel() );
+                    $subject->getLogicServiceVerify()->get( 'post' . $viewConfig->mode, $model->getModelName() )->trigger( $model->getDataModel() );
+//                    $subject->getLogicServiceVerify()->trigger( 'post' . $viewConfig->mode, $model->getDataModel() );
                     $url = $subject->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {

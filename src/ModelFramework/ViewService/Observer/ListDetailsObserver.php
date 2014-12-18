@@ -42,8 +42,11 @@ class ListDetailsObserver
                                   ->setItemCountPerPage( $viewConfig->rows );
         }
 
-        $subject->getLogicServiceVerify()->trigger( 'prelist',  $result[ 'paginator' ]->getCurrentItems() );
-        $subject->getLogicServiceVerify()->trigger( 'postlist', $result[ 'paginator' ]->getCurrentItems() );
+        $subject->getLogicServiceVerify()->get( 'prelist', $viewConfig->model )->trigger( $result[ 'paginator' ]->getCurrentItems() );
+        $subject->getLogicServiceVerify()->get( 'postlist', $viewConfig->model )->trigger( $result[ 'paginator' ]->getCurrentItems() );
+
+//        $subject->getLogicServiceVerify()->trigger( 'prelist',  $result[ 'paginator' ]->getCurrentItems() );
+//        $subject->getLogicServiceVerify()->trigger( 'postlist', $result[ 'paginator' ]->getCurrentItems() );
 
 //        $subject->getLogicServiceVerify()->trigger( 'prelist', $subject
 //            ->getGatewayVerify()->model()->getDataModel() );

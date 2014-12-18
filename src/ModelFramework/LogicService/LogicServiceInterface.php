@@ -8,25 +8,23 @@
 
 namespace ModelFramework\LogicService;
 
-use ModelFramework\DataModel\DataModelInterface;
-
 interface LogicServiceInterface
 {
 
     /**
-     * @param string                   $eventName
-     * @param array|DataModelInterface $eventObject
+     * @param string $eventName
+     * @param string $modelName
      *
      * @return DataLogic
      */
-    public function get( $eventName, $eventObject );
+    public function get( $eventName, $modelName );
 
     /**
-     * @param string                   $eventName
-     * @param array|DataModelInterface $eventObject
+     * @param string $eventName
+     * @param string $modelName
      *
      * @return DataLogic
      */
-    public function trigger( $eventName, $eventObject );
+    public function createLogic( $eventName, $modelName );
 
 }

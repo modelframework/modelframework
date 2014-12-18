@@ -48,22 +48,59 @@ class LogicService
         {
             throw new \Exception( 'Event Params must be instance of DataModel' );
         }
-        $dataLogic = $this->get( $modelName, $model );
 
-        return call_user_func( [ $dataLogic, $event->getName() ], $event );
+//        $dataLogic = $this->get( $modelName, $modelName ) -> trigger( $model );
+        return $this->get( $event->getName(), $modelName )->trigger( $event );
+
 //        return call_user_func( [ $dataLogic, $event->getName() ], $event );
     }
 
     /**
-     * @param string                   $eventName
-     * @param array|DataModelInterface $eventObject
+     * @param string $eventName
+     * @param string $modelName
      *
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function get( $eventName, $eventObject )
+    public function get( $eventName, $modelName )
     {
-        return $this->trigger( $eventName, $eventObject );
+        return $this->createLogic( $eventName, $modelName );
+    }
+
+    /**
+     * @param string $eventName
+     * @param string $modelName
+     *
+     * @return DataLogic|void
+     * @throws \Exception
+     */
+    public function createLogic( $eventName, $modelName )
+    {
+        $logicConfig = $this->getConfigServiceVerify()->getByObject( $modelName . '.' . $eventName, new LogicConfig() );
+
+
+        $logic = new Logic();
+        if ( $logicConfig == null )
+        {
+            return $logic;
+        }
+
+
+        $logic->setLogicConfig( $logicConfig );
+
+        $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
+        $logic->setGatewayService( $this->getGatewayServiceVerify() );
+        $logic->setAuthService( $this->getAuthServiceVerify() );
+        $logic->setModelService( $this->getModelService() );
+        $logic->setLogicService( $this );
+        if ( $this->getParams() != null )
+        {
+            $logic->setParams( $this->getParams() );
+        }
+        $logic->init();
+
+        return $logic;
+
     }
 
     /**
@@ -73,7 +110,7 @@ class LogicService
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function trigger( $eventName, $eventObject )
+    public function trigger__b00bs( $eventName, $eventObject )
     {
         $model = $eventObject;
         if ( is_array( $eventObject ) )
@@ -89,7 +126,7 @@ class LogicService
             throw new \Exception( 'Event Param must implement DataModelInterface ' );
         }
         $logicConfig = $this->getConfigServiceVerify()->getByObject( $model->getModelName() . '.' . $eventName,
-                                                                     new LogicConfig( ) );
+                                                                     new LogicConfig() );
         if ( $logicConfig == null )
         {
             return null;
@@ -101,7 +138,7 @@ class LogicService
         $logic->setGatewayService( $this->getGatewayServiceVerify() );
         $logic->setAuthService( $this->getAuthServiceVerify() );
         $logic->setModelService( $this->getModelService() );
-        $logic->setLogicService($this);
+        $logic->setLogicService( $this );
         if ( $this->getParams() != null )
         {
             $logic->setParams( $this->getParams() );

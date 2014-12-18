@@ -44,8 +44,13 @@ class WidgetObserver
 //        }
 
 
-        $subject->getLogicServiceVerify()->trigger( 'prelist', $result[ 'paginator' ]->getCurrentItems() );
-        $subject->getLogicServiceVerify()->trigger( 'postlist', $result[ 'paginator' ]->getCurrentItems() );
+        $subject->getLogicServiceVerify()->get( 'prelist', $viewConfig->model )
+                ->trigger( $result[ 'paginator' ]->getCurrentItems() );
+        $subject->getLogicServiceVerify()->get( 'postlist', $viewConfig->model )
+                ->trigger( $result[ 'paginator' ]->getCurrentItems() );
+
+//        $subject->getLogicServiceVerify()->trigger( 'prelist', $result[ 'paginator' ]->getCurrentItems() );
+//        $subject->getLogicServiceVerify()->trigger( 'postlist', $result[ 'paginator' ]->getCurrentItems() );
 
         $result[ 'rows' ] = [ 5, 10, 25, 50, 100 ];
 

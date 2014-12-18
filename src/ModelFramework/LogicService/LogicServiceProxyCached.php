@@ -10,7 +10,6 @@ namespace ModelFramework\LogicService;
 
 use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
-use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use Zend\Mvc\Controller\Plugin\Params;
 
@@ -21,26 +20,27 @@ class LogicServiceProxyCached
     use LogicServiceAwareTrait, CacheServiceAwareTrait;
 
     /**
-     * @param string                   $eventName
-     * @param array|DataModelInterface $model
+     * @param string $eventName
+     * @param string $modelName
      *
-     * @return DataLogic
+     * @return Logic
      */
-    public function get( $eventName, $model )
+    public function get( $eventName, $modelName )
     {
-        return $this->getCacheService()->getCachedObjMethod( $this->getLogicService(), 'get', [ $eventName, $model ] );
+        return $this->getCacheService()
+                    ->getCachedObjMethod( $this->getLogicServiceVerify(), 'get', [ $eventName, $modelName ] );
     }
 
     /**
-     * @param string                   $eventName
-     * @param array|DataModelInterface $model
+     * @param string $eventName
+     * @param string $modelName
      *
-     * @return DataLogic
+     * @return Logic
      */
-    public function trigger( $eventName, $model )
+    public function createLogic( $eventName, $modelName )
     {
         return $this->getCacheService()
-                    ->getCachedObjMethod( $this->getLogicService(), 'trigger', [ $eventName, $model ] );
+                    ->getCachedObjMethod( $this->getLogicServiceVerify(), 'createLogic', [ $eventName, $modelName ] );
     }
 
     /**
@@ -50,7 +50,7 @@ class LogicServiceProxyCached
      */
     public function dispatch( $event )
     {
-        return $this->getLogicService()->dispatch( $event );
+        return $this->getLogicServiceVerify()->dispatch( $event );
     }
 
     /**
@@ -60,7 +60,7 @@ class LogicServiceProxyCached
      */
     public function setParams( Params $params )
     {
-        return $this->getLogicService()->setParams( $params );
+        return $this->getLogicServiceVerify()->setParams( $params );
     }
 
     /**
@@ -68,7 +68,7 @@ class LogicServiceProxyCached
      */
     public function getParams()
     {
-        return $this->getLogicService()->getParams();
+        return $this->getLogicServiceVerify()->getParams();
     }
 
     /**
@@ -77,6 +77,6 @@ class LogicServiceProxyCached
      */
     public function getParamsVerify()
     {
-        return $this->getLogicService()->getParamsVerify();
+        return $this->getLogicServiceVerify()->getParamsVerify();
     }
-} 
+}
