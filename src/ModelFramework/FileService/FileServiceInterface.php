@@ -20,7 +20,7 @@ interface FileServiceInterface
 
     public function checkBucket( $filename, $bucketname, $ispublic = FALSE );
 
-    public function getFileStream ( $filename, $bucketname, $ispublic = false );
+    public function getFileStream ( $filename, $ispublic = false );
 
     public function downloadFile( $filename, $ispublic = false );
 

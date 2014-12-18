@@ -106,8 +106,9 @@ class FileService implements FileServiceInterface
         return FALSE;
     }
 
-    public function getFileStream ( $filename, $bucketname, $ispublic = false )
+    public function getFileStream ( $filename, $ispublic = false )
     {
+      $bucketname = $this -> getBucket();
       $destenation = $this -> checkBucket( $filename, $bucketname, $ispublic );
       if ( !$destenation )
         {
