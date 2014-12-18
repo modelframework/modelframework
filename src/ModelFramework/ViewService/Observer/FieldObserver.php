@@ -24,7 +24,6 @@ class FieldObserver
      */
     public function update( \SplSubject $subject )
     {
-//        prn( 'ViewService FieldObserver' );
         $data = $subject->getParam( 'data', null );
         $view = $subject->getParam( 'view', null );
         if ( $data == null || $view == null )
@@ -37,33 +36,27 @@ class FieldObserver
         {
             throw new \Exception( 'Please fill ViewConfig for the ' . $data . '.' . $view );
         }
-
         $this->viewViewConfig = $viewConfig;
-
-        $modelConfig  = $subject->getModelConfigParserService()->getModelConfig( $data );
-        $aclData      = $subject->getAclServiceVerify()->getAclData( $data );
-        $fieldConfigs =
-            [
-                'fields' => [ ],
-                'labels' => [ ]
-            ];
+        $modelConfig          = $subject->getModelConfigParserService()->getModelConfig( $data );
+        $aclData              = $subject->getAclServiceVerify()->getAclData( $data );
+        $fieldConfigs         = [ 'fields' => [ ], 'labels' => [ ] ];
+        foreach ( $viewConfig->fields as $field )
+        {
+            if ( in_array( $field, array_keys( $aclData->fields ) ) )
+            {
+                $fieldConfigs[ 'fields' ][ $field ] = false;
+            }
+        }
         foreach ( array_keys( $aclData->fields ) as $field )
         {
             $fieldConfigs[ 'fields' ][ $field ] = in_array( $field, $viewConfig->fields ) ? true : false;
             $fieldConfigs[ 'labels' ][ $field ] = $modelConfig[ 'labels' ][ $field ];
         }
-//        prn( $fieldConfigs );
         $result                   = [ ];
         $result[ 'fieldconfigs' ] = $fieldConfigs;
-        $result[ 'params' ]       = [
-            'data' => $data,
-            'view' => $view
-        ];
-
+        $result[ 'params' ]       = [ 'data' => $data, 'view' => $view ];
         $subject->setData( $result );
-
         $this->postVerify( $subject );
-
     }
 
     public function postVerify( View $subject )
@@ -96,8 +89,9 @@ class FieldObserver
             if ( $url == null || $url == '/' )
             {
                 $url = $subject->getParams()->getController()->url()
-                               ->fromRoute( 'common', [ 'action' => 'index', 'data' => $this->viewViewConfig->document,
-                                                        'mode'   => $this->viewViewConfig->mode
+                               ->fromRoute( 'common', [
+                                   'action' => 'index', 'data' => $this->viewViewConfig->document,
+                                   'mode'   => $this->viewViewConfig->mode
                                ] );
             }
 
