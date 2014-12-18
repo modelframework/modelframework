@@ -39,7 +39,6 @@ class LogicServiceProxyCached
      */
     public function trigger( $eventName, $model )
     {
-        prn($this->getLogicService(),$eventName,$model);
         return $this->getCacheService()
                     ->getCachedObjMethod( $this->getLogicService(), 'trigger', [ $eventName, $model ] );
     }
