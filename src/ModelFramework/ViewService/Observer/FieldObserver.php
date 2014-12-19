@@ -77,7 +77,9 @@ class FieldObserver
             }
             if ( $fConfig[ 'type' ]=='source' )
             {
-                if ( $fConfig['source']!==$field)
+                if ( $fConfig['source']!==$field
+                     || !array_key_exists( $fConfig[ 'source' ], $aclData->fields )
+                     || !in_array( $aclData->fields[ $fConfig[ 'source' ] ], [ 'r', 'e' ] ))
                 {
                     unset($fieldConfigs[ 'fields' ][ $field ]);
                     continue;

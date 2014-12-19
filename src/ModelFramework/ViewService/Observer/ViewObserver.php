@@ -52,11 +52,82 @@ class ViewObserver
             }
         }
 
-//        $subject->setData( $data );
+        $result[ 'fieldsets' ] = [ ];
+
+        $aclData              = $subject->getAclServiceVerify()->getAclData( $viewConfig->model );
+        $modelFields           = $subject->getModelConfigVerify()[ 'fields' ];
+
+        $usedGroups = [ ];
+        foreach ( $viewConfig->fields as $field )
+        {
+            if ( !array_key_exists( $field, $modelFields ) )
+            {
+                continue;
+            }
+            $fConfig = $modelFields[ $field ];
+            if ( $fConfig[ 'type' ] == 'field' )
+            {
+                //check $field in acl
+                if ( !array_key_exists( $field, $aclData->fields )
+                     || !in_array( $aclData->fields[ $field ], [ 'r', 'e' ] )
+                )
+                {
+                    continue;
+                }
+            }
+            if ( $fConfig[ 'type' ] == 'alias' )
+            {
+                //check $fConfig['source'] in acl
+                if ( !array_key_exists( $fConfig[ 'source' ], $aclData->fields )
+                     || !in_array( $aclData->fields[ $fConfig[ 'source' ] ], [ 'r', 'e' ] )
+                )
+                {
+                    continue;
+                }
+            }
+            if ( $fConfig[ 'type' ]=='source' )
+            {
+                if ( $fConfig['source']!==$field
+                     || !array_key_exists( $fConfig[ 'source' ], $aclData->fields )
+                     || !in_array( $aclData->fields[ $fConfig[ 'source' ] ], [ 'r', 'e' ] )
+                )
+                {
+                    continue;
+                }
+            }
+            if ( $fConfig[ 'type' ] == 'pk' )
+            {
+                continue;
+            }
+
+            $usedGroups[ $modelFields[ $field ][ 'group' ] ][ ] = $field;
+        }
+
+        $chosenGroups = [ ];
+        foreach ( $viewConfig->groups as $group )
+        {
+            if ( array_key_exists( $group, $usedGroups ) )
+            {
+                $chosenGroups[ $group ] = $usedGroups[ $group ];
+            }
+        }
+
+        foreach ( $chosenGroups as $group => $groupElements )
+        {
+            $fieldSet = $subject->getModelConfigVerify()[ 'fieldsets' ][ $group ];
+            $elements = $fieldSet['elements'];
+            $fieldSet['elements'] = [];
+            foreach ( $groupElements as $field )
+            {
+                $fieldSet['elements'][ $field ] = $elements[ $field ];
+            }
+            $chosenGroups[ $group ] = $fieldSet;
+        }
+
+        $result[ 'fieldsets' ] = $chosenGroups;
 
         $subject->getLogicServiceVerify()->get( 'preview', $viewConfig->model )
                 ->trigger( $model );
-//        $subject->getLogicServiceVerify()->trigger( 'preview', $model );
 
         $result[ 'model' ]   = $model;
         $result[ 'title' ]   = $viewConfig->title . ': ' . $model->title;
@@ -67,7 +138,6 @@ class ViewObserver
 
         $subject->getLogicServiceVerify()->get( 'postview', $viewConfig->model )
                 ->trigger( $model );
-//        $subject->getLogicServiceVerify()->trigger( 'postview', $model );
     }
 
 }

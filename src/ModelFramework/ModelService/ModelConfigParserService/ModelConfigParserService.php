@@ -101,7 +101,6 @@ class ModelConfigParserService
      */
     protected function createField( $name, $conf )
     {
-
         $type                  = $conf[ 'type' ];
         $_fieldconf            = $this->getField( $type );
         $_fieldsets            = [ ];
@@ -123,13 +122,15 @@ class ModelConfigParserService
                 }
                 $_fields[ $name . $_sign . $_jfield ]     = [
                     'type'  => 'alias', 'datatype' => 'string', 'default' => '', 'source' => $name . '_id',
-                    'label' => $_jlabel, 'source' => $name
+                    'label' => $_jlabel, 'source' => $name,
+                    'group' => isset( $conf[ 'group' ] ) ? $conf[ 'group' ] : 'fields'
                 ];
                 $_labels[ $name . $_sign . $_jfield ]     = $_jlabel;
                 $_joinfields[ $name . $_sign . $_jfield ] = $_jfield;
                 if ( isset( $conf[ 'group' ] ) )
                 {
                     $_fieldsets[ $conf[ 'group' ] ][ 'elements' ][ $name . $_sign . $_jfield ] = $_jlabel;
+                    $_fieldconf[ 'group' ]                                                     = $conf[ 'group' ];
                 }
             }
             $_joins[ ]                =
@@ -144,6 +145,7 @@ class ModelConfigParserService
             if ( isset( $conf[ 'group' ] ) )
             {
                 $_fieldsets[ $conf[ 'group' ] ][ 'elements' ][ $name ] = $_fieldconf[ 'label' ];
+                $_fieldconf[ 'group' ]                                 = $conf[ 'group' ];
             }
             //FIXME this does not work for lookup fields, only for source fields. Need update.
             $_fieldconf[ 'default' ] = isset( $conf[ 'default' ] ) ? $conf[ 'default' ] : '';
