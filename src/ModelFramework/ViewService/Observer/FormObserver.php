@@ -187,25 +187,20 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
                 }
                 $model->merge( $model_data );
                 $model->merge( $old_data );
-//                prn($viewConfig->mode);
-//                exit;
-//                $subject->getLogicServiceVerify()->trigger( 'pre' . $viewConfig->mode, $model->getDataModel() );
-                $subject->getLogicServiceVerify()->get( 'pre' . $viewConfig->mode, $model->getModelName() )->trigger( $model->getDataModel() );
-                if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
+                $subject->getLogicServiceVerify()->get( 'pre' . $viewConfig->mode, $model->getModelName() )
+                        ->trigger( $model->getDataModel() );
+                try
                 {
-                    try
-                    {
-                        $subject->getGateway()->save( $model );
-                    }
-                    catch ( \Exception $ex )
-                    {
-                        $results[ 'message' ] = 'Invalid input data.' . $ex->getMessage();
-                    }
+                    $subject->getGateway()->save( $model );
+                }
+                catch ( \Exception $ex )
+                {
+                    $results[ 'message' ] = 'Invalid input data.' . $ex->getMessage();
                 }
                 if ( !isset( $results[ 'message' ] ) || !strlen( $results[ 'message' ] ) )
                 {
-                    $subject->getLogicServiceVerify()->get( 'post' . $viewConfig->mode, $model->getModelName() )->trigger( $model->getDataModel() );
-//                    $subject->getLogicServiceVerify()->trigger( 'post' . $viewConfig->mode, $model->getDataModel() );
+                    $subject->getLogicServiceVerify()->get( 'post' . $viewConfig->mode, $model->getModelName() )
+                            ->trigger( $model->getDataModel() );
                     $url = $subject->getBackUrl();
                     if ( $url == null || $url == '/' )
                     {
