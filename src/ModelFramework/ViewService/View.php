@@ -60,7 +60,7 @@ class View
     protected $allowed_observers = [
         'RowCountObserver', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver',
         'RecycleObserver', 'FieldObserver', 'UserObserver', 'ListDetailsObserver', 'UploadObserver',
-        'WidgetObserver', 'ParamsObserver', 'SignInObserver', 'SignUpObserver'
+        'WidgetObserver', 'ParamsObserver', 'SignInObserver', 'SignUpObserver', 'AttachObserver'
     ];
     protected $observers = [ ];
 
