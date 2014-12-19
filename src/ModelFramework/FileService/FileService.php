@@ -116,6 +116,7 @@ class FileService implements FileServiceInterface
 
     public function getFileStream( $filename, $bucketname = null, $ispublic = false )
     {
+
         if ( $bucketname == null )
         {
             $bucketname = $this->getBucket();
