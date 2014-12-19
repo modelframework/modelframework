@@ -39,19 +39,58 @@ class FieldObserver
         $this->viewViewConfig = $viewConfig;
         $modelConfig          = $subject->getModelConfigParserService()->getModelConfig( $data );
         $aclData              = $subject->getAclServiceVerify()->getAclData( $data );
-        $fieldConfigs         = [ 'fields' => [ ], 'labels' => [ ] ];
+        $fieldConfigs = [ 'fields' => [ ], 'labels' => [ ] ];
         foreach ( $viewConfig->fields as $field )
         {
-            if ( in_array( $field, array_keys( $aclData->fields ) ) )
+            if ( array_key_exists( $field, $modelConfig[ 'fields' ] )
+//                && array_key_exists( $field, $aclData->fields )
+//                && $aclData->fields[ $field ] !== 'x'
+            )
             {
                 $fieldConfigs[ 'fields' ][ $field ] = false;
             }
         }
-        foreach ( array_keys( $aclData->fields ) as $field )
+
+        foreach ( $modelConfig[ 'fields' ] as $field => $fConfig )
         {
+            if ( $fConfig[ 'type' ] == 'field' )
+            {
+                //check $field in acl
+                if ( !array_key_exists( $field, $aclData->fields )
+                     || !in_array( $aclData->fields[ $field ], [ 'r', 'e' ] )
+                )
+                {
+                    unset($fieldConfigs[ 'fields' ][ $field ]);
+                    continue;
+                }
+            }
+            if ( $fConfig[ 'type' ] == 'alias' )
+            {
+                //check $fConfig['source'] in acl
+                if ( !array_key_exists( $fConfig[ 'source' ], $aclData->fields )
+                     || !in_array( $aclData->fields[ $fConfig[ 'source' ] ], [ 'r', 'e' ] )
+                )
+                {
+                    unset($fieldConfigs[ 'fields' ][ $field ]);
+                    continue;
+                }
+            }
+            if ( $fConfig[ 'type' ]=='source' )
+            {
+                if ( $fConfig['source']!==$field)
+                {
+                    unset($fieldConfigs[ 'fields' ][ $field ]);
+                    continue;
+                }
+            }
+            if ( $fConfig[ 'type' ] == 'pk' )
+            {
+                continue;
+            }
             $fieldConfigs[ 'fields' ][ $field ] = in_array( $field, $viewConfig->fields ) ? true : false;
-            $fieldConfigs[ 'labels' ][ $field ] = $modelConfig[ 'labels' ][ $field ];
+            $fieldConfigs[ 'labels' ][ $field ] = $fConfig[ 'label' ];
         }
+
         $result                   = [ ];
         $result[ 'fieldconfigs' ] = $fieldConfigs;
         $result[ 'params' ]       = [ 'data' => $data, 'view' => $view ];

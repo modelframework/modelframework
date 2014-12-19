@@ -29,6 +29,7 @@ class ModelConfigParserService
     public function getModelConfig( $modelName )
     {
         $cd = $this->getConfigServiceVerify()->getByObject( $modelName, new ModelConfig() );
+
         if ( $cd == null )
         {
             throw new \Exception( 'Please fill ModelConfig for the ' . $modelName . '. I can\'t work on' );
