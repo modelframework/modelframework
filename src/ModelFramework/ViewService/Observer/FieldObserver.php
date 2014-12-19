@@ -129,7 +129,7 @@ class FieldObserver
             {
                 $url = $subject->getParams()->getController()->url()
                                ->fromRoute( 'common', [
-                                   'action' => 'index', 'data' => $this->viewViewConfig->document,
+                                   'action' => 'index', 'data' => strtolower( $this->viewViewConfig->document ),
                                    'mode'   => $this->viewViewConfig->mode
                                ] );
             }
