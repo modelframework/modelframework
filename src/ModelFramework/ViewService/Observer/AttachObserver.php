@@ -179,7 +179,6 @@ class AttachObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
         if ( $request->isPost() )
         {
             $post = $request->getPost();
-            prn( $post, $model->toArray() );
 
             $attach_to       = $model->attach_to;
             $attach_to_names = $model->attach_to_names;
