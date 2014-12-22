@@ -82,7 +82,6 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      */
     public function getPermittedConfig( $model, $mode )
     {
-        prn($model, $mode, $model->getModelName());
         $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
         $cd = $this->getConfigServiceVerify()->getByObject( $model->getModelName(), new ModelConfig() );

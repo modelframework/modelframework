@@ -40,7 +40,6 @@ class FormatObserver extends AbstractObserver
 
     private function card( $model, $key )
     {
-        prn( $model->$key, strlen( $model->$key ) );
         $value = (string) $model->$key;
 
         $value = substr($value, -4);
