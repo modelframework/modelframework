@@ -1,6 +1,6 @@
 <?php
 /**
- * Class FormObserver
+ * Class UploadObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -8,91 +8,151 @@
 
 namespace ModelFramework\ViewService\Observer;
 
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\AclService\AclDataModel;
-use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
+use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
+use ModelFramework\ViewService\View;
 use Wepo\Lib\Acl;
 
-class UploadObserver implements \SplObserver
+class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
 
+    use ConfigAwareTrait, SubjectAwareTrait;
+
+    private $_aclModel = null;
+    private $_model = null;
+
+    /**
+     * @param \SplSubject|View $subject
+     *
+     * @throws \Exception
+     */
     public function update( \SplSubject $subject )
     {
+        $this->setSubject( $subject );
         $files = $subject->getParams()->fromFiles();
         if ( count( $files ) )
         {
             $fileService = $subject->getFileServiceVerify();
-            $data        = $subject->getData();
-            if ( isset( $data[ 'model' ] ) )
-            {
-                $model = $data[ 'model' ];
-            }
-            else
-            {
-                $id = (string) $subject->getParam( 'id', '0' );
-                if ( $id == '0' )
-                {
-                    // :FIXME: check create permission
-                    $model = $subject->getGateway()->model();
-//                    $mode  = Acl::MODE_CREATE;
-                }
-                else
-                {
-                    // :FIXME: add security filter
-                    $model = $subject->getGateway()->get( $id );
-//                    $mode  = Acl::MODE_EDIT;
-                }
-            }
+        }
+        $subject->getLogicServiceVerify()->setParams( $subject->getParams() );
 
-            $aclModel = null;
-            if ( $model instanceof AclDataModel )
+        $dataModel = $this->initModel();
+
+//        $this->process( $form, $this->getModel() );
+        foreach ( $files as $_group => $_filefields )
+        {
+            foreach ( $_filefields as $_fieldname => $_file )
             {
-                $aclModel = $model;
-                $model    = $aclModel->getDataModel();
-            }
-            foreach ( $files as $_group => $_filefields )
-            {
-                foreach ( $_filefields as $_fieldname => $_file )
+                if ( isset( $dataModel->$_fieldname ) )
                 {
-                    if ( isset( $model->$_fieldname ) )
+                    $realname  = $_fieldname . '_real_name';
+                    $size      = $_fieldname . '_size';
+                    $extension = $_fieldname . '_extension';
+                    if ( isset( $dataModel->$size ) )
                     {
-                        $realname  = $_fieldname . '_real_name';
-                        $size      = $_fieldname . '_size';
-                        $extension = $_fieldname . '_extension';
-                        if ( isset( $model->$size ) )
-                        {
-                            $model->$size = (string) ( round( (float) $_file[ 'size' ] / 1048576, 2 ) ) . ' MB';
-                        }
-                        if ( isset( $model->$realname ) )
-                        {
-                            $model->$realname = basename( $_file[ 'name' ] );
-                        }
-                        if ( isset( $model->$extension ) )
-                        {
-                            $model->$extension = $fileService->getFileExtension( $_file[ 'name' ] );
-                        }
-                        if ( $_fieldname != 'avatar' )
-                        {
+                        $dataModel->$size = (string) ( round( (float) $_file[ 'size' ] / 1048576, 2 ) ) . ' MB';
+                    }
+                    if ( isset( $dataModel->$realname ) )
+                    {
+                        $dataModel->$realname = basename( $_file[ 'name' ] );
+                    }
+                    if ( isset( $dataModel->$extension ) )
+                    {
+                        $dataModel->$extension = $fileService->getFileExtension( $_file[ 'name' ] );
+                    }
+                    if ( $_fieldname != 'avatar' )
+                    {
 
-                            $model->$_fieldname = $fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ] );
-                        }
-                        else
-                        {
-                            $model->$_fieldname = basename($fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ], true, lcfirst($model->getModelName() )));
-                        }
+                        $dataModel->$_fieldname = $fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ] );
+                    }
+                    else
+                    {
+                        $dataModel->$_fieldname = basename($fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ], true, lcfirst($dataModel->getModelName() )));
                     }
                 }
             }
-
-            if ( $aclModel !== null && $aclModel instanceof AclDataModel )
-            {
-                $aclModel->setDataModel( $model );
-                $model    = $aclModel;
-                $aclModel = null;
-            }
-
-            $data[ 'model' ] = $model;
-            $subject->setData( $data );
-
         }
+
+        $model = $this->setModel( $dataModel );
+
+
     }
+
+    public function getModel()
+    {
+        if ( $this->_aclModel !== null ) return $this->_aclModel;
+
+        return $this->_model;
+    }
+
+    public function getModelData()
+    {
+        return $this->_model;
+    }
+
+    public function initModel()
+    {
+        $subject    = $this->getSubject();
+        $viewConfig = $subject->getViewConfigVerify();
+        $query      =
+            $subject->getQueryServiceVerify()
+                    ->get( $viewConfig->query )
+                    ->setParams( $subject->getParams() )
+                    ->process();
+
+        $data = $subject->getData();
+        if ( isset( $data[ 'model' ] ) && $data[ 'model' ] instanceof DataModelInterface )
+        {
+            $model = $data[ 'model' ];
+        }
+        else
+        {
+            if ( $viewConfig->mode == 'insert' )
+            {
+                $model = $subject->getGateway()->model();
+//                $model = $query->setDefaults( $model );
+            }
+            elseif ( $viewConfig->mode == 'update' )
+            {
+                $model = $subject->getGateway()->findOne( $query->getWhere() );
+                if ( $model == null )
+                {
+                    throw new \Exception( 'Data is not accessible' );
+                }
+            }
+            else
+            {
+                throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+                                      ' View Config for the ' . get_class() );
+            }
+        }
+
+        if ( $model instanceof AclDataModel )
+        {
+            $this->_aclModel = $model;
+            $this->_model    = $this->_aclModel->getDataModel();
+        }
+
+        $subject->getLogicServiceVerify()->get( 'setDefaults', $model->getModelName() )->trigger( $this->_model );
+
+        return $this->_model;
+    }
+
+    public function setModel( DataModelInterface $model )
+    {
+        if ( $this->_aclModel !== null && $this->_aclModel instanceof AclDataModel )
+        {
+            $this->_aclModel->setDataModel( $model );
+            $model = $this->_aclModel;
+        }
+
+        $this->getSubject()->setData( [ 'model' => $model ] );
+
+        return $model;
+    }
+
 }
