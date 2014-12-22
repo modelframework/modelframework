@@ -76,7 +76,6 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                 }
             }
         }
-
         $model = $this->setModel( $dataModel );
 
 
