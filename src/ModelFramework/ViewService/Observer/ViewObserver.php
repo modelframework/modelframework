@@ -104,12 +104,26 @@ class ViewObserver
         }
 
         $chosenGroups = [ ];
-        foreach ( $viewConfig->groups as $group )
+        foreach ( $viewConfig->groups as $groupBlock )
         {
-            if ( array_key_exists( $group, $usedGroups ) )
+            if ( is_array($groupBlock) )
             {
-                $chosenGroups[ $group ] = $usedGroups[ $group ];
+                foreach ( $groupBlock as $group )
+                {
+                    if ( array_key_exists( $group, $usedGroups ) )
+                    {
+                        $chosenGroups[ $group ] = $usedGroups[ $group ];
+                    }
+                }
+
+                continue;
             }
+
+            if ( array_key_exists( $groupBlock, $usedGroups ) )
+            {
+                $chosenGroups[ $groupBlock ] = $usedGroups[ $groupBlock ];
+            }
+
         }
 
         foreach ( $chosenGroups as $group => $groupElements )
