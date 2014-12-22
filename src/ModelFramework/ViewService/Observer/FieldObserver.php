@@ -51,6 +51,10 @@ class FieldObserver
             }
         }
 
+//        ksort( $modelConfig['fields']);
+        uasort( $modelConfig['fields'], function ($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
         foreach ( $modelConfig[ 'fields' ] as $field => $fConfig )
         {
             if ( $fConfig[ 'type' ] == 'field' )
