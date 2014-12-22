@@ -68,7 +68,7 @@ class AttachObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                     ->process();
 
         $data = $subject->getData();
-        
+
         if ( isset( $data[ 'model' ] ) && $data[ 'model' ] instanceof DataModelInterface )
         {
             $model = $data[ 'model' ];

@@ -104,12 +104,29 @@ class ViewObserver
         }
 
         $chosenGroups = [ ];
-        foreach ( $viewConfig->groups as $group )
+        $fieldSet2Group = [];
+        foreach ( $viewConfig->groups as $grKey => $groupBlock )
         {
-            if ( array_key_exists( $group, $usedGroups ) )
+            if ( is_array($groupBlock) )
             {
-                $chosenGroups[ $group ] = $usedGroups[ $group ];
+                foreach ( $groupBlock as $group )
+                {
+                    if ( array_key_exists( $group, $usedGroups ) )
+                    {
+                        $chosenGroups[ $group ] = $usedGroups[ $group ];
+                        $fieldSet2Group[ $group ] = $grKey;
+                    }
+                }
+
+                continue;
             }
+
+            if ( array_key_exists( $groupBlock, $usedGroups ) )
+            {
+                $chosenGroups[ $groupBlock ] = $usedGroups[ $groupBlock ];
+                $fieldSet2Group[ $groupBlock ] = $groupBlock;
+            }
+
         }
 
         foreach ( $chosenGroups as $group => $groupElements )
@@ -121,6 +138,8 @@ class ViewObserver
             {
                 $fieldSet['elements'][ $field ] = $elements[ $field ];
             }
+            $fieldSet['group'] = $fieldSet2Group[ $group ];
+
             $chosenGroups[ $group ] = $fieldSet;
         }
 
