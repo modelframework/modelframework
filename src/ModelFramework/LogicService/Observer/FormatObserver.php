@@ -38,4 +38,17 @@ class FormatObserver extends AbstractObserver
         $model->$key = $phone;
     }
 
+    private function card( $model, $key )
+    {
+        prn( $model->$key, strlen( $model->$key ) );
+        $value = (string) $model->$key;
+
+        $value = substr($value, -4);
+//        for ( $i = 0; $i < strlen( $model->$key ) - 2; $i++ )
+//        {
+//            $value[ $i ] = '*';
+//        }
+        $model->$key = $value;
+    }
+
 }

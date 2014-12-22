@@ -13,7 +13,7 @@ class ConcatenationObserver extends AbstractObserver
 
     public function process( $model, $key, $value )
     {
-        $model->$key = '';
+        $concatValue = '';
         foreach ( $value as $value_key )
         {
             if ( !isset( $model->$value_key ) )
@@ -21,8 +21,14 @@ class ConcatenationObserver extends AbstractObserver
                 throw new \Exception( 'Field ' . $value_key . ' does not exist in model ' .
                                       $model->getModelName() );
             }
-            $model->$key = $model->$key . ' ' . $model->$value_key;
+            if ( strlen( $concatValue ) )
+            {
+                $concatValue .= ' ';
+
+            }
+            $concatValue .= $model->$value_key;
         }
+        $model->$key = $concatValue;
     }
 
 }

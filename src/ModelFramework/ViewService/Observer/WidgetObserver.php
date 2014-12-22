@@ -27,6 +27,29 @@ class WidgetObserver
                     ->process();
         $subject->setData( $query->getData() );
 
+        $data = $subject->getData();
+
+        foreach ( [ 'actions', 'links' ] as $datapartam )
+        {
+            foreach ( $data[ $datapartam ] as $key => $link )
+            {
+                foreach ( [ 'routeparams', 'queryparams' ] as $keyparams )
+                {
+                    foreach ( $link[ $keyparams ] as $paramkey => $param )
+                    {
+                        if ( $param{0} == ':' )
+                        {
+                            $data[ $datapartam ][ $key ][ $keyparams ][ $paramkey ] =
+                                $subject->getParam( substr( $param, 1 ), '' );
+                        }
+                    }
+
+                }
+            }
+        }
+
+        $subject->setData( [ 'actions'=>$data['actions'], 'links' => $data['links'] ] );
+
         $result[ 'paginator' ] =
             $subject
                 ->getGatewayVerify()
