@@ -37,47 +37,47 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
         if ( count( $files ) )
         {
             $fileService = $subject->getFileServiceVerify();
-        }
-        $subject->getLogicServiceVerify()->setParams( $subject->getParams() );
+            $subject->getLogicServiceVerify()->setParams( $subject->getParams() );
 
-        $dataModel = $this->initModel();
+            $dataModel = $this->initModel();
 
-//        $this->process( $form, $this->getModel() );
-        foreach ( $files as $_group => $_filefields )
-        {
-            foreach ( $_filefields as $_fieldname => $_file )
+            foreach ( $files as $_group => $_filefields )
             {
-                if ( isset( $dataModel->$_fieldname ) )
+                foreach ( $_filefields as $_fieldname => $_file )
                 {
-                    $realname  = $_fieldname . '_real_name';
-                    $size      = $_fieldname . '_size';
-                    $extension = $_fieldname . '_extension';
-                    if ( isset( $dataModel->$size ) )
+                    if ( isset( $dataModel->$_fieldname ) && !$_file[ 'error' ] )
                     {
-                        $dataModel->$size = (string) ( round( (float) $_file[ 'size' ] / 1048576, 2 ) ) . ' MB';
-                    }
-                    if ( isset( $dataModel->$realname ) )
-                    {
-                        $dataModel->$realname = basename( $_file[ 'name' ] );
-                    }
-                    if ( isset( $dataModel->$extension ) )
-                    {
-                        $dataModel->$extension = $fileService->getFileExtension( $_file[ 'name' ] );
-                    }
-                    if ( $_fieldname != 'avatar' )
-                    {
+                        $realname  = $_fieldname . '_real_name';
+                        $size      = $_fieldname . '_size';
+                        $extension = $_fieldname . '_extension';
+                        if ( isset( $dataModel->$size ) )
+                        {
+                            $dataModel->$size = (string) ( round( (float) $_file[ 'size' ] / 1048576, 2 ) ) . ' MB';
+                        }
+                        if ( isset( $dataModel->$realname ) )
+                        {
+                            $dataModel->$realname = basename( $_file[ 'name' ] );
+                        }
+                        if ( isset( $dataModel->$extension ) )
+                        {
+                            $dataModel->$extension = $fileService->getFileExtension( $_file[ 'name' ] );
+                        }
+                        if ( $_fieldname != 'avatar' )
+                        {
 
-                        $dataModel->$_fieldname = $fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ] );
-                    }
-                    else
-                    {
-                        $dataModel->$_fieldname = basename($fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ], true, lcfirst($dataModel->getModelName() )));
+                            $dataModel->$_fieldname = $fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ] );
+                        }
+                        else
+                        {
+                            $dataModel->$_fieldname =
+                                basename( $fileService->saveFile( $_file[ 'name' ], $_file[ 'tmp_name' ], true,
+                                                                  lcfirst( $dataModel->getModelName() ) ) );
+                        }
                     }
                 }
             }
+            $model = $this->setModel( $dataModel );
         }
-        $model = $this->setModel( $dataModel );
-
 
     }
 
