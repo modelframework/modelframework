@@ -43,8 +43,11 @@ class ViewObserver
                     {
                         if ( $param{0} == ':' )
                         {
-                            $data[ $datapartam ][ $key ][ $keyparams ][ $paramkey ] =
-                                $subject->getParam( substr( $param, 1 ), '' );
+
+                            $_f = substr( $param, 1 );
+                            $data[ $datapartam ][ $key ][ $keyparams ][ $paramkey ] = $model -> $_f;
+//                                $subject->getParam( substr( $param, 1 ), '' );
+
                         }
                     }
 
