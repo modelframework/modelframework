@@ -224,7 +224,7 @@ class DataModel implements DataModelInterface
             {
                 return (string) $this->_id;
             }
-            throw new \Exception( " Missed property $name in model {$this->getModelName()}" );
+            throw new \Exception( " Missed property '$name' in model {$this->getModelName()}" );
 //            $trace = debug_backtrace();
 //            trigger_error(
 //                'Undefined property в __call(): ' . $name .
