@@ -5,11 +5,31 @@ namespace ModelFramework\Utility;
 class Arr
 {
 
-    public static function getDoubtField( $array, $key, $default = null )
+    /**
+     * Gets value from array is it exists in it and checks for lowercase math of keys
+     * @param array|null $a
+     * @param string     $key
+     * @param null|mixed       $default
+     *
+     * @return mixed
+     */
+    public static function getDoubtField( $a, $key, $default = null )
     {
-        if ( !empty( $array[ $key ] ) )
+        $result = $default;
+
+        if ( isset( $a[ $key ] ) ) //&& !empty( $a[ $key ] )
         {
-            $result = $array[ $key ];
+            $result = $a[ $key ];
+        }
+        elseif ( strtolower( $key ) !== $key )
+        {
+            foreach ( array_keys( $a ) as $_key )
+            {
+                if ( strtolower( $_key ) == strtolower( $key ) )
+                {
+                    return $a[ $_key ];
+                }
+            }
         }
         else
         {
@@ -19,18 +39,24 @@ class Arr
         return $result;
     }
 
-    public static function addNotNull( $array, $key, $value )
+    /**
+     * Adds $value Value to the $a if $value is not null
+     *
+     * @param $a
+     * @param $key
+     * @param $value
+     *
+     * @return mixed
+     */
+    public static function addNotNull( $a, $key, $value )
     {
         if ( $value !== null )
         {
-//            if ( !is_array( $array ) )
-//            {
-//                $array = [ ];
-//            }
-            $array[ $key ] = $value;
+//          if ( !is_array( $a ) ) { $a = [ ]; }
+            $a[ $key ] = $value;
         }
 
-        return $array;
+        return $a;
 
     }
 

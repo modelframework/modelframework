@@ -36,7 +36,9 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
                            ->findOne( [ 'key' => $keyName ] );
         if ( $configData == null )
         {
-            $configArray = Arr::getDoubtField( $this->getConfigDomainCustom( $domain ), $keyName, null );
+
+//            $configArray = Arr::getDoubtField( $this->getConfigDomainCustom( $domain ), $keyName, null );
+            $configArray = $this->getConfigDomainCustom( $domain, $keyName, null );
             if ( $configArray == null )
             {
                 return null;
