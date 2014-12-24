@@ -28,6 +28,10 @@ class ConvertObserver implements \SplObserver
         $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
         $convertConfig                =
             $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
+
+        prn( $convertConfig);
+        exit();
+
         $result[ 'convertedObjects' ] = [ ];
         foreach ( $convertConfig->targets as $_key => $_value )
         {
@@ -41,14 +45,24 @@ class ConvertObserver implements \SplObserver
         $result[ 'model' ] = $object;
         $result[ 'id' ]    = $id;
         $subject->setData( $result );
+
+        prn($result[ 'convertedObjects' ]);
+        exit();
+
+
         if ( $request->isPost() )
         {
+            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
+                    ->trigger( $result[ 'convertedObjects' ] );
+
             foreach ( $result[ 'convertedObjects' ] as $object )
             {
-//                $subject->getParams()->getController()->trigger( 'presave', $object );
                 $subject->getGatewayServiceVerify()->get( $object->getModelName() )->save( $object );
-//                $subject->getParams()->getController()->trigger( 'postsave', $object );
             }
+
+            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
+                    ->trigger( $result[ 'convertedObjects' ] );
+
             $url = $subject->getBackUrl();
             if ( $url == null || $url == '/' )
             {
