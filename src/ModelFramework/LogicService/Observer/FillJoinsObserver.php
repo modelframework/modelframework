@@ -9,6 +9,7 @@
 namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\AclService\AclDataModel;
+use ModelFramework\FormConfigParserService\StaticDataConfig\StaticDataConfig;
 use ModelFramework\LogicService\Logic;
 use Zend\Db\ResultSet\ResultSetInterface;
 
@@ -54,24 +55,13 @@ class FillJoinsObserver
 
             foreach ( $modelConfig[ 'joins' ] as $_k => $join )
             {
-                $othergw = $subject->getGatewayServiceVerify()->get( $join[ 'model' ] );
-                foreach ( $join[ 'on' ] as $myfield => $otherfield )
+                if ( $join[ 'type' ] == 'lookup' )
                 {
-                    $othermodel = $othergw->findOne( [ $otherfield => $mymodel->$myfield ] );
-                    if ( $othermodel !== null )
-                    {
-                        foreach ( $join[ 'fields' ] as $myfield => $otherfield )
-                        {
-                            $mymodel->$myfield = $othermodel->$otherfield;
-                        }
-                    }
-                    else
-                    {
-                        foreach ( $join[ 'fields' ] as $myfield => $otherfield )
-                        {
-                            unset( $mymodel->$myfield );
-                        }
-                    }
+                    $this->fillLookup( $join, $subject, $mymodel );
+                }
+                elseif ( $join[ 'type' ] == 'static_lookup' )
+                {
+                    $this->fillStaticLookup( $join, $subject, $mymodel );
                 }
             }
 
@@ -87,6 +77,54 @@ class FillJoinsObserver
 //            $models = $aModels;
 //        }
 
+    }
+
+    protected function fillLookup( $joinConf, $subject, $model )
+    {
+        $othergw = $subject->getGatewayServiceVerify()->get( $joinConf[ 'model' ] );
+        foreach ( $joinConf[ 'on' ] as $myfield => $otherfield )
+        {
+            $othermodel = $othergw->findOne( [ $otherfield => $model->$myfield ] );
+            if ( $othermodel !== null )
+            {
+                foreach ( $joinConf[ 'fields' ] as $myfield => $otherfield )
+                {
+                    $model->$myfield = $othermodel->$otherfield;
+                }
+            }
+            else
+            {
+                foreach ( $joinConf[ 'fields' ] as $myfield => $otherfield )
+                {
+                    unset( $model->$myfield );
+                }
+            }
+        }
+    }
+
+    protected function fillStaticLookup( $joinConf, $subject, $model )
+    {
+        $othermodel = $subject->getLogicService()->getConfigService()
+                              ->get( 'StaticDataSource', $joinConf['model'], new StaticDataConfig() )->options;
+        foreach ( $joinConf[ 'on' ] as $myfield=>$otherfield )
+        {
+            if ( isset( $othermodel[$model->$myfield] ) )
+            {
+                $othermodel = $othermodel[$model->$myfield];
+                foreach ( $joinConf[ 'fields' ] as $myfield => $otherfield )
+                {
+                    $model->$myfield = $othermodel[$otherfield];
+                }
+            }
+            else
+            {
+                foreach ( $joinConf[ 'fields' ] as $myfield => $otherfield )
+                {
+                    unset( $model->$myfield );
+                }
+            }
+        }
+//        exit;
     }
 
 }

@@ -48,7 +48,7 @@ class ModelConfigParserService
         $start_config = [
             'fields'    => [ ],
             'joins'     => [ ],
-            'unique'    => [ ],
+            //            'unique'       => [ ],
             'adapter'   => $cm->adapter,
             'model'     => $cm->model,
             'label'     => $cm->label,
@@ -133,10 +133,14 @@ class ModelConfigParserService
                     $_fieldconf[ 'group' ]                                                     = $conf[ 'group' ];
                 }
             }
-            $_joins[ ]                =
-                [ 'model' => $conf[ 'model' ], 'on' => [ $name . '_id' => '_id' ], 'fields' => $_joinfields ];
+            $_joins[ ]                = [
+                'model'  => $conf[ 'model' ],
+                'on'     => [ $name . '_id' => '_id' ],
+                'fields' => $_joinfields,
+                'type'   => $type
+            ];
             $_fieldconf[ 'source' ]   = $name;
-            $_fieldconf[ 'default' ] = isset( $conf[ 'default' ] ) ? $conf[ 'default' ] : '';
+            $_fieldconf[ 'default' ]  = isset( $conf[ 'default' ] ) ? $conf[ 'default' ] : '';
             $_fields[ $name . '_id' ] = $_fieldconf;
             $_labels[ $name . '_id' ] = $_jlabel;
             $name .= '_id';
