@@ -74,7 +74,8 @@ class RecycleObserver implements \SplObserver
             $delno  = $request->getPost( 'delno', null );
             if ( $delyes !== null )
             {
-                $view = $subject->getParam( 'view', 'delete' );
+//                $view = $subject->getParam( 'view', 'delete' );
+                $view = $subject->getViewConfigVerify()->mode;
                 if ( !in_array( $view, [ 'delete', 'clean', 'restore' ] ) )
                 {
                     throw new \Exception( 'Action is not allowed' );
