@@ -6,49 +6,49 @@
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\LogicService\LogicConfig;
+namespace ModelFramework\FormConfigParserService\StaticDataConfig;
 
 use ModelFramework\DataModel\DataModelInterface;
 
-trait LogicConfigAwareTrait
+trait StaticDataConfigAwareTrait
 {
 
     /**
-     * @var LogicConfig|DataModelInterface
+     * @var StaticDataConfig|DataModelInterface
      */
-    private $_logicConfig = null;
+    private $_staticDataConfig = null;
 
     /**
-     * @param LogicConfig|DataModelInterface $logicConfig
+     * @param StaticDataConfig|DataModelInterface $logicConfig
      *
      * @return $this
      */
-    public function setLogicConfig( LogicConfig $logicConfig )
+    public function setStaticDataConfig( StaticDataConfig $staticDataConfig )
     {
-        $this->_logicConfig = $logicConfig;
+        $this->$_staticDataConfig = $staticDataConfig;
     }
 
     /**
-     * @return LogicConfig|DataModelInterface
+     * @return StaticDataConfig|DataModelInterface
      *
      */
-    public function getLogicConfig()
+    public function getStaticDataConfig()
     {
-        return $this->_logicConfig;
+        return $this->$_staticDataConfig;
     }
 
     /**
-     * @return LogicConfig|DataModelInterface
+     * @return StaticDataConfig|DataModelInterface
      * @throws \Exception
      */
-    public function getLogicConfigVerify()
+    public function getStaticDataConfigVerify()
     {
-        $logicConfig = $this->getLogicConfig();
-        if ( $logicConfig == null || !$logicConfig instanceof LogicConfig )
+        $staticDataConfig = $this->getStaticDataConfig();
+        if ( $staticDataConfig == null || !$staticDataConfig instanceof StaticDataConfig )
         {
-            throw new \Exception( 'Logic Config Data does not set set in DataLogic' );
+            throw new \Exception( 'Static Data Config does not set set in StaticData' );
         }
 
-        return $logicConfig;
+        return $staticDataConfig;
     }
 }

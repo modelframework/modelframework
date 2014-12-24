@@ -1,31 +1,31 @@
 <?php
 /**
- * Class LogicConfigAwareInterface
+ * Class StaticDataConfigAwareInterface
  * @package ModelFramework\DataModel\Custom
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\LogicService\LogicConfig;
+namespace ModelFramework\FormConfigParserService\StaticDataConfig;
 
-interface LogicConfigAwareInterface
+interface StaticDataConfigAwareInterface
 {
 
     /**
-     * @param LogicConfig $logicConfig
+     * @param StaticDataConfig $logicConfig
      *
      * @return $this
      */
-    public function setLogicConfig( LogicConfig $logicConfig );
+    public function setStaticDataConfig( StaticDataConfig $logicConfig );
 
     /**
-     * @return LogicConfig
+     * @return StaticDataConfig
      */
-    public function getLogicConfig();
+    public function getStaticDataConfig();
 
     /**
-     * @return LogicConfig
+     * @return StaticDataConfig
      * @throws \Exception
      */
-    public function getLogicConfigVerify();
+    public function getStaticDataConfigVerify();
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace ModelFramework\LogicService\LogicConfig;
+namespace ModelFramework\FormConfigParserService\StaticDataConfig;
 
 use ModelFramework\DataModel\DataModel;
 
@@ -10,10 +10,10 @@ use ModelFramework\DataModel\DataModel;
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
-class StaticData extends DataModel
+class StaticDataConfig extends DataModel
 {
 
-    public $_model = 'StaticData';
+    public $_model = 'StaticDataConfig';
     public $_label = 'Source data for static dropdowns';
     public $_adapter = 'wepo_company';
 
@@ -26,8 +26,8 @@ class StaticData extends DataModel
     ];
 
     public $_id = '';
-    public $key = '';
-    public $attributes = [ ];
-    public $fields = [ ];
-    public $options = [ ];
+//    public $key = '';
+//    public $attributes = [ ];
+//    public $fields = [ ];
+//    public $options = [ ];
 }

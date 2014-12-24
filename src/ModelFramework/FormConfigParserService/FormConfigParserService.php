@@ -8,18 +8,24 @@
 
 namespace ModelFramework\FormConfigParserService;
 
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
+use ModelFramework\DataModel\DataModel;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
+use ModelFramework\FormConfigParserService\StaticDataConfig\StaticDataConfig;
 use ModelFramework\FormService\ConfigForm;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
+use ModelFramework\ModelService\ModelServiceAwareInterface;
+use ModelFramework\ModelService\ModelServiceAwareTrait;
 
 class FormConfigParserService
     implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface,
-               GatewayServiceAwareInterface
+               GatewayServiceAwareInterface, ConfigServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, GatewayServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, GatewayServiceAwareTrait, ConfigServiceAwareTrait;
 
     protected $_utilityFieldsetsConfigs = [
         'ButtonFieldset' => [
@@ -180,9 +186,10 @@ class FormConfigParserService
         if ( $type == 'lookup' )
         {
             $name .= '_id';
-            $filter[ 'name' ]                     = $name;
-            $_lall    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
-            $_options = [ ];
+            $filter[ 'name' ] = $name;
+            $_lall            =
+                $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
+            $_options         = [ ];
             foreach ( $_lall as $_lrow )
             {
                 $_llabel = '';
@@ -198,6 +205,36 @@ class FormConfigParserService
                 $_options[ $_lvalue ] = $_llabel;
             }
             $_elementconf[ 'options' ][ 'value_options' ] += $_options;
+        }
+        if ( $type == 'static_lookup' )
+        {
+            $name .= '_id';
+            $filter[ 'name' ] = $name;
+            $_lall            = $this->getConfigService()->get( 'StaticDataSource', $conf[ 'model' ],
+                                                                new StaticDataConfig() );
+            $_options         = [ ];
+            foreach ( $_lall->options as $_key => $_lrow )
+            {
+                $_llabel = $_lrow[ $_lall->attributes[ 'select_field' ] ];
+                $_lvalue = $_key;
+
+                $_options[ $_lvalue ] = $_llabel;
+            }
+            if ( isset( $conf[ 'default' ] ) )
+            {
+                $_elementconf[ 'options' ][ 'value_options' ] = $_options;
+//                $_elementconf[ 'attributes' ][ 'value' ]      = $conf[ 'default' ];
+            }
+            else
+            {
+                $_elementconf[ 'options' ][ 'value_options' ] += $_options;
+            }
+            $_elementconf[ 'options' ][ 'label' ] = $conf[ 'fields' ][ $_lall->attributes[ 'select_field' ] ];
+//            prn($_elementconf);
+//            exit;
+//            $_elementconf[ 'options' ][ 'value_options' ] += $_options;
+//            prn($_lall);
+//            exit;
         }
         $_elementconf[ 'attributes' ][ 'name' ] = $name;
         if ( isset( $conf[ 'required' ] ) )

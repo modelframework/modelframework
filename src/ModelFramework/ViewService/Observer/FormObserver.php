@@ -157,6 +157,7 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
      */
     public function process( $form, $model )
     {
+
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
 

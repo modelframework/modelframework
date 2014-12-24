@@ -108,7 +108,7 @@ class ModelConfigParserService
         $_fieldconf[ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
         $_labels               = [ ];
 
-        if ( $type == 'lookup' )
+        if ( in_array( $type, [ 'static_lookup', 'lookup' ] ) )
         {
             $_sign       = '_';
             $_joinfields = [ ];
@@ -136,6 +136,7 @@ class ModelConfigParserService
             $_joins[ ]                =
                 [ 'model' => $conf[ 'model' ], 'on' => [ $name . '_id' => '_id' ], 'fields' => $_joinfields ];
             $_fieldconf[ 'source' ]   = $name;
+            $_fieldconf[ 'default' ] = isset( $conf[ 'default' ] ) ? $conf[ 'default' ] : '';
             $_fields[ $name . '_id' ] = $_fieldconf;
             $_labels[ $name . '_id' ] = $_jlabel;
             $name .= '_id';

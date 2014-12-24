@@ -81,7 +81,6 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
     public function getConfig( $domain, $keyName, DataModelInterface $configObject )
     {
         $configArray = Arr::getDoubtField( $this->getConfigDomainSystem( $domain ), $keyName, null );
-
         if ( $configArray == null )
         {
             $configObject = $this->getConfigFromDb( $domain, $keyName, $configObject );
