@@ -67,16 +67,31 @@ trait ConfigAwareTrait
      * @param string $domain
      * @param string $key
      * @param null $subKey
+     * @param array $default
+     *
      *
      * @return null
      */
-    public function getConfigDomainPart( $domain, $key, $subKey = null )
+    public function getConfigDomainPart( $domain, $key, $subKey = null, $default = [] )
     {
-        $domainConfig = Arr::getDoubtField( $this->getConfigPart( $domain ), $key, [ ] );
+        $domainConfig = Arr::getDoubtField( $this->getConfigPart( $domain ), $key, $default );
 
         if ( $subKey !== null )
         {
-            $domainConfig = Arr::getDoubtField( $domainConfig, $subKey, [ ] );
+            $subConfig = Arr::getDoubtField( $domainConfig, $subKey, $default );
+
+
+//            if ( $subConfig === $default && strtolower($subKey)!==$subKey )
+//            {
+//                $keyMap = [];
+//                foreach (  array_keys($domainConfig) as $_key )
+//                {
+//                    $keyMap[ strtolower($_key) ] = $_key;
+//                }
+//                $subConfig = Arr::getDoubtField( $domainConfig, $keyMap[ strtolower($subKey) ], $default );
+//            }
+
+            $domainConfig = $subConfig;
         }
 
         return $domainConfig;
@@ -86,23 +101,25 @@ trait ConfigAwareTrait
     /**
      * @param string $domain
      * @param string $key
+     * @param array $default
      *
      * @return array
      */
-    public function getConfigDomainSystem( $domain, $key = null )
+    public function getConfigDomainSystem( $domain, $key = null, $default = []  )
     {
-        return $this->getConfigDomainPart( $domain, 'system', $key );
+        return $this->getConfigDomainPart( $domain, 'system', $key, $default );
     }
 
     /**
      * @param string $domain
      * @param string $key
+     * @param array $default
      *
      * @return array
      */
-    public function getConfigDomainCustom( $domain, $key = null )
+    public function getConfigDomainCustom( $domain, $key = null, $default = [] )
     {
-        return $this->getConfigDomainPart( $domain, 'custom', $key );
+        return $this->getConfigDomainPart( $domain, 'custom', $key, $default );
     }
 
 }

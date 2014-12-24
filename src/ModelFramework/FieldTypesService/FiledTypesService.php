@@ -46,7 +46,7 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
      */
     public function getInputFilter( $type )
     {
-        return $this->getFieldPart( $type, 'inputFilter' );
+        return $this->getFieldPart( $type, 'filter' );
     }
 
     /**
@@ -68,7 +68,7 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
      */
     public function getFormElement( $type )
     {
-        return $this->getFieldPart( $type, 'formElement'  );
+        return $this->getFieldPart( $type, 'element'  );
     }
 
     /**
