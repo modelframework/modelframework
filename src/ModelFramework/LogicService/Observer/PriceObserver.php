@@ -23,7 +23,7 @@ class PriceObserver
 
     private $defaultConfigs = [
         'raw_price'     => [ 'value' => 0, 'field' => 'sub_total' ],
-        'discount_type' => [ 'value' => 'Direct Price Reduction', 'field' => 'discount_type' ],
+        'discount_type' => [ 'value' => 'Direct Price Reduction', 'field' => 'discount_type_title' ],
         'discount'      => [ 'value' => 0, 'field' => 'discount' ],
         'tax'           => [ 'value' => 0, 'fields' => [ 'vat', 'sales_tax' ], 'field' => 'tax' ],
         'adjustment'    => [ 'value' => 0, 'field' => 'adjustment' ],
