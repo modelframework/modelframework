@@ -31,10 +31,10 @@ class TriggerObserver extends AbstractObserver
                 $trgModelGW     = $this->getSubject()->getGatewayService()->get( $trgModelName );
                 $trgModel       = $trgModelGW->find( [ $trgSearchField => $model->$key ] )->current();
 //                prn($trgModelName . '.' . $action, $trgModel);
-                $this->getSubject()->getLogicService()->trigger( $action, $trgModel );
+                $logic = $this->getSubject()->getLogicService()->get( $action, $trgModel->getModelName() );
+                $logic -> trigger($trgModel);
             }
         }
-//        exit;
     }
 
 }
