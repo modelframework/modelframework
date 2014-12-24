@@ -72,7 +72,7 @@ trait ConfigAwareTrait
      */
     public function getConfigDomainPart( $domain, $key, $subKey = null )
     {
-        $domainConfig = Arr::getDoubtField( $this->getConfigPart( $domain ), strtolower($key), [ ] );
+        $domainConfig = Arr::getDoubtField( $this->getConfigPart( $domain ), $key, [ ] );
 
         if ( $subKey !== null )
         {
