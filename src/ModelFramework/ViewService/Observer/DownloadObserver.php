@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AttachObserver
+ * Class DownloadObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -17,7 +17,7 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
 use Wepo\Lib\Acl;
 
-class AttachObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
+class DownloadObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
 
     use ConfigAwareTrait, SubjectAwareTrait;
