@@ -212,6 +212,10 @@ class DataModel implements DataModelInterface
         {
             return $this->_data[ $name ];
         }
+        if ( $name == 'id' )
+        {
+            return (string) $this->_id;
+        }
 
         return null;
     }
