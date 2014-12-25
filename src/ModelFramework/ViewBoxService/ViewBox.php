@@ -19,10 +19,10 @@ use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
 
-class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface
+class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface, ResponseAwareInterface
 {
 
-    use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait;
+    use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
@@ -96,6 +96,12 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
                     return;
                 }
+                if ( $modelView->hasResponse() )
+                {
+                    $this->setResponse( $modelView->getResponse() );
+
+                    return;
+                }
 
                 $data = $modelView->getData();
 
@@ -125,6 +131,10 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
         if ( $this->hasRedirect() )
         {
             return $this->getRedirect();
+        }
+        if ( $this->hasResponse() )
+        {
+            return $this->getResponse();
         }
         $data = $this->getData();
 
