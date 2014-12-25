@@ -19,18 +19,18 @@ class DataMappingConfig extends DataModel
 
     public $_fields = [
         '_id'     => [ 'type' => 'pk', 'datatype' => 'string', 'default' => '' ],
-        'key'    => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
-        'name'    => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
-        'source'  => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'key'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
+        'model'   => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'targets' => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
+        'post'    => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
     ];
     protected $_joins = [ ];
     public $_unique = [ 'model' ];
 
     public $_id = '';
     public $key = '';
-    public $name = '';
-    public $source = '';
+    public $model = '';
     public $targets = [ ];
+    public $post = [ ];
 
 }
