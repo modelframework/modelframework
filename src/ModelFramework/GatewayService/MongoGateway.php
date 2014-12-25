@@ -313,8 +313,8 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
             }
             elseif ( is_array( $_value ) && count( $_value ) )
             {
-                $_1key = array_keys($_value)[0];
-                if ($_1key{0}=='$')
+                $_1key = array_keys( $_value )[ 0 ];
+                if ( $_1key{0} == '$' )
                 {
                     $_value = $this->_mongoWhere( $_value );
                 }
@@ -645,15 +645,20 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     public function save( DataModelInterface $model )
     {
         $data = $this->_convertids( $model->toArray() );
-        $_id = $model->id();
+        $_id  = $model->id();
         if ( !$this->isUnique( $model ) )
         {
             throw new \Exception( 'Data is not unique' );
         }
         if ( empty( $_id ) )
         {
+
             $insertResult = $this->insert( $data );
             $result       = empty( $insertResult[ 'ok' ] ) ? 0 : $insertResult[ 'ok' ];
+            if ( $result )
+            {
+                $model->_id = $data[ '_id' ];
+            }
         }
         else
         {

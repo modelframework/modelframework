@@ -9,6 +9,8 @@
 namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\DataMapping\DataMappingConfig\DataMappingConfig;
+use ModelFramework\LogicService\Logic;
+use ModelFramework\Utility\Arr;
 use ModelFramework\ViewService\View;
 
 class ConvertObserver extends AbstractObserver
@@ -18,33 +20,61 @@ class ConvertObserver extends AbstractObserver
     {
         $model = $this->getModelData();
 
-        $subject  = $this->getSubject();
-        $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
-                ->trigger( $model );
-        $subject->getLogicServiceVerify()->get( 'convert', $model->getModelName() )
-                ->trigger( $model );
-        $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
-                ->trigger( $model );
+        /**
+         * @var View $subject
+         */
+        $subject = $this->getSubject();
+        $viewConfig = $subject->getViewConfigVerify();
 
-        prn($model, $model->toArray());
+        /**
+         * @var Logic $logic
+         */
+        $logic = $subject->getLogicServiceVerify()->get( 'convert', $model->getModelName() );
+
+        if ( $subject->getParamsVerify()->fromPost( 'object_id', null ) !== null )
+        {
+            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
+                    ->trigger( $model );
+            $logic->setData( [ 'save' => true ] );
+        }
+
+        $logic->trigger( $model );
+
+        $d = $logic->getData();
+
+        if ( Arr::getDoubtField( $logic->getData(), 'save', false ) )
+        {
+            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
+                    ->trigger( $model );
+
+            $url = $subject->getBackUrl();
+            if ( $url == null || $url == '/' )
+            {
+                $url = $subject->getParams()->getController()->url()
+                               ->fromRoute( 'common', [ 'data' => strtolower($viewConfig->model), 'view' => 'list' ] );
+            }
+            $subject->setRedirect( $subject->refresh( $model->getModelName() .
+                                                      ' data was successfully converted',
+                                                      $url ) );
+        }
+
     }
 
 
     public function update_b00bs( \SplSubject $subject )
     {
-        $result                       = [ ];
-        $request                      = $subject->getParams()->getController()->getRequest();
-        $viewConfig                   = $subject->getViewConfigVerify();
-        $modelName                    = $viewConfig->model;
-        $data                         = strtolower( $modelName );
-        $id                           = (string) $subject->getParams()->fromRoute( 'id', 0 );
-        $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
+        $result     = [ ];
+        $request    = $subject->getParams()->getController()->getRequest();
+        $viewConfig = $subject->getViewConfigVerify();
+        $modelName  = $viewConfig->model;
+        $data       = strtolower( $modelName );
+        $id         = (string) $subject->getParams()->fromRoute( 'id', 0 );
+        $object     = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
 
-
-        $convertConfig                =
+        $convertConfig =
             $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
 
-        prn( $convertConfig);
+        prn( $convertConfig );
         exit();
 
         $result[ 'convertedObjects' ] = [ ];

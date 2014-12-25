@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class UploadObserver extends AbstractObserver
+class UploadObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class ConcatenationObserver extends AbstractObserver
+class ConcatenationObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

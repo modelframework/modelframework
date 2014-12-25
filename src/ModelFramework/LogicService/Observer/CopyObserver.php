@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class CopyObserver extends AbstractObserver
+class CopyObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

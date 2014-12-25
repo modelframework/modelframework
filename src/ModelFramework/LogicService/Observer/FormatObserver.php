@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class FormatObserver extends AbstractObserver
+class FormatObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

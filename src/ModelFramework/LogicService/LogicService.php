@@ -88,6 +88,7 @@ class LogicService
 
         $logic->setLogicConfig( $logicConfig );
 
+        $logic->setConfigService( $this->getConfigServiceVerify() );
         $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
         $logic->setGatewayService( $this->getGatewayServiceVerify() );
         $logic->setAuthService( $this->getAuthServiceVerify() );
