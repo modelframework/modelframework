@@ -76,21 +76,21 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
             if ( $viewConfig->mode == 'insert' )
             {
                 $model = $subject->getGateway()->model();
-//                $model = $query->setDefaults( $model );
             }
-            elseif ( in_array($viewConfig->mode, ['update', 'convert' ] ) )
+            else
             {
+//            elseif ( in_array($viewConfig->mode, ['update', 'convert' ] ) )
                 $model = $subject->getGateway()->findOne( $query->getWhere() );
                 if ( $model == null )
                 {
                     throw new \Exception( 'Data is not accessible' );
                 }
             }
-            else
-            {
-                throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
-                                      ' View Config for the ' . get_class() );
-            }
+//        else
+//        {
+//          throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+//              ' View Config for the ' . get_class() );
+//        }
         }
 
         if ( $model instanceof AclDataModel )
@@ -116,6 +116,5 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
 
         return $model;
     }
-
 
 }
