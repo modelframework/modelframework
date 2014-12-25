@@ -133,6 +133,7 @@ class FormObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareIn
         }
 
         $form = $subject->getFormServiceVerify()->get( $this->getModel(), $mode );
+
         $form->setRoute( 'common' );
         $form->setActionParams( [ 'data' => strtolower( $viewConfig->model ), 'view' => $viewConfig->mode ] );
 
