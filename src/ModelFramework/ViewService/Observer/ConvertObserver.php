@@ -14,9 +14,19 @@ use ModelFramework\ViewService\View;
 class ConvertObserver extends AbstractObserver
 {
 
-    public function process( $model )
+    public function process( $aclModel )
     {
-        prn($model);
+        $model = $this->getModelData();
+
+        $subject  = $this->getSubject();
+        $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
+                ->trigger( $model );
+        $subject->getLogicServiceVerify()->get( 'convert', $model->getModelName() )
+                ->trigger( $model );
+        $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
+                ->trigger( $model );
+
+        prn($model, $model->toArray());
     }
 
 
