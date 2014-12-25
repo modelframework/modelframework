@@ -1,122 +1,22 @@
 <?php
 /**
- * Class UploadObserver
+ * Class DownloadObserver
  * @package ModelFramework\ModelViewService
- * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
- * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
+ * @author  Ilia Davydenko di.nekto@gmail.com
  */
 
 namespace ModelFramework\ViewService\Observer;
 
-use ModelFramework\ConfigService\ConfigAwareInterface;
-use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\AclService\AclDataModel;
-use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
-use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
-use ModelFramework\ViewService\View;
-use Wepo\Lib\Acl;
 
-class DownloadObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
+class DownloadObserver extends AbstractObserver
 {
 
-    use ConfigAwareTrait, SubjectAwareTrait;
-
-    private $_aclModel = null;
-    private $_model = null;
-
-    /**
-     * @param \SplSubject|View $subject
-     *
-     * @throws \Exception
-     */
-    public function update( \SplSubject $subject )
-    {
-        $this->setSubject( $subject );
-        $id = $subject->getParams()->fromRoute('id');
-
-        $subject->getLogicServiceVerify()->setParams( $subject->getParams() );
-
-        $dataModel = $this->initModel();
-
-        prn($id);
-        exit();
-        $model = $this->setModel( $dataModel );
-
-
-    }
-
-    public function getModel()
-    {
-        if ( $this->_aclModel !== null ) return $this->_aclModel;
-
-        return $this->_model;
-    }
-
-    public function getModelData()
-    {
-        return $this->_model;
-    }
-
-    public function initModel()
-    {
-        $subject    = $this->getSubject();
-        $viewConfig = $subject->getViewConfigVerify();
-        $query      =
-            $subject->getQueryServiceVerify()
-                    ->get( $viewConfig->query )
-                    ->setParams( $subject->getParams() )
-                    ->process();
-
-        $data = $subject->getData();
-        if ( isset( $data[ 'model' ] ) && $data[ 'model' ] instanceof DataModelInterface )
-        {
-            $model = $data[ 'model' ];
-        }
-        else
-        {
-            if ( $viewConfig->mode == 'insert' )
-            {
-                $model = $subject->getGateway()->model();
-//                $model = $query->setDefaults( $model );
-            }
-            elseif ( $viewConfig->mode == 'update' )
-            {
-                $model = $subject->getGateway()->findOne( $query->getWhere() );
-                if ( $model == null )
-                {
-                    throw new \Exception( 'Data is not accessible' );
-                }
-            }
-            else
-            {
-                throw new \Exception( "Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
-                                      ' View Config for the ' . get_class() );
-            }
-        }
-
-        if ( $model instanceof AclDataModel )
-        {
-            $this->_aclModel = $model;
-            $this->_model    = $this->_aclModel->getDataModel();
-        }
-
-        $subject->getLogicServiceVerify()->get( 'setDefaults', $model->getModelName() )->trigger( $this->_model );
-
-        return $this->_model;
-    }
-
-    public function setModel( DataModelInterface $model )
-    {
-        if ( $this->_aclModel !== null && $this->_aclModel instanceof AclDataModel )
-        {
-            $this->_aclModel->setDataModel( $model );
-            $model = $this->_aclModel;
-        }
-
-        $this->getSubject()->setData( [ 'model' => $model ] );
-
-        return $model;
-    }
-
+ public function process($model)
+ {
+     $subject = $this->getSubject();
+     $fs = $subject->getFileServiceVerify();
+     $filename = basename($model->document);
+     $response = $fs->downloadFile($filename);
+     $subject -> setResponse($response);
+ }
 }

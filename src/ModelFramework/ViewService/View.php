@@ -36,6 +36,8 @@ use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
+use ModelFramework\ViewBoxService\ResponseAwareInterface;
+use ModelFramework\ViewBoxService\ResponseAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareInterface;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
@@ -46,13 +48,13 @@ class View
                ModelConfigParserServiceAwareInterface, ModelServiceAwareInterface, GatewayAwareInterface,
                ParamsAwareInterface, GatewayServiceAwareInterface, FormServiceAwareInterface, FileServiceAwareInterface,
                AclServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface,
-               QueryServiceAwareInterface, ConfigServiceAwareInterface, \SplSubject
+               QueryServiceAwareInterface, ConfigServiceAwareInterface, \SplSubject, ResponseAwareInterface
 {
 
     use ViewConfigAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
-        AclServiceAwareTrait, ConfigServiceAwareTrait;
+        AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
