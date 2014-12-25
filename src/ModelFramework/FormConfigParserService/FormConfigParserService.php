@@ -230,11 +230,6 @@ class FormConfigParserService
                 $_elementconf[ 'options' ][ 'value_options' ] += $_options;
             }
             $_elementconf[ 'options' ][ 'label' ] = $conf[ 'fields' ][ $_lall->attributes[ 'select_field' ] ];
-//            prn($_elementconf);
-//            exit;
-//            $_elementconf[ 'options' ][ 'value_options' ] += $_options;
-//            prn($_lall);
-//            exit;
         }
         $_elementconf[ 'attributes' ][ 'name' ] = $name;
         if ( isset( $conf[ 'required' ] ) )
@@ -255,6 +250,7 @@ class FormConfigParserService
         $result = [ 'filters' => [ $name => $filter ], 'elements' => [ $name => $_elementconf ] ];
 
 //        $result = [ $name => $_elementconf ];
+
 
         return $result;
     }

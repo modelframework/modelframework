@@ -11,13 +11,32 @@ namespace ModelFramework\ViewService\Observer;
 use ModelFramework\DataMapping\DataMappingConfig\DataMappingConfig;
 use ModelFramework\ViewService\View;
 
-class ConvertObserver implements \SplObserver
+class ConvertObserver extends AbstractObserver
 {
 
     /**
      * @param \SplSubject|View $subject
+     *
+     * @throws \Exception
      */
     public function update( \SplSubject $subject )
+    {
+        $this->setSubject( $subject );
+        $dataModel = $this->initModel();
+
+        prn($dataModel);
+        exit();
+
+        $form = $this->initForm();
+
+        $this->process( $form, $this->getModel() );
+
+        $model = $this->setModel( $dataModel );
+
+    }
+
+
+    public function update_b00bs( \SplSubject $subject )
     {
         $result                       = [ ];
         $request                      = $subject->getParams()->getController()->getRequest();
@@ -26,6 +45,8 @@ class ConvertObserver implements \SplObserver
         $data                         = strtolower( $modelName );
         $id                           = (string) $subject->getParams()->fromRoute( 'id', 0 );
         $object                       = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
+
+
         $convertConfig                =
             $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
 
