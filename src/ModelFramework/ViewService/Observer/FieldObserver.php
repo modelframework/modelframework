@@ -26,6 +26,8 @@ class FieldObserver
     {
         $data = $subject->getParam( 'data', null );
         $view = $subject->getParam( 'view', null );
+
+
         if ( $data == null || $view == null )
         {
             throw new \Exception( 'Please specify data param' );
