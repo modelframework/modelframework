@@ -8,11 +8,9 @@
 
 namespace ModelFramework\ConfigService;
 
-use ModelFramework\DataModel\Custom\ConfigData;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\DataModel\Custom\LogicConfigData;
 use ModelFramework\Utility\Arr;
 
 class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterface, ConfigAwareInterface
@@ -33,7 +31,7 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
     {
 //        $configData = new ConfigData();
         $configData = $this->getGatewayServiceVerify()->get( $configObject->getModelName(), $configObject )
-                           ->findOne( [ 'key' => $keyName ] );
+                           ->findOne( [ 'key' => strtolower($keyName) ] );
         if ( $configData == null )
         {
 
@@ -67,6 +65,7 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
         {
             throw new \Exception( '"key" field must be set in ' . $configObject ->getModelName() . ' configuration' );
         }
+        $configObject->key = strtolower($configObject->key);
         return $this->getGatewayServiceVerify()
                     ->get( $configObject->getModelName(), $configObject )
                     ->save( $configObject );

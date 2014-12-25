@@ -14,25 +14,9 @@ use ModelFramework\ViewService\View;
 class ConvertObserver extends AbstractObserver
 {
 
-    /**
-     * @param \SplSubject|View $subject
-     *
-     * @throws \Exception
-     */
-    public function update( \SplSubject $subject )
+    public function process( $model )
     {
-        $this->setSubject( $subject );
-        $dataModel = $this->initModel();
-
-        prn($dataModel);
-        exit();
-
-        $form = $this->initForm();
-
-        $this->process( $form, $this->getModel() );
-
-        $model = $this->setModel( $dataModel );
-
+        prn($model);
     }
 
 
@@ -66,10 +50,6 @@ class ConvertObserver extends AbstractObserver
         $result[ 'model' ] = $object;
         $result[ 'id' ]    = $id;
         $subject->setData( $result );
-
-        prn($result[ 'convertedObjects' ]);
-        exit();
-
 
         if ( $request->isPost() )
         {
