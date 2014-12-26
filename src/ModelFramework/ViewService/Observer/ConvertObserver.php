@@ -33,19 +33,20 @@ class ConvertObserver extends AbstractObserver
 
         if ( $subject->getParamsVerify()->fromPost( 'object_id', null ) !== null )
         {
-            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
-                    ->trigger( $model );
+//            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
+//                    ->trigger( $model );
             $logic->setData( [ 'save' => true ] );
         }
 
         $logic->trigger( $model );
 
         $d = $logic->getData();
+        prn($d);
 
         if ( Arr::getDoubtField( $logic->getData(), 'save', false ) )
         {
-            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
-                    ->trigger( $model );
+//            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
+//                    ->trigger( $model );
 
             $url = $subject->getBackUrl();
             if ( $url == null || $url == '/' )
