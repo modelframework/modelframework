@@ -46,15 +46,22 @@ class PriceObserver
         {
             $config = $this->updateDefaultConfigs( $model );
 
-            $total_price = $config[ 'discount_type' ][ 'value' ] == '% of Price' ?
-                $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ] * $config[ 'discount' ][ 'value' ] /
-                100 :
-                $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ] - $config[ 'discount' ][ 'value' ];
+            $total_price = $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ];
+            if ( $config[ 'discount_type' ][ 'value' ] == '% of Price' )
+            {
+                $total_price *= (1 - $config[ 'discount' ][ 'value' ] / 100 );
+            }
 
-            $total_price = round( max( [ $total_price, 0 ] ), 2 );
+            if ( $config[ 'discount_type' ][ 'value' ] == 'Direct Price Reduction' )
+            {
+                $total_price -=  $config[ 'discount' ][ 'value' ];
+            }
+
+            $total_price = round( $total_price , 2 );
 
             $taxes       = $total_price * $config[ 'tax' ][ 'value' ] / 100;
-            $total_price = max( [ $total_price + $taxes + $config[ 'adjustment' ][ 'value' ], 0 ] );
+            $total_price += $taxes;
+            $total_price += $config[ 'adjustment' ][ 'value' ];
 
             $model->$config[ 'tax' ][ 'field' ]          = $taxes;
             $model->$config[ 'result_price' ][ 'field' ] = $total_price;

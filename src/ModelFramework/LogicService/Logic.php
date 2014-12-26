@@ -63,6 +63,7 @@ class Logic extends AbstractService
         'DetailsSumObserver',
         'TriggerObserver',
         'ConvertObserver',
+        'DebugObserver',
         'SetAsDefaultObserver'
     ];
 

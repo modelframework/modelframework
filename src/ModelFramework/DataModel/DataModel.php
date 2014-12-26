@@ -50,6 +50,7 @@ class DataModel implements DataModelInterface
         {
             return $this->_table;
         }
+
         return $this->_model;
     }
 
@@ -155,7 +156,7 @@ class DataModel implements DataModelInterface
     public function split( $validationGroup )
     {
         $fields = $this->values( $validationGroup );
-        $data   = $this->_fields;
+        $data   = $this->_data;
         foreach ( $fields as $_v )
         {
             unset( $data[ $_v ] );
@@ -208,6 +209,7 @@ class DataModel implements DataModelInterface
 
     public function __get( $name )
     {
+
         if ( array_key_exists( $name, $this->_data ) )
         {
             return $this->_data[ $name ];

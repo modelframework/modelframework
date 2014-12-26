@@ -10,7 +10,7 @@ namespace ModelFramework\ViewService\Observer;
 
 use Wepo\Lib\Acl;
 
-class FormObserver extends  AbstractObserver
+class FormObserver extends AbstractObserver
 {
 
     public function process( $model )
@@ -59,13 +59,10 @@ class FormObserver extends  AbstractObserver
      */
     public function processForm( $form, $model )
     {
-
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-
-        $results  = [ ];
-        $old_data = $model->split( $form->getValidationGroup() );
-
+        $results    = [ ];
+        $old_data   = $model->split( $form->getValidationGroup() );
         //Это жесть конечно и забавно, но на время сойдет :)
         $model_bind = $model->toArray();
         foreach ( $model_bind as $_k => $_v )
@@ -76,7 +73,6 @@ class FormObserver extends  AbstractObserver
             }
         }
         //Конец жести
-
         $request = $subject->getParams()->getController()->getRequest();
         if ( $request->isPost() )
         {
@@ -121,11 +117,8 @@ class FormObserver extends  AbstractObserver
         {
             $form->bind( $model );
         }
-
         $form->prepare();
-
         $results[ 'form' ] = $form;
-
         $subject->setData( $results );
     }
 
