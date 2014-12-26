@@ -50,7 +50,6 @@ class Logic extends AbstractService
         'ParamsObserver',
         'CleanObserver',
         'SaveObserver',
-        'UploadObserver',
         'OwnerObserver',
         'DateObserver',
         'AgeObserver',
