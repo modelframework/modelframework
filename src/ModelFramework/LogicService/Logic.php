@@ -59,7 +59,8 @@ class Logic extends AbstractService
         'PriceObserver',
         'DetailsSumObserver',
         'TriggerObserver',
-        'ConvertObserver'
+        'ConvertObserver',
+        'SetAsDefaultObserver'
     ];
 
     protected $observers = [ ];

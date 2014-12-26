@@ -8,27 +8,43 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class ConcatenationObserver extends AbstractObserver
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
+
+class SetAsDefaultObserver  implements \SplObserver, ConfigAwareInterface
 {
-
-    public function process( $model, $key, $value )
+    use ConfigAwareTrait;
+    /**
+     * @param \SplSubject|Logic $subject
+     */
+    public function update( \SplSubject $subject )
     {
-        $concatValue = '';
-        foreach ( $value as $value_key )
-        {
-            if ( !isset( $model->$value_key ) )
-            {
-                throw new \Exception( 'Field ' . $value_key . ' does not exist in model ' .
-                                      $model->getModelName() );
-            }
-            if ( strlen( $concatValue ) )
-            {
-                $concatValue .= ' ';
 
+        $model = $subject->getEventObject();
+        $settings = $this->getRootConfig();
+        if($model->$settings['isdefault_field']=='true')
+        {
+            $gw = $subject->getGatewayServiceVerify()->get( $model->getModelName() );
+
+            $searchQuery = [ ];
+            foreach ( $settings[ 'unique_fields' ] as $field )
+            {
+                $searchQuery[ $field ] = $model->$field;
             }
-            $concatValue .= $model->$value_key;
+
+            $searchQuery['-_id'] = $model->_id;
+
+
+            $otherModels = $gw->find( $searchQuery );
+
+            foreach ( $otherModels as $othrModel )
+            {
+                $othrModel->$settings[ 'isdefault_field' ] = 'false';
+                $gw->save( $othrModel );
+            }
         }
-        $model->$key = $concatValue;
     }
+
+
 
 }
