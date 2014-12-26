@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class ConditionObserver extends AbstractObserver
+class ConditionObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

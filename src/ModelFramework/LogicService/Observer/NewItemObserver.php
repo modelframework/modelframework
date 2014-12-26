@@ -10,7 +10,7 @@ namespace ModelFramework\LogicService\Observer;
 
 use Wepo\Model\Status;
 
-class NewItemObserver extends AbstractObserver
+class NewItemObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

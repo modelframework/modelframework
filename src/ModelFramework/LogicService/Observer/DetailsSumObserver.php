@@ -10,7 +10,7 @@ namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
-class DetailsSumObserver extends AbstractObserver
+class DetailsSumObserver extends AbstractConfigObserver
 {
 
     use SubjectAwareTrait;

@@ -12,6 +12,8 @@ use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\BaseService\AbstractService;
 use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
@@ -20,17 +22,19 @@ use ModelFramework\LogicService\LogicConfig\LogicConfigAwareTrait;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
 use Zend\Db\ResultSet\ResultSetInterface;
 
 class Logic extends AbstractService
     implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
-               AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject, LogicServiceAwareInterface
+               AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject, LogicServiceAwareInterface,
+               ConfigServiceAwareInterface
 {
 
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
-        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait;
+        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait;
 
     /**
      * @var array|DataModel|null
@@ -64,6 +68,23 @@ class Logic extends AbstractService
     ];
 
     protected $observers = [ ];
+    private $_data = [ ];
+
+    public function getData()
+    {
+        return $this->_data;
+    }
+
+    public function setData( array $data )
+    {
+        $this->_data = Arr::merge( $this->_data, $data );
+//        $this->_data = $data;
+    }
+
+    protected function clearData()
+    {
+        $this->_data = [ ];
+    }
 
     public function attach( \SplObserver $observer )
     {

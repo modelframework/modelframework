@@ -85,7 +85,7 @@ class FileService implements FileServiceInterface
         {
             $destenation = './upload/' . (string) $auth->getMainUser()->company_id . '/' . $userdir . '/' . $filename;
         }
-        if ( file_exists( $destenation ) )
+        if ( file_exists( $destenation ) && !empty($filename))
         {
             return $destenation;
         }

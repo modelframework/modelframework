@@ -11,7 +11,7 @@ namespace ModelFramework\LogicService\Observer;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
-class TriggerObserver extends AbstractObserver
+class TriggerObserver extends AbstractConfigObserver
 {
 
     use SubjectAwareTrait;

@@ -11,7 +11,7 @@ namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\AclService\AclDataModel;
 
-class ConstantObserver extends AbstractObserver
+class ConstantObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

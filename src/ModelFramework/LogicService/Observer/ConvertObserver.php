@@ -8,61 +8,196 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-use ModelFramework\AclService\AclDataModel;
-use ModelFramework\ConfigService\ConfigAwareInterface;
-use ModelFramework\ConfigService\ConfigAwareTrait;
+use ModelFramework\DataMapping\DataMappingConfig\DataMappingConfig;
+use ModelFramework\DataModel\DataModel;
 use ModelFramework\LogicService\Logic;
-use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
-use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
-use Zend\Db\ResultSet\ResultSetInterface;
+use ModelFramework\Utility\Arr;
 
-abstract class ConvertObserver
-    implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
+class ConvertObserver extends AbstractObserver
 {
 
-    use ConfigAwareTrait, SubjectAwareTrait;
+    private $_data = [ ];
+
+    public function getData()
+    {
+        return $this->_data;
+    }
+
+    public function setData( array $data )
+    {
+//        $this->_data = Arr::merge( $this->_data, $data );
+        $this->_data = $data;
+    }
+
+    protected function clearData()
+    {
+        $this->_data = [ ];
+    }
+
+    public function processModel( $model )
+    {
+
+        /**
+         * @var Logic $subject
+         */
+        $subject = $this->getSubject();
+
+        $save = Arr::getDoubtField( $subject->getData(), 'save', false );
+
+        $data = $this->getData();
+
+        $convertConfig = $this->getConfig( $model->getModelName() );
+
+        $data[ $convertConfig->key ] = $model;
+
+        $this->setData( $data );
+
+        $this->processConfig( $convertConfig );
+
+        $subject->setData( [ $this->getData() ] );
+
+    }
+
+    public function processConfig( $convertConfig )
+    {
+        /**
+         * @var Logic $subject
+         */
+        $subject = $this->getSubject();
+        $data    = $this->getData();
+
+        /**
+         * @var DataModel $model
+         */
+        $model = $data[ $convertConfig->key ];
+        foreach ( $convertConfig->targets as $target => $config )
+        {
+            $targetModel = $subject->getModelServiceVerify()->get( $config[ 'model' ] );
+            foreach ( $config[ 'fields' ] as $field => $value )
+            {
+                $targetModel->$field = $this->parse( $value );
+
+            }
+            $this->saveModel( $targetModel, 'insert' );
+            $data[ $target ] = $targetModel;
+            $this->setData( $data );
+
+            if ( !isset( $config[ 'related' ] ) )
+            {
+                continue;
+            }
+
+            $related = [ ];
+            foreach ( $config[ 'related' ] as $relatedName => $query )
+            {
+                $related[ $relatedName ] = [ ];
+                $relatedConfig           = $this->getConfig( $relatedName );
+                foreach ( $query as $qField => $qValue )
+                {
+                    $query[ $qField ] = $this->parse( $qValue );
+                }
+
+                $rModel = $this->getData()[ $relatedConfig->key ];
+                $gw     = $subject->getGatewayServiceVerify()->get( $relatedConfig->model, $rModel );
+
+                foreach ( $gw->find( $query ) as $_rModel )
+                {
+                    $_d                        = $data;
+                    $_d[ $relatedConfig->key ] = $_rModel;
+                    $this->setData( $_d );
+                    $this->processConfig( $relatedConfig );
+
+                    $related[ $relatedName ][ ] = array_diff_key( $this->getData(), $data );
+                }
+
+            }
+
+            if ( isset( $convertConfig->post ) )
+            {
+                $model->merge( $convertConfig->post );
+                $this->saveModel( $model, 'convert' );
+            }
+
+            $data[ 'related' ] = $related;
+
+            $this->setData( $data );
+
+        }
+
+    }
 
     /**
-     * @param \SplSubject|Logic $subject
+     * @param DataModel $model
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function saveModel( $model, $mode )
     {
-        $this->setSubject( $subject );
+        /**
+         * @var Logic $subject
+         */
+        $subject = $this->getSubject();
 
-        $models = $subject->getEventObject();
-        if ( !( is_array( $models ) || $models instanceof ResultSetInterface ) )
-        {
-            $models = [ $models ];
-        }
+        if ( !Arr::getDoubtField( $subject->getData(), 'save', false ) ) return;
 
-        $aModels = [ ];
-        foreach ( $models as $_k => $model )
-        {
-            if ( $model instanceof AclDataModel )
-            {
-                $dataModel = $model->getDataModel();
-            }
-            else
-            {
-                $dataModel = $model;
-            }
+//        $mode = 'insert';
+//        if ( $model->id() !== '' )
+//        {
+//            $mode = 'update';
+//        }
+        $subject->getLogicServiceVerify()->get( 'pre'.$mode, $model->getModelName() )
+                ->trigger( $model );
+        $subject->getGatewayServiceVerify()->get( $model->getModelName(), $model )->save( $model );
 
-            $this->process( $dataModel );
+        $subject->getLogicServiceVerify()->get( 'post'.$mode, $model->getModelName() )
+                ->trigger( $model );
 
-            $aModels[ ] = $model->getArrayCopy();
-        }
-
-        if ( $models instanceof ResultSetInterface )
-        {
-            $models->initialize( $aModels );
-        }
     }
 
-    public function process( $model )
+
+    public function getConfig( $key )
     {
-        prn($model);
+        /**
+         * @var Logic $subject
+         */
+        $subject = $this->getSubject();
+
+        $data          = $this->getData();
+        $convertConfig =
+            $subject->getConfigServiceVerify()->getByObject( $key, new DataMappingConfig() );
+
+        if ( !isset( $data[ $convertConfig->key ] ) )
+        {
+            $data[ $convertConfig->key ] = $subject->getModelServiceVerify()->get( $convertConfig->model );
+        }
+
+        $this->setData( $data );
+
+        return $convertConfig;
+    }
+
+
+    public function parse( $string )
+    {
+        if ( strlen( $string ) && $string{0} == ':' )
+        {
+            return $this->get( substr( $string, 1 ) );
+        }
+
+        return $string;
+    }
+
+    public function get( $string )
+    {
+        $data = $this->getData();
+
+        list( $model, $field ) = explode( '.', $string );
+        if ( !isset( $data[ $model ] ) )
+        {
+            return '';
+        }
+
+        return $data[ $model ]->$field;
     }
 
 }

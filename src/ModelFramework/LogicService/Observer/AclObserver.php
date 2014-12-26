@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class AclObserver extends AbstractObserver
+class AclObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )

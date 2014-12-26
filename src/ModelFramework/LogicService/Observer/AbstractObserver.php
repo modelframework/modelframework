@@ -9,18 +9,16 @@
 namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\AclService\AclDataModel;
-use ModelFramework\ConfigService\ConfigAwareInterface;
-use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\LogicService\Logic;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use Zend\Db\ResultSet\ResultSetInterface;
 
 abstract class AbstractObserver
-    implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
+    implements \SplObserver, SubjectAwareInterface
 {
 
-    use ConfigAwareTrait, SubjectAwareTrait;
+    use SubjectAwareTrait;
 
     /**
      * @param \SplSubject|Logic $subject
@@ -49,21 +47,7 @@ abstract class AbstractObserver
                 $dataModel = $model;
             }
 
-            foreach ( $this->getRootConfig() as $key => $value )
-            {
-                if ( is_numeric( $key ) )
-                {
-                    $key   = $value;
-                    $value = '';
-                }
-                if ( !isset( $dataModel->$key ) )
-                {
-                    throw new \Exception( 'Field ' . $key . ' does not exist in model ' . $dataModel->getModelName() );
-                }
-
-                $this->process( $dataModel, $key, $value );
-
-            }
+            $this->processModel( $dataModel );
 
             $aModels[ ] = $model->getArrayCopy();
         }
@@ -74,6 +58,6 @@ abstract class AbstractObserver
         }
     }
 
-    abstract public function process( $model, $key, $value );
+    abstract public function processModel( $model );
 
 }

@@ -8,7 +8,7 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-class AgeObserver extends AbstractObserver
+class AgeObserver extends AbstractConfigObserver
 {
 
     public function process( $model, $key, $value )
