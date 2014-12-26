@@ -50,7 +50,6 @@ class Logic extends AbstractService
         'ParamsObserver',
         'CleanObserver',
         'SaveObserver',
-        'UploadObserver',
         'OwnerObserver',
         'DateObserver',
         'AgeObserver',
@@ -63,7 +62,8 @@ class Logic extends AbstractService
         'PriceObserver',
         'DetailsSumObserver',
         'TriggerObserver',
-        'ConvertObserver'
+        'ConvertObserver',
+        'SetAsDefaultObserver'
     ];
 
     protected $observers = [ ];
