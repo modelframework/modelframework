@@ -60,10 +60,10 @@ class RecycleObserver implements \SplObserver
                 $subject->setRedirect( $subject->refresh( 'Data is invalid ' .
                                                           $ex->getMessage(), $this->url()
                                                                                   ->fromRoute( 'common',
-                                                                                               array(
+                                                                                               [
                                                                                                    'data' => $modelRoute,
                                                                                                    'view' => 'list'
-                                                                                               ) ) ) );
+                                                                                               ] ) ) );
 
                 return;
             }
@@ -74,22 +74,16 @@ class RecycleObserver implements \SplObserver
             $delno  = $request->getPost( 'delno', null );
             if ( $delyes !== null )
             {
-//                $view = $subject->getParam( 'view', 'delete' );
                 $view = $subject->getViewConfigVerify()->mode;
                 if ( !in_array( $view, [ 'delete', 'clean', 'restore' ] ) )
                 {
                     throw new \Exception( 'Action is not allowed' );
                 }
-
                 $subject->getLogicServiceVerify()->get( 'pre' . $view, $viewConfig->model )
                         ->trigger( $results[ 'items' ] );
                 $subject->getLogicServiceVerify()->get( $view, $viewConfig->model )->trigger( $results[ 'items' ] );
                 $subject->getLogicServiceVerify()->get( 'post' . $view, $viewConfig->model )
                         ->trigger( $results[ 'items' ] );
-
-//                $subject->getLogicServiceVerify()->trigger( 'pre' . $view, $results[ 'items' ] );
-//                $subject->getLogicServiceVerify()->trigger( $view, $results[ 'items' ] );
-//                $subject->getLogicServiceVerify()->trigger( 'post' . $view, $results[ 'items' ] );
                 $url = $subject->getParams()->fromPost( 'saurl' )[ 'back' ];
                 if ( !isset( $url ) || $view == 'clean' )
                 {
