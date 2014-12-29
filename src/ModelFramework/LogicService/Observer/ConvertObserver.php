@@ -8,13 +8,17 @@
 
 namespace ModelFramework\LogicService\Observer;
 
+use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\DataMapping\DataMappingConfig\DataMappingConfig;
 use ModelFramework\DataModel\DataModel;
 use ModelFramework\LogicService\Logic;
 use ModelFramework\Utility\Arr;
 
-class ConvertObserver extends AbstractObserver
+class ConvertObserver extends AbstractObserver implements ConfigAwareInterface
 {
+
+    use ConfigAwareTrait;
 
     private $_data = [ ];
 
@@ -42,7 +46,12 @@ class ConvertObserver extends AbstractObserver
          */
         $subject = $this->getSubject();
 
+        $this->getRootConfig();
+
         $save = Arr::getDoubtField( $subject->getData(), 'save', false );
+        $save = Arr::getDoubtField( $this->getRootConfig(), 'save', $save );
+
+        $subject->setData( [ 'save' => $save ] );
 
         $data = $this->getData();
 
@@ -145,11 +154,11 @@ class ConvertObserver extends AbstractObserver
 //        {
 //            $mode = 'update';
 //        }
-        $subject->getLogicServiceVerify()->get( 'pre'.$mode, $model->getModelName() )
+        $subject->getLogicServiceVerify()->get( 'pre' . $mode, $model->getModelName() )
                 ->trigger( $model );
         $subject->getGatewayServiceVerify()->get( $model->getModelName(), $model )->save( $model );
 
-        $subject->getLogicServiceVerify()->get( 'post'.$mode, $model->getModelName() )
+        $subject->getLogicServiceVerify()->get( 'post' . $mode, $model->getModelName() )
                 ->trigger( $model );
 
     }

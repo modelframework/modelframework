@@ -90,7 +90,7 @@ class FormObserver extends AbstractObserver
                         ->trigger( $model->getDataModel() );
                 try
                 {
-                    $subject->getGateway()->save( $model );
+                    $subject->getGateway()->save( $model->getDataModel() );
                 }
                 catch ( \Exception $ex )
                 {

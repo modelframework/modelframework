@@ -659,7 +659,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
             {
                 $model->_id = $data[ '_id' ];
             }
-        }
+    }
         else
         {
             if ( $this->get( $_id ) )
