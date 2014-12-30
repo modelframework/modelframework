@@ -28,7 +28,8 @@ class Query
     private $_order = [ ];
 
     protected $allowed_observers = [
-        'RouteParamObserver', 'LetterParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver', 'PermissionObserver', 'AclObserver'
+        'RouteParamObserver', 'LetterParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver',
+        'PermissionObserver', 'AclObserver', 'CurrentUserObserver'
     ];
 
     protected $observers = [ ];
