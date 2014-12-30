@@ -64,7 +64,8 @@ class Logic extends AbstractService
         'TriggerObserver',
         'ConvertObserver',
         'DebugObserver',
-        'SetAsDefaultObserver'
+        'SetAsDefaultObserver',
+        'MailSyncObserver'
     ];
 
     protected $observers = [ ];

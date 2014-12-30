@@ -21,20 +21,17 @@ class CurrentUserObserver extends AbstractObserver
 
         $this->setSubject( $subject );
 
-        prn();
-        exit;
-
         $data = [
             'params' => []
         ];
 
-        $user_id = $subject->getAuthServiceVerify()->getUser();
+        $user = $subject->getAuthServiceVerify()->getUser();
 
         $where = [ ];
 
         foreach ( $this->getRootConfig() as $field => $param )
         {
-            $where[$param] = $user_id;
+            $where[$field] = $user->$param;
         }
 
         $subject->setData($data);
