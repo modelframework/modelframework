@@ -11,6 +11,7 @@ namespace ModelFramework\FormService;
 use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
 
 class FormServiceProxyCached implements FormServiceAwareInterface, CacheServiceAwareInterface, FormServiceInterface
 {

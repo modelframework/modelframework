@@ -8,6 +8,7 @@
 
 namespace ModelFramework\QueryService\Observer;
 
+use ModelFramework\QueryService\Query;
 use ModelFramework\Utility\Arr;
 
 class OrderObserver extends AbstractObserver
@@ -16,7 +17,7 @@ class OrderObserver extends AbstractObserver
     /**
      * @param \SplSubject|Query $subject
      *
-     * @throws \Exception
+     * @return string
      */
     public function update( \SplSubject $subject )
     {
@@ -29,9 +30,17 @@ class OrderObserver extends AbstractObserver
 
         $queryConfig = $subject->getQueryConfig();
 //        $defaults    = $queryConfig->order;
-        $defaults    =  $this->getRootConfig();
+        $defaults = $this->getRootConfig();
 
-        $sort = $subject->getParam( 'sort', null );
+        $sort = null;
+        $s    = null;
+
+        if ( $subject->getParams() !== null )
+        {
+            $sort = $subject->getParam( 'sort', null );
+            $s    = (int) $subject->getParam( 'desc', null );
+        }
+
         if ( $sort == null || !in_array( $sort, $queryConfig->fields ) )
         {
             $sort = Arr::getDoubtField( $defaults, 'sort', null );
@@ -45,7 +54,6 @@ class OrderObserver extends AbstractObserver
             $data[ 'params' ][ 'sort' ] = $sort;
         }
 
-        $s = (int) $subject->getParam( 'desc', null );
         if ( $s == null )
         {
             $s = Arr::getDoubtField( $defaults, 'desc', 0 );
