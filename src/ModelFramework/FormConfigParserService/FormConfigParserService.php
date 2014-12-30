@@ -138,7 +138,7 @@ class FormConfigParserService
                 $_baseFieldSet = isset( $_fls[ 'base' ] ) && $_fls[ 'base' ] == true;
             }
 
-            $fsconfig = [
+            $fsConfig = [
                 'name'            => $modelName . 'Fieldset',
                 'group'           => $_grp,
                 'type'            => 'fieldset',
@@ -154,10 +154,10 @@ class FormConfigParserService
                 {
                     $formConfig[ 'filters' ][ $_grp ] = [ ];
                 }
-                $fsconfig[ 'elements' ] = $_fsGroups[ $_grp ];
+                $fsConfig[ 'elements' ] = $_fsGroups[ $_grp ];
                 $formConfig[ 'filters' ][ $_grp ] += $_filterGroups[ $_grp ];
             }
-            $fssConfigs[ $_grp ]                = $fsconfig;
+            $fssConfigs[ $_grp ]                = $fsConfig;
             $formConfig[ 'fieldsets' ][ $_grp ] = [ 'type' => $modelName . 'Fieldset' ];
             if ( $_baseFieldSet == true )
             {
@@ -166,10 +166,10 @@ class FormConfigParserService
         }
         $formConfig[ 'fieldsets_configs' ] = $fssConfigs;
         $ufs                               = $this->getUtilityFieldsetsConfigs();
-        foreach ( $ufs as $fieldset )
+        foreach ( $ufs as $fieldSet )
         {
-            $formConfig[ 'fieldsets' ][ $fieldset[ 'name' ] ]         = [ 'type' => $fieldset[ 'name' ] ];
-            $formConfig[ 'fieldsets_configs' ][ $fieldset[ 'name' ] ] = $fieldset;
+            $formConfig[ 'fieldsets' ][ $fieldSet[ 'name' ] ]         = [ 'type' => $fieldSet[ 'name' ] ];
+            $formConfig[ 'fieldsets_configs' ][ $fieldSet[ 'name' ] ] = $fieldSet;
         }
         $cf = new ConfigForm();
 
@@ -181,11 +181,11 @@ class FormConfigParserService
     protected function createFormElement( $name, $conf )
     {
         $type = $conf[ 'type' ];
-//        $_elementconf                         = $this->_fieldtypes[ $type ][ 'formElement' ];
-        $_elementconf                         = $this->getFieldTypesServiceVerify()->getFormElement( $type );
+//        $_elementConf                         = $this->_fieldtypes[ $type ][ 'formElement' ];
+        $_elementConf                         = $this->getFieldTypesServiceVerify()->getFormElement( $type );
         $filter                               = $this->getFieldTypesServiceVerify()->getInputFilter( $type );
         $filter[ 'name' ]                     = $name;
-        $_elementconf[ 'options' ][ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
+        $_elementConf[ 'options' ][ 'label' ] = isset( $conf[ 'label' ] ) ? $conf[ 'label' ] : ucfirst( $name );
         if ( $type == 'lookup' )
         {
             $name .= '_id';
@@ -198,68 +198,69 @@ class FormConfigParserService
                 $_where = $query->getWhere();
                 $_order = $query->getOrder();
             }
-            $_lall    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( $_where, $_order );
+
+            $_lAll    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( $_where, $_order );
             $_options = [ ];
-            foreach ( $_lall as $_lrow )
+            foreach ( $_lAll as $_lRow )
             {
-                $_llabel = '';
-                $_lvalue = $_lrow->id();
+                $_lLabel = '';
+                $_lvalue = $_lRow->id();
                 foreach ( array_keys( $conf[ 'fields' ] ) as $_k )
                 {
-                    if ( strlen( $_llabel ) )
+                    if ( strlen( $_lLabel ) )
                     {
-                        $_llabel .= ' ';
+                        $_lLabel .= ' ';
                     }
-                    $_llabel .= $_lrow->$_k;
+                    $_lLabel .= $_lRow->$_k;
                 }
-                $_options[ $_lvalue ] = $_llabel;
+                $_options[ $_lvalue ] = $_lLabel;
             }
-            $_elementconf[ 'options' ][ 'value_options' ] += $_options;
+            $_elementConf[ 'options' ][ 'value_options' ] += $_options;
         }
         if ( $type == 'static_lookup' )
         {
             $name .= '_id';
             $filter[ 'name' ] = $name;
-            $_lall            = $this->getConfigService()->get( 'StaticDataSource', $conf[ 'model' ],
+            $_lAll            = $this->getConfigService()->get( 'StaticDataSource', $conf[ 'model' ],
                                                                 new StaticDataConfig() );
             $_options         = [ ];
-            foreach ( $_lall->options as $_key => $_lrow )
+            foreach ( $_lAll->options as $_key => $_lRow )
             {
-                $_llabel = $_lrow[ $_lall->attributes[ 'select_field' ] ];
+                $_lLabel = $_lRow[ $_lAll->attributes[ 'select_field' ] ];
                 $_lvalue = $_key;
 
-                $_options[ $_lvalue ] = $_llabel;
+                $_options[ $_lvalue ] = $_lLabel;
             }
             if ( isset( $conf[ 'default' ] ) )
             {
-                $_elementconf[ 'options' ][ 'value_options' ] = $_options;
-//                $_elementconf[ 'attributes' ][ 'value' ]      = $conf[ 'default' ];
+                $_elementConf[ 'options' ][ 'value_options' ] = $_options;
+//                $_elementConf[ 'attributes' ][ 'value' ]      = $conf[ 'default' ];
             }
             else
             {
-                $_elementconf[ 'options' ][ 'value_options' ] += $_options;
+                $_elementConf[ 'options' ][ 'value_options' ] += $_options;
             }
-            $_elementconf[ 'options' ][ 'label' ] = $conf[ 'fields' ][ $_lall->attributes[ 'select_field' ] ];
+            $_elementConf[ 'options' ][ 'label' ] = $conf[ 'fields' ][ $_lAll->attributes[ 'select_field' ] ];
         }
-        $_elementconf[ 'attributes' ][ 'name' ] = $name;
+        $_elementConf[ 'attributes' ][ 'name' ] = $name;
         if ( isset( $conf[ 'required' ] ) )
         {
-            $_elementconf[ 'attributes' ][ 'required' ] = 'required';
-            if ( isset( $_elementconf[ 'options' ][ 'label_attributes' ][ 'class' ] ) &&
-                 strlen( $_elementconf[ 'options' ][ 'label_attributes' ][ 'class' ] )
+            $_elementConf[ 'attributes' ][ 'required' ] = 'required';
+            if ( isset( $_elementConf[ 'options' ][ 'label_attributes' ][ 'class' ] ) &&
+                 strlen( $_elementConf[ 'options' ][ 'label_attributes' ][ 'class' ] )
             )
             {
-                $_elementconf[ 'options' ][ 'label_attributes' ][ 'class' ] .= ' required';
+                $_elementConf[ 'options' ][ 'label_attributes' ][ 'class' ] .= ' required';
             }
             else
             {
-                $_elementconf[ 'options' ][ 'label_attributes' ] = [ 'class' => 'required' ];
+                $_elementConf[ 'options' ][ 'label_attributes' ] = [ 'class' => 'required' ];
             }
         }
 
-        $result = [ 'filters' => [ $name => $filter ], 'elements' => [ $name => $_elementconf ] ];
+        $result = [ 'filters' => [ $name => $filter ], 'elements' => [ $name => $_elementConf ] ];
 
-//        $result = [ $name => $_elementconf ];
+//        $result = [ $name => $_elementConf ];
 
         return $result;
     }

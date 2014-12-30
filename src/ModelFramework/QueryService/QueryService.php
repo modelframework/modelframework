@@ -11,12 +11,14 @@ use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\QueryService\QueryConfig\QueryConfig;
+use ModelFramework\Utility\Params\ParamsAwareInterface;
+use ModelFramework\Utility\Params\ParamsAwareTrait;
 
 class QueryService
-    implements QueryServiceInterface, ConfigServiceAwareInterface, AuthServiceAwareInterface
+    implements QueryServiceInterface, ConfigServiceAwareInterface, AuthServiceAwareInterface, ParamsAwareInterface
 {
 
-    use ConfigServiceAwareTrait, AuthServiceAwareTrait;
+    use ConfigServiceAwareTrait, AuthServiceAwareTrait, ParamsAwareTrait;
 
     /**
      * @param string $queryName
@@ -51,6 +53,11 @@ class QueryService
         if ( $queryConfig == null )
         {
             throw new \Exception('Please fill QueryConfig for the ' . $queryName. '. I can\'t get it out');
+        }
+
+        if ( $this->getParams()!== null )
+        {
+            $query->setParams( $this->getParams() );
         }
         $query->setQueryConfig( $queryConfig );
 
