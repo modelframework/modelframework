@@ -10,11 +10,16 @@ namespace ModelFramework\ViewService\Observer;
 
 use Wepo\Lib\Acl;
 
-class FormObserver extends AbstractObserver
+class LogicObserver extends AbstractObserver
 {
 
     public function process( $model )
     {
+        prn($model);
+        $this->getSubject()->setRedirect( $this->getSubject()->refresh( 'Mails synced successfully',
+                                                  'http://wepo.loc/common/mail/index.html' ) );
+        return;
+        exit;
         $form = $this->initForm();
         $this->processForm( $form, $this->getModel() );
     }
