@@ -19,13 +19,16 @@ use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareTrait;
+use Wepo\Model\Status;
 
 class FormConfigParserService
     implements FormConfigParserServiceInterface, FieldTypesServiceAwareInterface,
-               GatewayServiceAwareInterface, ConfigServiceAwareInterface
+               GatewayServiceAwareInterface, ConfigServiceAwareInterface, QueryServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, GatewayServiceAwareTrait, ConfigServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, GatewayServiceAwareTrait, ConfigServiceAwareTrait, QueryServiceAwareTrait;
 
     protected $_utilityFieldsetsConfigs = [
         'ButtonFieldset' => [
@@ -187,9 +190,16 @@ class FormConfigParserService
         {
             $name .= '_id';
             $filter[ 'name' ] = $name;
-            $_lall            =
-                $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( [ ], $conf[ 'fields' ] );
-            $_options         = [ ];
+            $_where           = [ 'status_id' => [ Status::NEW_, Status::NORMAL ] ];
+            $_order           = $conf[ 'fields' ];
+            if ( isset( $conf[ 'query' ] ) && strlen( $conf[ 'query' ] ) )
+            {
+                $query  = $this->getQueryServiceVerify()->get( $conf[ 'query' ] )->process();
+                $_where = $query->getWhere();
+                $_order = $query->getOrder();
+            }
+            $_lall    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( $_where, $_order );
+            $_options = [ ];
             foreach ( $_lall as $_lrow )
             {
                 $_llabel = '';
@@ -250,7 +260,6 @@ class FormConfigParserService
         $result = [ 'filters' => [ $name => $filter ], 'elements' => [ $name => $_elementconf ] ];
 
 //        $result = [ $name => $_elementconf ];
-
 
         return $result;
     }

@@ -33,7 +33,7 @@ class AclObserver extends AbstractObserver
 
         if ( !count( $this->getConfigPart( 'type' ) ) )
         {
-            $match[ 'type' ]  = [ 'owner', 'shared', 'hieararhy' ];
+            $match[ 'type' ]  = [ 'owner', 'shared', 'hierarchy' ];
             $match[ 'role_id' ] = [ $user->id(), $user->role_id ];
 //            'type'=> [ 'owner', 'shared', 'hieararhy' ],
 //            'role_id'
