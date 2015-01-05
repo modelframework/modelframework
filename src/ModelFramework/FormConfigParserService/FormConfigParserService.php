@@ -209,9 +209,14 @@ class FormConfigParserService
                 {
                     if ( strlen( $_lLabel ) )
                     {
-                        $_lLabel .= ' ';
+                        $_lLabel .= '  [ ';
+                        $_lLabel .= $_lRow->$_k;
+                        $_lLabel .= ' ] ';
                     }
-                    $_lLabel .= $_lRow->$_k;
+                    else
+                    {
+                        $_lLabel .= $_lRow->$_k;
+                    }
                 }
                 $_options[ $_lvalue ] = $_lLabel;
             }
