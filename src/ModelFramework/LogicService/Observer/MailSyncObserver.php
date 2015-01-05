@@ -40,14 +40,15 @@ class MailSyncObserver
             }
             catch ( \Exception $ex )
             {
-                prn($ex->getMessage());
+//                prn($ex->getMessage());
 //            throw $ex;
                 $count = 0;
             }
 //            prn($count);
 //            exit;
 
-//            $this->updateMailChains();
+            $this->updateMailChains( $user );
+            exit;
         }
     }
 
@@ -181,10 +182,15 @@ class MailSyncObserver
         return $count;
     }
 
-    public function updateMailChains( $user = null )
+
+    //todo rewrite update method to work in
+    public function updateMailChains( $user )
     {
-        $user         = is_null( $user ) ? $this->user() : $user;
-        $noChainMails = $this->table( 'Mail' )->find( [ 'chain_id' => '', 'owner_id' => $user->id() ] );
+        $mailGW  = $this->getSubject()->getGatewayService()->get( 'MailDetail' );
+        $chainGW = $this->getSubject()->getGatewayService()->get( 'Mail' );
+        $modelService = $this->getSubject()->getModelServiceVerify();
+
+        $noChainMails = $mailGW->find( [ 'chain_id' => '', 'owner_id' => $user->id() ] );
 //        prn('all mails',$noChainMails->toArray());
 //        exit;
 
@@ -204,11 +210,11 @@ class MailSyncObserver
                 array_push( $chainWhere, $MMessageId );
             }
             $chainWhere = array_unique( $chainWhere );
-            $chains     = $this->table( 'MailChain' )->find( [ 'reference' => $chainWhere ] );
+            $chains     = $chainGW->find( [ 'reference' => $chainWhere ] );
 //            prn('chain search array', $chainWhere);
 //            prn('chain search result', $chains->toArray());
 
-            $chain            = $this->model( 'MailChain' );
+            $chain            = $modelService->get( 'Mail' );
             $chain->reference = $chainWhere;
             $chain->title     = $mail->title;
             $chain->date      = $mail->date;
@@ -243,12 +249,13 @@ class MailSyncObserver
 
             try
             {
-                $this->trigger( 'presave', $chain );
-                $tr = $this->table( 'MailChain' );
-                $tr->save( $chain );
-//                $mail->chain_id = $tr->getLastInsertId()?:$mail->chain_id;
+                $chain->owner_id = $user->id();
+
+                $this->getSubject()->getLogicService()->get('sync', $chain->getModelName() )->trigger( $chain );
+                $chainGW->save( $chain );
+//                $mail->chain_id = $chainGW->getLastInsertId()?:$mail->chain_id;
 //                $this->table('Mail')->save($mail);
-                $tr->delete( [ '_id' => $oldChainIds ] );
+                $chainGW->delete( [ '_id' => $oldChainIds ] );
 //                $this->trigger('postsave',$chain);
             }
             catch ( \Exception $ex )
@@ -262,9 +269,9 @@ class MailSyncObserver
         {
             $message_id     = 'message-id';
             $chain          =
-                $this->table( 'MailChain' )->findOne( [ 'reference' => [ $mail->header[ $message_id ] ] ] );
+                $chainGW->findOne( [ 'reference' => [ $mail->header[ $message_id ] ] ] );
             $mail->chain_id = $chain->_id;
-            $this->table( 'Mail' )->save( $mail );
+            $mailGW->save( $mail );
         }
     }
 
