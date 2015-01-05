@@ -33,7 +33,7 @@ class FormObserver extends AbstractObserver
             $mode = Acl::MODE_EDIT;
         }
 
-        $form = $subject->getFormServiceVerify()->get( $this->getModel(), $mode );
+        $form = $subject->getFormServiceVerify()->get( $this->getModel(), $mode, $viewConfig->fields );
 
         $form->setRoute( 'common' );
         $form->setActionParams( [ 'data' => strtolower( $viewConfig->model ), 'view' => $viewConfig->mode ] );

@@ -21,23 +21,27 @@ class FormServiceProxyCached implements FormServiceAwareInterface, CacheServiceA
     /**
      * @param DataModelInterface $model
      * @param string             $mode
+     * @param array              $fields
      *
-     * @return DataForm
+     * @return $this
+     * @throws \Exception
      */
-    public function get( DataModelInterface $model, $mode )
+    public function get( DataModelInterface $model, $mode, array $fields = []  )
     {
-        return $this->getForm( $model, $mode );
+        return $this->getForm( $model, $mode, $fields );
     }
 
     /**
      * @param DataModelInterface $model
      * @param string             $mode
+     * @param array              $fields
      *
-     * @return DataForm
+     * @return $this
+     * @throws \Exception
      */
-    public function getForm( DataModelInterface $model, $mode )
+    public function getForm( DataModelInterface $model, $mode, array $fields = []  )
     {
-        return $this->getCacheService()->getCachedObjMethod( $this->getFormService(), 'getForm', [ $model, $mode ] );
+        return $this->getCacheService()->getCachedObjMethod( $this->getFormService(), 'getForm', [ $model, $mode, $fields ] );
     }
 
 }

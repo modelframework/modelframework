@@ -35,6 +35,7 @@ class ListObserver
             $subject
                 ->getGatewayVerify()
                 ->getPages( $subject->fields(), $query->getWhere(), $query->getOrder() );
+
         if ( $result[ 'paginator' ]->count() > 0 )
         {
             $result[ 'paginator' ]->setCurrentPageNumber( $subject->getParam( 'page', 1 ) )

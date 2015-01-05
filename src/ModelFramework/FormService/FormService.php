@@ -37,35 +37,55 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
     /**
      * @param DataModelInterface $model
      * @param string             $mode
+     * @param array              $fields
      *
-     * @return DataForm
+     * @return $this
+     * @throws \Exception
      */
-    public function get( DataModelInterface $model, $mode )
+    public function get( DataModelInterface $model, $mode, array $fields = [ ] )
     {
-        return $this->getForm( $model, $mode );
+        return $this->getForm( $model, $mode, $fields );
     }
 
     /**
      * @param DataModelInterface $model
      * @param string             $mode
+     * @param array              $fields
      *
-     * @return DataForm
+     * @return $this
+     * @throws \Exception
      */
-    public function getForm( DataModelInterface $model, $mode )
+    public function getForm( DataModelInterface $model, $mode, array $fields = [ ] )
     {
-        return $this->createForm( $model, $mode );
+        return $this->createForm( $model, $mode, $fields );
     }
 
 
     /**
      * @param DataModelInterface $model
-     * @param        string      $mode
+     * @param string             $mode
+     * @param array              $fields
      *
-     * @return DataFormInterface
+     * @return $this
+     * @throws \Exception
      */
-    public function createForm( DataModelInterface $model, $mode )
+    public function createForm( DataModelInterface $model, $mode, array $fields = [ ] )
     {
         $configData = $this->getPermittedConfig( $model, $mode );
+
+        if ( count($fields) )
+        {
+            $configFields = $configData->fields;
+            $configData->fields = [];
+            foreach ( $fields as $fieldName )
+            {
+                if ( isset( $configFields[$fieldName]))
+                {
+                    $configData->fields[$fieldName] = $configFields[$fieldName];
+                }
+            }
+        }
+
         $cf         = $this->getFormConfigParserServiceVerify()->getFormConfig( $configData );
         $form       = new DataForm();
 
