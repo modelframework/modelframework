@@ -85,7 +85,7 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclCo
 
     public function __get( $name )
     {
-        if ( in_array( $name, [ '_model', '_label', '_adapter', 'acl', 'id' ] ) )
+        if ( in_array( $name, [ '_model', '_label', '_adapter', '_acl', 'id' ] ) )
         {
             return $this->getDataModelVerify()->{$name};
         }

@@ -136,11 +136,11 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
             $modelPermissions = $acl->permissions;
             $groups           = $user->groups;
             $groups[ ]        = $user->_id;
-            if ( is_array( $model->acl ) )
+            if ( is_array( $model->_acl ) )
             {
                 foreach ( $groups as $group_id )
                 {
-                    foreach ( $model->acl as $_acl )
+                    foreach ( $model->_acl as $_acl )
                     {
                         if ( !empty( $_acl[ 'role_id' ] ) && $_acl[ 'role_id' ] == $group_id )
                         {

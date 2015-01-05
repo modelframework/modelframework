@@ -84,8 +84,8 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
                     '_id' => [
                         'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID', 'source' => '_id'
                     ],
-                    'acl' => [
-                        'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl', 'source' => 'acl'
+                    '_acl' => [
+                        'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl', 'source' => '_acl'
                     ],
                 ],
             'filters' => [ '_id' => $this->getInputFilter( 'text' ) ],

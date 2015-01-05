@@ -14,7 +14,7 @@ class AclObserver extends AbstractConfigObserver
     public function process( $model, $key, $value )
     {
         $user = $this->getSubject()->getAuthService()->getUser();
-        $acl  = $model->acl;
+        $acl  = $model->_acl;
         foreach ( $acl as $_key => $_aclArray )
         {
             if ( $_aclArray[ 'type' ] == 'owner' || $_aclArray[ 'type' ] == 'hierarchy' )
