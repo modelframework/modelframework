@@ -38,13 +38,13 @@ class OrderObserver extends AbstractObserver
         if ( $subject->getParams() !== null )
         {
             $sort = $subject->getParam( 'sort', null );
-            $s    = (int) $subject->getParam( 'desc', null );
+            $s    = $subject->getParam( 'desc', null );
         }
 
-        if ( $sort == null || !in_array( $sort, $queryConfig->fields ) )
+        if ( $sort === null || !in_array( $sort, $queryConfig->fields ) )
         {
             $sort = Arr::getDoubtField( $defaults, 'sort', null );
-            if ( $sort == null )
+            if ( $sort === null )
             {
                 return '';
             }
@@ -54,7 +54,7 @@ class OrderObserver extends AbstractObserver
             $data[ 'params' ][ 'sort' ] = $sort;
         }
 
-        if ( $s == null )
+        if ( $s === null )
         {
             $s = Arr::getDoubtField( $defaults, 'desc', 0 );
         }
@@ -67,6 +67,7 @@ class OrderObserver extends AbstractObserver
         $subject->setOrder( $order );
         $data[ 'column' ][ 'sort' ] = $sort;
         $data[ 'column' ][ 'desc' ] = $s;
+
 
         $subject->setData( $data );
 
