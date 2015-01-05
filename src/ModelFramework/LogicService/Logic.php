@@ -8,6 +8,7 @@
 
 namespace ModelFramework\LogicService;
 
+use Mail\MailServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\BaseService\AbstractService;
@@ -34,7 +35,7 @@ class Logic extends AbstractService
 {
 
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
-        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait;
+        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait, MailServiceAwareTrait;
 
     /**
      * @var array|DataModel|null

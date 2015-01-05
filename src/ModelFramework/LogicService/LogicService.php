@@ -8,6 +8,7 @@
 
 namespace ModelFramework\LogicService;
 
+use Mail\MailServiceAwareTrait;
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
@@ -31,7 +32,7 @@ class LogicService
 {
 
     use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait,
-        AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait;
+        AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait;
 
     public function dispatch( $event )
     {
@@ -94,6 +95,7 @@ class LogicService
         $logic->setAuthService( $this->getAuthServiceVerify() );
         $logic->setModelService( $this->getModelService() );
         $logic->setLogicService( $this );
+        $logic->setMailService( $this->getMailService() );
         if ( $this->getParams() != null )
         {
             $logic->setParams( $this->getParams() );

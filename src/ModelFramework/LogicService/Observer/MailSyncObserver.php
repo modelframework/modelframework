@@ -8,11 +8,12 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
+use ModelFramework\FormConfigParserService\StaticDataConfig\StaticDataConfig;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
+use Wepo\Model\Status;
 
 class MailSyncObserver
     implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
@@ -33,78 +34,88 @@ class MailSyncObserver
 
         foreach ( $users as $_k => $user )
         {
+            try
+            {
+                $count = $this->syncMails( $user );
+            }
+            catch ( \Exception $ex )
+            {
+                prn($ex->getMessage());
+//            throw $ex;
+                $count = 0;
+            }
+//            prn($count);
+//            exit;
 
+//            $this->updateMailChains();
         }
     }
 
-    public function checkMailSettingExist( $actionType, $user = null )
+    public function getSyncSetting( $user )
     {
-        if ( !$user )
-        {
-            $user = $this->user();
-        }
-        switch ( $actionType )
-        {
-            case 'sync':
-                $settings = $this->table( 'MailSetting' )->find( [
-                                                                     'user_id'          => $user->id(),
-                                                                     'setting_protocol' => \Wepo\Model\MailSetting::receiveProtocols(),
-                                                                     'status_id'        => [
-                                                                         Status::NORMAL,
-                                                                         Status::NEW_
-                                                                     ]
-                                                                 ] );
-                break;
-            case 'send': //change when mail setting become apart for send and sync
-                $settings = $this->table( 'MailSetting' )->find( [
-                                                                     'user_id'          => $user->id(),
-                                                                     'setting_protocol' => \Wepo\Model\MailSetting::sendProtocols(),
-                                                                     'status_id'        => [
-                                                                         Status::NORMAL,
-                                                                         Status::NEW_
-                                                                     ]
-                                                                 ] );
-                break;
-            default:
-                throw new \Exception( 'actionType is wrong' );
-                break;
-        }
+//        prn( $user->id() );
+        $protocols = array_keys( $this->getSubject()->getConfigServiceVerify()
+                                      ->get( 'StaticDataSource', 'ReceiveMailProtocol',
+                                             new StaticDataConfig() )->options );
+//        prn( $protocols );
+        $gw = $this->getSubject()->getGatewayService()->get( 'MailReceiveSetting' );
+//        exit;
+        $settings = $gw->find( [
+                                   'user_id'             => $user->id(),
+                                   'setting_protocol_id' => $protocols,
+                                   'status_id'           => [
+                                       Status::NORMAL,
+                                       Status::NEW_
+                                   ]
+                               ] );
+//        prn( $settings->toArray() );
+//        exit;
+//        switch ( $actionType )
+//        {
+//            case 'sync':
+//                $settings = $this->table( 'MailSetting' )->find( [
+//                                                                     'user_id'          => $user->id(),
+//                                                                     'setting_protocol' => \Wepo\Model\MailSetting::receiveProtocols(),
+//                                                                     'status_id'        => [
+//                                                                         Status::NORMAL,
+//                                                                         Status::NEW_
+//                                                                     ]
+//                                                                 ] );
+//                break;
+//            case 'send': //change when mail setting become apart for send and sync
+//                $settings = $this->table( 'MailSetting' )->find( [
+//                                                                     'user_id'          => $user->id(),
+//                                                                     'setting_protocol' => \Wepo\Model\MailSetting::sendProtocols(),
+//                                                                     'status_id'        => [
+//                                                                         Status::NORMAL,
+//                                                                         Status::NEW_
+//                                                                     ]
+//                                                                 ] );
+//                break;
+//            default:
+//                throw new \Exception( 'actionType is wrong' );
+//                break;
+//        }
 
         return $settings;
     }
 
-    public function syncAction()
+    public function syncMails( $user )
     {
-//        prn('done');
-//        exit;
-//        $settings = $this->checkMailSettingExist( 'sync', $this->user() );
-        $count = 0;
-//        /*
-        try
-        {
-            $count = $this -> syncMails();
-        }
-        catch(\Exception $ex)
-        {
-//            throw $ex;
-            $count = 0;
-        }
-        exit;
-//        /*/
-        $this -> updateMailChains();
-//        exit;
-        /**/
-//        return $this -> refresh( $count . ' mails was successfully add', $this -> url() -> fromRoute( 'mail', ['action' => 'list' ] ) );
-    }
-
-    public function syncMails( $user = null )
-    {
-        $user = !is_null($user) ? $user : $this->user();
         ini_set( 'max_execution_time', 300 );
-        $settings = $this->checkMailSettingExist( 'sync', $user );
+        $settings = $this->getSyncSetting( $user );
         $count    = 0;
-        $mails    = $this->table( 'Mail' )->find( [ 'owner_id' => $this->user()->id() ] );
+
+//        prn( $this->getSubject()->getModelServiceVerify()->get( 'MailDetail' ) );
+//        exit;
+        $modelService = $this->getSubject()->getModelServiceVerify();
+
+        $mailGW  = $this->getSubject()->getGatewayService()->get( 'MailDetail' );
+//        $chainGW = $this->getSubject()->getGatewayService()->get( 'Mail' );
+
+        $mails    = $mailGW->find( [ 'owner_id' => $user->id() ] );
         $newMails = [ ];
+
         foreach ( $settings as $setting )
         {
             $exceptUids = [ ];
@@ -115,15 +126,17 @@ class MailSyncObserver
                     $exceptUids[ ] = $mail->protocol_ids[ $setting->id() ];
                 }
             }
-//            prn($exceptUids);
+//            prn($exceptUids, $setting);
 //            exit();
-            $syncService = $this->mail($setting);
-            $fetchedMails = $syncService -> fetchAll( $exceptUids );
-            if($syncService->lastSyncIsSuccessful())
+            $syncService  = $this->mail( $setting );
+            $fetchedMails = $syncService->fetchAll( $exceptUids );
+//            prn($fetchedMails);
+            if ( $syncService->lastSyncIsSuccessful() )
             {
-                $this->table('Mail')->delete(['header.message-id'=>'send']);
+                $mailGW->delete( [ 'header.message-id' => 'send' ] );
             }
 //            prn( $fetchedMails );
+//            exit;
             foreach ( $fetchedMails as $key => $mail )
             {
                 if ( isset( $newMails[ $key ] ) )
@@ -133,35 +146,44 @@ class MailSyncObserver
                 }
                 else
                 {
-                    $newMails[ $key ] = $this->model( 'Mail' )->exchangeArray( $mail );
+//                    $newMails[ $key ] = $this->model( 'Mail' )->exchangeArray( $mail );
+                    $newMails[ $key ] = $modelService->get( 'MailDetail' )->exchangeArray( $mail );
                 }
             }
         }
 
 //        prn($newMails);
-        $oldMails = count($newMails)? $this->table('Mail')->find([ 'header.message-id' => array_keys($newMails), 'owner_id' => $user->id()]):[];
+        $oldMails = count( $newMails ) ? $mailGW->find( [
+                                                            'header.message-id' => array_keys( $newMails ),
+                                                            'owner_id'          => $user->id()
+                                                        ] ) : [ ];
 
-        foreach($oldMails as $oldMail)
+        foreach ( $oldMails as $oldMail )
         {
-            $newMail = $newMails[$oldMail->header['message-id']];
-            unset($newMails[$oldMail->header['message-id']]);
+            $newMail = $newMails[ $oldMail->header[ 'message-id' ] ];
+            unset( $newMails[ $oldMail->header[ 'message-id' ] ] );
             $oldMail->protocol_ids = array_merge( $newMail->protocol_ids, $oldMail->protocol_ids );
-            $this->table('Mail')->save($oldMail);
+            $mailGW->save( $oldMail );
         }
 
-        foreach($newMails as $newMail)
+
+        foreach ( $newMails as $newMail )
         {
-            $this->trigger('presave',$newMail);
-            $this->table('Mail')->save($newMail);
+            $newMail->owner_id = $user->id();
+//            prn($newMail->getModelName());
+            $this->getSubject()->getLogicService()->get('sync', $newMail->getModelName() )->trigger( $newMail );
+//            prn($this->getSubject()->getLogicService()->get('sync', $newMail->getModelName ));
+//            prn($newMail);
+            $mailGW->save( $newMail );
             $count++;
         }
 
         return $count;
     }
 
-    public function updateMailChains($user = null)
+    public function updateMailChains( $user = null )
     {
-        $user = is_null($user)? $this->user() : $user;
+        $user         = is_null( $user ) ? $this->user() : $user;
         $noChainMails = $this->table( 'Mail' )->find( [ 'chain_id' => '', 'owner_id' => $user->id() ] );
 //        prn('all mails',$noChainMails->toArray());
 //        exit;
@@ -169,83 +191,106 @@ class MailSyncObserver
         foreach ( $noChainMails as $mail )
         {
 //            prn('//////////////////////////////////////////////////////////////////////////////////////////////');
-            $MInReplyTo = isset($mail->header['in-reply-to'])?$mail->header['in-reply-to']:null;
-            $MMessageId = $mail->header['message-id'];
-            $MReferences = isset($mail->header['references'])?$mail->header['references']:[];
-            $chainWhere = $MReferences;
-            if(isset($MInReplyTo))
+            $MInReplyTo  = isset( $mail->header[ 'in-reply-to' ] ) ? $mail->header[ 'in-reply-to' ] : null;
+            $MMessageId  = $mail->header[ 'message-id' ];
+            $MReferences = isset( $mail->header[ 'references' ] ) ? $mail->header[ 'references' ] : [ ];
+            $chainWhere  = $MReferences;
+            if ( isset( $MInReplyTo ) )
             {
-                array_push($chainWhere, $MMessageId, $MInReplyTo);
+                array_push( $chainWhere, $MMessageId, $MInReplyTo );
             }
             else
             {
-                array_push($chainWhere, $MMessageId);
+                array_push( $chainWhere, $MMessageId );
             }
-            $chainWhere = array_unique($chainWhere);
-            $chains = $this->table('MailChain')->find(['reference'=>$chainWhere]);
+            $chainWhere = array_unique( $chainWhere );
+            $chains     = $this->table( 'MailChain' )->find( [ 'reference' => $chainWhere ] );
 //            prn('chain search array', $chainWhere);
 //            prn('chain search result', $chains->toArray());
 
-
-            $chain = $this->model('MailChain');
+            $chain            = $this->model( 'MailChain' );
             $chain->reference = $chainWhere;
-            $chain->title = $mail->title;
-            $chain->date = $mail->date;
-            $chain->count = 1;
+            $chain->title     = $mail->title;
+            $chain->date      = $mail->date;
+            $chain->count     = 1;
             $chain->status_id = $mail->status_id;
-            $oldChainIds = [];
+            $oldChainIds      = [ ];
 
-            if(count($chains))
+            if ( count( $chains ) )
             {
-                foreach($chains as $oldChain)
+                foreach ( $chains as $oldChain )
                 {
-                    $oldChainIds[] = $oldChain->id();
-                    $chain->reference = array_unique(array_merge($chain->reference,$oldChain->reference ));
+                    $oldChainIds[ ]   = $oldChain->id();
+                    $chain->reference = array_unique( array_merge( $chain->reference, $oldChain->reference ) );
 
-                    $chainDate = strtotime($chain->date);
-                    $oldChainDate = strtotime($oldChain->date);
-                    if($chainDate < $oldChainDate)
+                    $chainDate    = strtotime( $chain->date );
+                    $oldChainDate = strtotime( $oldChain->date );
+                    if ( $chainDate < $oldChainDate )
                     {
                         $chain->title = $oldChain->title;
                     }
                     else
                     {
-                        $date = new \DateTime('@'.$oldChainDate);
-                        $chain->date = $date->format('Y-m-d H:i:s');//$oldChainDate;
+                        $date        = new \DateTime( '@' . $oldChainDate );
+                        $chain->date = $date->format( 'Y-m-d H:i:s' );//$oldChainDate;
                     }
                 }
-                $chain->_id = array_pop($oldChainIds);
+                $chain->_id     = array_pop( $oldChainIds );
                 $mail->chain_id = $chain->_id;
             }
-            $chain->count = count($chain->reference);
-            $chain->reference = array_values($chain->reference);
-
+            $chain->count     = count( $chain->reference );
+            $chain->reference = array_values( $chain->reference );
 
             try
             {
-                $this->trigger('presave', $chain);
-                $tr = $this->table('MailChain');
-                $tr->save($chain);
+                $this->trigger( 'presave', $chain );
+                $tr = $this->table( 'MailChain' );
+                $tr->save( $chain );
 //                $mail->chain_id = $tr->getLastInsertId()?:$mail->chain_id;
 //                $this->table('Mail')->save($mail);
-                $tr->delete( ['_id' => $oldChainIds] );
+                $tr->delete( [ '_id' => $oldChainIds ] );
 //                $this->trigger('postsave',$chain);
             }
-            catch(\Exception $ex)
+            catch ( \Exception $ex )
             {
                 throw $ex;
                 continue;
             }
         }
 
-        foreach($noChainMails as $mail)
+        foreach ( $noChainMails as $mail )
         {
-            $message_id = 'message-id';
-            $chain = $this->table('MailChain')->findOne(['reference'=>[$mail->header[$message_id]]]);
+            $message_id     = 'message-id';
+            $chain          =
+                $this->table( 'MailChain' )->findOne( [ 'reference' => [ $mail->header[ $message_id ] ] ] );
             $mail->chain_id = $chain->_id;
-            $this->table('Mail')->save($mail);
+            $this->table( 'Mail' )->save( $mail );
         }
     }
 
+
+    /**
+     * @param Object $setting
+     *
+     * @return \Mail\Receive\BaseTransport|\Mail\Send\BaseTransport
+     */
+    public function mail( $setting )
+    {
+        $tm = $this->getSubject()->getMailService();
+
+        $purpose      = 'Receive';
+        $protocolName = $setting->setting_protocol_id;
+        $settingId    = (string) $setting->_id;
+
+        $setting = array(
+            'host'     => $setting->setting_host,
+            'user'     => $setting->setting_user,
+            'password' => $setting->pass,
+            'ssl'      => $setting->setting_security_id,
+            'port'     => $setting->setting_port,
+        );
+
+        return $tm->getGateway( $purpose, $protocolName, $setting, $settingId );
+    }
 
 }
