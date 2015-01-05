@@ -63,7 +63,7 @@ class AclObserver extends AbstractObserver
 //            prn($user);
 //            $where [ 'acl.permissions' ] = $config[ 'permissions' ];
 
-            $where [ 'acl' ] = [ '$elemMatch' => $match ];
+            $where [ '_acl' ] = [ '$elemMatch' => $match ];
 //            $where [ 'acl.role_id' ] = [$user->id()
 //                '$elemMatch' => [ 'role_id' => $user->id() ], 'permissions' => [ '$in' => [ $config[ 'permissions' ] ] ]
 //                    'permissions' => [ '$in' => $config[ 'permissions' ] ]

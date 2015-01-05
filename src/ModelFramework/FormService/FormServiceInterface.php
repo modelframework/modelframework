@@ -12,21 +12,24 @@ use ModelFramework\DataModel\DataModelInterface;
 
 interface FormServiceInterface
 {
+    /**
+     * @param DataModelInterface $model
+     * @param string             $mode
+     * @param array              $fields
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function get( DataModelInterface $model, $mode, array $fields = [] );
 
     /**
      * @param DataModelInterface $model
      * @param string             $mode
+     * @param array              $fields
      *
-     * @return DataForm
+     * @return $this
+     * @throws \Exception
      */
-    public function get( DataModelInterface $model, $mode );
-
-    /**
-     * @param DataModelInterface $model
-     * @param string             $mode
-     *
-     * @return DataForm
-     */
-    public function getForm( DataModelInterface $model, $mode );
+    public function getForm( DataModelInterface $model, $mode, array $fields = [] );
 
 }
