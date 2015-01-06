@@ -48,7 +48,7 @@ class MailSyncObserver
 //            exit;
 
             $this->updateMailChains( $user );
-            exit;
+//            exit;
         }
     }
 
@@ -149,6 +149,7 @@ class MailSyncObserver
                 {
 //                    $newMails[ $key ] = $this->model( 'Mail' )->exchangeArray( $mail );
                     $newMails[ $key ] = $modelService->get( 'MailDetail' )->exchangeArray( $mail );
+                    $this->configureMail( $user, $setting, $newMails[ $key ] );
                 }
             }
         }
@@ -169,10 +170,10 @@ class MailSyncObserver
 
         foreach ( $newMails as $newMail )
         {
-            $newMail->owner_id = $user->id();
+//            $newMail->owner_id = $user->id();
+//            $newMail->title = $newMail->header[ 'subject' ];
+//            $newMail->date  = ( new \DateTime( $newMail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
             $this->getSubject()->getLogicService()->get( 'sync', $newMail->getModelName() )->trigger( $newMail );
-            $newMail->title = $newMail->header[ 'subject' ];
-            $newMail->date  = ( new \DateTime( $newMail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
             $mailGW->save( $newMail );
             $count++;
         }
@@ -241,7 +242,6 @@ class MailSyncObserver
 
 //            $chain = $modelService->get( 'Mail' );
 
-            //todo find old chain
             $chain = $chainGW->find( [ 'reference' => array_values( $chainWhere ) ] )->current();
             $chain = isset( $chain ) ? $chain : $modelService->get( 'Mail' );
 
@@ -249,6 +249,7 @@ class MailSyncObserver
             $lastMailDate  = strtotime( $chain->date );
             $title         = $chain->title;
             $date          = $chain->date;
+            $text          = $chain->text;
             foreach ( $chainMails as $mail )
             {
                 $mailDate = strtotime( $mail->date );
@@ -262,12 +263,14 @@ class MailSyncObserver
                 {
                     $date         = $mail->date;//$oldChainDate;
                     $lastMailDate = $mailDate;
+                    $text         = $mail->text;
                 }
             }
 
             $chain->reference = array_unique( array_merge( $chainWhere, $chain->reference ) );
             $chain->title     = $title;
             $chain->date      = $date;
+            $chain->text      = $text;
             $chain->count     = $chain->count + count( $chainMails );
             $chain->status_id = Status::NEW_;
 //            prn( 'result', $chain );
@@ -318,6 +321,23 @@ class MailSyncObserver
         );
 
         return $tm->getGateway( $purpose, $protocolName, $setting, $settingId );
+    }
+
+    public function configureMail( $user, $setting, $mail )
+    {
+        foreach ( $mail->header[ 'to' ] as $email )
+        {
+            $email        = strtolower( trim( $email ) );
+            $settingEmail = strtolower( trim( $setting->email ) );
+            if ( $email == $settingEmail )
+            {
+                $mail->type = 'inbox';
+                break;
+            }
+        }
+        $mail->owner_id = $user->id();
+        $mail->title    = $mail->header[ 'subject' ];
+        $mail->date     = ( new \DateTime( $mail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
     }
 
 }
