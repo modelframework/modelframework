@@ -268,7 +268,7 @@ class MailSyncObserver
             $chain->reference = array_unique( array_merge( $chainWhere, $chain->reference ) );
             $chain->title     = $title;
             $chain->date      = $date;
-            $chain->count     = count( $chainMails );
+            $chain->count     = $chain->count + count( $chainMails );
             $chain->status_id = Status::NEW_;
 //            prn( 'result', $chain );
 
@@ -277,10 +277,13 @@ class MailSyncObserver
                 $chain->owner_id = $user->id();
 
                 $this->getSubject()->getLogicService()->get( 'sync', $chain->getModelName() )->trigger( $chain );
+//                prn($chain);
+//                prn($chainMails);
                 $chainGW->save( $chain );
                 foreach ( $chainMails as $mail )
                 {
-                    $mail->chain_id = $chainGW->getLastInsertId() ?: $mail->chain_id;
+                    $mail->chain_id = $chainGW->getLastInsertId() ?: $chain->_id;
+//                    prn($mail);
                     $mailGW->save( $mail );
                 }
             }
