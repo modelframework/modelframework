@@ -29,7 +29,7 @@ class Query
 
     protected $allowed_observers = [
         'RouteParamObserver', 'LetterParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver',
-        'PermissionObserver', 'AclObserver', 'CurrentUserObserver'
+        'PermissionObserver', 'AclObserver', 'CurrentUserObserver', 'FormatObserver'
     ];
 
     protected $observers = [ ];
@@ -102,6 +102,22 @@ class Query
     public function getOrder()
     {
         return $this->_order;
+    }
+
+    public function getFields()
+    {
+        return $this->getQueryConfigVerify()->fields;
+    }
+
+    public function getFormat( $field )
+    {
+        $data = $this->getData();
+        if ( isset( $data[ 'format' ][ $field ] ) )
+        {
+            return $data[ 'format' ][ $field ];
+        }
+
+        return null;
     }
 
 

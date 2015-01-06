@@ -22,17 +22,18 @@ class PriceObserver
     use ConfigAwareTrait, SubjectAwareTrait;
 
     private $defaultConfigs = [
-        'raw_price'     => [ 'value' => 0, 'field' => 'sub_total' ],
-        'discount_type' => [ 'value' => 'Direct Price Reduction', 'field' => 'discount_type_title' ],
+        'list_price'     => [ 'value' => 0, 'field' => 'list_price' ],
+        'qty'           => [ 'value' => 1, 'field' => 'qty' ],
+        'amount'        => [ 'value' => 0, 'field' => 'amount' ],
         'discount'      => [ 'value' => 0, 'field' => 'discount' ],
         'tax'           => [ 'value' => 0, 'fields' => [ 'vat', 'sales_tax' ], 'field' => 'tax' ],
-        'adjustment'    => [ 'value' => 0, 'field' => 'adjustment' ],
-        'qty'           => [ 'value' => 1, 'field' => 'qty' ],
-        'result_price'  => [ 'value' => 0, 'field' => 'grand_total' ],
+//        'adjustment'    => [ 'value' => 0, 'field' => 'adjustment' ],
+        'total'  => [ 'value' => 0, 'field' => 'total' ],
     ];
 
     public function update( \SplSubject $subject )
     {
+
         $this->setSubject( $subject );
 
         $models = $subject->getEventObject();
@@ -44,7 +45,9 @@ class PriceObserver
         $aModels = [ ];
         foreach ( $models as $_k => $model )
         {
+
             $config = $this->updateDefaultConfigs( $model );
+            prn($config);
 
             $total_price = $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ];
             if ( $config[ 'discount_type' ][ 'value' ] == '% of Price' )
@@ -67,6 +70,8 @@ class PriceObserver
             $model->$config[ 'result_price' ][ 'field' ] = $total_price;
 
             $aModels[ ] = $model->getArrayCopy();
+
+
         }
 
         if ( $models instanceof ResultSetInterface )
