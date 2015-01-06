@@ -201,7 +201,7 @@ class FormConfigParserService
                 $_order = $query->getOrder();
                 $_fields = $query->getFields();
 
-                $_mask = $query -> getFormat();
+                $_mask = $query -> getFormat( 'label' );
             }
 
             $_lAll    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( $_where, $_order );
@@ -210,11 +210,15 @@ class FormConfigParserService
             {
                 $_lLabel = '';
                 $_lvalue = $_lRow->id();
-                if ( $_mask!==null )
-                {
 
-                    prn($_mask, aarray_intersect_key( $_lRow->toArray(), $_fields ));
-//                    $_lLabel = vsprintf( $_mask, aarray_intersect_key( $_lRow->toArray(), $_fields ) )
+                if ( $_mask!==null && strlen($_mask) )
+                {
+                    $_vals = [];
+                    foreach ( $_fields as $field)
+                    {
+                        $_vals[ $field] = $_lRow->$field;
+                    }
+                    $_lLabel = vsprintf( $_mask, $_vals );
 
                 }
                 else

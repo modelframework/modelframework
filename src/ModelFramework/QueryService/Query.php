@@ -106,16 +106,15 @@ class Query
 
     public function getFields()
     {
-        prn($this->getQueryConfigVerify());
         return $this->getQueryConfigVerify()->fields;
     }
 
-    public function getFormat()
+    public function getFormat( $field )
     {
         $data = $this->getData();
-        if ( isset($data['format']) )
+        if ( isset( $data[ 'format' ][ $field ] ) )
         {
-            return $data['format'];
+            return $data[ 'format' ][ $field ];
         }
 
         return null;

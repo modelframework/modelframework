@@ -20,15 +20,16 @@ class FormatObserver extends AbstractObserver
     {
         $this->setSubject( $subject );
 
-        $data = [
-            'format' => ''
-        ];
+        $format = [];
 
         $config = $this->getRootConfig();
 
-        prn($config);
+        foreach ( $this->getRootConfigVerify() as $key => $value )
+        {
+            $format[ $key ] = $value;
+        }
 
-        $subject->setData( $data );
+        $subject->setData( [ 'format' => $format ] );
 
     }
 
