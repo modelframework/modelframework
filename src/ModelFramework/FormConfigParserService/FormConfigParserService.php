@@ -192,11 +192,16 @@ class FormConfigParserService
             $filter[ 'name' ] = $name;
             $_where           = [ 'status_id' => [ Status::NEW_, Status::NORMAL ] ];
             $_order           = $conf[ 'fields' ];
+            $_fields = array_keys( $conf[ 'fields' ] );
+            $_mask = null;
             if ( isset( $conf[ 'query' ] ) && strlen( $conf[ 'query' ] ) )
             {
                 $query  = $this->getQueryServiceVerify()->get( $conf[ 'query' ] )->process();
                 $_where = $query->getWhere();
                 $_order = $query->getOrder();
+                $_fields = $query->getFields();
+
+                $_mask = $query -> getFormat();
             }
 
             $_lAll    = $this->getGatewayServiceVerify()->get( $conf[ 'model' ] )->find( $_where, $_order );
@@ -205,23 +210,34 @@ class FormConfigParserService
             {
                 $_lLabel = '';
                 $_lvalue = $_lRow->id();
-                foreach ( array_keys( $conf[ 'fields' ] ) as $_k )
+                if ( $_mask!==null )
                 {
-                    if ( strlen( $_lLabel ) )
+
+                    prn($_mask, aarray_intersect_key( $_lRow->toArray(), $_fields ));
+//                    $_lLabel = vsprintf( $_mask, aarray_intersect_key( $_lRow->toArray(), $_fields ) )
+
+                }
+                else
+                {
+                    foreach ( $_fields as $_k )
                     {
-                        $_lLabel .= '  [ ';
-                        $_lLabel .= $_lRow->$_k;
-                        $_lLabel .= ' ] ';
-                    }
-                    else
-                    {
-                        $_lLabel .= $_lRow->$_k;
+                        if ( strlen( $_lLabel ) )
+                        {
+                            $_lLabel .= '  [ ';
+                            $_lLabel .= $_lRow->$_k;
+                            $_lLabel .= ' ] ';
+                        }
+                        else
+                        {
+                            $_lLabel .= $_lRow->$_k;
+                        }
                     }
                 }
                 $_options[ $_lvalue ] = $_lLabel;
             }
             $_elementConf[ 'options' ][ 'value_options' ] += $_options;
         }
+
         if ( $type == 'static_lookup' )
         {
             $name .= '_id';
