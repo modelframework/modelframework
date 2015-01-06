@@ -13,8 +13,6 @@ class FormulaObserver extends AbstractConfigObserver
 
     public function process( $model, $key, $value )
     {
-        prn( $model, $key, $value );
-
         $result = '';
 
         eval( '$result = ' . $value . ';');

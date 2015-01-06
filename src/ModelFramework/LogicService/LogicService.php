@@ -21,6 +21,8 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
 use Zend\Db\ResultSet\ResultSetInterface;
@@ -28,11 +30,11 @@ use Zend\Db\ResultSet\ResultSetInterface;
 class LogicService
     implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, ParamsAwareInterface,
-               AuthServiceAwareInterface, ModelServiceAwareInterface
+               AuthServiceAwareInterface, ModelServiceAwareInterface, QueryServiceAwareInterface
 {
 
     use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait,
-        AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait;
+        AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait, QueryServiceAwareTrait;
 
     public function dispatch( $event )
     {
@@ -96,6 +98,7 @@ class LogicService
         $logic->setModelService( $this->getModelService() );
         $logic->setLogicService( $this );
         $logic->setMailService( $this->getMailService() );
+        $logic->setQueryService( $this->getQueryServiceVerify() );
         if ( $this->getParams() != null )
         {
             $logic->setParams( $this->getParams() );

@@ -109,6 +109,11 @@ class Query
         return $this->getQueryConfigVerify()->fields;
     }
 
+    public function getModelName()
+    {
+        return $this->getQueryConfigVerify()->model;
+    }
+
     public function getFormat( $field )
     {
         $data = $this->getData();

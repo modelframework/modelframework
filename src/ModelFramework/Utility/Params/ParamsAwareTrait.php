@@ -9,12 +9,32 @@
 namespace ModelFramework\Utility\Params;
 
 
+use ModelFramework\DataModel\DataModelInterface;
 use Zend\Mvc\Controller\Plugin\Params;
 
 trait ParamsAwareTrait {
 
     private $_params = null;
+    private $_paramSource = null;
 
+    /**
+     * @param DataModelInterface $data
+     *
+     * @return $this
+     */
+    public function setParamSource( DataModelInterface $data )
+    {
+        $this->_paramSource = $data;
+        return $this;
+    }
+
+    /**
+     * @return DataModelInterface
+     */
+    public function getParamSource(  )
+    {
+        return $this->_paramSource;
+    }
     /**
      * @param Params $params
      *
@@ -52,6 +72,19 @@ trait ParamsAwareTrait {
 
     public function getParam( $name, $default = '' )
     {
+        $param = $default;
+
+        if ( $this->getParamSource() !== null )
+        {
+            $params = $this->getParamSource();
+            if ( isset($params->$name) )
+            {
+                $param = $params->$name;
+            }
+
+            return $param;
+        }
+
         $param = $this->getParamsVerify()->fromQuery( $name, $default );
         if ( $param === $default )
         {

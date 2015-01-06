@@ -17,16 +17,23 @@ class DetailsSumObserver extends AbstractConfigObserver
 
     public function process( $model, $key, $value )
     {
-//        prn('heare',$model);
-        $sum = 0;
-        $details = $this->getSubject()->getGatewayService()->get( $value[ 'details' ] )
-                        ->find( [ $value[ 'extLinkF' ] => $model->$value[ 'curLinkF' ] ] );
+        $subject = $this->getSubject();
+
+        $subject->setParamSource( $model );
+
+        $query =
+            $subject->getQueryServiceVerify()
+                    ->get( $value[ 'query' ] )
+                    ->setParamSource( $model )
+                    ->process();
+
+        $model->$key = 0;
+        $details     = $this->getSubject()->getGatewayService()->get( $query->getModelName() )
+                            ->find( $query->getWhere(), $query->getOrder() );
         foreach ( $details as $detail )
         {
-            $sum += $detail->$value['sum_field'];
+            $model->$key += $detail->$value[ 'field' ];
         }
-        $model->$key = $sum;
-//        prn($sum);
-//        exit;
+
     }
 }

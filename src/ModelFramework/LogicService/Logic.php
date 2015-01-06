@@ -23,6 +23,8 @@ use ModelFramework\LogicService\LogicConfig\LogicConfigAwareTrait;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
@@ -31,11 +33,12 @@ use Zend\Db\ResultSet\ResultSetInterface;
 class Logic extends AbstractService
     implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
                AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject, LogicServiceAwareInterface,
-               ConfigServiceAwareInterface
+               ConfigServiceAwareInterface, QueryServiceAwareInterface
 {
 
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
-        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait, MailServiceAwareTrait;
+        AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait, MailServiceAwareTrait,
+        QueryServiceAwareTrait;
 
     /**
      * @var array|DataModel|null
