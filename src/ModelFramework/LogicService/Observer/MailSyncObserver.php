@@ -40,7 +40,7 @@ class MailSyncObserver
             }
             catch ( \Exception $ex )
             {
-//                prn($ex->getMessage());
+                prn($ex->getMessage());
 //            throw $ex;
                 $count = 0;
             }
