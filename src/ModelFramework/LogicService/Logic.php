@@ -61,6 +61,7 @@ class Logic extends AbstractService
         'RecycleObserver',
         'AclObserver',
         'PriceObserver',
+        'FormulaObserver',
         'DetailsSumObserver',
         'TriggerObserver',
         'ConvertObserver',
