@@ -13,13 +13,9 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 class DetailsSumObserver extends AbstractConfigObserver
 {
 
-    use SubjectAwareTrait;
-
     public function process( $model, $key, $value )
     {
         $subject = $this->getSubject();
-
-        $subject->setParamSource( $model );
 
         $query =
             $subject->getQueryServiceVerify()
@@ -30,8 +26,7 @@ class DetailsSumObserver extends AbstractConfigObserver
         $model->$key = 0;
         $details     = $this->getSubject()->getGatewayService()->get( $query->getModelName() )
                             ->find( $query->getWhere(), $query->getOrder() );
-        foreach ( $details as $detail )
-        {
+        foreach ($details as $detail) {
             $model->$key += $detail->$value[ 'field' ];
         }
 

@@ -1,6 +1,7 @@
 <?php
 /**
  * Class AbstractObserver
+ *
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -21,22 +22,19 @@ abstract class AbstractConfigObserver extends AbstractObserver
 
     public function processModel( $model )
     {
-        foreach ( $this->getRootConfig() as $key => $value )
-        {
-            if ( is_numeric( $key ) )
-            {
+        foreach ( $this->getRootConfig() as $key => $value ) {
+            if ( is_numeric( $key ) ) {
                 $key   = $value;
                 $value = '';
             }
-            if ( !isset( $model->$key ) )
-            {
-                throw new \Exception( 'Field ' . $key . ' does not exist in model ' . $model->getModelName() );
+            if ( !isset( $model->$key ) ) {
+                throw new \Exception(
+                    'Field ' . $key . ' does not exist in model '
+                    . $model->getModelName()
+                );
             }
 
             $this->process( $model, $key, $value );
-
         }
     }
-
-
 }

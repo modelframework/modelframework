@@ -1,6 +1,7 @@
 <?php
 /**
  * Class AbstractObserver
+ *
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -30,20 +31,17 @@ abstract class AbstractObserver
         $this->setSubject( $subject );
 
         $models = $subject->getEventObject();
-        if ( !( is_array( $models ) || $models instanceof ResultSetInterface ) )
-        {
+        if ( !( is_array( $models )
+            || $models instanceof ResultSetInterface )
+        ) {
             $models = [ $models ];
         }
 
         $aModels = [ ];
-        foreach ( $models as $_k => $model )
-        {
-            if ( $model instanceof AclDataModel )
-            {
+        foreach ( $models as $_k => $model ) {
+            if ( $model instanceof AclDataModel ) {
                 $dataModel = $model->getDataModel();
-            }
-            else
-            {
+            } else {
                 $dataModel = $model;
             }
 
@@ -52,12 +50,10 @@ abstract class AbstractObserver
             $aModels[ ] = $model->getArrayCopy();
         }
 
-        if ( $models instanceof ResultSetInterface )
-        {
+        if ( $models instanceof ResultSetInterface ) {
             $models->initialize( $aModels );
         }
     }
 
     abstract public function processModel( $model );
-
 }
