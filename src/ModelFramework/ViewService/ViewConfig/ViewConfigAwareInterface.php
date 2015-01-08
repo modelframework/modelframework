@@ -8,26 +8,25 @@
 
 namespace ModelFramework\ViewService\ViewConfig;
 
-
 use ModelFramework\DataModel\DataModelInterface;
 
-interface ViewConfigAwareInterface {
-
+interface ViewConfigAwareInterface
+{
     /**
      * @param ViewConfig|DataModelInterface $viewConfig
      *
      * @return $this
      */
-    public function setViewConfig( ViewConfig $viewConfig );
+    public function setViewConfig(ViewConfig $viewConfig);
 
     /**
      * @return ViewConfig|DataModelInterface
      */
-    public function getViewConfig( );
+    public function getViewConfig();
 
     /**
      * @return ViewConfig|DataModelInterface
      * @throws \Exception
      */
-    public function getViewConfigVerify( );
+    public function getViewConfigVerify();
 }

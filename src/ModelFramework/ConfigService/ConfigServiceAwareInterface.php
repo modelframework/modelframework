@@ -10,13 +10,12 @@ namespace ModelFramework\ConfigService;
 
 interface ConfigServiceAwareInterface
 {
-
     /**
      * @param ConfigServiceInterface $configService
      *
      * @return $this
      */
-    public function setConfigService( ConfigServiceInterface $configService );
+    public function setConfigService(ConfigServiceInterface $configService);
 
     /**
      * @return ConfigServiceInterface
@@ -28,5 +27,4 @@ interface ConfigServiceAwareInterface
      * @throws \Exception
      */
     public function getConfigServiceVerify();
-
 }

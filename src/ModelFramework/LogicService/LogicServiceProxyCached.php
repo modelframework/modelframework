@@ -16,7 +16,6 @@ use Zend\Mvc\Controller\Plugin\Params;
 class LogicServiceProxyCached
     implements LogicServiceInterface, LogicServiceAwareInterface, CacheServiceAwareInterface, ParamsAwareInterface
 {
-
     use LogicServiceAwareTrait, CacheServiceAwareTrait;
 
     /**
@@ -25,10 +24,10 @@ class LogicServiceProxyCached
      *
      * @return Logic
      */
-    public function get( $eventName, $modelName )
+    public function get($eventName, $modelName)
     {
         return $this->getCacheService()
-                    ->getCachedObjMethod( $this->getLogicServiceVerify(), 'get', [ $eventName, $modelName ] );
+                    ->getCachedObjMethod($this->getLogicServiceVerify(), 'get', [ $eventName, $modelName ]);
     }
 
     /**
@@ -37,10 +36,10 @@ class LogicServiceProxyCached
      *
      * @return Logic
      */
-    public function createLogic( $eventName, $modelName )
+    public function createLogic($eventName, $modelName)
     {
         return $this->getCacheService()
-                    ->getCachedObjMethod( $this->getLogicServiceVerify(), 'createLogic', [ $eventName, $modelName ] );
+                    ->getCachedObjMethod($this->getLogicServiceVerify(), 'createLogic', [ $eventName, $modelName ]);
     }
 
     /**
@@ -48,9 +47,9 @@ class LogicServiceProxyCached
      *
      * @return mixed
      */
-    public function dispatch( $event )
+    public function dispatch($event)
     {
-        return $this->getLogicServiceVerify()->dispatch( $event );
+        return $this->getLogicServiceVerify()->dispatch($event);
     }
 
     /**
@@ -58,9 +57,9 @@ class LogicServiceProxyCached
      *
      * @return $this
      */
-    public function setParams( Params $params )
+    public function setParams(Params $params)
     {
-        return $this->getLogicServiceVerify()->setParams( $params );
+        return $this->getLogicServiceVerify()->setParams($params);
     }
 
     /**

@@ -10,15 +10,14 @@ namespace ModelFramework\QueryService\Observer;
 
 class AclObserver extends AbstractObserver
 {
-
     /**
      * @param \SplSubject|Query $subject
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 //        prn( $subject->getData());
         $config = $this->getRootConfig();
         $user            = $subject->getAuthServiceVerify()->getUser();
@@ -26,39 +25,34 @@ class AclObserver extends AbstractObserver
         $match = [
 //            'type'=> [ 'owner', 'shared', 'hieararhy' ],
 //            'role_id'=> [ $user->id(), $user->role_id ],
-            'permissions'=> $this->getConfigPart( 'permissions' )
+            'permissions' => $this->getConfigPart('permissions'),
         ];
 
 //        prn($this->getConfigPart( 'type' ));
 
-        if ( !count( $this->getConfigPart( 'type' ) ) )
-        {
+        if (!count($this->getConfigPart('type'))) {
             $match[ 'type' ]  = [ 'owner', 'shared', 'hierarchy' ];
             $match[ 'role_id' ] = [ $user->id(), $user->role_id ];
 //            'type'=> [ 'owner', 'shared', 'hieararhy' ],
 //            'role_id'
         }
 
-        if ( in_array( 'owner', $this->getConfigPart( 'type' ) ) )
-        {
+        if (in_array('owner', $this->getConfigPart('type'))) {
             $match[ 'type' ][] = 'owner';
             $match[ 'role_id' ][] = $user->id();
         }
 
-        if ( in_array( 'hierarchy', $this->getConfigPart( 'type' ) ) )
-        {
+        if (in_array('hierarchy', $this->getConfigPart('type'))) {
             $match[ 'type' ][] = 'hierarchy';
             $match[ 'role_id' ][] = $user->role_id();
-
         }
 
-        if ( in_array( 'shared', $this->getConfigPart( 'type' ) ) )
-        {
+        if (in_array('shared', $this->getConfigPart('type'))) {
             $match[ 'type' ][] = 'shared';
             $match[ 'role_id' ] = [ $user->id(), $user->role_id ];
         }
 
-            $user            = $subject->getAuthServiceVerify()->getUser();
+        $user            = $subject->getAuthServiceVerify()->getUser();
 //            $where [ 'acl.role_id' ] = [$user->id(), $user->role_id];
 //            prn($user);
 //            $where [ 'acl.permissions' ] = $config[ 'permissions' ];
@@ -69,7 +63,7 @@ class AclObserver extends AbstractObserver
 //                    'permissions' => [ '$in' => $config[ 'permissions' ] ]
 //            ];
 //        }
-        $subject->setWhere( $where );
+        $subject->setWhere($where);
 //        prn($where);
 
 //        prn($subject);
@@ -88,7 +82,6 @@ class AclObserver extends AbstractObserver
 //
 //        # I need to know permissions !
 //        $subject->setData( [ 'where' => $where ] );
-
     }
 
     /*

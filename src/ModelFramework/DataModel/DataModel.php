@@ -10,7 +10,6 @@ namespace ModelFramework\DataModel;
  */
 class DataModel implements DataModelInterface
 {
-
     public $_model = '';
     public $_table = '';
     public $_label = '';
@@ -18,9 +17,9 @@ class DataModel implements DataModelInterface
     protected $_fields = [ ];
     public $_data = [ ];
 
-    function __construct( $data = array() )
+    public function __construct($data = array())
     {
-        $this->exchangeArray( $data );
+        $this->exchangeArray($data);
     }
 
 //    /**
@@ -46,45 +45,31 @@ class DataModel implements DataModelInterface
 
     public function getTableName()
     {
-        if ( !empty( $this->_table ) )
-        {
+        if (!empty($this->_table)) {
             return $this->_table;
         }
 
         return $this->_model;
     }
 
-    public function exchangeArray( array $data )
+    public function exchangeArray(array $data)
     {
-        if ( !isset( $this->_fields ) )
-        {
-            throw new \Exception( ' _fields property is not set in ' . get_class() );
+        if (!isset($this->_fields)) {
+            throw new \Exception(' _fields property is not set in '.get_class());
         }
-        foreach ( $this->_fields as $_field => $_properties )
-        {
-            if ( isset( $data[ $_field ] ) )
-            {
+        foreach ($this->_fields as $_field => $_properties) {
+            if (isset($data[ $_field ])) {
                 $this->$_field = $data[ $_field ];
+            } else {
+                $this->$_field = isset($_properties[ 'default' ]) ? $_properties[ 'default' ] : null;
             }
-            else
-            {
-                $this->$_field = isset( $_properties[ 'default' ] ) ? $_properties[ 'default' ] : null;
-            }
-            if ( isset( $_properties[ 'datatype' ] ) && $this->$_field !== null )
-            {
-
-                if ( $this->$_field instanceof \MongoId )
-                {
-                }
-                elseif ( $this->$_field instanceof \MongoDate )
-                {
-
+            if (isset($_properties[ 'datatype' ]) && $this->$_field !== null) {
+                if ($this->$_field instanceof \MongoId) {
+                } elseif ($this->$_field instanceof \MongoDate) {
                     $this->$_field =
-                        date( $_properties[ 'datatype' ] == 'date' ? 'Y-m-d' : 'Y-m-d h:i:s', $this->$_field->sec );
-                }
-                elseif ( !$_properties[ 'datatype' ] == 'date' && !$_properties[ 'datatype' ] == 'datetime' )
-                {
-                    settype( $this->$_field, $_properties[ 'datatype' ] );
+                        date($_properties[ 'datatype' ] == 'date' ? 'Y-m-d' : 'Y-m-d h:i:s', $this->$_field->sec);
+                } elseif (!$_properties[ 'datatype' ] == 'date' && !$_properties[ 'datatype' ] == 'datetime') {
+                    settype($this->$_field, $_properties[ 'datatype' ]);
                 }
             }
         }
@@ -92,31 +77,23 @@ class DataModel implements DataModelInterface
         return $this;
     }
 
-    public function merge( $data )
+    public function merge($data)
     {
-        if ( !isset( $this->_fields ) )
-        {
-            throw new \Exception( ' _fields property is not set in ' . get_class() );
+        if (!isset($this->_fields)) {
+            throw new \Exception(' _fields property is not set in '.get_class());
         }
-        if ( is_object( $data ) )
-        {
-            if ( method_exists( $data, 'getFields' ) )
-            {
+        if (is_object($data)) {
+            if (method_exists($data, 'getFields')) {
                 $data = $this->getFields();
-            }
-            else
-            {
-                $data = get_object_vars( $data );
+            } else {
+                $data = get_object_vars($data);
             }
         }
-        if ( !is_array( $data ) )
-        {
-            throw new \Exception( ' Array or object expected ' );
+        if (!is_array($data)) {
+            throw new \Exception(' Array or object expected ');
         }
-        foreach ( array_keys( $this->_fields ) as $_field )
-        {
-            if ( isset( $data[ $_field ] ) )
-            {
+        foreach (array_keys($this->_fields) as $_field) {
+            if (isset($data[ $_field ])) {
                 $this->$_field = $data[ $_field ];
             }
         }
@@ -124,42 +101,33 @@ class DataModel implements DataModelInterface
         return $this;
     }
 
-    private function values( $data )
+    private function values($data)
     {
         static $results = [ ];
-        if ( is_object( $data ) )
-        {
-            if ( method_exists( $data, 'toArray' ) )
-            {
-                $data = array_keys( $data->toArray() );
-            }
-            else
-            {
-                $data = array_keys( get_object_vars( $data ) );
+        if (is_object($data)) {
+            if (method_exists($data, 'toArray')) {
+                $data = array_keys($data->toArray());
+            } else {
+                $data = array_keys(get_object_vars($data));
             }
         }
-        if ( is_array( $data ) )
-        {
-            foreach ( $data as $_v )
-            {
-                $this->values( $_v );
+        if (is_array($data)) {
+            foreach ($data as $_v) {
+                $this->values($_v);
             }
-        }
-        elseif ( !isset( $results[ $data ] ) )
-        {
+        } elseif (!isset($results[ $data ])) {
             $results[ $data ] = $data;
         }
 
         return $results;
     }
 
-    public function split( $validationGroup )
+    public function split($validationGroup)
     {
-        $fields = $this->values( $validationGroup );
+        $fields = $this->values($validationGroup);
         $data   = $this->_data;
-        foreach ( $fields as $_v )
-        {
-            unset( $data[ $_v ] );
+        foreach ($fields as $_v) {
+            unset($data[ $_v ]);
         }
 
         return $data;
@@ -168,8 +136,7 @@ class DataModel implements DataModelInterface
     public function getArrayCopy()
     {
         $data = [ ];
-        foreach ( $this->_fields as $_field => $_properties )
-        {
+        foreach ($this->_fields as $_field => $_properties) {
             $data[ $_field ] = $this->{$_field};
         }
 
@@ -180,104 +147,86 @@ class DataModel implements DataModelInterface
 
     public function toArray()
     {
-
         $data = $this->getArrayCopy();
-        unset( $data[ '_id' ] );
+        unset($data[ '_id' ]);
 
         return $data;
     }
 
-    public function __set( $name, $value )
+    public function __set($name, $value)
     {
-        if ( isset( $this->_fields[ $name ] ) )
-        {
+        if (isset($this->_fields[ $name ])) {
             $this->_data[ $name ] = $value;
-            if ( isset( $this->_fields[ $name ][ 'datatype' ] ) && $value !== null )
-            {
-                settype( $this->_data[ $name ], $this->_fields[ $name ][ 'datatype' ] );
+            if (isset($this->_fields[ $name ][ 'datatype' ]) && $value !== null) {
+                settype($this->_data[ $name ], $this->_fields[ $name ][ 'datatype' ]);
             }
 
             return $this->_data[ $name ];
-        }
-        else
-        {
+        } else {
             $this->$name = $value;
 
             return $this->$name;
         }
     }
 
-    public function __get( $name )
+    public function __get($name)
     {
-
-        if ( array_key_exists( $name, $this->_data ) )
-        {
+        if (array_key_exists($name, $this->_data)) {
             return $this->_data[ $name ];
         }
-        if ( $name == 'id' )
-        {
+        if ($name == 'id') {
             return (string) $this->_id;
         }
 
-        return null;
+        return;
     }
 
-    public function __call( $name, $arguments )
+    public function __call($name, $arguments)
     {
-        if ( !isset( $this->_fields[ $name ] ) )
-        {
-            if ( $name == 'id' )
-            {
+        if (!isset($this->_fields[ $name ])) {
+            if ($name == 'id') {
                 return (string) $this->_id;
             }
-            throw new \Exception( " Missed property '$name' in model {$this->getModelName()}" );
+            throw new \Exception(" Missed property '$name' in model {$this->getModelName()}");
 //            $trace = debug_backtrace();
 //            trigger_error(
 //                'Undefined property в __call(): ' . $name .
 //                ' in file ' . $trace[ 0 ][ 'file' ] .
 //                ' row ' . $trace[ 0 ][ 'line' ], E_USER_NOTICE );
         }
-        if ( count( $arguments ) == 0 )
-        {
+        if (count($arguments) == 0) {
             return $this->_data[ $name ] ?: $this->_fields[ $name ][ 'default' ];
         }
         $_result = [ ];
-        foreach ( $arguments as $value )
-        {
-            if ( isset( $this->_fields[ $name ][ 'datatype' ] ) && $value !== null )
-            {
-                settype( $value, $this->_fields[ $name ][ 'datatype' ] );
+        foreach ($arguments as $value) {
+            if (isset($this->_fields[ $name ][ 'datatype' ]) && $value !== null) {
+                settype($value, $this->_fields[ $name ][ 'datatype' ]);
             }
             $_result[ ] = $value;
         }
-        if ( count( $_result ) == 1 )
-        {
-            $_result = array_shift( $_result );
+        if (count($_result) == 1) {
+            $_result = array_shift($_result);
         }
 
         return $_result;
     }
 
-    public function __isset( $name )
+    public function __isset($name)
     {
-        return isset( $this->_data[ $name ] );
+        return isset($this->_data[ $name ]);
     }
 
-    public function __unset( $name )
+    public function __unset($name)
     {
-        unset( $this->_data[ $name ] );
+        unset($this->_data[ $name ]);
     }
 
-    public function getFieldSource( $fieldName )
+    public function getFieldSource($fieldName)
     {
-        if ( isset( $this->_fields[ $fieldName ] ) )
-        {
+        if (isset($this->_fields[ $fieldName ])) {
             return $this->_fields[ $fieldName ][ 'source' ];
-        }
-        else
-        {
-            throw new \Exception( 'Field ' . $fieldName . ' is not set' );
+        } else {
+            throw new \Exception('Field '.$fieldName.' is not set');
         }
     }
-
 }

@@ -23,10 +23,9 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
      * @return array
      * @throws \Exception
      */
-    public function getFieldPart( $type, $part )
+    public function getFieldPart($type, $part)
     {
-
-        return $this->getConfigDomainPart( 'fieldTypes', $type, $part );
+        return $this->getConfigDomainPart('fieldTypes', $type, $part);
 
 //        $_config = $this->getConfigPart( $type );
 //        if ( !isset( $_config[ $part ] ) )
@@ -37,16 +36,15 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
 //        return $_config[ $part ];
     }
 
-
     /**
      * @param string $type
      *
      * @return array
      * @throws \Exception
      */
-    public function getInputFilter( $type )
+    public function getInputFilter($type)
     {
-        return $this->getFieldPart( $type, 'filter' );
+        return $this->getFieldPart($type, 'filter');
     }
 
     /**
@@ -55,9 +53,9 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
      * @return array
      * @throws \Exception
      */
-    public function getField( $type )
+    public function getField($type)
     {
-        return $this->getFieldPart( $type, 'field'  );
+        return $this->getFieldPart($type, 'field');
     }
 
     /**
@@ -66,9 +64,9 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
      * @return array
      * @throws \Exception
      */
-    public function getFormElement( $type )
+    public function getFormElement($type)
     {
-        return $this->getFieldPart( $type, 'element'  );
+        return $this->getFieldPart($type, 'element');
     }
 
     /**
@@ -76,20 +74,18 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
      *
      * @return array
      */
-    public function getUtilityFields( $modelName = '' )
+    public function getUtilityFields($modelName = '')
     {
         return [
-            'fields'  =>
-                [
+            'fields'  => [
                     '_id' => [
-                        'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID', 'source' => '_id'
+                        'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID', 'source' => '_id',
                     ],
                     '_acl' => [
-                        'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl', 'source' => '_acl'
+                        'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl', 'source' => '_acl',
                     ],
                 ],
-            'filters' => [ '_id' => $this->getInputFilter( 'text' ) ],
+            'filters' => [ '_id' => $this->getInputFilter('text') ],
         ];
     }
-
-} 
+}

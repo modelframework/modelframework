@@ -17,26 +17,24 @@ use ModelFramework\DataModel\DataModelInterface;
 class GatewayService extends GatewayServiceRaw
     implements ModelServiceAwareInterface, ModelConfigParserServiceAwareInterface
 {
-
     use ModelServiceAwareTrait, ModelConfigParserServiceAwareTrait;
 
     /**
      * @param string             $name
      * @param DataModelInterface $model
-     * @param array $modelConfig
+     * @param array              $modelConfig
      *
      * @return null|MongoGateway
      * @throws \Exception
      */
-    public function getGateway( $name, DataModelInterface $model = null, array $modelConfig = [] )
+    public function getGateway($name, DataModelInterface $model = null, array $modelConfig = [])
     {
-        if ( $model == null )
-        {
-            $model = $this->getModel( $name );
-            $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig( $name );
+        if ($model == null) {
+            $model = $this->getModel($name);
+            $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig($name);
         }
-        $gw = parent::getGateway( '', $model );
-        $gw->setModelConfig( $modelConfig );
+        $gw = parent::getGateway('', $model);
+        $gw->setModelConfig($modelConfig);
 
         return $gw;
     }
@@ -46,9 +44,8 @@ class GatewayService extends GatewayServiceRaw
      *
      * @return DataModelInterface
      */
-    public function getModel( $modelName )
+    public function getModel($modelName)
     {
-        return $this->getModelServiceVerify()->get( $modelName );
+        return $this->getModelServiceVerify()->get($modelName);
     }
-
 }

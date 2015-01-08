@@ -8,15 +8,14 @@
 
 namespace ModelFramework\ModelService\ModelConfigParserService;
 
-
-interface ModelConfigParserServiceAwareInterface {
-
+interface ModelConfigParserServiceAwareInterface
+{
     /**
      * @param ModelConfigParserServiceInterface $modelConfigParserService
      *
      * @return $this
      */
-    public function setModelConfigParserService( ModelConfigParserServiceInterface $modelConfigParserService );
+    public function setModelConfigParserService(ModelConfigParserServiceInterface $modelConfigParserService);
 
     /**
      * @return ModelConfigParserServiceInterface
@@ -28,5 +27,4 @@ interface ModelConfigParserServiceAwareInterface {
      * @throws \Exception
      */
     public function getModelConfigParserServiceVerify();
-
-} 
+}

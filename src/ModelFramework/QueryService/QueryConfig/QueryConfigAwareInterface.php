@@ -10,13 +10,12 @@ namespace ModelFramework\QueryService\QueryConfig;
 
 interface QueryConfigAwareInterface
 {
-
     /**
      * @param QueryConfig $queryConfig
      *
      * @return $this
      */
-    public function setQueryConfig( QueryConfig $queryConfig );
+    public function setQueryConfig(QueryConfig $queryConfig);
 
     /**
      * @return QueryConfig

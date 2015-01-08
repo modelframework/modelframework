@@ -14,20 +14,18 @@ use ModelFramework\CacheService\CacheServiceAwareTrait;
 class QueryServiceProxyCached
     implements QueryServiceInterface, CacheServiceAwareInterface, QueryServiceAwareInterface
 {
-
     use CacheServiceAwareTrait, QueryServiceAwareTrait;
 
-
     /**
      * @param string $key
      *
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function getQuery( $key )
+    public function getQuery($key)
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod( $this->getQueryServiceVerify(), 'getQuery', [ $key ] );
+                    ->getCachedObjMethod($this->getQueryServiceVerify(), 'getQuery', [ $key ]);
     }
 
     /**
@@ -36,9 +34,8 @@ class QueryServiceProxyCached
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function get( $key )
+    public function get($key)
     {
-        return $this->getQuery( $key );
+        return $this->getQuery($key);
     }
-
-} 
+}

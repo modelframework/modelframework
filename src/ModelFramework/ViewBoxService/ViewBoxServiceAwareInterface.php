@@ -2,15 +2,14 @@
 
 namespace ModelFramework\ViewBoxService;
 
-
-interface ViewBoxServiceAwareInterface {
-
+interface ViewBoxServiceAwareInterface
+{
     /**
      * @param ViewBoxServiceInterface $modelViewService
      *
      * @return $this
      */
-    public function setViewBoxService( ViewBoxServiceInterface $modelViewService );
+    public function setViewBoxService(ViewBoxServiceInterface $modelViewService);
 
     /**
      * @return ViewBoxServiceInterface
@@ -22,5 +21,4 @@ interface ViewBoxServiceAwareInterface {
      * @throws \Exception
      */
     public function getViewBoxServiceVerify();
-
 }

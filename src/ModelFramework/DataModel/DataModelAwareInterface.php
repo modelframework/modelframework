@@ -4,13 +4,12 @@ namespace ModelFramework\DataModel;
 
 interface DataModelAwareInterface
 {
-
     /**
      * @param DataModelInterface $dataModel
      *
      * @return $this
      */
-    public function setDataModel( DataModelInterface $dataModel );
+    public function setDataModel(DataModelInterface $dataModel);
 
     /**
      * @return DataModelInterface
@@ -22,5 +21,4 @@ interface DataModelAwareInterface
      * @throws \Exception
      */
     public function getDataModelVerify();
-
 }

@@ -10,13 +10,12 @@ namespace ModelFramework\FormConfigParserService;
 
 interface FormConfigParserServiceAwareInterface
 {
-
     /**
      * @param FormConfigParserServiceInterface $formConfigParserService
      *
      * @return $this
      */
-    public function setFormConfigParserService( FormConfigParserServiceInterface $formConfigParserService );
+    public function setFormConfigParserService(FormConfigParserServiceInterface $formConfigParserService);
 
     /**
      * @return FormConfigParserServiceInterface
@@ -28,5 +27,4 @@ interface FormConfigParserServiceAwareInterface
      * @throws \Exception
      */
     public function getFormConfigParserServiceVerify();
-
-} 
+}

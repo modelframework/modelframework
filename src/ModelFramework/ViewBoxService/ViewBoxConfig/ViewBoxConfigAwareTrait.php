@@ -8,11 +8,10 @@
 
 namespace ModelFramework\ViewBoxService\ViewBoxConfig;
 
-
 use ModelFramework\DataModel\DataModelInterface;
 
-trait ViewBoxConfigAwareTrait {
-
+trait ViewBoxConfigAwareTrait
+{
     /**
      * @var ViewBoxConfig|DataModelInterface
      */
@@ -23,7 +22,7 @@ trait ViewBoxConfigAwareTrait {
      *
      * @return $this
      */
-    public function setViewBoxConfig( ViewBoxConfig $viewBoxConfig )
+    public function setViewBoxConfig(ViewBoxConfig $viewBoxConfig)
     {
         $this->_viewBoxConfig = $viewBoxConfig;
     }
@@ -32,7 +31,7 @@ trait ViewBoxConfigAwareTrait {
      * @return ViewBoxConfig|DataModelInterface
      *
      */
-    public function getViewBoxConfig( )
+    public function getViewBoxConfig()
     {
         return $this->_viewBoxConfig;
     }
@@ -41,14 +40,14 @@ trait ViewBoxConfigAwareTrait {
      * @return ViewBoxConfig
      * @throws \Exception
      */
-    public function getViewBoxConfigVerify( )
+    public function getViewBoxConfigVerify()
     {
         $viewBoxConfig = $this->getViewBoxConfig();
-        if ( $viewBoxConfig==null || ! $viewBoxConfig instanceof ViewBoxConfig )
-        {
-            throw new \Exception( 'View Config Data does not set set in ModelViewAware instance of ' .
-                                  get_class( $this ) );
+        if ($viewBoxConfig == null || ! $viewBoxConfig instanceof ViewBoxConfig) {
+            throw new \Exception('View Config Data does not set set in ModelViewAware instance of '.
+                                  get_class($this));
         }
+
         return $viewBoxConfig;
     }
-} 
+}

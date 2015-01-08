@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
  */
 class StaticDataConfig extends DataModel
 {
-
     public $_model = 'StaticDataConfig';
     public $_label = 'Source data for static dropdowns';
     public $_adapter = 'wepo_company';

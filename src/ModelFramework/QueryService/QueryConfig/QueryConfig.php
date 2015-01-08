@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
 
 class QueryConfig extends DataModel
 {
-
     public $_model = 'QueryConfig';
     public $_label = 'Query Config';
     public $_adapter = 'wepo_company';
@@ -25,7 +24,7 @@ class QueryConfig extends DataModel
         'fields'    => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'actions'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'links'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        'order'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
+        'order'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
 
     ];
 
@@ -39,5 +38,4 @@ class QueryConfig extends DataModel
     public $actions = [ ];
     public $links = [ ];
     public $order = [ ];
-
 }

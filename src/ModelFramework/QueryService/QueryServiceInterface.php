@@ -10,6 +10,13 @@ namespace ModelFramework\QueryService;
 
 interface QueryServiceInterface
 {
+    /**
+     * @param string $key
+     *
+     * @return Query|QueryInterface
+     * @throws \Exception
+     */
+    public function getQuery($key);
 
     /**
      * @param string $key
@@ -17,14 +24,5 @@ interface QueryServiceInterface
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function getQuery( $key );
-
-    /**
-     * @param string $key
-     *
-     * @return Query|QueryInterface
-     * @throws \Exception
-     */
-    public function get( $key );
-
+    public function get($key);
 }

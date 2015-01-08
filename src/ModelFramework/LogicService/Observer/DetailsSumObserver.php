@@ -8,27 +8,24 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
 class DetailsSumObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
         $subject = $this->getSubject();
 
         $query =
             $subject->getQueryServiceVerify()
-                    ->get( $value[ 'query' ] )
-                    ->setParamSource( $model )
+                    ->get($value[ 'query' ])
+                    ->setParamSource($model)
                     ->process();
 
         $model->$key = 0;
-        $details     = $this->getSubject()->getGatewayService()->get( $query->getModelName() )
-                            ->find( $query->getWhere(), $query->getOrder() );
+        $details     = $this->getSubject()->getGatewayService()->get($query->getModelName())
+                            ->find($query->getWhere(), $query->getOrder());
         foreach ($details as $detail) {
             $model->$key += $detail->$value[ 'field' ];
         }
-
     }
 }

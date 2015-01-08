@@ -35,7 +35,6 @@ class ViewService
                FormServiceAwareInterface, AuthServiceAwareInterface, LogicServiceAwareInterface,
                QueryServiceAwareInterface, FileServiceAwareInterface
 {
-
     use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait;
 
     /**
@@ -44,9 +43,9 @@ class ViewService
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function getView( $viewName )
+    public function getView($viewName)
     {
-        return $this->createView( $viewName );
+        return $this->createView($viewName);
     }
 
     /**
@@ -55,9 +54,9 @@ class ViewService
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function get( $viewName )
+    public function get($viewName)
     {
-        return $this->getView( $viewName );
+        return $this->getView($viewName);
     }
 
     /**
@@ -66,45 +65,44 @@ class ViewService
      * @return View|ViewInterface
      * @throws \Exception
      */
-    protected function createView( $viewName )
+    protected function createView($viewName)
     {
         $view = new View();
-        $view->setAuthService( $this->getAuthServiceVerify() );
-        $view->setAclService( $this->getAclServiceVerify() );
-        $view->setLogicService( $this->getLogicServiceVerify() );
-        $view->setConfigService( $this->getConfigServiceVerify() );
-        $viewConfig = $this->getConfigServiceVerify()->getByObject( $viewName, new ViewConfig() );
-        if ( $viewConfig == null )
-        {
-            throw new \Exception( 'Please fill ViewConfig for the ' . $viewName . '. I can\'t work on' );
+        $view->setAuthService($this->getAuthServiceVerify());
+        $view->setAclService($this->getAclServiceVerify());
+        $view->setLogicService($this->getLogicServiceVerify());
+        $view->setConfigService($this->getConfigServiceVerify());
+        $viewConfig = $this->getConfigServiceVerify()->getByObject($viewName, new ViewConfig());
+        if ($viewConfig == null) {
+            throw new \Exception('Please fill ViewConfig for the '.$viewName.'. I can\'t work on');
         }
-        $view->setViewConfig( $viewConfig );
+        $view->setViewConfig($viewConfig);
         // config parser service
-        $view->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
+        $view->setModelConfigParserService($this->getModelConfigParserServiceVerify());
 
-        $view->setModelService( $this->getModelServiceVerify() );
+        $view->setModelService($this->getModelServiceVerify());
 
         // info about model - how it is organized. it will be useful
-        $modelConfigArray = $this->getModelConfigParserServiceVerify()->getModelConfig( $viewConfig->model );
-        $view->setModelConfig( $modelConfigArray );
+        $modelConfigArray = $this->getModelConfigParserServiceVerify()->getModelConfig($viewConfig->model);
+        $view->setModelConfig($modelConfigArray);
 
         // model view should deal with acl enabled model
-        $aclModel = $this->getAclServiceVerify()->getAclModel( $viewConfig->model );
+        $aclModel = $this->getAclServiceVerify()->getAclModel($viewConfig->model);
         // primary gateway for data ops
-        $gateway = $this->getGatewayServiceVerify()->get( $viewConfig->model, $aclModel );
-        $view->setGateway( $gateway );
+        $gateway = $this->getGatewayServiceVerify()->get($viewConfig->model, $aclModel);
+        $view->setGateway($gateway);
 
         // gateway service for queries
-        $view->setGatewayService( $this->getGatewayServiceVerify() );
+        $view->setGatewayService($this->getGatewayServiceVerify());
 
         // form service for form creation
-        $view->setFormService( $this->getFormServiceVerify() );
+        $view->setFormService($this->getFormServiceVerify());
 
-        $view->setConfigService( $this->getConfigServiceVerify() );
+        $view->setConfigService($this->getConfigServiceVerify());
 
-        $view->setQueryService( $this->getQueryServiceVerify() );
+        $view->setQueryService($this->getQueryServiceVerify());
 
-        $view->setFileService( $this->getFileServiceVerify() );
+        $view->setFileService($this->getFileServiceVerify());
 //        $view->setDataMappingService( $this->getDataMappingServiceVerify() );
 
         // initialize stuff. observers as primary
@@ -112,5 +110,4 @@ class ViewService
 
         return $view;
     }
-
-} 
+}

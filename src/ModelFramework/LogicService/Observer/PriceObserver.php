@@ -8,7 +8,6 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-
 //fixme test needs after quote, order, invoice add functionality created
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
@@ -18,7 +17,6 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 class PriceObserver
     implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
-
     use ConfigAwareTrait, SubjectAwareTrait;
 
     private $defaultConfigs = [
@@ -31,36 +29,30 @@ class PriceObserver
         'total'  => [ 'value' => 0, 'field' => 'total' ],
     ];
 
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 
         $models = $subject->getEventObject();
-        if ( !( is_array( $models ) || $models instanceof ResultSetInterface ) )
-        {
+        if (!(is_array($models) || $models instanceof ResultSetInterface)) {
             $models = [ $models ];
         }
 
         $aModels = [ ];
-        foreach ( $models as $_k => $model )
-        {
-
-            $config = $this->updateDefaultConfigs( $model );
+        foreach ($models as $_k => $model) {
+            $config = $this->updateDefaultConfigs($model);
             prn($config);
 
             $total_price = $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ];
-            if ( $config[ 'discount_type' ][ 'value' ] == '% of Price' )
-            {
-                $total_price *= (1 - $config[ 'discount' ][ 'value' ] / 100 );
+            if ($config[ 'discount_type' ][ 'value' ] == '% of Price') {
+                $total_price *= (1 - $config[ 'discount' ][ 'value' ] / 100);
             }
 
-            if ( $config[ 'discount_type' ][ 'value' ] == 'Direct Price Reduction' )
-            {
+            if ($config[ 'discount_type' ][ 'value' ] == 'Direct Price Reduction') {
                 $total_price -=  $config[ 'discount' ][ 'value' ];
             }
 
-            $total_price = round( $total_price , 2 );
+            $total_price = round($total_price, 2);
 
             $taxes       = $total_price * $config[ 'tax' ][ 'value' ] / 100;
             $total_price += $taxes;
@@ -70,41 +62,31 @@ class PriceObserver
             $model->$config[ 'result_price' ][ 'field' ] = $total_price;
 
             $aModels[ ] = $model->getArrayCopy();
-
-
         }
 
-        if ( $models instanceof ResultSetInterface )
-        {
-            $models->initialize( $aModels );
+        if ($models instanceof ResultSetInterface) {
+            $models->initialize($aModels);
         }
     }
 
-    protected function updateDefaultConfigs( $model )
+    protected function updateDefaultConfigs($model)
     {
         $config     = $this->defaultConfigs;
         $usrConfigs = $this->getRootConfig();
-        foreach ( $config as $key => $value )
-        {
-            if ( isset( $usrConfigs[ $key ] ) )
-            {
+        foreach ($config as $key => $value) {
+            if (isset($usrConfigs[ $key ])) {
                 $config[ $key ][ 'field' ] = $usrConfigs[ $key ];
             }
-            if ( $key == 'tax' )
-            {
-                foreach ( $value['fields'] as $field )
-                {
+            if ($key == 'tax') {
+                foreach ($value['fields'] as $field) {
                     $config[ $key ][ 'value' ] += $model->$field;
                 }
-            }
-            else
-            {
+            } else {
                 $config[ $key ][ 'value' ] =
-                    isset( $model->$config[ $key ][ 'field' ] ) ? $model->$config[ $key ][ 'field' ] : $config[ $key ][ 'value' ];
+                    isset($model->$config[ $key ][ 'field' ]) ? $model->$config[ $key ][ 'field' ] : $config[ $key ][ 'value' ];
             }
         }
 
         return $config;
     }
-
 }

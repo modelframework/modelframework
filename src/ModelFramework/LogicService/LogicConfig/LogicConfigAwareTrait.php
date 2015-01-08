@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModelInterface;
 
 trait LogicConfigAwareTrait
 {
-
     /**
      * @var LogicConfig|DataModelInterface
      */
@@ -23,7 +22,7 @@ trait LogicConfigAwareTrait
      *
      * @return $this
      */
-    public function setLogicConfig( LogicConfig $logicConfig )
+    public function setLogicConfig(LogicConfig $logicConfig)
     {
         $this->_logicConfig = $logicConfig;
     }
@@ -44,9 +43,8 @@ trait LogicConfigAwareTrait
     public function getLogicConfigVerify()
     {
         $logicConfig = $this->getLogicConfig();
-        if ( $logicConfig == null || !$logicConfig instanceof LogicConfig )
-        {
-            throw new \Exception( 'Logic Config Data does not set set in DataLogic' );
+        if ($logicConfig == null || !$logicConfig instanceof LogicConfig) {
+            throw new \Exception('Logic Config Data does not set set in DataLogic');
         }
 
         return $logicConfig;

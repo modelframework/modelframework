@@ -6,13 +6,12 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 
 interface ServiceLocatorAwareInterface
 {
-
     /**
      * @param ServiceLocatorInterface $serviceLocator
      *
      * @return $this
      */
-    public function setServiceLocator( ServiceLocatorInterface $serviceLocator );
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator);
 
     /**
      * @return ServiceLocatorInterface
@@ -25,5 +24,4 @@ interface ServiceLocatorAwareInterface
      * @throws \Exception
      */
     public function getServiceLocatorVerify();
-
-} 
+}

@@ -10,7 +10,6 @@ namespace ModelFramework\FieldTypesService;
 
 trait FieldTypesServiceAwareTrait
 {
-
     private $_fieldTypesService = null;
 
     /**
@@ -18,7 +17,7 @@ trait FieldTypesServiceAwareTrait
      *
      * @return $this
      */
-    public function setFieldTypesService( FieldTypesServiceInterface $fieldTypesService )
+    public function setFieldTypesService(FieldTypesServiceInterface $fieldTypesService)
     {
         $this->_fieldTypesService = $fieldTypesService;
 
@@ -40,18 +39,17 @@ trait FieldTypesServiceAwareTrait
     public function getFieldTypesServiceVerify()
     {
         $fieldTypesService = $this->getFieldTypesService();
-        if ( $fieldTypesService == null || !$fieldTypesService instanceof FieldTypesServiceInterface )
-        {
-            throw new \Exception( 'FieldTypesService does not set in the FieldTypesServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($fieldTypesService == null || !$fieldTypesService instanceof FieldTypesServiceInterface) {
+            throw new \Exception('FieldTypesService does not set in the FieldTypesServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $fieldTypesService;
     }
 
-    protected function getUtilityFields( $modelName )
+    protected function getUtilityFields($modelName)
     {
-        return $this->getFieldTypesServiceVerify()->getUtilityFields( $modelName );
+        return $this->getFieldTypesServiceVerify()->getUtilityFields($modelName);
     }
 
     /**
@@ -61,18 +59,18 @@ trait FieldTypesServiceAwareTrait
      * @return array
      * @throws \Exception
      */
-    public function getFieldPart( $type, $part )
+    public function getFieldPart($type, $part)
     {
-        return $this->getFieldTypesServiceVerify()->getFieldPart( $type, $part );
+        return $this->getFieldTypesServiceVerify()->getFieldPart($type, $part);
     }
 
-    protected function getField( $type )
+    protected function getField($type)
     {
-        return $this->getFieldTypesServiceVerify()->getField( $type );
+        return $this->getFieldTypesServiceVerify()->getField($type);
     }
 
-    protected function getInputFilter( $type )
+    protected function getInputFilter($type)
     {
-        return $this->getFieldTypesServiceVerify()->getInputFilter( $type );
+        return $this->getFieldTypesServiceVerify()->getInputFilter($type);
     }
 }

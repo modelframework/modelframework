@@ -32,28 +32,23 @@ class LogicService
                GatewayServiceAwareInterface, ParamsAwareInterface,
                AuthServiceAwareInterface, ModelServiceAwareInterface, QueryServiceAwareInterface
 {
-
     use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait,
         AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait, QueryServiceAwareTrait;
 
-    public function dispatch( $event )
+    public function dispatch($event)
     {
         $model = $event->getParams();
-        if ( is_array( $model ) )
-        {
-            $model = array_shift( $model );
+        if (is_array($model)) {
+            $model = array_shift($model);
         }
-        if ( $model instanceof DataModelInterface )
-        {
+        if ($model instanceof DataModelInterface) {
             $modelName = $model->getModelName();
-        }
-        else
-        {
-            throw new \Exception( 'Event Params must be instance of DataModel' );
+        } else {
+            throw new \Exception('Event Params must be instance of DataModel');
         }
 
 //        $dataLogic = $this->get( $modelName, $modelName ) -> trigger( $model );
-        return $this->get( $event->getName(), $modelName )->trigger( $event );
+        return $this->get($event->getName(), $modelName)->trigger($event);
 
 //        return call_user_func( [ $dataLogic, $event->getName() ], $event );
     }
@@ -65,9 +60,9 @@ class LogicService
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function get( $eventName, $modelName )
+    public function get($eventName, $modelName)
     {
-        return $this->createLogic( $eventName, $modelName );
+        return $this->createLogic($eventName, $modelName);
     }
 
     /**
@@ -77,36 +72,31 @@ class LogicService
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function createLogic( $eventName, $modelName )
+    public function createLogic($eventName, $modelName)
     {
-        $logicConfig = $this->getConfigServiceVerify()->getByObject( $modelName . '.' . $eventName, new LogicConfig() );
-
+        $logicConfig = $this->getConfigServiceVerify()->getByObject($modelName.'.'.$eventName, new LogicConfig());
 
         $logic = new Logic();
-        if ( $logicConfig == null )
-        {
+        if ($logicConfig == null) {
             return $logic;
         }
 
+        $logic->setLogicConfig($logicConfig);
 
-        $logic->setLogicConfig( $logicConfig );
-
-        $logic->setConfigService( $this->getConfigServiceVerify() );
-        $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
-        $logic->setGatewayService( $this->getGatewayServiceVerify() );
-        $logic->setAuthService( $this->getAuthServiceVerify() );
-        $logic->setModelService( $this->getModelService() );
-        $logic->setLogicService( $this );
-        $logic->setMailService( $this->getMailService() );
-        $logic->setQueryService( $this->getQueryServiceVerify() );
-        if ( $this->getParams() != null )
-        {
-            $logic->setParams( $this->getParams() );
+        $logic->setConfigService($this->getConfigServiceVerify());
+        $logic->setModelConfigParserService($this->getModelConfigParserServiceVerify());
+        $logic->setGatewayService($this->getGatewayServiceVerify());
+        $logic->setAuthService($this->getAuthServiceVerify());
+        $logic->setModelService($this->getModelService());
+        $logic->setLogicService($this);
+        $logic->setMailService($this->getMailService());
+        $logic->setQueryService($this->getQueryServiceVerify());
+        if ($this->getParams() != null) {
+            $logic->setParams($this->getParams());
         }
         $logic->init();
 
         return $logic;
-
     }
 
     /**
@@ -116,38 +106,33 @@ class LogicService
      * @return DataLogic|void
      * @throws \Exception
      */
-    public function trigger__b00bs( $eventName, $eventObject )
+    public function trigger__b00bs($eventName, $eventObject)
     {
         $model = $eventObject;
-        if ( is_array( $eventObject ) )
-        {
-            $model = reset( $eventObject );
+        if (is_array($eventObject)) {
+            $model = reset($eventObject);
         }
-        if ( $eventObject instanceof ResultSetInterface )
-        {
+        if ($eventObject instanceof ResultSetInterface) {
             $model = $eventObject->getArrayObjectPrototype();
         }
-        if ( !$model instanceof DataModelInterface )
-        {
-            throw new \Exception( 'Event Param must implement DataModelInterface ' );
+        if (!$model instanceof DataModelInterface) {
+            throw new \Exception('Event Param must implement DataModelInterface ');
         }
-        $logicConfig = $this->getConfigServiceVerify()->getByObject( $model->getModelName() . '.' . $eventName,
-                                                                     new LogicConfig() );
-        if ( $logicConfig == null )
-        {
-            return null;
+        $logicConfig = $this->getConfigServiceVerify()->getByObject($model->getModelName().'.'.$eventName,
+                                                                     new LogicConfig());
+        if ($logicConfig == null) {
+            return;
         }
         $logic = new Logic();
-        $logic->setLogicConfig( $logicConfig );
-        $logic->setEventObject( $eventObject );
-        $logic->setModelConfigParserService( $this->getModelConfigParserServiceVerify() );
-        $logic->setGatewayService( $this->getGatewayServiceVerify() );
-        $logic->setAuthService( $this->getAuthServiceVerify() );
-        $logic->setModelService( $this->getModelService() );
-        $logic->setLogicService( $this );
-        if ( $this->getParams() != null )
-        {
-            $logic->setParams( $this->getParams() );
+        $logic->setLogicConfig($logicConfig);
+        $logic->setEventObject($eventObject);
+        $logic->setModelConfigParserService($this->getModelConfigParserServiceVerify());
+        $logic->setGatewayService($this->getGatewayServiceVerify());
+        $logic->setAuthService($this->getAuthServiceVerify());
+        $logic->setModelService($this->getModelService());
+        $logic->setLogicService($this);
+        if ($this->getParams() != null) {
+            $logic->setParams($this->getParams());
         }
         $logic->init();
         $logic->process();
@@ -156,7 +141,5 @@ class LogicService
 
 //
 //        return $dataLogic;
-
     }
-
 }

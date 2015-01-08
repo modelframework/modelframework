@@ -8,13 +8,12 @@
 
 namespace ModelFramework\FormConfigParserService;
 
-
-interface FormConfigParserServiceInterface {
-
+interface FormConfigParserServiceInterface
+{
     /**
      * @param string $modelName
      *
      * @return array
      */
-    public function getFormConfig( $modelName );
+    public function getFormConfig($modelName);
 }

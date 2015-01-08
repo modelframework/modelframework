@@ -10,13 +10,12 @@ namespace ModelFramework\FileService;
 
 interface FileServiceAwareInterface
 {
-
     /**
      * @param FileServiceInterface $fileService
      *
      * @return $this
      */
-    public function setFileService( FileServiceInterface $fileService );
+    public function setFileService(FileServiceInterface $fileService);
 
     /**
      * @return FileServiceInterface
@@ -28,5 +27,4 @@ interface FileServiceAwareInterface
      * @throws \Exception
      */
     public function getFileServiceVerify();
-
 }

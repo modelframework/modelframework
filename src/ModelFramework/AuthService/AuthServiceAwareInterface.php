@@ -3,7 +3,6 @@ namespace ModelFramework\AuthService;
 
 interface AuthServiceAwareInterface
 {
-
     /**
      * @return AuthServiceInterface
      */
@@ -20,6 +19,5 @@ interface AuthServiceAwareInterface
      *
      * @return $this
      */
-    public function setAuthService( AuthServiceInterface $authService );
-
+    public function setAuthService(AuthServiceInterface $authService);
 }

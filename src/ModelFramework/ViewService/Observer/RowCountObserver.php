@@ -13,20 +13,17 @@ use ModelFramework\ViewService\View;
 class RowCountObserver
     implements \SplObserver
 {
-
     /**
      * @param View|\SplSubject $subject
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
         $viewConfig           = $subject->getViewConfigVerify();
-        $result[ 'rowcount' ] = $subject->getParam( 'rowcount', $viewConfig->rows );
-        if ( $result[ 'rowcount' ] != $viewConfig->rows )
-        {
+        $result[ 'rowcount' ] = $subject->getParam('rowcount', $viewConfig->rows);
+        if ($result[ 'rowcount' ] != $viewConfig->rows) {
             $viewConfig->rows = $result[ 'rowcount' ];
-            $subject->getConfigServiceVerify()->saveByObject( $viewConfig );
+            $subject->getConfigServiceVerify()->saveByObject($viewConfig);
         }
-        $subject->setData( $result );
+        $subject->setData($result);
     }
-
 }

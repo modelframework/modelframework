@@ -8,7 +8,6 @@
 
 namespace ModelFramework\ViewService;
 
-
-interface ViewInterface {
-
-} 
+interface ViewInterface
+{
+}

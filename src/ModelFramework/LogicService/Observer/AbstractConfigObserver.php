@@ -15,26 +15,24 @@ use ModelFramework\ConfigService\ConfigAwareTrait;
 abstract class AbstractConfigObserver extends AbstractObserver
     implements ConfigAwareInterface
 {
-
     use ConfigAwareTrait;
 
-    abstract public function process( $model, $key, $value );
+    abstract public function process($model, $key, $value);
 
-    public function processModel( $model )
+    public function processModel($model)
     {
-        foreach ( $this->getRootConfig() as $key => $value ) {
-            if ( is_numeric( $key ) ) {
+        foreach ($this->getRootConfig() as $key => $value) {
+            if (is_numeric($key)) {
                 $key   = $value;
                 $value = '';
             }
-            if ( !isset( $model->$key ) ) {
+            if (!isset($model->$key)) {
                 throw new \Exception(
-                    'Field ' . $key . ' does not exist in model '
-                    . $model->getModelName()
+                    'Field '.$key.' does not exist in model '
+                    .$model->getModelName()
                 );
             }
-
-            $this->process( $model, $key, $value );
+            $this->process($model, $key, $value);
         }
     }
 }

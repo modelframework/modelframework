@@ -8,24 +8,23 @@
 
 namespace ModelFramework\ViewBoxService\ViewBoxConfig;
 
-
-interface ViewBoxConfigAwareInterface {
-
+interface ViewBoxConfigAwareInterface
+{
     /**
      * @param ViewBoxConfig $viewBoxConfig
      *
      * @return $this
      */
-    public function setViewBoxConfig( ViewBoxConfig $viewBoxConfig );
+    public function setViewBoxConfig(ViewBoxConfig $viewBoxConfig);
 
     /**
      * @return ViewBoxConfig
      */
-    public function getViewBoxConfig( );
+    public function getViewBoxConfig();
 
     /**
      * @return ViewBoxConfig
      * @throws \Exception
      */
-    public function getViewBoxConfigVerify( );
+    public function getViewBoxConfigVerify();
 }

@@ -21,13 +21,12 @@ use Zend\View\Model\ViewModel as ZendViewModel;
 
 class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface, ResponseAwareInterface
 {
-
     use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
 
-    public function setRedirect( $redirect )
+    public function setRedirect($redirect)
     {
         $this->_redirect = $redirect;
     }
@@ -39,23 +38,21 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
     public function hasRedirect()
     {
-        if ( !empty( $this->_redirect ) )
-        {
+        if (!empty($this->_redirect)) {
             return true;
         }
 
         return false;
     }
 
-
     public function getData()
     {
         return $this->_data;
     }
 
-    public function setData( array $data )
+    public function setData(array $data)
     {
-        $this->_data = Arr::merge( $this->_data, $data );
+        $this->_data = Arr::merge($this->_data, $data);
     }
 
     protected function clearData()
@@ -74,7 +71,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
         $result[ 'title' ]    = $viewBoxConfig->title;
         $result[ 'mode' ]     = $viewBoxConfig->mode;
         $result[ 'user' ]     = $this->getAuthServiceVerify()->getUser();
-        $this->setData( $result );
+        $this->setData($result);
     }
 
     public function process()
@@ -83,64 +80,55 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
         $params = [];
 
-        foreach ( $this->getViewBoxConfigVerify()->blocks as $blockName => $viewNames )
-        {
-            foreach ( $viewNames as $viewName )
-            {
-                $modelView = $this->getViewServiceVerify()->get( $viewName );
-                $modelView->setParams( $this->getParamsVerify() );
+        foreach ($this->getViewBoxConfigVerify()->blocks as $blockName => $viewNames) {
+            foreach ($viewNames as $viewName) {
+                $modelView = $this->getViewServiceVerify()->get($viewName);
+                $modelView->setParams($this->getParamsVerify());
                 $modelView->process();
-                if ( $modelView->hasRedirect() )
-                {
-                    $this->setRedirect( $modelView->getRedirect() );
+                if ($modelView->hasRedirect()) {
+                    $this->setRedirect($modelView->getRedirect());
 
                     return;
                 }
-                if ( $modelView->hasResponse() )
-                {
-                    $this->setResponse( $modelView->getResponse() );
+                if ($modelView->hasResponse()) {
+                    $this->setResponse($modelView->getResponse());
 
                     return;
                 }
 
                 $data = $modelView->getData();
 
-                $vParams = Arr::getDoubtField( $data, 'params', [ ] );
-                if ( count( $vParams ) )
-                {
-                    $params = Arr::merge( $params, $vParams );
+                $vParams = Arr::getDoubtField($data, 'params', [ ]);
+                if (count($vParams)) {
+                    $params = Arr::merge($params, $vParams);
                 }
 
                 $viewResults = [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
 
-                $this->setData( $viewResults );
+                $this->setData($viewResults);
             }
-
         }
 
-        $params['data'] = strtolower( $this -> getViewBoxConfigVerify()->document );
-        $params['view'] = strtolower( $this -> getViewBoxConfigVerify()->mode );
+        $params['data'] = strtolower($this->getViewBoxConfigVerify()->document);
+        $params['view'] = strtolower($this->getViewBoxConfigVerify()->mode);
 
-        $this->setData( [ 'viewboxparams' => $params ] );
+        $this->setData([ 'viewboxparams' => $params ]);
 
         return $this;
     }
 
     public function output()
     {
-        if ( $this->hasRedirect() )
-        {
+        if ($this->hasRedirect()) {
             return $this->getRedirect();
         }
-        if ( $this->hasResponse() )
-        {
+        if ($this->hasResponse()) {
             return $this->getResponse();
         }
         $data = $this->getData();
 
-        $viewModel = new ZendViewModel( $data );
+        $viewModel = new ZendViewModel($data);
 
-        return $viewModel->setTemplate( $data[ 'template' ] );
+        return $viewModel->setTemplate($data[ 'template' ]);
     }
-
 }

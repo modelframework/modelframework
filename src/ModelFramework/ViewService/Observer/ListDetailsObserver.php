@@ -8,42 +8,37 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-use ModelFramework\Utility\Arr;
 use ModelFramework\ViewService\View;
-use Wepo\Lib\Acl;
 
 class ListDetailsObserver
     implements \SplObserver
 {
-
     /**
      * @param \SplSubject|View $subject
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-
         $viewConfig = $subject->getViewConfigVerify();
 
         $query =
             $subject->getQueryServiceVerify()
-                    ->get( $viewConfig->query )
-                    ->setParams( $subject->getParams() )
+                    ->get($viewConfig->query)
+                    ->setParams($subject->getParams())
                     ->process();
 
-        $subject->setData( $query->getData() );
+        $subject->setData($query->getData());
 
         $result[ 'paginator' ] =
             $subject
                 ->getGatewayVerify()
-                ->getPages( $subject->fields(), $query->getWhere(), $query->getOrder() );
-        if ( $result[ 'paginator' ]->count() > 0 )
-        {
-            $result[ 'paginator' ]->setCurrentPageNumber( $subject->getParam( 'page', 1 ) )
-                                  ->setItemCountPerPage( $viewConfig->rows );
+                ->getPages($subject->fields(), $query->getWhere(), $query->getOrder());
+        if ($result[ 'paginator' ]->count() > 0) {
+            $result[ 'paginator' ]->setCurrentPageNumber($subject->getParam('page', 1))
+                                  ->setItemCountPerPage($viewConfig->rows);
         }
 
-        $subject->getLogicServiceVerify()->get( 'prelist', $viewConfig->model )->trigger( $result[ 'paginator' ]->getCurrentItems() );
-        $subject->getLogicServiceVerify()->get( 'postlist', $viewConfig->model )->trigger( $result[ 'paginator' ]->getCurrentItems() );
+        $subject->getLogicServiceVerify()->get('prelist', $viewConfig->model)->trigger($result[ 'paginator' ]->getCurrentItems());
+        $subject->getLogicServiceVerify()->get('postlist', $viewConfig->model)->trigger($result[ 'paginator' ]->getCurrentItems());
 
 //        $subject->getLogicServiceVerify()->trigger( 'prelist',  $result[ 'paginator' ]->getCurrentItems() );
 //        $subject->getLogicServiceVerify()->trigger( 'postlist', $result[ 'paginator' ]->getCurrentItems() );
@@ -55,21 +50,15 @@ class ListDetailsObserver
 
         $data = $subject->getData();
 
-        foreach ( [ 'actions', 'links' ] as $datapartam )
-        {
-            foreach ( $data[ $datapartam ] as $key => $link )
-            {
-                foreach ( [ 'routeparams', 'queryparams' ] as $keyparams )
-                {
-                    foreach ( $link[ $keyparams ] as $paramkey => $param )
-                    {
-                        if ( $param{0} == ':' )
-                        {
+        foreach ([ 'actions', 'links' ] as $datapartam) {
+            foreach ($data[ $datapartam ] as $key => $link) {
+                foreach ([ 'routeparams', 'queryparams' ] as $keyparams) {
+                    foreach ($link[ $keyparams ] as $paramkey => $param) {
+                        if ($param{0} == ':') {
                             $data[ $datapartam ][ $key ][ $keyparams ][ $paramkey ] =
-                                $subject->getParam( substr( $param, 1 ), '' );
+                                $subject->getParam(substr($param, 1), '');
                         }
                     }
-
                 }
             }
         }
@@ -79,7 +68,6 @@ class ListDetailsObserver
         $result['actions'] = $data['actions'];
         $result['links'] = $data['links'];
 
-        $subject->setData( $result );
+        $subject->setData($result);
     }
-
 }

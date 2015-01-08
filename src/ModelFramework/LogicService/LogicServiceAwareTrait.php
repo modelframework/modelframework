@@ -10,7 +10,6 @@ namespace ModelFramework\LogicService;
 
 trait LogicServiceAwareTrait
 {
-
     /**
      * @var LogicServiceInterface
      */
@@ -21,7 +20,7 @@ trait LogicServiceAwareTrait
      *
      * @return mixed
      */
-    public function setLogicService( LogicServiceInterface $logicService )
+    public function setLogicService(LogicServiceInterface $logicService)
     {
         $this->_logicService = $logicService;
 
@@ -43,13 +42,11 @@ trait LogicServiceAwareTrait
     public function getLogicServiceVerify()
     {
         $_logicService = $this->getLogicService();
-        if ( $_logicService == null || !$_logicService instanceof LogicServiceInterface )
-        {
-            throw new \Exception( 'LogicService does not set in the LogicServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_logicService == null || !$_logicService instanceof LogicServiceInterface) {
+            throw new \Exception('LogicService does not set in the LogicServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $_logicService;
-
     }
-} 
+}

@@ -10,13 +10,12 @@ namespace ModelFramework\AclService\AclConfig;
 
 interface AclConfigAwareInterface
 {
-
     /**
      * @param AclConfig $aclConfig
      *
      * @return $this
      */
-    public function setAclData( AclConfig $aclConfig );
+    public function setAclData(AclConfig $aclConfig);
 
     /**
      * @return AclConfig

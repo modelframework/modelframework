@@ -18,7 +18,6 @@ use ModelFramework\ViewService\ViewServiceAwareTrait;
 class ViewBoxService
     implements ViewBoxServiceInterface, ConfigServiceAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface
 {
-
     use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
@@ -27,9 +26,9 @@ class ViewBoxService
      * @return ViewBox|ViewBoxInterface
      * @throws \Exception
      */
-    public function getViewBox( $viewBoxName )
+    public function getViewBox($viewBoxName)
     {
-        return $this->createViewBox( $viewBoxName );
+        return $this->createViewBox($viewBoxName);
     }
 
     /**
@@ -38,9 +37,9 @@ class ViewBoxService
      * @return ViewBox|ViewBoxInterface
      * @throws \Exception
      */
-    public function get( $viewBoxName )
+    public function get($viewBoxName)
     {
-        return $this->getViewBox( $viewBoxName );
+        return $this->getViewBox($viewBoxName);
     }
 
     /**
@@ -49,23 +48,21 @@ class ViewBoxService
      * @return ViewBox|ViewBoxInterface
      * @throws \Exception
      */
-    public function createViewBox( $viewBoxName )
+    public function createViewBox($viewBoxName)
     {
         // this object will deal with all view of model stuff
         $viewBox = new ViewBox();
 
-        $viewBoxConfig = $this->getConfigServiceVerify()->getByObject( $viewBoxName, new ViewBoxConfig() );
+        $viewBoxConfig = $this->getConfigServiceVerify()->getByObject($viewBoxName, new ViewBoxConfig());
 
-        if ( $viewBoxConfig == null )
-        {
-            throw new \Exception('Please fill ViewBoxConfig for the ' . $viewBoxName. '. I can\'t work on' );
+        if ($viewBoxConfig == null) {
+            throw new \Exception('Please fill ViewBoxConfig for the '.$viewBoxName.'. I can\'t work on');
         }
-        $viewBox->setViewBoxConfig( $viewBoxConfig );
+        $viewBox->setViewBoxConfig($viewBoxConfig);
 
-        $viewBox->setViewService( $this->getViewServiceVerify() );
-        $viewBox->setAuthService( $this->getAuthServiceVerify() );
+        $viewBox->setViewService($this->getViewServiceVerify());
+        $viewBox->setAuthService($this->getAuthServiceVerify());
 
         return $viewBox;
     }
-
-} 
+}

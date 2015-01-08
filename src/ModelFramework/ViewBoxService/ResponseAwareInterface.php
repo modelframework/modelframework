@@ -13,7 +13,7 @@ interface ResponseAwareInterface
     /**
      * @param $response
      */
-    public function setResponse( $response );
+    public function setResponse($response);
 
     /**
      * @return null

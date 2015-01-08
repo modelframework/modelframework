@@ -15,11 +15,9 @@ use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
-use Wepo\Lib\Acl;
 
 abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
-
     use ConfigAwareTrait, SubjectAwareTrait;
 
     private $_aclModel = null;
@@ -30,23 +28,25 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
-        $subject->getLogicServiceVerify()->setParams( $subject->getParams() );
+        $this->setSubject($subject);
+        $subject->getLogicServiceVerify()->setParams($subject->getParams());
 
         $dataModel = $this->initModel();
 
-        $this->process( $this->getModel() );
+        $this->process($this->getModel());
 
-        $this->setModel( $dataModel );
+        $this->setModel($dataModel);
     }
 
-    abstract public function process( $model );
+    abstract public function process($model);
 
     public function getModel()
     {
-        if ( $this->_aclModel !== null ) return $this->_aclModel;
+        if ($this->_aclModel !== null) {
+            return $this->_aclModel;
+        }
 
         return $this->_model;
     }
@@ -62,28 +62,21 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
         $viewConfig = $subject->getViewConfigVerify();
         $query      =
             $subject->getQueryServiceVerify()
-                    ->get( $viewConfig->query )
-                    ->setParams( $subject->getParams() )
+                    ->get($viewConfig->query)
+                    ->setParams($subject->getParams())
                     ->process();
 
         $data = $subject->getData();
-        if ( isset( $data[ 'model' ] ) && $data[ 'model' ] instanceof DataModelInterface )
-        {
+        if (isset($data[ 'model' ]) && $data[ 'model' ] instanceof DataModelInterface) {
             $model = $data[ 'model' ];
-        }
-        else
-        {
-            if ( $viewConfig->mode == 'insert' )
-            {
+        } else {
+            if ($viewConfig->mode == 'insert') {
                 $model = $subject->getGateway()->model();
-            }
-            else
-            {
-//            elseif ( in_array($viewConfig->mode, ['update', 'convert' ] ) )
-                $model = $subject->getGateway()->findOne( $query->getWhere() );
-                if ( $model == null )
-                {
-                    throw new \Exception( 'Data is not accessible' );
+            } else {
+                //            elseif ( in_array($viewConfig->mode, ['update', 'convert' ] ) )
+                $model = $subject->getGateway()->findOne($query->getWhere());
+                if ($model == null) {
+                    throw new \Exception('Data is not accessible');
                 }
             }
 //        else
@@ -93,28 +86,25 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
 //        }
         }
 
-        if ( $model instanceof AclDataModel )
-        {
+        if ($model instanceof AclDataModel) {
             $this->_aclModel = $model;
             $this->_model    = $this->_aclModel->getDataModel();
         }
 
-        $subject->getLogicServiceVerify()->get( 'setDefaults', $model->getModelName() )->trigger( $this->_model );
+        $subject->getLogicServiceVerify()->get('setDefaults', $model->getModelName())->trigger($this->_model);
 
         return $this->_model;
     }
 
-    public function setModel( DataModelInterface $model )
+    public function setModel(DataModelInterface $model)
     {
-        if ( $this->_aclModel !== null && $this->_aclModel instanceof AclDataModel )
-        {
-            $this->_aclModel->setDataModel( $model );
+        if ($this->_aclModel !== null && $this->_aclModel instanceof AclDataModel) {
+            $this->_aclModel->setDataModel($model);
             $model = $this->_aclModel;
         }
 
-        $this->getSubject()->setData( [ 'model' => $model ] );
+        $this->getSubject()->setData([ 'model' => $model ]);
 
         return $model;
     }
-
 }

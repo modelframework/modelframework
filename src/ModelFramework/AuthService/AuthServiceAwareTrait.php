@@ -10,7 +10,6 @@ namespace ModelFramework\AuthService;
 
 trait AuthServiceAwareTrait
 {
-
     /**
      * @var AuthServiceInterface
      */
@@ -32,9 +31,8 @@ trait AuthServiceAwareTrait
     public function getAuthServiceVerify()
     {
         $_authService = $this->getAuthService();
-        if ( $_authService == null || !$_authService instanceof AuthServiceInterface )
-        {
-            throw new \Exception( 'AuthService does not set in the AuthServiceAware instance of ' . get_class( $this ) );
+        if ($_authService == null || !$_authService instanceof AuthServiceInterface) {
+            throw new \Exception('AuthService does not set in the AuthServiceAware instance of '.get_class($this));
         }
 
         return $_authService;
@@ -45,8 +43,8 @@ trait AuthServiceAwareTrait
      *
      * @return $this
      */
-    public function setAuthService( AuthServiceInterface $authService )
+    public function setAuthService(AuthServiceInterface $authService)
     {
         $this->_authService = $authService;
     }
-} 
+}

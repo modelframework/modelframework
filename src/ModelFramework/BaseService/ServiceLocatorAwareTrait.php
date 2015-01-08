@@ -4,8 +4,8 @@ namespace ModelFramework\BaseService;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-trait ServiceLocatorAwareTrait {
-
+trait ServiceLocatorAwareTrait
+{
     /**
      * @var ServiceLocatorInterface
      */
@@ -16,7 +16,7 @@ trait ServiceLocatorAwareTrait {
      *
      * @return $this
      */
-    public function setServiceLocator( ServiceLocatorInterface $serviceLocator )
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
         $this->_services = $serviceLocator;
 
@@ -39,12 +39,10 @@ trait ServiceLocatorAwareTrait {
     public function getServiceLocatorVerify()
     {
         $_services = $this->getServiceLocator();
-        if ( $_services == null || !$_services instanceof ServiceLocatorInterface )
-        {
-            throw new \Exception( 'ServiceLocator does not set in the ServiceLocatorAware service ' . get_class( $this ) );
+        if ($_services == null || !$_services instanceof ServiceLocatorInterface) {
+            throw new \Exception('ServiceLocator does not set in the ServiceLocatorAware service '.get_class($this));
         }
 
         return $_services;
     }
-
 }

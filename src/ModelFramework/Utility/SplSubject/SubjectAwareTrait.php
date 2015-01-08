@@ -10,7 +10,6 @@ namespace ModelFramework\Utility\SplSubject;
 
 trait SubjectAwareTrait
 {
-
     /**
      * @var SplSubject
      */
@@ -21,18 +20,18 @@ trait SubjectAwareTrait
      *
      * @return $this
      */
-    public function setSubject( \SplSubject $subject )
+    public function setSubject(\SplSubject $subject)
     {
         $this->_subject = $subject;
+
         return $this;
     }
 
     /**
      * @return SplSubject
      */
-    public function getSubject( )
+    public function getSubject()
     {
         return $this->_subject;
     }
-
-} 
+}

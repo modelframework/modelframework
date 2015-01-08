@@ -18,7 +18,6 @@ use Zend\Db\ResultSet\ResultSetInterface;
 abstract class AbstractObserver
     implements \SplObserver, SubjectAwareInterface
 {
-
     use SubjectAwareTrait;
 
     /**
@@ -26,34 +25,34 @@ abstract class AbstractObserver
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 
         $models = $subject->getEventObject();
-        if ( !( is_array( $models )
-            || $models instanceof ResultSetInterface )
+        if (!(is_array($models)
+            || $models instanceof ResultSetInterface)
         ) {
             $models = [ $models ];
         }
 
         $aModels = [ ];
-        foreach ( $models as $_k => $model ) {
-            if ( $model instanceof AclDataModel ) {
+        foreach ($models as $_k => $model) {
+            if ($model instanceof AclDataModel) {
                 $dataModel = $model->getDataModel();
             } else {
                 $dataModel = $model;
             }
 
-            $this->processModel( $dataModel );
+            $this->processModel($dataModel);
 
             $aModels[ ] = $model->getArrayCopy();
         }
 
-        if ( $models instanceof ResultSetInterface ) {
-            $models->initialize( $aModels );
+        if ($models instanceof ResultSetInterface) {
+            $models->initialize($aModels);
         }
     }
 
-    abstract public function processModel( $model );
+    abstract public function processModel($model);
 }

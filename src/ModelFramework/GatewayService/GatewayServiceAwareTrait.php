@@ -4,7 +4,6 @@ namespace ModelFramework\GatewayService;
 
 trait GatewayServiceAwareTrait
 {
-
     /**
      * @var GatewayServiceInterface
      */
@@ -15,7 +14,7 @@ trait GatewayServiceAwareTrait
      *
      * @return $this
      */
-    public function setGatewayService( GatewayServiceInterface $gatewayService )
+    public function setGatewayService(GatewayServiceInterface $gatewayService)
     {
         $this->_gatewayService = $gatewayService;
 
@@ -37,13 +36,10 @@ trait GatewayServiceAwareTrait
     public function getGatewayServiceVerify()
     {
         $_gatewayService = $this->getGatewayService();
-        if ( $_gatewayService == null || !$_gatewayService instanceof GatewayServiceInterface )
-        {
-            throw new \Exception( 'GatewayService does not set in the GatewayServiceAware instance of ' . get_class( $this ) );
+        if ($_gatewayService == null || !$_gatewayService instanceof GatewayServiceInterface) {
+            throw new \Exception('GatewayService does not set in the GatewayServiceAware instance of '.get_class($this));
         }
 
         return $_gatewayService;
-
     }
-
 }

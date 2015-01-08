@@ -9,15 +9,10 @@
 namespace ModelFramework\LogicService\Observer;
 
 
-use ModelFramework\AclService\AclDataModel;
-
 class ConstantObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
         $model->$key = $value;
     }
-
-
 }

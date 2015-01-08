@@ -14,7 +14,6 @@ use ModelFramework\CacheService\CacheServiceAwareTrait;
 class FormConfigParserServiceProxyCached
     implements FormConfigParserServiceAwareInterface, CacheServiceAwareInterface, FormConfigParserServiceInterface
 {
-
     use CacheServiceAwareTrait, FormConfigParserServiceAwareTrait;
 
     /**
@@ -22,9 +21,9 @@ class FormConfigParserServiceProxyCached
      *
      * @return array
      */
-    public function get( $modelName )
+    public function get($modelName)
     {
-        return $this->getFormConfig( $modelName );
+        return $this->getFormConfig($modelName);
     }
 
     /**
@@ -32,9 +31,8 @@ class FormConfigParserServiceProxyCached
      *
      * @return array
      */
-    public function getFormConfig( $modelName )
+    public function getFormConfig($modelName)
     {
-        return $this->getCacheService()->getCachedObjMethod( $this->getFormConfigParserServiceVerify(), 'getFormConfig', [ $modelName ] );
+        return $this->getCacheService()->getCachedObjMethod($this->getFormConfigParserServiceVerify(), 'getFormConfig', [ $modelName ]);
     }
-
 }

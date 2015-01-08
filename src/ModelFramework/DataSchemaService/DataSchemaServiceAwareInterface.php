@@ -10,13 +10,12 @@ namespace ModelFramework\DataSchemaService;
 
 interface DataSchemaServiceAwareInterface
 {
-
     /**
      * @param DataSchemaServiceInterface $dataSchemaService
      *
      * @return $this
      */
-    public function setDataSchemaService( DataSchemaServiceInterface $dataSchemaService );
+    public function setDataSchemaService(DataSchemaServiceInterface $dataSchemaService);
 
     /**
      * @return DataSchemaServiceInterface
@@ -28,5 +27,4 @@ interface DataSchemaServiceAwareInterface
      * @throws \Exception
      */
     public function getDataSchemaServiceVerify();
-
-} 
+}

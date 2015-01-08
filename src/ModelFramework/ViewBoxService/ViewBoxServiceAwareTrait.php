@@ -4,7 +4,6 @@ namespace ModelFramework\ViewBoxService;
 
 trait ViewBoxServiceAwareTrait
 {
-
     /**
      * @var ViewBoxServiceInterface
      */
@@ -15,10 +14,9 @@ trait ViewBoxServiceAwareTrait
      *
      * @return $this
      */
-    public function setViewBoxService( ViewBoxServiceInterface $viewBoxService )
+    public function setViewBoxService(ViewBoxServiceInterface $viewBoxService)
     {
         $this->_viewBoxService = $viewBoxService;
-
     }
 
     /**
@@ -36,11 +34,11 @@ trait ViewBoxServiceAwareTrait
     public function getViewBoxServiceVerify()
     {
         $_viewBoxService =  $this->getViewBoxService();
-        if ( $_viewBoxService == null || ! $_viewBoxService instanceof ViewBoxServiceInterface )
-        {
-            throw new \Exception( 'ViewBoxService does not set in the ViewBoxServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_viewBoxService == null || ! $_viewBoxService instanceof ViewBoxServiceInterface) {
+            throw new \Exception('ViewBoxService does not set in the ViewBoxServiceAware instance of '.
+                                  get_class($this));
         }
+
         return $_viewBoxService;
     }
-} 
+}

@@ -10,7 +10,6 @@ namespace ModelFramework\FormService;
 
 class ConfigForm
 {
-
     public $_id = '';
     public $name = '';
     public $group = '';
@@ -28,12 +27,10 @@ class ConfigForm
      *
      * @return $this
      */
-    public function exchangeArray( $data )
+    public function exchangeArray($data)
     {
-        foreach ( $data as $key => $value )
-        {
-            if ( isset( $this->$key ) )
-            {
+        foreach ($data as $key => $value) {
+            if (isset($this->$key)) {
                 $this->$key = $value;
             }
         }

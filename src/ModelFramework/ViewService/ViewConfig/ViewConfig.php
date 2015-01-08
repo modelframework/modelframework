@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
 
 class ViewConfig extends DataModel
 {
-
     public $_model = 'ViewConfig';
     public $_label = 'Model View Config';
     public $_adapter = 'wepo_company';
@@ -33,7 +32,7 @@ class ViewConfig extends DataModel
         'links'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'params'    => [
             'type'    => 'field', 'datatype' => 'array',
-            'default' => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ]
+            'default' => [ 'rows' => 10, 'sort' => 'created_dtm', 'desc' => 1, 'q' => '' ],
         ],
         'order'     => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
         'groups'    => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
@@ -62,5 +61,4 @@ class ViewConfig extends DataModel
     public $groups = [ ];
     public $rows = 10;
     public $limit = 10;
-
 }

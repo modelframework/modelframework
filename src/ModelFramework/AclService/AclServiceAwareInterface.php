@@ -2,15 +2,14 @@
 
 namespace ModelFramework\AclService;
 
-
-interface AclServiceAwareInterface {
-
+interface AclServiceAwareInterface
+{
     /**
      * @param AclServiceInterface $aclService
      *
      * @return $this
      */
-    public function setAclService( AclServiceInterface $aclService );
+    public function setAclService(AclServiceInterface $aclService);
 
     /**
      * @return AclServiceInterface
@@ -22,5 +21,4 @@ interface AclServiceAwareInterface {
      * @throws \Exception
      */
     public function getAclServiceVerify();
-
 }

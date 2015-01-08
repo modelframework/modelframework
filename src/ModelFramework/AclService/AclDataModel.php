@@ -10,13 +10,12 @@ use ModelFramework\DataModel\DataModelInterface;
 
 class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclConfigAwareInterface
 {
-
     use DataModelAwareTrait, AclConfigAwareTrait;
 
     public function __clone()
     {
-        $this->setDataModel( clone $this->getDataModel() );
-        $this->setAclData( clone $this->getAclData() );
+        $this->setDataModel(clone $this->getDataModel());
+        $this->setAclData(clone $this->getAclData());
     }
 
     public function getModelName()
@@ -29,23 +28,23 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclCo
         return $this->getDataModelVerify()->getTableName();
     }
 
-    public function exchangeArray( array $data )
+    public function exchangeArray(array $data)
     {
-        $this->getDataModelVerify()->exchangeArray( $data );
+        $this->getDataModelVerify()->exchangeArray($data);
 
         return $this;
     }
 
-    public function merge( $data )
+    public function merge($data)
     {
-        $this->getDataModelVerify()->merge( $data );
+        $this->getDataModelVerify()->merge($data);
 
         return $this;
     }
 
-    public function split( $data )
+    public function split($data)
     {
-        $this->getDataModelVerify()->split( $data );
+        $this->getDataModelVerify()->split($data);
 
         return $this;
     }
@@ -60,66 +59,56 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface, AclCo
         return $this->getDataModelVerify()->getArrayCopy();
     }
 
-    public function __set( $name, $value )
+    public function __set($name, $value)
     {
         $_aclData = $this->getAclDataVerify();
-        if ( !is_array( $_aclData->permissions ) || !in_array( 'e', $_aclData->permissions ) )
-        {
-            throw new \Exception( 'writing is not allowed' );
+        if (!is_array($_aclData->permissions) || !in_array('e', $_aclData->permissions)) {
+            throw new \Exception('writing is not allowed');
         }
-        if ( empty( $_aclData->fields[ $name ] ) )
-        {
-            return null;
+        if (empty($_aclData->fields[ $name ])) {
+            return;
         }
-        if ( $_aclData->fields[ $name ] == 'x' )
-        {
+        if ($_aclData->fields[ $name ] == 'x') {
             return 'reading is not allowed';
         }
-        if ( $_aclData->fields[ $name ] !== 'e' )
-        {
+        if ($_aclData->fields[ $name ] !== 'e') {
             return 'writing is not allowed';
         }
 
-        return $this->getDataModelVerify()->__set( $name, $value );
+        return $this->getDataModelVerify()->__set($name, $value);
     }
 
-    public function __get( $name )
+    public function __get($name)
     {
-        if ( in_array( $name, [ '_model', '_label', '_adapter', '_acl', 'id' ] ) )
-        {
+        if (in_array($name, [ '_model', '_label', '_adapter', '_acl', 'id' ])) {
             return $this->getDataModelVerify()->{$name};
         }
         $_aclData = $this->getAclDataVerify();
-        if ( !is_array( $_aclData->permissions ) || !in_array( 'r', $_aclData->permissions ) )
-        {
-            throw new \Exception( 'reading is not allowed' );
+        if (!is_array($_aclData->permissions) || !in_array('r', $_aclData->permissions)) {
+            throw new \Exception('reading is not allowed');
         }
-        if ( empty( $_aclData->fields[ $this->getDataModelVerify()->getFieldSource( $name ) ] ) )
-        {
-            return null;
+        if (empty($_aclData->fields[ $this->getDataModelVerify()->getFieldSource($name) ])) {
+            return;
         }
-        if ( $_aclData->fields[ $this->getDataModelVerify()->getFieldSource( $name ) ] == 'x' )
-        {
+        if ($_aclData->fields[ $this->getDataModelVerify()->getFieldSource($name) ] == 'x') {
             return 'reading is not allowed';
         }
 
-        return $this->getDataModelVerify()->__get( $name );
-
+        return $this->getDataModelVerify()->__get($name);
     }
 
-    public function __call( $name, $arguments )
+    public function __call($name, $arguments)
     {
-        return $this->getDataModelVerify()->__call( $name, $arguments );
+        return $this->getDataModelVerify()->__call($name, $arguments);
     }
 
-    public function __isset( $name )
+    public function __isset($name)
     {
-        return $this->getDataModelVerify()->__isset( $name );
+        return $this->getDataModelVerify()->__isset($name);
     }
 
-    public function __unset( $name )
+    public function __unset($name)
     {
-        return $this->getDataModelVerify()->__unset( $name );
+        return $this->getDataModelVerify()->__unset($name);
     }
-
 }

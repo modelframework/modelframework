@@ -13,18 +13,17 @@ use ModelFramework\Utility\Arr;
 
 class OrderObserver extends AbstractObserver
 {
-
     /**
      * @param \SplSubject|Query $subject
      *
      * @return string
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
         $data  = [
             'params' => [ ],
-            'column' => [ ]
+            'column' => [ ],
         ];
         $order = [ ];
 
@@ -35,42 +34,31 @@ class OrderObserver extends AbstractObserver
         $sort = null;
         $s    = null;
 
-        if ( $subject->getParams() !== null )
-        {
-            $sort = $subject->getParam( 'sort', null );
-            $s    = $subject->getParam( 'desc', null );
+        if ($subject->getParams() !== null) {
+            $sort = $subject->getParam('sort', null);
+            $s    = $subject->getParam('desc', null);
         }
 
-        if ( $sort === null || !in_array( $sort, $queryConfig->fields ) )
-        {
-            $sort = Arr::getDoubtField( $defaults, 'sort', null );
-            if ( $sort === null )
-            {
+        if ($sort === null || !in_array($sort, $queryConfig->fields)) {
+            $sort = Arr::getDoubtField($defaults, 'sort', null);
+            if ($sort === null) {
                 return '';
             }
-        }
-        else
-        {
+        } else {
             $data[ 'params' ][ 'sort' ] = $sort;
         }
 
-        if ( $s === null )
-        {
-            $s = Arr::getDoubtField( $defaults, 'desc', 0 );
-        }
-        else
-        {
+        if ($s === null) {
+            $s = Arr::getDoubtField($defaults, 'desc', 0);
+        } else {
             $data[ 'params' ][ 'desc' ] = $s;
         }
 
-        $order[ $sort ] = ( $s == 1 ) ? 'desc' : 'asc';
-        $subject->setOrder( $order );
+        $order[ $sort ] = ($s == 1) ? 'desc' : 'asc';
+        $subject->setOrder($order);
         $data[ 'column' ][ 'sort' ] = $sort;
         $data[ 'column' ][ 'desc' ] = $s;
 
-
-        $subject->setData( $data );
-
+        $subject->setData($data);
     }
-
 }

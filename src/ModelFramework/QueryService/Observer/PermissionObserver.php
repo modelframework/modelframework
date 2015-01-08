@@ -10,29 +10,25 @@ namespace ModelFramework\QueryService\Observer;
 
 class PermissionObserver extends AbstractObserver
 {
-
     /**
      * @param \SplSubject|Query $subject
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
         $where = [ ];
 
         $user = $subject->getAuthServiceVerify()->getUser();
 
-        foreach ( $this->getRootConfig() as $field => $value )
-        {
-            if ( $user->role_id == $value )
-            {
+        foreach ($this->getRootConfig() as $field => $value) {
+            if ($user->role_id == $value) {
                 $where[ $field ] = $user->id();
             }
         }
 
-        $subject->setWhere( $where );
-
+        $subject->setWhere($where);
     }
 
     /*

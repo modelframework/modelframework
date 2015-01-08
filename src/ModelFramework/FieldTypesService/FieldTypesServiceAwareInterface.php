@@ -8,15 +8,14 @@
 
 namespace ModelFramework\FieldTypesService;
 
-
-interface FieldTypesServiceAwareInterface {
-
+interface FieldTypesServiceAwareInterface
+{
     /**
      * @param FieldTypesServiceInterface $fieldTypesService
      *
      * @return $this
      */
-    public function setFieldTypesService( FieldTypesServiceInterface $fieldTypesService);
+    public function setFieldTypesService(FieldTypesServiceInterface $fieldTypesService);
 
     /**
      * @return FieldTypesServiceInterface
@@ -28,5 +27,4 @@ interface FieldTypesServiceAwareInterface {
      * @throws \Exception
      */
     public function getFieldTypesServiceVerify();
-
-} 
+}

@@ -8,15 +8,14 @@
 
 namespace ModelFramework\ModelService\ModelConfig;
 
-
-interface ModelConfigAwareInterface {
-
+interface ModelConfigAwareInterface
+{
     /**
      * @param array $modelConfig
      *
      * @return $this
      */
-    public function setModelConfig( array $modelConfig );
+    public function setModelConfig(array $modelConfig);
 
     /**
      * @return array

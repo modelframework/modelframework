@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModelInterface;
 
 trait QueryConfigAwareTrait
 {
-
     /**
      * @var QueryConfig
      */
@@ -23,7 +22,7 @@ trait QueryConfigAwareTrait
      *
      * @return $this
      */
-    public function setQueryConfig( QueryConfig $queryConfig )
+    public function setQueryConfig(QueryConfig $queryConfig)
     {
         $this->_queryConfig = $queryConfig;
     }
@@ -44,10 +43,9 @@ trait QueryConfigAwareTrait
     public function getQueryConfigVerify()
     {
         $queryConfig = $this->getQueryConfig();
-        if ( $queryConfig == null || !$queryConfig instanceof QueryConfig )
-        {
-            throw new \Exception( 'Query Config does not set set in QueryConfigAware instance of ' .
-                                  get_class( $this ) );
+        if ($queryConfig == null || !$queryConfig instanceof QueryConfig) {
+            throw new \Exception('Query Config does not set set in QueryConfigAware instance of '.
+                                  get_class($this));
         }
 
         return $queryConfig;

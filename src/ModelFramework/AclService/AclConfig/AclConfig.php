@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
  */
 class AclConfig extends DataModel
 {
-
     public $_model = 'AclConfig';
     public $_label = 'Acl Config Data';
     public $_adapter = 'wepo_company';
@@ -24,7 +23,7 @@ class AclConfig extends DataModel
         "role"        => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         "type"        => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         "permissions" => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
-        "fields"      => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
+        "fields"      => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
     ];
 
     public $_id = '';
@@ -34,5 +33,4 @@ class AclConfig extends DataModel
     public $type = '';
     public $permissions = [ ];
     public $fields = [ ];
-
 }

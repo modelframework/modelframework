@@ -10,10 +10,8 @@ namespace ModelFramework\LogicService\Observer;
 
 class DateObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
-        $model->$key = date( $value );
+        $model->$key = date($value);
     }
-
 }

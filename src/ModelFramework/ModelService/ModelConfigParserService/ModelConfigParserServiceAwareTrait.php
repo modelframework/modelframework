@@ -10,7 +10,6 @@ namespace ModelFramework\ModelService\ModelConfigParserService;
 
 trait ModelConfigParserServiceAwareTrait
 {
-
     /**
      * @var ModelConfigParserServiceInterface
      */
@@ -21,10 +20,9 @@ trait ModelConfigParserServiceAwareTrait
      *
      * @return $this
      */
-    public function setModelConfigParserService( ModelConfigParserServiceInterface $modelConfigParserService )
+    public function setModelConfigParserService(ModelConfigParserServiceInterface $modelConfigParserService)
     {
         $this->_modelConfigParserService = $modelConfigParserService;
-
     }
 
     /**
@@ -42,15 +40,13 @@ trait ModelConfigParserServiceAwareTrait
     public function getModelConfigParserServiceVerify()
     {
         $modelConfigParserService = $this->getModelConfigParserService();
-        if ( $modelConfigParserService == null ||
+        if ($modelConfigParserService == null ||
              !$modelConfigParserService instanceof ModelConfigParserServiceInterface
-        )
-        {
-            throw new \Exception( 'ModelConfigParserService does not set in the ModelConfigParserServiceAware instance of ' .
-                                  get_class( $this ) );
+        ) {
+            throw new \Exception('ModelConfigParserService does not set in the ModelConfigParserServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $modelConfigParserService;
     }
-
 }

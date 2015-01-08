@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModelInterface;
 
 trait AclDataAwareTrait
 {
-
     /**
      * @var DataModelInterface
      */
@@ -23,7 +22,7 @@ trait AclDataAwareTrait
      *
      * @return $this
      */
-    public function setAclData( DataModelInterface $aclData )
+    public function setAclData(DataModelInterface $aclData)
     {
         $this->_aclData = $aclData;
 
@@ -45,12 +44,10 @@ trait AclDataAwareTrait
     public function getAclDataVerify()
     {
         $_aclData = $this->getAclData();
-        if ( $_aclData == null || !$_aclData instanceof DataModelInterface || $_aclData->getModelName() !== 'Acl' )
-        {
-            throw new \Exception( 'AclData is not set in the AclDataAware instance of ' . get_class( $this ) );
+        if ($_aclData == null || !$_aclData instanceof DataModelInterface || $_aclData->getModelName() !== 'Acl') {
+            throw new \Exception('AclData is not set in the AclDataAware instance of '.get_class($this));
         }
 
         return $_aclData;
-
     }
-} 
+}

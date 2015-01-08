@@ -5,23 +5,20 @@ namespace ModelFramework\GatewayService;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
-
-use \MonZend\Paginator\Adapter\MongoCursor;
-
-use \Zend\Db\Adapter\AdapterInterface;
-use \Zend\Db\Adapter\Profiler\ProfilerInterface;
-use \Zend\Db\Exception\InvalidArgumentException;
-use \Zend\Db\ResultSet\ResultSet;
-use \Zend\Db\ResultSet\ResultSetInterface;
-use \Zend\Db\Sql\TableIdentifier;
-use \Zend\Db\TableGateway\Exception\RuntimeException;
-use \Zend\Db\TableGateway\Feature\FeatureSet;
-use \Zend\Db\TableGateway\Feature\AbstractFeature;
-use \Zend\Paginator\Paginator;
+use MonZend\Paginator\Adapter\MongoCursor;
+use Zend\Db\Adapter\AdapterInterface;
+use Zend\Db\Adapter\Profiler\ProfilerInterface;
+use Zend\Db\Exception\InvalidArgumentException;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\ResultSet\ResultSetInterface;
+use Zend\Db\Sql\TableIdentifier;
+use Zend\Db\TableGateway\Exception\RuntimeException;
+use Zend\Db\TableGateway\Feature\FeatureSet;
+use Zend\Db\TableGateway\Feature\AbstractFeature;
+use Zend\Paginator\Paginator;
 
 class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
 {
-
     use ModelConfigAwareTrait;
 
     /**
@@ -79,13 +76,12 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      *
      * @throws InvalidArgumentException
      */
-    public function __construct( $table, AdapterInterface $adapter, $features = null,
-                                 ResultSetInterface $resultSetPrototype = null, Sql $sql = null )
+    public function __construct($table, AdapterInterface $adapter, $features = null,
+                                 ResultSetInterface $resultSetPrototype = null, Sql $sql = null)
     {
         // table
-        if ( !( is_string( $table ) || $table instanceof TableIdentifier ) )
-        {
-            throw new InvalidArgumentException( 'Table name must be a string or an instance of Zend\Db\Sql\TableIdentifier' );
+        if (!(is_string($table) || $table instanceof TableIdentifier)) {
+            throw new InvalidArgumentException('Table name must be a string or an instance of Zend\Db\Sql\TableIdentifier');
         }
         $this->table = $table;
 
@@ -93,34 +89,25 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         $this->adapter = $adapter;
 
         // process features
-        if ( $features !== null )
-        {
-            if ( $features instanceof AbstractFeature )
-            {
+        if ($features !== null) {
+            if ($features instanceof AbstractFeature) {
                 $features = array( $features );
             }
-            if ( is_array( $features ) )
-            {
-                $this->featureSet = new FeatureSet( $features );
-            }
-            elseif ( $features instanceof FeatureSet )
-            {
+            if (is_array($features)) {
+                $this->featureSet = new FeatureSet($features);
+            } elseif ($features instanceof FeatureSet) {
                 $this->featureSet = $features;
-            }
-            else
-            {
+            } else {
                 throw new InvalidArgumentException(
                     'TableGateway expects $feature to be an instance of an AbstractFeature or a FeatureSet, or an array of AbstractFeatures'
                 );
             }
-        }
-        else
-        {
+        } else {
             $this->featureSet = new FeatureSet();
         }
 
         // result prototype
-        $this->resultSetPrototype = ( $resultSetPrototype ) ?: new ResultSet;
+        $this->resultSetPrototype = ($resultSetPrototype) ?: new ResultSet();
 
         $this->initialize();
     }
@@ -141,13 +128,11 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function initialize()
     {
-        if ( $this->isInitialized() )
-        {
+        if ($this->isInitialized()) {
             return;
         }
 
-        if ( !$this->featureSet instanceof FeatureSet )
-        {
+        if (!$this->featureSet instanceof FeatureSet) {
             $this->featureSet = new FeatureSet();
         }
 
@@ -155,23 +140,20 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
 //        $this -> featureSet -> setTableGateway( $this );
 //        $this -> featureSet -> apply( 'preInitialize', array() );
 
-        if ( !$this->adapter instanceof AdapterInterface )
-        {
-            throw new RuntimeException( 'This table does not have an Adapter setup' );
+        if (!$this->adapter instanceof AdapterInterface) {
+            throw new RuntimeException('This table does not have an Adapter setup');
         }
 
-        if ( !is_string( $this->table ) && !$this->table instanceof TableIdentifier )
-        {
-            throw new RuntimeException( 'This table object does not have a valid table set.' );
+        if (!is_string($this->table) && !$this->table instanceof TableIdentifier) {
+            throw new RuntimeException('This table object does not have a valid table set.');
         }
 
-        if ( !$this->resultSetPrototype instanceof ResultSetInterface )
-        {
-            $this->resultSetPrototype = new ResultSet;
+        if (!$this->resultSetPrototype instanceof ResultSetInterface) {
+            $this->resultSetPrototype = new ResultSet();
         }
 
         $this->collection =
-            $this->adapter->getDriver()->getConnection()->getDB()->selectCollection( $this->getTable() );
+            $this->adapter->getDriver()->getConnection()->getDB()->selectCollection($this->getTable());
 //        $this -> featureSet -> apply( 'postInitialize', array() );
 
 //        if (
@@ -237,7 +219,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      *
      * @return Statement
      */
-    public function setProfiler( ProfilerInterface $profiler )
+    public function setProfiler(ProfilerInterface $profiler)
     {
         $this->profiler = $profiler;
 
@@ -252,74 +234,56 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         return $this->profiler;
     }
 
-    protected function convertId( $ids )
+    protected function convertId($ids)
     {
-        if ( is_array( $ids ) )
-        {
-            foreach ( $ids as $_k => $_v )
-            {
-                $ids[ $_k ] = $this->convertId( $_v );
+        if (is_array($ids)) {
+            foreach ($ids as $_k => $_v) {
+                $ids[ $_k ] = $this->convertId($_v);
             }
-        }
-        elseif ( !$ids instanceof \MongoId && preg_match( '/^[0123456789abcdefABCDEF]{24}$/', $ids ) )
-        {
-            $ids = new \MongoId( $ids );
+        } elseif (!$ids instanceof \MongoId && preg_match('/^[0123456789abcdefABCDEF]{24}$/', $ids)) {
+            $ids = new \MongoId($ids);
         }
 
         return $ids;
     }
 
-    protected function _convertIds( $fields = array() )
+    protected function _convertIds($fields = array())
     {
-        if ( $fields == null )
-        {
+        if ($fields == null) {
             $fields = [ ];
         }
-        foreach ( $fields as $_key => $_value )
-        {
-            $_value          = $this->convertId( $_value );
+        foreach ($fields as $_key => $_value) {
+            $_value          = $this->convertId($_value);
             $fields[ $_key ] = $_value;
         }
 
         return $fields;
     }
 
-    protected function _where( $where = array() )
+    protected function _where($where = array())
     {
-        return $this->_mongoWhere( $this->_convertIds( $where ) );
+        return $this->_mongoWhere($this->_convertIds($where));
     }
 
-    protected function _mongoWhere( $where = array() )
+    protected function _mongoWhere($where = array())
     {
         $_where = [ ];
-        foreach ( $where as $_key => $_value )
-        {
-            if ( $_key{0} == '$' || is_numeric( $_key ) )
-            {
-                if ( is_array( $_value ) )
-                {
-                    $_value = $this->_mongoWhere( $_value );
+        foreach ($where as $_key => $_value) {
+            if ($_key{0} == '$' || is_numeric($_key)) {
+                if (is_array($_value)) {
+                    $_value = $this->_mongoWhere($_value);
                 }
-            }
-            elseif ( $_key{0} == '-' && is_array( $_value ) )
-            {
+            } elseif ($_key{0} == '-' && is_array($_value)) {
                 $_value = [ '$nin' => $_value ];
-                $_key   = substr( $_key, 1 );
-            }
-            elseif ( $_key{0} == '-' && !is_array( $_value ) )
-            {
+                $_key   = substr($_key, 1);
+            } elseif ($_key{0} == '-' && !is_array($_value)) {
                 $_value = [ '$ne' => $_value ];
-                $_key   = substr( $_key, 1 );
-            }
-            elseif ( is_array( $_value ) && count( $_value ) )
-            {
-                $_1key = array_keys( $_value )[ 0 ];
-                if ( $_1key{0} == '$' )
-                {
-                    $_value = $this->_mongoWhere( $_value );
-                }
-                else
-                {
+                $_key   = substr($_key, 1);
+            } elseif (is_array($_value) && count($_value)) {
+                $_1key = array_keys($_value)[ 0 ];
+                if ($_1key{0} == '$') {
+                    $_value = $this->_mongoWhere($_value);
+                } else {
                     $_value = [ '$in' => $_value ];
                 }
             }
@@ -329,20 +293,15 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
         return $_where;
     }
 
-    protected function _orders( $orders = array() )
+    protected function _orders($orders = array())
     {
-        if ( $orders == null )
-        {
+        if ($orders == null) {
             $orders = [ ];
         }
-        foreach ( $orders as $_k => $_v )
-        {
-            if ( strtolower( $_v ) == 'desc' || $_v < 0 )
-            {
+        foreach ($orders as $_k => $_v) {
+            if (strtolower($_v) == 'desc' || $_v < 0) {
                 $orders[ $_k ] = -1;
-            }
-            else
-            {
+            } else {
                 $orders[ $_k ] = 1;
             }
         }
@@ -358,33 +317,29 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      * @return ResultSet
      * @throws RuntimeException
      */
-    public function select( $where = null )
+    public function select($where = null)
     {
-
-        if ( $this->profiler )
-        {
-            $this->profiler->profilerStart( $this );
+        if ($this->profiler) {
+            $this->profiler->profilerStart($this);
         }
 
         // apply preSelect features
         // $this -> featureSet -> apply( 'preSelect', array( $select ) );
 
-        $return = $this->collection->find( $this->_where( $where ) );
+        $return = $this->collection->find($this->_where($where));
 
-        if ( $this->profiler )
-        {
+        if ($this->profiler) {
             $this->profiler->profilerFinish();
         }
 
-        if ( $return === false )
-        {
-            throw new RuntimeException( $this->getDriver()->getConnection()->getDB()->lastError() );
+        if ($return === false) {
+            throw new RuntimeException($this->getDriver()->getConnection()->getDB()->lastError());
         }
 
-        $result = $this->adapter->getDriver()->createResult( $return, $this->getTable() );
+        $result = $this->adapter->getDriver()->createResult($return, $this->getTable());
 
         $resultSet = clone $this->resultSetPrototype;
-        $resultSet->initialize( $result );
+        $resultSet->initialize($result);
 
         // apply postSelect features
         // $this -> featureSet -> apply( 'postSelect', array( $result, $resultSet ) );
@@ -395,13 +350,13 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     /**
      * Insert
      *
-     * @param  array $set
+     * @param array $set
      *
      * @return array
      */
-    public function insert( $set )
+    public function insert($set)
     {
-        $return                = $this->collection->insert( $set );
+        $return                = $this->collection->insert($set);
         $this->lastInsertValue = $set[ '_id' ];
 
         return $return;
@@ -410,16 +365,16 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     /**
      * Update
      *
-     * @param  array $set
-     * @param  array $where
+     * @param array $set
+     * @param array $where
      *
      * @return array
      */
-    public function update( $set, $where = null )
+    public function update($set, $where = null)
     {
         $return                =
-            $this->collection->update( $this->_where( $where ), [ '$set' => $this->_convertids( $set ) ],
-                                       [ 'multiple' => true ] );
+            $this->collection->update($this->_where($where), [ '$set' => $this->_convertids($set) ],
+                                       [ 'multiple' => true ]);
         $this->lastInsertValue = 0;
 
         return $return;
@@ -428,13 +383,13 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     /**
      * Delete
      *
-     * @param  Where|\Closure|string|array $where
+     * @param Where|\Closure|string|array $where
      *
      * @return int
      */
-    public function delete( $where )
+    public function delete($where)
     {
-        $return                = $this->collection->remove( $this->_where( $where ) );
+        $return                = $this->collection->remove($this->_where($where));
         $this->lastInsertValue = 0;
 
         return $return;
@@ -454,43 +409,36 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      * @return DataModelInterface
      * @throws \Exception|RuntimeException
      */
-    public function get( $id )
+    public function get($id)
     {
-        if ( $this->profiler )
-        {
-            $this->profiler->profilerStart( $this );
+        if ($this->profiler) {
+            $this->profiler->profilerStart($this);
         }
 
         // apply preSelect features
 //        $this -> featureSet -> apply( 'preSelect', array( $select ) );
 
-        try
-        {
-//          $where = [ '_id' => $this -> convertid( $id ) ];
-            $return = $this->collection->findOne( $this->_where( [ '_id' => $id ] ) );
-        }
-        catch ( \Exception $ex )
-        {
-            throw new \Exception( 'wrong mongo id object.' . $ex->getMessage() );
+        try {
+            //          $where = [ '_id' => $this -> convertid( $id ) ];
+            $return = $this->collection->findOne($this->_where([ '_id' => $id ]));
+        } catch (\Exception $ex) {
+            throw new \Exception('wrong mongo id object.'.$ex->getMessage());
         }
 
-        if ( $this->profiler )
-        {
+        if ($this->profiler) {
             $this->profiler->profilerFinish();
         }
 
-        if ( $return === false )
-        {
-            throw new RuntimeException( $this->getDriver()->getConnection()->getDB()->lastError() );
+        if ($return === false) {
+            throw new RuntimeException($this->getDriver()->getConnection()->getDB()->lastError());
         }
 
-        if ( $return === null )
-        {
-            return null;
+        if ($return === null) {
+            return;
         }
 
         $model  = clone $this->resultSetPrototype->getArrayObjectPrototype();
-        $result = $model->exchangeArray( $return );
+        $result = $model->exchangeArray($return);
 
         return $result;
     }
@@ -501,35 +449,31 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      * @return DataModelInterface
      * @throws RuntimeException
      */
-    public function findOne( array $where )
+    public function findOne(array $where)
     {
-        if ( $this->profiler )
-        {
-            $this->profiler->profilerStart( $this );
+        if ($this->profiler) {
+            $this->profiler->profilerStart($this);
         }
 
         // apply preSelect features
         // $this -> featureSet -> apply( 'preSelect', array( $select ) );
 
-        $return = $this->collection->findOne( $this->_where( $where ) );
+        $return = $this->collection->findOne($this->_where($where));
 
-        if ( $this->profiler )
-        {
+        if ($this->profiler) {
             $this->profiler->profilerFinish();
         }
 
-        if ( $return === false )
-        {
-            throw new RuntimeException( $this->getDriver()->getConnection()->getDB()->lastError() );
+        if ($return === false) {
+            throw new RuntimeException($this->getDriver()->getConnection()->getDB()->lastError());
         }
 
-        if ( $return === null )
-        {
-            return null;
+        if ($return === null) {
+            return;
         }
 
         $model  = clone $this->resultSetPrototype->getArrayObjectPrototype();
-        $result = $model->exchangeArray( $return );
+        $result = $model->exchangeArray($return);
 
         return $result;
     }
@@ -544,63 +488,51 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      * @throws RuntimeException
      * @throws \Exception
      */
-    public function find( $fields = array(), $orders = array(), $limit = null, $offset = null )
+    public function find($fields = array(), $orders = array(), $limit = null, $offset = null)
     {
-
-        if ( !is_array( $fields ) || !is_array( $orders ) )
-        {
-            throw new \Exception( "Wrong input type of parameters !" );
+        if (!is_array($fields) || !is_array($orders)) {
+            throw new \Exception("Wrong input type of parameters !");
         }
 
-        if ( $this->profiler )
-        {
-            $this->profiler->profilerStart( $this );
+        if ($this->profiler) {
+            $this->profiler->profilerStart($this);
         }
 
         // apply preSelect features
 //        $this -> featureSet -> apply( 'preSelect', array( $select ) );
 
-        $return = $this->collection->find( $this->_where( $fields ) );
+        $return = $this->collection->find($this->_where($fields));
 
-        foreach ( $orders as $_k => $_v )
-        {
-            if ( strtolower( $_v ) == 'desc' || $_v < 0 )
-            {
+        foreach ($orders as $_k => $_v) {
+            if (strtolower($_v) == 'desc' || $_v < 0) {
                 $orders[ $_k ] = -1;
-            }
-            else
-            {
+            } else {
                 $orders[ $_k ] = 1;
             }
         }
 
-        if ( !empty( $orders ) )
-        {
-            $return->sort( $this->_orders( $orders ) );
+        if (!empty($orders)) {
+            $return->sort($this->_orders($orders));
         }
 
-        if ( $limit !== null )
-        {
-            $return->limit( $limit );
+        if ($limit !== null) {
+            $return->limit($limit);
         }
 
-        if ( $offset !== null )
-        {
-            $return->skip( $offset );
+        if ($offset !== null) {
+            $return->skip($offset);
         }
 
-        if ( $this->profiler )
-        {
+        if ($this->profiler) {
             $this->profiler->profilerFinish();
         }
 
-        if ( $return === false )
-        {
-            throw new RuntimeException( $this->getDriver()->getConnection()->getDB()->lastError() );
+        if ($return === false) {
+            throw new RuntimeException($this->getDriver()->getConnection()->getDB()->lastError());
         }
-        $result    = $this->adapter->getDriver()->createResult( $return, $this->getTable() );
+        $result    = $this->adapter->getDriver()->createResult($return, $this->getTable());
         $resultSet = clone $this->resultSetPrototype;
-        $resultSet->initialize( $result );
+        $resultSet->initialize($result);
 
         // apply postSelect features
 //        $this -> featureSet -> apply( 'postSelect', array( $result, $resultSet ) );
@@ -613,21 +545,17 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      *
      * @return bool|mixed
      */
-    public function isUnique( DataModelInterface $model )
+    public function isUnique(DataModelInterface $model)
     {
         $modelConfig = $this->getModelConfig();
-        if ( $modelConfig && isset( $modelConfig[ 'unique' ] ) && is_array( $modelConfig[ 'unique' ] ) )
-        {
-            foreach ( $modelConfig[ 'unique' ] as $_unique )
-            {
+        if ($modelConfig && isset($modelConfig[ 'unique' ]) && is_array($modelConfig[ 'unique' ])) {
+            foreach ($modelConfig[ 'unique' ] as $_unique) {
                 $_data = [ ];
-                foreach ( (array) $_unique as $_key )
-                {
+                foreach ((array) $_unique as $_key) {
                     $_data[ $_key ] = $model->$_key;
                 }
-                $check = $this->find( $_data );
-                if ( $check->count() > 0 && $check->current()->id() != $model->id() )
-                {
+                $check = $this->find($_data);
+                if ($check->count() > 0 && $check->current()->id() != $model->id()) {
                     return false;
                 }
             }
@@ -642,33 +570,24 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      * @return array|bool|int|mixed
      * @throws \Exception
      */
-    public function save( DataModelInterface $model )
+    public function save(DataModelInterface $model)
     {
-        $data = $this->_convertids( $model->toArray() );
+        $data = $this->_convertids($model->toArray());
         $_id  = $model->id();
-        if ( !$this->isUnique( $model ) )
-        {
-            throw new \Exception( 'Data is not unique' );
+        if (!$this->isUnique($model)) {
+            throw new \Exception('Data is not unique');
         }
-        if ( empty( $_id ) )
-        {
-
-            $insertResult = $this->insert( $data );
-            $result       = empty( $insertResult[ 'ok' ] ) ? 0 : $insertResult[ 'ok' ];
-            if ( $result )
-            {
+        if (empty($_id)) {
+            $insertResult = $this->insert($data);
+            $result       = empty($insertResult[ 'ok' ]) ? 0 : $insertResult[ 'ok' ];
+            if ($result) {
                 $model->_id = $data[ '_id' ];
             }
-    }
-        else
-        {
-            if ( $this->get( $_id ) )
-            {
-                $result = $this->update( $data, $this->_where( [ '_id' => $_id ] ) );
-            }
-            else
-            {
-                throw new \Exception( 'Model id does not exist' );
+        } else {
+            if ($this->get($_id)) {
+                $result = $this->update($data, $this->_where([ '_id' => $_id ]));
+            } else {
+                throw new \Exception('Model id does not exist');
             }
         }
 
@@ -682,17 +601,16 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      *
      * @return Paginator
      */
-    public function getPages( $fields = array(), $where = array(), $orders = array() /* $params = array( ) */ )
+    public function getPages($fields = array(), $where = array(), $orders = array() /* $params = array( ) */)
     {
-        $cursor = $this->collection->find( $this->_where( $where ) );
+        $cursor = $this->collection->find($this->_where($where));
 //        $cursor->fields($fields);
-        if ( !empty( $orders ) )
-        {
-            $cursor->sort( $this->_orders( $orders ) );
+        if (!empty($orders)) {
+            $cursor->sort($this->_orders($orders));
         }
 
-        $adapter = new MongoCursor( $cursor, $this->getResultSetPrototype() );
-        $pager   = new Paginator( $adapter );
+        $adapter = new MongoCursor($cursor, $this->getResultSetPrototype());
+        $pager   = new Paginator($adapter);
 
         return $pager;
     }
@@ -703,15 +621,14 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      *
      * @return Paginator
      */
-    public function getPaginator( $where = array(), $orders = array() )
+    public function getPaginator($where = array(), $orders = array())
     {
-        $cursor = $this->collection->find( $this->_where( $where ) );
-        if ( !empty( $orders ) )
-        {
-            $cursor->sort( $this->_orders( $orders ) );
+        $cursor = $this->collection->find($this->_where($where));
+        if (!empty($orders)) {
+            $cursor->sort($this->_orders($orders));
         }
-        $adapter = new MongoCursor( $cursor, $this->getResultSetPrototype() );
-        $pager   = new \Zend\Paginator\Paginator( $adapter );
+        $adapter = new MongoCursor($cursor, $this->getResultSetPrototype());
+        $pager   = new \Zend\Paginator\Paginator($adapter);
 
         return $pager;
     }
@@ -735,12 +652,11 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     /**
      * @param array $index
      */
-    public function ensureIndex( $index )
+    public function ensureIndex($index)
     {
         $this->collection->deleteIndexes();
-        $this->collection->ensureIndex( $index, array(
-            'name' => $this->table . 'TextIndex'
-        ) );
+        $this->collection->ensureIndex($index, array(
+            'name' => $this->table.'TextIndex',
+        ));
     }
-
 }

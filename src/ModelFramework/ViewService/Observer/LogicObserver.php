@@ -8,30 +8,26 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-use Wepo\Lib\Acl;
 
 class LogicObserver
     implements \SplObserver
 {
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
         $viewConfig = $subject->getViewConfigVerify();
 
         $query =
             $subject->getQueryServiceVerify()
-                    ->get( $viewConfig->query )
-                    ->setParams( $subject->getParams() )
+                    ->get($viewConfig->query)
+                    ->setParams($subject->getParams())
                     ->process();
-
 
         $models = $subject->getGateway()->find($query->getWhere());
 
-
-        foreach ( $models as $model )
-        {
-            $subject->getLogicServiceVerify()->get( $viewConfig -> mode, $viewConfig->model )->trigger( $model );
+        foreach ($models as $model) {
+            $subject->getLogicServiceVerify()->get($viewConfig->mode, $viewConfig->model)->trigger($model);
         }
 
-        $subject->setRedirect( $subject->refresh( $viewConfig->title.' successfull', 'http://wepo.loc/common/mail/index.html' ) );
+        $subject->setRedirect($subject->refresh($viewConfig->title.' successfull', 'http://wepo.loc/common/mail/index.html'));
     }
 }

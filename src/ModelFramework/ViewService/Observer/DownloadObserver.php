@@ -7,16 +7,14 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-
 class DownloadObserver extends AbstractObserver
 {
-
- public function process($model)
- {
-     $subject = $this->getSubject();
-     $fs = $subject->getFileServiceVerify();
-     $filename = basename($model->document);
-     $response = $fs->downloadFile($filename);
-     $subject -> setResponse($response);
- }
+    public function process($model)
+    {
+        $subject = $this->getSubject();
+        $fs = $subject->getFileServiceVerify();
+        $filename = basename($model->document);
+        $response = $fs->downloadFile($filename);
+        $subject->setResponse($response);
+    }
 }

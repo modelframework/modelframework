@@ -10,6 +10,13 @@ namespace ModelFramework\LogicService;
 
 interface LogicServiceInterface
 {
+    /**
+     * @param string $eventName
+     * @param string $modelName
+     *
+     * @return DataLogic
+     */
+    public function get($eventName, $modelName);
 
     /**
      * @param string $eventName
@@ -17,14 +24,5 @@ interface LogicServiceInterface
      *
      * @return DataLogic
      */
-    public function get( $eventName, $modelName );
-
-    /**
-     * @param string $eventName
-     * @param string $modelName
-     *
-     * @return DataLogic
-     */
-    public function createLogic( $eventName, $modelName );
-
+    public function createLogic($eventName, $modelName);
 }

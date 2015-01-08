@@ -12,35 +12,29 @@ use Wepo\Model\Status;
 
 class NewItemObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
         $modelName = $model->getModelName();
-        if ( $value < 0 && isset ( $model->status_id ) && $model->status_id != Status::NEW_ )
-        {
+        if ($value < 0 && isset($model->status_id) && $model->status_id != Status::NEW_) {
             return;
         }
         $id       = $model->$key;
         $user     =
-            $this->getSubject()->getGatewayServiceVerify()->get( 'User' )->findOne( [ '_id' => $id ] );
+            $this->getSubject()->getGatewayServiceVerify()->get('User')->findOne([ '_id' => $id ]);
         $newItems = [ ];
-        if ( isset( $user->newitems ) )
-        {
+        if (isset($user->newitems)) {
             $newItems = $user->newitems;
         }
-        if ( !isset( $newItems[ $modelName ] ) )
-        {
+        if (!isset($newItems[ $modelName ])) {
             $newItems[ $modelName ] = 0;
         }
         $newItems[ $modelName ] = (int) $newItems[ $modelName ];
 
-        if ( $newItems[ $modelName ] + $value < 0 )
-        {
+        if ($newItems[ $modelName ] + $value < 0) {
             return;
         }
         $newItems[ $modelName ] += $value;
-        $this->getSubject()->getGatewayServiceVerify()->get( 'User' )
-             ->update( [ 'newitems' => $newItems ], [ '_id' => $id ] );
+        $this->getSubject()->getGatewayServiceVerify()->get('User')
+             ->update([ 'newitems' => $newItems ], [ '_id' => $id ]);
     }
-
 }

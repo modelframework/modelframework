@@ -10,17 +10,15 @@ namespace ModelFramework\Utility\SplSubject;
 
 interface SubjectAwareInterface
 {
-
     /**
      * @param \SplSubject $subject
      *
      * @return $this
      */
-    public function setSubject( \SplSubject $subject );
+    public function setSubject(\SplSubject $subject);
 
     /**
      * @return SplSubject
      */
-    public function getSubject( );
-
-} 
+    public function getSubject();
+}

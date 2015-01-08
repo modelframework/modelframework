@@ -3,13 +3,12 @@ namespace ModelFramework\CacheService;
 
 interface CacheServiceAwareInterface
 {
-
     /**
      * @param CacheServiceInterface $modelService
      *
      * @return $this
      */
-    public function setCacheService( CacheServiceInterface $modelService );
+    public function setCacheService(CacheServiceInterface $modelService);
 
     /**
      * @return CacheServiceInterface

@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModelInterface;
 
 trait StaticDataConfigAwareTrait
 {
-
     /**
      * @var StaticDataConfig|DataModelInterface
      */
@@ -23,7 +22,7 @@ trait StaticDataConfigAwareTrait
      *
      * @return $this
      */
-    public function setStaticDataConfig( StaticDataConfig $staticDataConfig )
+    public function setStaticDataConfig(StaticDataConfig $staticDataConfig)
     {
         $this->$_staticDataConfig = $staticDataConfig;
     }
@@ -44,9 +43,8 @@ trait StaticDataConfigAwareTrait
     public function getStaticDataConfigVerify()
     {
         $staticDataConfig = $this->getStaticDataConfig();
-        if ( $staticDataConfig == null || !$staticDataConfig instanceof StaticDataConfig )
-        {
-            throw new \Exception( 'Static Data Config does not set set in StaticData' );
+        if ($staticDataConfig == null || !$staticDataConfig instanceof StaticDataConfig) {
+            throw new \Exception('Static Data Config does not set set in StaticData');
         }
 
         return $staticDataConfig;

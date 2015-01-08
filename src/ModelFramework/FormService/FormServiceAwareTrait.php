@@ -10,7 +10,6 @@ namespace ModelFramework\FormService;
 
 trait FormServiceAwareTrait
 {
-
     /**
      * @var FormServiceInterface
      */
@@ -21,7 +20,7 @@ trait FormServiceAwareTrait
      *
      * @return $this
      */
-    public function setFormService( FormServiceInterface $formService )
+    public function setFormService(FormServiceInterface $formService)
     {
         $this->_formService = $formService;
 
@@ -43,13 +42,11 @@ trait FormServiceAwareTrait
     public function getFormServiceVerify()
     {
         $_formService = $this->getFormService();
-        if ( $_formService == null || !$_formService instanceof FormServiceInterface )
-        {
-            throw new \Exception( 'FormService does not set in the FormServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_formService == null || !$_formService instanceof FormServiceInterface) {
+            throw new \Exception('FormService does not set in the FormServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $_formService;
     }
-
-} 
+}

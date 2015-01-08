@@ -8,12 +8,11 @@
 
 namespace ModelFramework\Utility\Params;
 
-
 use ModelFramework\DataModel\DataModelInterface;
 use Zend\Mvc\Controller\Plugin\Params;
 
-trait ParamsAwareTrait {
-
+trait ParamsAwareTrait
+{
     private $_params = null;
     private $_paramSource = null;
 
@@ -22,16 +21,17 @@ trait ParamsAwareTrait {
      *
      * @return $this
      */
-    public function setParamSource( DataModelInterface $data )
+    public function setParamSource(DataModelInterface $data)
     {
         $this->_paramSource = $data;
+
         return $this;
     }
 
     /**
      * @return DataModelInterface
      */
-    public function getParamSource(  )
+    public function getParamSource()
     {
         return $this->_paramSource;
     }
@@ -40,16 +40,17 @@ trait ParamsAwareTrait {
      *
      * @return $this
      */
-    public function setParams( Params $params )
+    public function setParams(Params $params)
     {
         $this->_params = $params;
+
         return $this;
     }
 
     /**
      * @return Params
      */
-    public function getParams(  )
+    public function getParams()
     {
         return $this->_params;
     }
@@ -58,37 +59,32 @@ trait ParamsAwareTrait {
      * @return Params
      * @throws \Exception
      */
-    public function getParamsVerify(  )
+    public function getParamsVerify()
     {
         $params = $this->getParams();
-        if ( $params === null || !$params instanceof Params )
-        {
-            throw new \Exception('Params does not set in the ParamsAware instance of '. get_class( $this ) );
+        if ($params === null || !$params instanceof Params) {
+            throw new \Exception('Params does not set in the ParamsAware instance of '.get_class($this));
         }
 
         return $params;
     }
 
-
-    public function getParam( $name, $default = '' )
+    public function getParam($name, $default = '')
     {
         $param = $default;
 
-        if ( $this->getParamSource() !== null )
-        {
+        if ($this->getParamSource() !== null) {
             $params = $this->getParamSource();
-            if ( isset($params->$name) )
-            {
+            if (isset($params->$name)) {
                 $param = $params->$name;
             }
 
             return $param;
         }
 
-        $param = $this->getParamsVerify()->fromQuery( $name, $default );
-        if ( $param === $default )
-        {
-            $param = $this->getParamsVerify()->fromRoute( $name, $default );
+        $param = $this->getParamsVerify()->fromQuery($name, $default);
+        if ($param === $default) {
+            $param = $this->getParamsVerify()->fromRoute($name, $default);
         }
 
         return $param;

@@ -10,7 +10,6 @@ namespace ModelFramework\FileService;
 
 trait FileServiceAwareTrait
 {
-
     /**
      * @var FileServiceInterface
      */
@@ -21,10 +20,9 @@ trait FileServiceAwareTrait
      *
      * @return $this
      */
-    public function setFileService( FileServiceInterface $fileService )
+    public function setFileService(FileServiceInterface $fileService)
     {
         $this->_fileService = $fileService;
-
     }
 
     /**
@@ -42,12 +40,11 @@ trait FileServiceAwareTrait
     public function getFileServiceVerify()
     {
         $_fileService = $this->getFileService();
-        if ( $_fileService == null || !$_fileService instanceof FileServiceInterface )
-        {
-            throw new \Exception( 'FileService does not set in the FileServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_fileService == null || !$_fileService instanceof FileServiceInterface) {
+            throw new \Exception('FileService does not set in the FileServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $_fileService;
     }
-} 
+}

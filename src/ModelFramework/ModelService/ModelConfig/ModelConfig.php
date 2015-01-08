@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
  */
 class ModelConfig extends DataModel
 {
-
     public $_model = 'ModelConfig';
     public $_label = 'Model Config';
     public $_adapter = 'wepo_company';
@@ -39,5 +38,4 @@ class ModelConfig extends DataModel
     public $fields = [ ];
     public $groups = [ ];
     public $unique = [ ];
-
 }

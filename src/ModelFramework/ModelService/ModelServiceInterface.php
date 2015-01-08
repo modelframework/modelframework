@@ -4,20 +4,19 @@ namespace ModelFramework\ModelService;
 
 use ModelFramework\DataModel\DataModel;
 
-interface ModelServiceInterface {
+interface ModelServiceInterface
+{
+    /**
+     * @param string $modelName
+     *
+     * @return DataModel
+     */
+    public function get($modelName);
 
     /**
      * @param string $modelName
      *
      * @return DataModel
      */
-    public function get( $modelName );
-
-    /**
-     * @param string $modelName
-     *
-     * @return DataModel
-     */
-    public function getModel( $modelName );
-
+    public function getModel($modelName);
 }

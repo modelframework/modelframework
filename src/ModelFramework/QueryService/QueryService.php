@@ -17,7 +17,6 @@ use ModelFramework\Utility\Params\ParamsAwareTrait;
 class QueryService
     implements QueryServiceInterface, ConfigServiceAwareInterface, AuthServiceAwareInterface, ParamsAwareInterface
 {
-
     use ConfigServiceAwareTrait, AuthServiceAwareTrait, ParamsAwareTrait;
 
     /**
@@ -26,9 +25,9 @@ class QueryService
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function get( $queryName )
+    public function get($queryName)
     {
-        return $this->getQuery( $queryName );
+        return $this->getQuery($queryName);
     }
 
     /**
@@ -37,10 +36,9 @@ class QueryService
      * @return Query|QueryInterface
      * @throws \Exception
      */
-    public function getQuery( $queryName )
+    public function getQuery($queryName)
     {
-        if ( is_array( $queryName ) )
-        {
+        if (is_array($queryName)) {
             throw new \Exception('Change QueryConfig to the valid QueryName. I have got an array ');
         }
 
@@ -48,24 +46,21 @@ class QueryService
         $query = new Query();
 
         // we want modelView get to know what to show and how
-        $queryConfig = $this->getConfigServiceVerify()->getByObject( $queryName,  new QueryConfig() );
+        $queryConfig = $this->getConfigServiceVerify()->getByObject($queryName,  new QueryConfig());
 
-        if ( $queryConfig == null )
-        {
-            throw new \Exception('Please fill QueryConfig for the ' . $queryName. '. I can\'t get it out');
+        if ($queryConfig == null) {
+            throw new \Exception('Please fill QueryConfig for the '.$queryName.'. I can\'t get it out');
         }
 
-        if ( $this->getParams()!== null )
-        {
-            $query->setParams( $this->getParams() );
+        if ($this->getParams() !== null) {
+            $query->setParams($this->getParams());
         }
-        $query->setQueryConfig( $queryConfig );
+        $query->setQueryConfig($queryConfig);
 
-        $query->setAuthService( $this->getAuthServiceVerify() );
+        $query->setAuthService($this->getAuthServiceVerify());
 
         $query->init();
 
         return $query;
     }
-
-} 
+}

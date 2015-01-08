@@ -10,15 +10,12 @@ namespace ModelFramework\LogicService\Observer;
 
 class FormulaObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
         $result = '';
 
-        eval( '$result = ' . $value . ';');
+        eval('$result = '.$value.';');
 
         $model->$key = $result;
     }
-
-
 }

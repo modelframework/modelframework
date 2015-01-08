@@ -10,6 +10,13 @@ namespace ModelFramework\ViewService;
 
 interface ViewServiceInterface
 {
+    /**
+     * @param string $viewName
+     *
+     * @return View|ViewInterface
+     * @throws \Exception
+     */
+    public function getView($viewName);
 
     /**
      * @param string $viewName
@@ -17,14 +24,5 @@ interface ViewServiceInterface
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function getView( $viewName );
-
-    /**
-     * @param string $viewName
-     *
-     * @return View|ViewInterface
-     * @throws \Exception
-     */
-    public function get( $viewName );
-
+    public function get($viewName);
 }

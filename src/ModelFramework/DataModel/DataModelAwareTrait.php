@@ -10,7 +10,6 @@ namespace ModelFramework\DataModel;
 
 trait DataModelAwareTrait
 {
-
     /**
      * @var DataModelInterface
      */
@@ -21,7 +20,7 @@ trait DataModelAwareTrait
      *
      * @return $this
      */
-    public function setDataModel( DataModelInterface $dataModel )
+    public function setDataModel(DataModelInterface $dataModel)
     {
         $this->_dataModel = $dataModel;
 
@@ -43,13 +42,10 @@ trait DataModelAwareTrait
     public function getDataModelVerify()
     {
         $_dataModel = $this->getDataModel();
-        if ( $_dataModel == null || !$_dataModel instanceof DataModelInterface )
-        {
-            throw new \Exception( 'DataModel does not set in the DataModelAware instance ' . get_class( $this ) );
+        if ($_dataModel == null || !$_dataModel instanceof DataModelInterface) {
+            throw new \Exception('DataModel does not set in the DataModelAware instance '.get_class($this));
         }
 
         return $_dataModel;
-
     }
-
-} 
+}

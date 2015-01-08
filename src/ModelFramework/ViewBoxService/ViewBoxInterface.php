@@ -2,7 +2,6 @@
 
 namespace ModelFramework\ViewBoxService;
 
-
-interface ViewBoxInterface {
-
-} 
+interface ViewBoxInterface
+{
+}

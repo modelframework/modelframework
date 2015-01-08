@@ -2,14 +2,14 @@
 
 namespace ModelFramework\ModelService;
 
-interface ModelServiceAwareInterface {
-
+interface ModelServiceAwareInterface
+{
     /**
      * @param ModelServiceInterface $modelService
      *
      * @return $this
      */
-    public function setModelService( ModelServiceInterface $modelService );
+    public function setModelService(ModelServiceInterface $modelService);
 
     /**
      * @return ModelServiceInterface

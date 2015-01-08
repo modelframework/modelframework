@@ -14,19 +14,17 @@ use ModelFramework\ConfigService\ConfigAwareTrait;
 class DebugObserver extends AbstractObserver
     implements ConfigAwareInterface
 {
-
     use ConfigAwareTrait;
 
-    public function processModel( $model )
+    public function processModel($model)
     {
         $logicConfig = $this->getSubject()->getlogicConfigVerify();
         $debugInfo   = [
             'Observer config' => $this->getRootConfig(),
             'Model'           => $model,
-            'Config'          => $logicConfig
+            'Config'          => $logicConfig,
         ];
 
-        prn( 'Called with key "'. $logicConfig->key .'"', $debugInfo );
+        prn('Called with key "'.$logicConfig->key.'"', $debugInfo);
     }
-
 }

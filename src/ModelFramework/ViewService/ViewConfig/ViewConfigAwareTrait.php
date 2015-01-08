@@ -8,11 +8,10 @@
 
 namespace ModelFramework\ViewService\ViewConfig;
 
-
 use ModelFramework\DataModel\DataModelInterface;
 
-trait ViewConfigAwareTrait {
-
+trait ViewConfigAwareTrait
+{
     /**
      * @var ViewConfig|DataModelInterface
      */
@@ -23,7 +22,7 @@ trait ViewConfigAwareTrait {
      *
      * @return $this
      */
-    public function setViewConfig( ViewConfig $viewConfig )
+    public function setViewConfig(ViewConfig $viewConfig)
     {
         $this->_viewConfig = $viewConfig;
     }
@@ -32,7 +31,7 @@ trait ViewConfigAwareTrait {
      * @return ViewConfig|DataModelInterface
      *
      */
-    public function getViewConfig( )
+    public function getViewConfig()
     {
         return $this->_viewConfig;
     }
@@ -41,14 +40,14 @@ trait ViewConfigAwareTrait {
      * @return ViewConfig|DataModelInterface
      * @throws \Exception
      */
-    public function getViewConfigVerify( )
+    public function getViewConfigVerify()
     {
         $viewConfig = $this->getViewConfig();
-        if ( $viewConfig==null || ! $viewConfig instanceof ViewConfig )
-        {
-            throw new \Exception( 'ViewConfig does not set in ViewConfigAware instance of ' .
-                                  get_class( $this ) );
+        if ($viewConfig == null || ! $viewConfig instanceof ViewConfig) {
+            throw new \Exception('ViewConfig does not set in ViewConfigAware instance of '.
+                                  get_class($this));
         }
+
         return $viewConfig;
     }
-} 
+}

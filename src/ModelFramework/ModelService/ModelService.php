@@ -16,7 +16,6 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
 class ModelService
     implements ModelServiceInterface, ModelConfigParserServiceAwareInterface
 {
-
     use ModelConfigParserServiceAwareTrait;
 
     /**
@@ -24,9 +23,9 @@ class ModelService
      *
      * @return DataModelInterface
      */
-    public function get( $modelName )
+    public function get($modelName)
     {
-        return $this->getModel( $modelName );
+        return $this->getModel($modelName);
     }
 
     /**
@@ -34,9 +33,9 @@ class ModelService
      *
      * @return DataModelInterface
      */
-    public function getModel( $modelName )
+    public function getModel($modelName)
     {
-        return $this->createModel( $modelName );
+        return $this->createModel($modelName);
     }
 
     /**
@@ -44,18 +43,17 @@ class ModelService
      *
      * @return DataModelInterface
      */
-    protected function createModel( $modelName )
+    protected function createModel($modelName)
     {
-        $modelConfig     = $this->getModelConfigParserServiceVerify()->getModelConfig( $modelName );
+        $modelConfig     = $this->getModelConfigParserServiceVerify()->getModelConfig($modelName);
         $model           = new DataModel();
         $model->_fields  = $modelConfig[ 'fields' ];
         $model->_model   = $modelConfig[ 'model' ];
         $model->_table   = $modelConfig[ 'table' ];
         $model->_label   = $modelConfig[ 'label' ];
         $model->_adapter = $modelConfig[ 'adapter' ];
-        $model->exchangeArray( [ ] );
+        $model->exchangeArray([ ]);
 
         return $model;
     }
-
 }

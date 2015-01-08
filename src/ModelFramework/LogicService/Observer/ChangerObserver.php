@@ -10,10 +10,8 @@ namespace ModelFramework\LogicService\Observer;
 
 class ChangerObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
         $model->$key = $this->getSubject()->getAuthServiceVerify()->getUser()->id();
     }
-
 }

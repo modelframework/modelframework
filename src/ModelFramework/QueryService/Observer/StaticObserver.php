@@ -10,23 +10,19 @@ namespace ModelFramework\QueryService\Observer;
 
 class StaticObserver extends AbstractObserver
 {
-
     /**
      * @param \SplSubject|Query $subject
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 
         $where = [ ];
-        foreach ( $this->getRootConfig() as $field => $value )
-        {
+        foreach ($this->getRootConfig() as $field => $value) {
             $where[ $field ] = $value;
         }
-        $subject->setWhere( $where );
-
+        $subject->setWhere($where);
     }
-
 }

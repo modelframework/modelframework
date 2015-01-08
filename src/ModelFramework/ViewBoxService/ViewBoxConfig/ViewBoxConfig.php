@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
 
 class ViewBoxConfig extends DataModel
 {
-
     public $_model = 'ViewBoxConfig';
     public $_label = 'ViewBox Config';
     public $_adapter = 'wepo_company';
@@ -24,7 +23,7 @@ class ViewBoxConfig extends DataModel
         'key'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'mode'     => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
         'template' => [ 'type' => 'field', 'datatype' => 'string', 'default' => '' ],
-        'blocks'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ]
+        'blocks'   => [ 'type' => 'field', 'datatype' => 'array', 'default' => [ ] ],
     ];
 
     protected $_joins = [ ];
@@ -35,5 +34,4 @@ class ViewBoxConfig extends DataModel
     public $title = '';
     public $key = '';
     public $blocks = [ ];
-
 }

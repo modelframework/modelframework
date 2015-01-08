@@ -13,7 +13,6 @@ use ModelFramework\CacheService\CacheServiceAwareTrait;
 
 class AclServiceProxyCached implements AclServiceInterface, AclServiceAwareInterface, CacheServiceAwareInterface
 {
-
     use AclServiceAwareTrait, CacheServiceAwareTrait;
 
     /**
@@ -22,11 +21,10 @@ class AclServiceProxyCached implements AclServiceInterface, AclServiceAwareInter
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclModel( $modelName )
+    public function getAclModel($modelName)
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod( $this->getAclServiceVerify(), 'getAclModel', [ $modelName ] );
-
+                    ->getCachedObjMethod($this->getAclServiceVerify(), 'getAclModel', [ $modelName ]);
     }
 
     /**
@@ -35,10 +33,10 @@ class AclServiceProxyCached implements AclServiceInterface, AclServiceAwareInter
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclData( $modelName )
+    public function getAclData($modelName)
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod( $this->getAclServiceVerify(), 'getAclData', [ $modelName ] );
+                    ->getCachedObjMethod($this->getAclServiceVerify(), 'getAclData', [ $modelName ]);
     }
 
     /**
@@ -47,9 +45,8 @@ class AclServiceProxyCached implements AclServiceInterface, AclServiceAwareInter
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function get( $modelName )
+    public function get($modelName)
     {
-        return $this->getAclModel( $modelName );
+        return $this->getAclModel($modelName);
     }
-
 }

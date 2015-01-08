@@ -10,13 +10,12 @@ namespace ModelFramework\QueryService;
 
 interface QueryServiceAwareInterface
 {
-
     /**
      * @param QueryServiceInterface $queryService
      *
      * @return $this
      */
-    public function setQueryService( QueryServiceInterface $queryService );
+    public function setQueryService(QueryServiceInterface $queryService);
 
     /**
      * @return QueryServiceInterface
@@ -28,5 +27,4 @@ interface QueryServiceAwareInterface
      * @throws \Exception
      */
     public function getQueryServiceVerify();
-
 }

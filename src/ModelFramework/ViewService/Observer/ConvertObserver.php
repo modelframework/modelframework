@@ -15,8 +15,7 @@ use ModelFramework\ViewService\View;
 
 class ConvertObserver extends AbstractObserver
 {
-
-    public function process( $aclModel )
+    public function process($aclModel)
     {
         $model = $this->getModelData();
 
@@ -29,94 +28,83 @@ class ConvertObserver extends AbstractObserver
         /**
          * @var Logic $logic
          */
-        $logic = $subject->getLogicServiceVerify()->get( 'convert', $model->getModelName() );
+        $logic = $subject->getLogicServiceVerify()->get('convert', $model->getModelName());
 
-        if ( $subject->getParamsVerify()->fromPost( 'object_id', null ) !== null )
-        {
-//            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
+        if ($subject->getParamsVerify()->fromPost('object_id', null) !== null) {
+            //            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
 //                    ->trigger( $model );
-            $logic->setData( [ 'save' => true ] );
+            $logic->setData([ 'save' => true ]);
         }
 
-        $logic->trigger( $model );
+        $logic->trigger($model);
 
         $d = $logic->getData();
         prn($d);
 
-        if ( Arr::getDoubtField( $logic->getData(), 'save', false ) )
-        {
-//            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
+        if (Arr::getDoubtField($logic->getData(), 'save', false)) {
+            //            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
 //                    ->trigger( $model );
 
             $url = $subject->getBackUrl();
-            if ( $url == null || $url == '/' )
-            {
+            if ($url == null || $url == '/') {
                 $url = $subject->getParams()->getController()->url()
-                               ->fromRoute( 'common', [ 'data' => strtolower($viewConfig->model), 'view' => 'list' ] );
+                               ->fromRoute('common', [ 'data' => strtolower($viewConfig->model), 'view' => 'list' ]);
             }
-            $subject->setRedirect( $subject->refresh( $model->getModelName() .
+            $subject->setRedirect($subject->refresh($model->getModelName().
                                                       ' data was successfully converted',
-                                                      $url ) );
+                                                      $url));
         }
-
     }
 
-
-    public function update_b00bs( \SplSubject $subject )
+    public function update_b00bs(\SplSubject $subject)
     {
         $result     = [ ];
         $request    = $subject->getParams()->getController()->getRequest();
         $viewConfig = $subject->getViewConfigVerify();
         $modelName  = $viewConfig->model;
-        $data       = strtolower( $modelName );
-        $id         = (string) $subject->getParams()->fromRoute( 'id', 0 );
-        $object     = $subject->getGatewayServiceVerify()->get( $modelName )->get( $id );
+        $data       = strtolower($modelName);
+        $id         = (string) $subject->getParams()->fromRoute('id', 0);
+        $object     = $subject->getGatewayServiceVerify()->get($modelName)->get($id);
 
         $convertConfig =
-            $subject->getConfigServiceVerify()->getByObject( $modelName, new DataMappingConfig() );
+            $subject->getConfigServiceVerify()->getByObject($modelName, new DataMappingConfig());
 
-        prn( $convertConfig );
+        prn($convertConfig);
         exit();
 
         $result[ 'convertedObjects' ] = [ ];
-        foreach ( $convertConfig->targets as $_key => $_value )
-        {
-            $convertObject = $subject->getGatewayServiceVerify()->get( $_key )->model();
-            foreach ( $_value as $_k => $_v )
-            {
+        foreach ($convertConfig->targets as $_key => $_value) {
+            $convertObject = $subject->getGatewayServiceVerify()->get($_key)->model();
+            foreach ($_value as $_k => $_v) {
                 $convertObject->$_v = $object->$_k;
             }
             $result[ 'convertedObjects' ][ $_key ] = $convertObject;
         }
         $result[ 'model' ] = $object;
         $result[ 'id' ]    = $id;
-        $subject->setData( $result );
+        $subject->setData($result);
 
-        if ( $request->isPost() )
-        {
-            $subject->getLogicServiceVerify()->get( 'preconvert', $model->getModelName() )
-                    ->trigger( $result[ 'convertedObjects' ] );
+        if ($request->isPost()) {
+            $subject->getLogicServiceVerify()->get('preconvert', $model->getModelName())
+                    ->trigger($result[ 'convertedObjects' ]);
 
-            foreach ( $result[ 'convertedObjects' ] as $object )
-            {
-                $subject->getGatewayServiceVerify()->get( $object->getModelName() )->save( $object );
+            foreach ($result[ 'convertedObjects' ] as $object) {
+                $subject->getGatewayServiceVerify()->get($object->getModelName())->save($object);
             }
 
-            $subject->getLogicServiceVerify()->get( 'postconvert', $model->getModelName() )
-                    ->trigger( $result[ 'convertedObjects' ] );
+            $subject->getLogicServiceVerify()->get('postconvert', $model->getModelName())
+                    ->trigger($result[ 'convertedObjects' ]);
 
             $url = $subject->getBackUrl();
-            if ( $url == null || $url == '/' )
-            {
+            if ($url == null || $url == '/') {
                 $url = $subject->getParams()->getController()->url()
-                               ->fromRoute( 'common', [ 'data' => $data, 'view' => 'list' ] );
+                               ->fromRoute('common', [ 'data' => $data, 'view' => 'list' ]);
             }
-            $subject->setRedirect( $subject->refresh( $modelName .
+            $subject->setRedirect($subject->refresh($modelName.
                                                       ' data was successfully converted',
-                                                      $url ) );
+                                                      $url));
         }
 
         return;
     }
-
 }

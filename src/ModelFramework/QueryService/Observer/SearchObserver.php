@@ -10,38 +10,36 @@ namespace ModelFramework\QueryService\Observer;
 
 class SearchObserver extends AbstractObserver
 {
-
     /**
      * @param \SplSubject|Query $subject
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 
         $data = [
-            'params' => []
+            'params' => [],
         ];
 
         $config = $this->getRootConfig();
 
-        $searchQuery = $subject->getParam( $config['param'], '' );
+        $searchQuery = $subject->getParam($config['param'], '');
 
-        if ( !strlen($searchQuery) )
+        if (!strlen($searchQuery)) {
             return;
+        }
 
         $data['search_query'] = $searchQuery;
         $data['params']['search_query'] = $searchQuery;
         $data['params'][$config['param']] = $searchQuery;
 
         $where = [
-            '$and' => [ [ '$text' => [ '$search' => $searchQuery ] ] ]
+            '$and' => [ [ '$text' => [ '$search' => $searchQuery ] ] ],
         ];
 
-        $subject->setWhere( $where );
-        $subject->setData( $data );
-
+        $subject->setWhere($where);
+        $subject->setData($data);
     }
-
 }

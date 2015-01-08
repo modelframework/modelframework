@@ -10,13 +10,12 @@ namespace ModelFramework\FormConfigParserService\StaticDataConfig;
 
 interface StaticDataConfigAwareInterface
 {
-
     /**
      * @param StaticDataConfig $logicConfig
      *
      * @return $this
      */
-    public function setStaticDataConfig( StaticDataConfig $logicConfig );
+    public function setStaticDataConfig(StaticDataConfig $logicConfig);
 
     /**
      * @return StaticDataConfig

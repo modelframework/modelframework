@@ -14,7 +14,6 @@ use PHPUnit_Framework_TestCase;
 
 class AclServiceTest extends PHPUnit_Framework_TestCase
 {
-
     protected $controller;
     protected $request;
     protected $response;
@@ -26,15 +25,15 @@ class AclServiceTest extends PHPUnit_Framework_TestCase
         $serviceManager   = Bootstrap::getServiceManager();
         $this->controller = new DashboardController();
         $this->request    = new Request();
-        $this->routeMatch = new RouteMatch( array( 'controller' => 'index' ) );
+        $this->routeMatch = new RouteMatch(array( 'controller' => 'index' ));
         $this->event      = new MvcEvent();
-        $config           = $serviceManager->get( 'Config' );
-        $routerConfig     = isset( $config[ 'router' ] ) ? $config[ 'router' ] : array();
-        $router           = HttpRouter::factory( $routerConfig );
-        $this->event->setRouter( $router );
-        $this->event->setRouteMatch( $this->routeMatch );
-        $this->controller->setEvent( $this->event );
-        $this->controller->setServiceLocator( $serviceManager );
+        $config           = $serviceManager->get('Config');
+        $routerConfig     = isset($config[ 'router' ]) ? $config[ 'router' ] : array();
+        $router           = HttpRouter::factory($routerConfig);
+        $this->event->setRouter($router);
+        $this->event->setRouteMatch($this->routeMatch);
+        $this->controller->setEvent($this->event);
+        $this->controller->setServiceLocator($serviceManager);
 
         $this->setTestUser();
     }
@@ -45,40 +44,38 @@ class AclServiceTest extends PHPUnit_Framework_TestCase
      */
     protected function setTestUser()
     {
-        if ( !isset( $this->controller ) )
-        {
-            throw new \Exception( 'Controller is not set. Set controller before setting the User.' );
+        if (!isset($this->controller)) {
+            throw new \Exception('Controller is not set. Set controller before setting the User.');
         }
-        $mainUser = $this->controller->Model( 'MainUser' );
+        $mainUser = $this->controller->Model('MainUser');
         $mainUser->exchangeArray(
             [
-                "_id"         => new \MongoId( "53a047288bc6c91f37603cdc" ),
+                "_id"         => new \MongoId("53a047288bc6c91f37603cdc"),
                 "company_id"  => "533ec57a83971eba5c19bbb8",
-                "role_id"     => new \MongoId( "5295fdf7c5b9f222acd3c406" ),
+                "role_id"     => new \MongoId("5295fdf7c5b9f222acd3c406"),
                 "status"      => "normal",
-                "status_id"   => new \MongoId( "5295fdf7c5b9f222acd3c74c" ),
+                "status_id"   => new \MongoId("5295fdf7c5b9f222acd3c74c"),
                 "created_dtm" => "2014-06-17 09:33:21",
                 "login"       => "stas@acl.com",
                 "password"    => "10a7cdd970fe135cf4f7bb55c0e3b59f",
                 "fname"       => "Stanis",
-                "lname"       => "Aclis"
+                "lname"       => "Aclis",
             ]
         );
-        $this->controller->mainUser( $mainUser );
+        $this->controller->mainUser($mainUser);
 
         return $this;
     }
 
-
     public function testIndexActionCanBeAccessed()
     {
-        var_dump( 'testIndexAction' );
-        $this->routeMatch->setParam( 'action', 'index' );
+        var_dump('testIndexAction');
+        $this->routeMatch->setParam('action', 'index');
 
-        $result   = $this->controller->dispatch( $this->request );
+        $result   = $this->controller->dispatch($this->request);
         $response = $this->controller->getResponse();
 
-        $this->assertEquals( 200, $response->getStatusCode() );
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testPushAndPop()
@@ -175,5 +172,4 @@ class AclServiceTest extends PHPUnit_Framework_TestCase
 //
 //        return $aclData;
 //    }
-
 }

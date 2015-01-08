@@ -13,21 +13,19 @@ use ModelFramework\ViewService\View;
 class UserObserver
     implements \SplObserver
 {
-
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
         /**
          * @var View $subject
          */
         $result              = [ ];
-        $model               = $subject -> getUser();
-        if ( !$model )
-        {
-            throw new \Exception( 'User not found' );
+        $model               = $subject->getUser();
+        if (!$model) {
+            throw new \Exception('User not found');
         }
         $result[ 'model' ]          = $model;
-        $result[ 'title' ]          = $subject->getViewConfigVerify()->title . ' ' . $model->title;
+        $result[ 'title' ]          = $subject->getViewConfigVerify()->title.' '.$model->title;
 //        $this->widgets( $subject, $model );
-        $subject->setData( $result );
+        $subject->setData($result);
     }
 }

@@ -10,8 +10,9 @@ class ApcCache implements CacheableInterface
     public function set($key, $data)
     {
         if (!apc_store($key, $data)) {
-            throw new ApcCacheException('Error saving data with the key ' . $key . ' to the cache.');
+            throw new ApcCacheException('Error saving data with the key '.$key.' to the cache.');
         }
+
         return $this;
     }
 
@@ -22,11 +23,13 @@ class ApcCache implements CacheableInterface
     {
         if ($this->exists($key)) {
             if (!$data = apc_fetch($key)) {
-                throw new ApcCacheException('Error fetching data with the key ' . $key . ' from the cache.');
+                throw new ApcCacheException('Error fetching data with the key '.$key.' from the cache.');
             }
+
             return $data;
         }
-        return null;
+
+        return;
     }
 
     /**
@@ -36,9 +39,10 @@ class ApcCache implements CacheableInterface
     {
         if ($this->exists($key)) {
             if (!apc_delete($key)) {
-                throw new ApcCacheException('Error deleting data with the key ' . $key . ' from the cache.');
+                throw new ApcCacheException('Error deleting data with the key '.$key.' from the cache.');
             }
         }
+
         return $this;
     }
 

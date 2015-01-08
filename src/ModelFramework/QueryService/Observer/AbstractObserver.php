@@ -16,7 +16,6 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 abstract class AbstractObserver
     implements \SplObserver, ConfigAwareInterface
 {
-
     use ConfigAwareTrait, SubjectAwareTrait;
 
     /**
@@ -24,12 +23,11 @@ abstract class AbstractObserver
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 
 //        $this->process( $subject, '$key', '$value' );
-
     }
 
 //
@@ -41,5 +39,4 @@ abstract class AbstractObserver
 //     * @return mixed
 //     */
 //    abstract public function process( $model, $key, $value );
-
 }

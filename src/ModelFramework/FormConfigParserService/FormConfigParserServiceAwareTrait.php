@@ -10,7 +10,6 @@ namespace ModelFramework\FormConfigParserService;
 
 trait FormConfigParserServiceAwareTrait
 {
-
     /**
      * @var FormConfigParserServiceInterface
      */
@@ -21,10 +20,9 @@ trait FormConfigParserServiceAwareTrait
      *
      * @return $this
      */
-    public function setFormConfigParserService( FormConfigParserServiceInterface $formConfigParserService )
+    public function setFormConfigParserService(FormConfigParserServiceInterface $formConfigParserService)
     {
         $this->_formConfigParserService = $formConfigParserService;
-
     }
 
     /**
@@ -42,15 +40,13 @@ trait FormConfigParserServiceAwareTrait
     public function getFormConfigParserServiceVerify()
     {
         $formConfigParserService = $this->getFormConfigParserService();
-        if ( $formConfigParserService == null ||
+        if ($formConfigParserService == null ||
              !$formConfigParserService instanceof FormConfigParserServiceInterface
-        )
-        {
-            throw new \Exception( 'FormConfigParserService does not set in the FormConfigParserServiceAware instance of ' .
-                                  get_class( $this ) );
+        ) {
+            throw new \Exception('FormConfigParserService does not set in the FormConfigParserServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $formConfigParserService;
     }
-
 }

@@ -15,9 +15,7 @@ use ModelFramework\Utility\Arr;
 
 class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterface, ConfigAwareInterface
 {
-
     use GatewayServiceAwareTrait, ConfigAwareTrait;
-
 
     /**
      * @param string             $domain
@@ -27,23 +25,20 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
      * @return DataModelInterface|null
      * @throws \Exception
      */
-    protected function getConfigFromDb( $domain, $keyName, DataModelInterface $configObject )
+    protected function getConfigFromDb($domain, $keyName, DataModelInterface $configObject)
     {
-//        $configData = new ConfigData();
-        $configData = $this->getGatewayServiceVerify()->get( $configObject->getModelName(), $configObject )
-                           ->findOne( [ 'key' => strtolower($keyName) ] );
-        if ( $configData == null )
-        {
-
-//            $configArray = Arr::getDoubtField( $this->getConfigDomainCustom( $domain ), $keyName, null );
-            $configArray = $this->getConfigDomainCustom( $domain, $keyName, null );
-            if ( $configArray == null )
-            {
-                return null;
+        //        $configData = new ConfigData();
+        $configData = $this->getGatewayServiceVerify()->get($configObject->getModelName(), $configObject)
+                           ->findOne([ 'key' => strtolower($keyName) ]);
+        if ($configData == null) {
+            //            $configArray = Arr::getDoubtField( $this->getConfigDomainCustom( $domain ), $keyName, null );
+            $configArray = $this->getConfigDomainCustom($domain, $keyName, null);
+            if ($configArray == null) {
+                return;
 //                throw new \Exception( ' unknown config for model ' . $keyName );
             }
             $configData = clone $configObject;
-            $configData->exchangeArray( $configArray );
+            $configData->exchangeArray($configArray);
 //            $configData->key = $keyName;
 //            prn($this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData ));
 //            $this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData )->save( $configData );
@@ -52,23 +47,22 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
         return $configData;
     }
 
-
     /**
      * @param DataModelInterface $configObject
      *
      * @return array|bool|int|mixed
      * @throws \Exception
      */
-    public function saveByObject( DataModelInterface $configObject )
+    public function saveByObject(DataModelInterface $configObject)
     {
-        if ( ! isset($configObject->key ) )
-        {
-            throw new \Exception( '"key" field must be set in ' . $configObject ->getModelName() . ' configuration' );
+        if (! isset($configObject->key)) {
+            throw new \Exception('"key" field must be set in '.$configObject->getModelName().' configuration');
         }
         $configObject->key = strtolower($configObject->key);
+
         return $this->getGatewayServiceVerify()
-                    ->get( $configObject->getModelName(), $configObject )
-                    ->save( $configObject );
+                    ->get($configObject->getModelName(), $configObject)
+                    ->save($configObject);
     }
 
     /**
@@ -79,16 +73,13 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
      * @return DataModelInterface|ConfigData|DataModelInterface|null
      * @throws \Exception
      */
-    public function getConfig( $domain, $keyName, DataModelInterface $configObject )
+    public function getConfig($domain, $keyName, DataModelInterface $configObject)
     {
-        $configArray = Arr::getDoubtField( $this->getConfigDomainSystem( $domain ), $keyName, null );
-        if ( $configArray == null )
-        {
-            $configObject = $this->getConfigFromDb( $domain, $keyName, $configObject );
-        }
-        else
-        {
-            $configObject->exchangeArray( $configArray );
+        $configArray = Arr::getDoubtField($this->getConfigDomainSystem($domain), $keyName, null);
+        if ($configArray == null) {
+            $configObject = $this->getConfigFromDb($domain, $keyName, $configObject);
+        } else {
+            $configObject->exchangeArray($configArray);
         }
 
 //        if ( $configObject == null )
@@ -107,11 +98,10 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
      *
      * @return DataModelInterface|DataModelInterface|null
      */
-    public function get( $domain, $keyName, DataModelInterface $configObject )
+    public function get($domain, $keyName, DataModelInterface $configObject)
     {
-        return $this->getConfig( $domain, $keyName, $configObject );
+        return $this->getConfig($domain, $keyName, $configObject);
     }
-
 
     /**
      * @param string $keyName
@@ -119,9 +109,8 @@ class ConfigService implements ConfigServiceInterface, GatewayServiceAwareInterf
      * @return Config
      * @throws \Exception
      */
-    public function getByObject( $keyName, DataModelInterface $configObject )
+    public function getByObject($keyName, DataModelInterface $configObject)
     {
-        return $this->getConfig( $configObject->getModelName(), $keyName, $configObject );
+        return $this->getConfig($configObject->getModelName(), $keyName, $configObject);
     }
-
 }

@@ -35,7 +35,6 @@ class Logic extends AbstractService
                AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject, LogicServiceAwareInterface,
                ConfigServiceAwareInterface, QueryServiceAwareInterface
 {
-
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
         AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait, MailServiceAwareTrait,
         QueryServiceAwareTrait;
@@ -70,7 +69,7 @@ class Logic extends AbstractService
         'ConvertObserver',
         'DebugObserver',
         'SetAsDefaultObserver',
-        'MailSyncObserver'
+        'MailSyncObserver',
     ];
 
     protected $observers = [ ];
@@ -81,9 +80,9 @@ class Logic extends AbstractService
         return $this->_data;
     }
 
-    public function setData( array $data )
+    public function setData(array $data)
     {
-        $this->_data = Arr::merge( $this->_data, $data );
+        $this->_data = Arr::merge($this->_data, $data);
 //        $this->_data = $data;
     }
 
@@ -92,48 +91,42 @@ class Logic extends AbstractService
         $this->_data = [ ];
     }
 
-    public function attach( \SplObserver $observer )
+    public function attach(\SplObserver $observer)
     {
         $this->observers[ ] = $observer;
     }
 
-    public function detach( \SplObserver $observer )
+    public function detach(\SplObserver $observer)
     {
-        $key = array_search( $observer, $this->observers );
-        if ( $key )
-        {
-            unset( $this->observers[ $key ] );
+        $key = array_search($observer, $this->observers);
+        if ($key) {
+            unset($this->observers[ $key ]);
         }
     }
 
     public function notify()
     {
-        foreach ( $this->observers as $observer )
-        {
-            $observer->update( $this );
+        foreach ($this->observers as $observer) {
+            $observer->update($this);
         }
     }
 
-    public function  init()
+    public function init()
     {
-        foreach ( $this->getLogicConfigVerify()->observers as $observer => $obConfig )
-        {
-            if ( is_numeric( $observer ) )
-            {
+        foreach ($this->getLogicConfigVerify()->observers as $observer => $obConfig) {
+            if (is_numeric($observer)) {
                 $observer = $obConfig;
                 $obConfig = null;
             }
-            if ( !in_array( $observer, $this->allowed_observers ) )
-            {
-                throw new \Exception( $observer . ' is not allowed in ' . get_class( $this ) );
+            if (!in_array($observer, $this->allowed_observers)) {
+                throw new \Exception($observer.' is not allowed in '.get_class($this));
             }
-            $observerClassName = 'ModelFramework\LogicService\Observer\\' . $observer;
+            $observerClassName = 'ModelFramework\LogicService\Observer\\'.$observer;
             $_obs              = new $observerClassName();
-            if ( !empty( $obConfig ) && $_obs instanceof ConfigAwareInterface )
-            {
-                $_obs->setRootConfig( $obConfig );
+            if (!empty($obConfig) && $_obs instanceof ConfigAwareInterface) {
+                $_obs->setRootConfig($obConfig);
             }
-            $this->attach( $_obs );
+            $this->attach($_obs);
         }
     }
 
@@ -152,7 +145,7 @@ class Logic extends AbstractService
      *
      * @return $this
      */
-    public function setEventObject( $eventObject )
+    public function setEventObject($eventObject)
     {
         $this->_eventObject = $eventObject;
 
@@ -172,15 +165,14 @@ class Logic extends AbstractService
         $this->notify();
     }
 
-
     /**
      * @param array|DataModelInterface $eventObject
      *
      * @throws \Exception
      */
-    public function trigger( $eventObject )
+    public function trigger($eventObject)
     {
-//        $model = $eventObject;
+        //        $model = $eventObject;
 //
 //        if ( is_array( $eventObject ) )
 //        {
@@ -200,9 +192,8 @@ class Logic extends AbstractService
 //
 //        }
 
-        $this->setEventObject( $eventObject );
+        $this->setEventObject($eventObject);
 
         $this->process();
     }
-
 }

@@ -14,20 +14,18 @@ use ModelFramework\CacheService\CacheServiceAwareTrait;
 class ViewServiceProxyCached
     implements ViewServiceInterface, CacheServiceAwareInterface, ViewServiceAwareInterface
 {
-
     use CacheServiceAwareTrait, ViewServiceAwareTrait;
 
-
     /**
      * @param string $viewName
      *
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function getView( $viewName )
+    public function getView($viewName)
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod( $this->getViewServiceVerify(), 'getView', [ $viewName ] );
+                    ->getCachedObjMethod($this->getViewServiceVerify(), 'getView', [ $viewName ]);
     }
 
     /**
@@ -36,9 +34,8 @@ class ViewServiceProxyCached
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function get( $viewName )
+    public function get($viewName)
     {
-        return $this->getView( $viewName );
+        return $this->getView($viewName);
     }
-
-} 
+}

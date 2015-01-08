@@ -4,7 +4,6 @@ namespace ModelFramework\ViewBoxService;
 
 trait ResponseAwareTrait
 {
-
     /**
      * @var null
      */
@@ -13,7 +12,7 @@ trait ResponseAwareTrait
     /**
      * @param $response
      */
-    public function setResponse( $response )
+    public function setResponse($response)
     {
         $this->_response = $response;
     }
@@ -31,11 +30,10 @@ trait ResponseAwareTrait
      */
     public function hasResponse()
     {
-        if ( !empty( $this->_response ) )
-        {
+        if (!empty($this->_response)) {
             return true;
         }
 
         return false;
     }
-} 
+}

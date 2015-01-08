@@ -14,7 +14,6 @@ use ModelFramework\DataModel\DataModel;
  */
 class ModelServiceProxyCached implements ModelServiceAwareInterface, CacheServiceAwareInterface, ModelServiceInterface
 {
-
     use CacheServiceAwareTrait, ModelServiceAwareTrait;
 
     /**
@@ -22,9 +21,9 @@ class ModelServiceProxyCached implements ModelServiceAwareInterface, CacheServic
      *
      * @return DataModel
      */
-    public function get( $modelName )
+    public function get($modelName)
     {
-        return $this->getModel( $modelName );
+        return $this->getModel($modelName);
     }
 
     /**
@@ -32,9 +31,8 @@ class ModelServiceProxyCached implements ModelServiceAwareInterface, CacheServic
      *
      * @return DataModel
      */
-    public function getModel( $modelName )
+    public function getModel($modelName)
     {
-        return $this->getCacheService()->getCachedObjMethod( $this->getModelService(), 'getModel', [ $modelName ] );
+        return $this->getCacheService()->getCachedObjMethod($this->getModelService(), 'getModel', [ $modelName ]);
     }
-
 }

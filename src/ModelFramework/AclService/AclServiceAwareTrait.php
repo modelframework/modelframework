@@ -8,8 +8,8 @@
 
 namespace ModelFramework\AclService;
 
-trait AclServiceAwareTrait {
-
+trait AclServiceAwareTrait
+{
     private $_aclService = null;
 
     /**
@@ -17,7 +17,7 @@ trait AclServiceAwareTrait {
      *
      * @return $this
      */
-    public function setAclService( AclServiceInterface $aclService )
+    public function setAclService(AclServiceInterface $aclService)
     {
         $this->_aclService = $aclService;
     }
@@ -37,11 +37,10 @@ trait AclServiceAwareTrait {
     public function getAclServiceVerify()
     {
         $_aclService = $this->getAclService();
-        if ( $_aclService == null || ! $_aclService instanceof AclServiceInterface )
-        {
-            throw new \Exception( 'AclService does not set in the AclServiceAware instance of ' . get_class( $this ) );
+        if ($_aclService == null || ! $_aclService instanceof AclServiceInterface) {
+            throw new \Exception('AclService does not set in the AclServiceAware instance of '.get_class($this));
         }
+
         return $_aclService;
     }
-
-} 
+}

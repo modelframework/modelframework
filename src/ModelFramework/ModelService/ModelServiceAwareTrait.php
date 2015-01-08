@@ -2,8 +2,8 @@
 
 namespace ModelFramework\ModelService;
 
-trait ModelServiceAwareTrait {
-
+trait ModelServiceAwareTrait
+{
     /**
      * @var ModelServiceInterface
      */
@@ -14,7 +14,7 @@ trait ModelServiceAwareTrait {
      *
      * @return $this
      */
-    public function setModelService( ModelServiceInterface $modelService )
+    public function setModelService(ModelServiceInterface $modelService)
     {
         $this->_modelService = $modelService;
 
@@ -29,7 +29,6 @@ trait ModelServiceAwareTrait {
         return $this->_modelService;
     }
 
-
     /**
      * @return ModelServiceInterface
      * @throws \Exception
@@ -37,12 +36,11 @@ trait ModelServiceAwareTrait {
     public function getModelServiceVerify()
     {
         $_modelService =  $this->getModelService();
-        if ( $_modelService == null || ! $_modelService instanceof ModelServiceInterface )
-        {
-            throw new \Exception( 'ModelService does not set in the ModelServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_modelService == null || ! $_modelService instanceof ModelServiceInterface) {
+            throw new \Exception('ModelService does not set in the ModelServiceAware instance of '.
+                                  get_class($this));
         }
+
         return $_modelService;
     }
-
-} 
+}

@@ -8,26 +8,23 @@
 
 namespace ModelFramework\LogicService;
 
-
-interface LogicServiceAwareInterface {
-
+interface LogicServiceAwareInterface
+{
     /**
      * @param LogicServiceInterface $logicService
      *
      * @return mixed
      */
-    public function setLogicService( LogicServiceInterface $logicService );
+    public function setLogicService(LogicServiceInterface $logicService);
 
     /**
      * @return LogicServiceInterface
      */
-    public function getLogicService(  );
+    public function getLogicService();
 
     /**
      * @return LogicServiceInterface
      * @throws \Exception
      */
-    public function getLogicServiceVerify(  );
-
-
-} 
+    public function getLogicServiceVerify();
+}

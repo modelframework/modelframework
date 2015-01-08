@@ -10,13 +10,12 @@ namespace ModelFramework\FormService;
 
 interface FormServiceAwareInterface
 {
-
     /**
      * @param FormServiceInterface $formService
      *
      * @return $this
      */
-    public function setFormService( FormServiceInterface $formService );
+    public function setFormService(FormServiceInterface $formService);
 
     /**
      * @return FormServiceInterface
@@ -28,5 +27,4 @@ interface FormServiceAwareInterface
      * @throws \Exception
      */
     public function getFormServiceVerify();
-
 }

@@ -8,9 +8,8 @@
 
 namespace ModelFramework\ModelService\ModelConfig;
 
-
-trait ModelConfigAwareTrait {
-
+trait ModelConfigAwareTrait
+{
     private $_modelConfig = null;
 
     /**
@@ -18,9 +17,10 @@ trait ModelConfigAwareTrait {
      *
      * @return $this
      */
-    public function setModelConfig(array $modelConfig )
+    public function setModelConfig(array $modelConfig)
     {
         $this->_modelConfig = $modelConfig;
+
         return $this;
     }
 
@@ -39,10 +39,10 @@ trait ModelConfigAwareTrait {
     public function getModelConfigVerify()
     {
         $modelConfig = $this->getModelConfig();
-        if ( $modelConfig == null || !is_array($modelConfig))
-        {
+        if ($modelConfig == null || !is_array($modelConfig)) {
             throw new \Exception('ModelConfig does not set in ModelView');
         }
+
         return $this->getModelConfig();
     }
-} 
+}

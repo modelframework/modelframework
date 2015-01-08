@@ -12,7 +12,6 @@ use ModelFramework\DataModel\DataModel;
  */
 class LogicConfig extends DataModel
 {
-
     public $_model = 'LogicConfig';
     public $_label = 'Logic Config Data';
     public $_adapter = 'wepo_company';
@@ -28,5 +27,4 @@ class LogicConfig extends DataModel
     public $key = '';
     public $model = '';
     public $observers = [ ];
-
 }

@@ -10,5 +10,4 @@ namespace ModelFramework\QueryService;
 
 interface QueryInterface
 {
-
-} 
+}

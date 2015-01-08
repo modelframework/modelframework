@@ -20,7 +20,7 @@ interface FormServiceInterface
      * @return $this
      * @throws \Exception
      */
-    public function get( DataModelInterface $model, $mode, array $fields = [] );
+    public function get(DataModelInterface $model, $mode, array $fields = []);
 
     /**
      * @param DataModelInterface $model
@@ -30,6 +30,5 @@ interface FormServiceInterface
      * @return $this
      * @throws \Exception
      */
-    public function getForm( DataModelInterface $model, $mode, array $fields = [] );
-
+    public function getForm(DataModelInterface $model, $mode, array $fields = []);
 }

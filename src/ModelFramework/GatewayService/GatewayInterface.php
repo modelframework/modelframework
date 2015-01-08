@@ -8,13 +8,12 @@ use Zend\Db\ResultSet\ResultSet;
 
 interface GatewayInterface extends TableGatewayInterface
 {
-
     /**
      * @param string $id
      *
      * @return DataModelInterface
      */
-    public function get( $id );
+    public function get($id);
 
     /**
      * @param array $fields
@@ -24,7 +23,7 @@ interface GatewayInterface extends TableGatewayInterface
      *
      * @return ResultSet
      */
-    public function find( $fields = array(), $orders = array(), $limit = null, $offset = null );
+    public function find($fields = array(), $orders = array(), $limit = null, $offset = null);
 
     /**
      * @return ResultSet
@@ -36,12 +35,12 @@ interface GatewayInterface extends TableGatewayInterface
      *
      * @return mixed
      */
-    public function isUnique( DataModelInterface $model );
+    public function isUnique(DataModelInterface $model);
 
     /**
      * @param DataModelInterface $model
      *
      * @return mixed
      */
-    public function save( DataModelInterface $model );
+    public function save(DataModelInterface $model);
 }

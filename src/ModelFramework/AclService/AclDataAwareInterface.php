@@ -8,17 +8,16 @@
 
 namespace ModelFramework\AclService;
 
-
 use ModelFramework\DataModel\DataModelInterface;
 
-interface AclDataAwareInterface {
-
+interface AclDataAwareInterface
+{
     /**
      * @param DataModelInterface $aclData
      *
      * @return $this
      */
-    public function setAclData( DataModelInterface $aclData );
+    public function setAclData(DataModelInterface $aclData);
 
     /**
      * @return DataModelInterface
@@ -30,5 +29,4 @@ interface AclDataAwareInterface {
      * @throws \Exception
      */
     public function getAclDataVerify();
-
-} 
+}

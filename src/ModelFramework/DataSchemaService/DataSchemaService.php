@@ -11,12 +11,9 @@ namespace ModelFramework\DataSchemaService;
 use ModelFramework\DataModel\Custom\ViewConfigData;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\Utility\Arr;
-use Wepo\Model\Status;
 
 class DataSchemaService implements DataSchemaServiceInterface, GatewayServiceAwareInterface
 {
-
     use GatewayServiceAwareTrait;
 
     /**
@@ -29,25 +26,22 @@ class DataSchemaService implements DataSchemaServiceInterface, GatewayServiceAwa
      */
     protected $_dbConfig = [ ];
 
-    protected function getKeyName( $modelName, $viewName )
+    protected function getKeyName($modelName, $viewName)
     {
-        return $modelName . '.' . $viewName;
+        return $modelName.'.'.$viewName;
     }
 
-    protected function getConfigFromDb( $modelName )
+    protected function getConfigFromDb($modelName)
     {
-
-        $dataSchema = $this->getGatewayServiceVerify()->getGateway( 'ModelView', new DataSchema() )->findOne(
+        $dataSchema = $this->getGatewayServiceVerify()->getGateway('ModelView', new DataSchema())->findOne(
             [ 'model' => $modelName ]
         );
-        if ( $dataSchema == null )
-        {
+        if ($dataSchema == null) {
             $configArray = $this->_dbConfig[ $modelName ];
-            if ( $configArray == null )
-            {
-                throw new \Exception( ' unknown config for model ' . $modelName );
+            if ($configArray == null) {
+                throw new \Exception(' unknown config for model '.$modelName);
             }
-            $dataSchema = new DataSchema( $configArray );
+            $dataSchema = new DataSchema($configArray);
 //            $configData->exchangeArray( $configArray );
 //            $this->getGatewayServiceVerify()->get( 'ConfigData', $viewConfigData )->save( $viewConfigData );
         }
@@ -61,28 +55,23 @@ class DataSchemaService implements DataSchemaServiceInterface, GatewayServiceAwa
      * @return DataSchema
      * @throws \Exception
      */
-    public function getDataSchema( $modelName )
+    public function getDataSchema($modelName)
     {
-
-        $dataSchema = $this->getConfigFromDb( $modelName );
-        if ( $dataSchema == null )
-        {
+        $dataSchema = $this->getConfigFromDb($modelName);
+        if ($dataSchema == null) {
             $dataSchemaArray = $this->_dataSchemas[ $modelName ];
-            if ( $dataSchemaArray !== null )
-            {
-                $dataSchema = new DataSchema( $dataSchemaArray );
-            }
-            else
-            {
-                throw new \Exception( 'Unknown data schema for ' . $modelName );
+            if ($dataSchemaArray !== null) {
+                $dataSchema = new DataSchema($dataSchemaArray);
+            } else {
+                throw new \Exception('Unknown data schema for '.$modelName);
             }
         }
 
         return $dataSchema;
     }
 
-    public function get( $modelName )
+    public function get($modelName)
     {
-        return $this->getDataSchema( $modelName );
+        return $this->getDataSchema($modelName);
     }
 }

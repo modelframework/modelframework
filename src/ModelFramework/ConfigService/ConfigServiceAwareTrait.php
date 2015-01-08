@@ -10,7 +10,6 @@ namespace ModelFramework\ConfigService;
 
 trait ConfigServiceAwareTrait
 {
-
     private $_configService = null;
 
     /**
@@ -18,7 +17,7 @@ trait ConfigServiceAwareTrait
      *
      * @return $this
      */
-    public function setConfigService( ConfigServiceInterface $configService )
+    public function setConfigService(ConfigServiceInterface $configService)
     {
         $this->_configService = $configService;
     }
@@ -31,7 +30,6 @@ trait ConfigServiceAwareTrait
         return $this->_configService;
     }
 
-
     /**
      * @return ConfigServiceInterface
      * @throws \Exception
@@ -39,13 +37,11 @@ trait ConfigServiceAwareTrait
     public function getConfigServiceVerify()
     {
         $_configService = $this->getConfigService();
-        if ( $_configService == null || !$_configService instanceof ConfigServiceInterface )
-        {
-            throw new \Exception( 'ConfigService does not set in the ConfigServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_configService == null || !$_configService instanceof ConfigServiceInterface) {
+            throw new \Exception('ConfigService does not set in the ConfigServiceAware instance of '.
+                                  get_class($this));
         }
 
         return $_configService;
     }
-
 }

@@ -2,8 +2,8 @@
 
 namespace ModelFramework\CacheService;
 
-trait CacheServiceAwareTrait {
-
+trait CacheServiceAwareTrait
+{
     /**
      * @var CacheServiceInterface
      */
@@ -14,7 +14,7 @@ trait CacheServiceAwareTrait {
      *
      * @return $this
      */
-    public function setCacheService( CacheServiceInterface $cacheService )
+    public function setCacheService(CacheServiceInterface $cacheService)
     {
         $this->_cacheService = $cacheService;
 
@@ -36,12 +36,10 @@ trait CacheServiceAwareTrait {
     public function getCacheServiceVerify()
     {
         $_cacheService = $this->getCacheService();
-        if ( $_cacheService == null || !$_cacheService instanceof CacheServiceInterface )
-        {
-            throw new \Exception( 'CacheService does not set in the CacheServiceAware instance of ' . get_class( $this ) );
+        if ($_cacheService == null || !$_cacheService instanceof CacheServiceInterface) {
+            throw new \Exception('CacheService does not set in the CacheServiceAware instance of '.get_class($this));
         }
 
         return $_cacheService;
-
     }
-} 
+}

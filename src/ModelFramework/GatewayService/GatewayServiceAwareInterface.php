@@ -4,13 +4,12 @@ namespace ModelFramework\GatewayService;
 
 interface GatewayServiceAwareInterface
 {
-
     /**
      * @param GatewayServiceInterface $gatewayService
      *
      * @return $this
      */
-    public function setGatewayService( GatewayServiceInterface $gatewayService );
+    public function setGatewayService(GatewayServiceInterface $gatewayService);
 
     /**
      * @return GatewayServiceInterface
@@ -22,5 +21,4 @@ interface GatewayServiceAwareInterface
      * @throws \Exception
      */
     public function getGatewayServiceVerify();
-
 }

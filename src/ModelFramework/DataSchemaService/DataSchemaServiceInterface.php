@@ -10,12 +10,11 @@ namespace ModelFramework\DataSchemaService;
 
 interface DataSchemaServiceInterface
 {
-
     /**
      * @param $modelName
      *
      * @return DataSchema
      * @throws \Exception
      */
-    public function getDataSchema( $modelName );
+    public function getDataSchema($modelName);
 }

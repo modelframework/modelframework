@@ -2,4 +2,6 @@
 
 namespace ModelFramework\CacheService;
 
-class ApcCacheException extends \Exception{}
+class ApcCacheException extends \Exception
+{
+}

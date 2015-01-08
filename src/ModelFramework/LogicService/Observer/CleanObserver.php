@@ -15,31 +15,24 @@ use Zend\Db\ResultSet\ResultSetInterface;
 class CleanObserver
     implements \SplObserver
 {
-
     /**
      * @param \SplSubject|Logic $subject
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
         $models = $subject->getEventObject();
-        if ( !( is_array( $models ) || $models instanceof ResultSetInterface ) )
-        {
+        if (!(is_array($models) || $models instanceof ResultSetInterface)) {
             $models = [ $models ];
         }
-        foreach ( $models as $_k => $model )
-        {
-            if ( $model instanceof AclDataModel )
-            {
+        foreach ($models as $_k => $model) {
+            if ($model instanceof AclDataModel) {
                 $dataModel = $model->getDataModel();
-            }
-            else
-            {
+            } else {
                 $dataModel = $model;
             }
-            $subject->getGatewayServiceVerify()->get( $dataModel->getModelName() )->delete( ['_id' => $dataModel->id()] );
+            $subject->getGatewayServiceVerify()->get($dataModel->getModelName())->delete(['_id' => $dataModel->id()]);
         }
     }
-
 }

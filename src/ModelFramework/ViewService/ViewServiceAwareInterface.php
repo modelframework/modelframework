@@ -2,15 +2,14 @@
 
 namespace ModelFramework\ViewService;
 
-
-interface ViewServiceAwareInterface {
-
+interface ViewServiceAwareInterface
+{
     /**
      * @param ViewServiceInterface $viewService
      *
      * @return $this
      */
-    public function setViewService( ViewServiceInterface $viewService );
+    public function setViewService(ViewServiceInterface $viewService);
 
     /**
      * @return ViewServiceInterface
@@ -22,5 +21,4 @@ interface ViewServiceAwareInterface {
      * @throws \Exception
      */
     public function getViewServiceVerify();
-
 }

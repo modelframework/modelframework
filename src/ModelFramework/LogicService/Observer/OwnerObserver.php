@@ -10,14 +10,10 @@ namespace ModelFramework\LogicService\Observer;
 
 class OwnerObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
-        if ( empty( $model->$key ) )
-        {
+        if (empty($model->$key)) {
             $model->$key = $this->getSubject()->getAuthServiceVerify()->getUser()->id();
         }
-
     }
-
 }

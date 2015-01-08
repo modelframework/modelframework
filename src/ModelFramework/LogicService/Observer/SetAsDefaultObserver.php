@@ -17,34 +17,26 @@ class SetAsDefaultObserver  implements \SplObserver, ConfigAwareInterface
     /**
      * @param \SplSubject|Logic $subject
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-
         $model = $subject->getEventObject();
         $settings = $this->getRootConfig();
-        if($model->$settings['isdefault_field']=='true')
-        {
-            $gw = $subject->getGatewayServiceVerify()->get( $model->getModelName() );
+        if ($model->$settings['isdefault_field'] == 'true') {
+            $gw = $subject->getGatewayServiceVerify()->get($model->getModelName());
 
             $searchQuery = [ ];
-            foreach ( $settings[ 'unique_fields' ] as $field )
-            {
+            foreach ($settings[ 'unique_fields' ] as $field) {
                 $searchQuery[ $field ] = $model->$field;
             }
 
             $searchQuery['-_id'] = $model->_id;
 
+            $otherModels = $gw->find($searchQuery);
 
-            $otherModels = $gw->find( $searchQuery );
-
-            foreach ( $otherModels as $othrModel )
-            {
+            foreach ($otherModels as $othrModel) {
                 $othrModel->$settings[ 'isdefault_field' ] = 'false';
-                $gw->save( $othrModel );
+                $gw->save($othrModel);
             }
         }
     }
-
-
-
 }

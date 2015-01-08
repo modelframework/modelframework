@@ -10,13 +10,12 @@ namespace ModelFramework\LogicService\LogicConfig;
 
 interface LogicConfigAwareInterface
 {
-
     /**
      * @param LogicConfig $logicConfig
      *
      * @return $this
      */
-    public function setLogicConfig( LogicConfig $logicConfig );
+    public function setLogicConfig(LogicConfig $logicConfig);
 
     /**
      * @return LogicConfig

@@ -8,8 +8,15 @@
 
 namespace ModelFramework\FieldTypesService;
 
-
-interface FieldTypesServiceInterface {
+interface FieldTypesServiceInterface
+{
+    /**
+     * @param string $type
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getInputFilter($type);
 
     /**
      * @param string $type
@@ -17,7 +24,7 @@ interface FieldTypesServiceInterface {
      * @return array
      * @throws \Exception
      */
-    public function getInputFilter( $type );
+    public function getField($type);
 
     /**
      * @param string $type
@@ -25,22 +32,14 @@ interface FieldTypesServiceInterface {
      * @return array
      * @throws \Exception
      */
-    public function getField( $type );
-
-    /**
-     * @param string $type
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public function getFormElement( $type );
+    public function getFormElement($type);
 
     /**
      * @param string $modelName
      *
      * @return mixed
      */
-    public function getUtilityFields( $modelName = '' );
+    public function getUtilityFields($modelName = '');
 
     /**
      * @param string $type
@@ -49,5 +48,5 @@ interface FieldTypesServiceInterface {
      * @return array
      * @throws \Exception
      */
-    public function getFieldPart( $type, $part );
-} 
+    public function getFieldPart($type, $part);
+}

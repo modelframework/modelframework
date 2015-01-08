@@ -16,31 +16,29 @@ use ModelFramework\ModelService\ModelServiceAwareTrait;
 class GatewayServiceProxyCached
     implements GatewayServiceAwareInterface, CacheServiceAwareInterface, GatewayServiceInterface
 {
-
     use GatewayServiceAwareTrait, CacheServiceAwareTrait, ModelServiceAwareTrait;
 
     /**
-     * @param string    $name
+     * @param string             $name
      * @param DataModelInterface $model
      *
      * @return null|MongoGateway
      */
-    public function get( $name, DataModelInterface $model = null )
+    public function get($name, DataModelInterface $model = null)
     {
-        return $this->getGateway( $name, $model );
+        return $this->getGateway($name, $model);
     }
 
     /**
-     * @param string    $name
+     * @param string             $name
      * @param DataModelInterface $model
      *
      * @return null|MongoGateway
      * @throws \Exception
      */
-    public function getGateway( $name, DataModelInterface $model = null )
+    public function getGateway($name, DataModelInterface $model = null)
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod( $this->getGatewayServiceVerify(), 'getGateway', [ $name, $model ] );
+                    ->getCachedObjMethod($this->getGatewayServiceVerify(), 'getGateway', [ $name, $model ]);
     }
-
 }

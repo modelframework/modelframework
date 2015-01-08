@@ -4,7 +4,6 @@ namespace ModelFramework\ViewService;
 
 trait ViewServiceAwareTrait
 {
-
     /**
      * @var ViewServiceInterface
      */
@@ -15,10 +14,9 @@ trait ViewServiceAwareTrait
      *
      * @return $this
      */
-    public function setViewService( ViewServiceInterface $viewService )
+    public function setViewService(ViewServiceInterface $viewService)
     {
         $this->_viewService = $viewService;
-
     }
 
     /**
@@ -36,11 +34,11 @@ trait ViewServiceAwareTrait
     public function getViewServiceVerify()
     {
         $_viewService =  $this->getViewService();
-        if ( $_viewService == null || ! $_viewService instanceof ViewServiceInterface )
-        {
-            throw new \Exception( 'ViewService does not set in the ViewServiceAware instance of ' .
-                                  get_class( $this ) );
+        if ($_viewService == null || ! $_viewService instanceof ViewServiceInterface) {
+            throw new \Exception('ViewService does not set in the ViewServiceAware instance of '.
+                                  get_class($this));
         }
+
         return $_viewService;
     }
-} 
+}

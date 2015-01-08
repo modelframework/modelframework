@@ -12,16 +12,13 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
 class ParamsObserver extends AbstractConfigObserver
 {
-
     use SubjectAwareTrait;
 
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
-        $param = $this->getSubject()->getParam( $value, null );
-        if ( $param != null )
-        {
+        $param = $this->getSubject()->getParam($value, null);
+        if ($param != null) {
             $model->$key = $param;
         }
     }
-
 }

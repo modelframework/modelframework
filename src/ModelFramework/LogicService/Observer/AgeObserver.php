@@ -10,18 +10,15 @@ namespace ModelFramework\LogicService\Observer;
 
 class AgeObserver extends AbstractConfigObserver
 {
-
-    public function process( $model, $key, $value )
+    public function process($model, $key, $value)
     {
         $model->$key = '';
-        if ( !isset( $model->$value[ 'source' ] ) )
-        {
-            throw new \Exception( 'Field ' . $value[ 'source' ] . ' does not exist in ' . $model->getModelName() );
+        if (!isset($model->$value[ 'source' ])) {
+            throw new \Exception('Field '.$value[ 'source' ].' does not exist in '.$model->getModelName());
         }
-        if ( !empty( $model->$value[ 'source' ] ) )
-        {
+        if (!empty($model->$value[ 'source' ])) {
             $model->$key =
-                $this->dateDifference( date( 'Y-m-d H:i:s' ), $model->$value[ 'source' ], $value[ 'format' ] );
+                $this->dateDifference(date('Y-m-d H:i:s'), $model->$value[ 'source' ], $value[ 'format' ]);
         }
     }
 
@@ -38,15 +35,13 @@ class AgeObserver extends AbstractConfigObserver
     // '%h Hours                                                    =>  11 Hours
     // '%a Days                                                        =>  468 Days
     //////////////////////////////////////////////////////////////////////
-    private function dateDifference( $date_1, $date_2, $differenceFormat = '%a' )
+    private function dateDifference($date_1, $date_2, $differenceFormat = '%a')
     {
-        $datetime1 = date_create( $date_1 );
-        $datetime2 = date_create( $date_2 );
+        $datetime1 = date_create($date_1);
+        $datetime2 = date_create($date_2);
 
-        $interval = date_diff( $datetime1, $datetime2 );
+        $interval = date_diff($datetime1, $datetime2);
 
-        return $interval->format( $differenceFormat );
-
+        return $interval->format($differenceFormat);
     }
-
 }
