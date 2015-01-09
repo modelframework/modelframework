@@ -35,6 +35,7 @@ trait ParamsAwareTrait
     {
         return $this->_paramSource;
     }
+
     /**
      * @param Params $params
      *

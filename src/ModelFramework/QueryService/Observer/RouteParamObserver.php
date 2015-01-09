@@ -1,6 +1,7 @@
 <?php
 /**
  * Class RouteParamObserver
+ *
  * @package ModelFramework\QueryService\Observer
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -8,8 +9,11 @@
 
 namespace ModelFramework\QueryService\Observer;
 
+use ModelFramework\QueryService\Query;
+
 class RouteParamObserver extends AbstractObserver
 {
+
     /**
      * @param \SplSubject|Query $subject
      *
@@ -23,11 +27,11 @@ class RouteParamObserver extends AbstractObserver
             'params' => [],
         ];
 
-        $where = [ ];
+        $where = [];
         foreach ($this->getRootConfig() as $field => $param) {
-            $where[ $field ] = $subject->getParam($param, 'null');
-            if ($where[ $field ] !== null) {
-                $data['params'][$param] = $where[ $field ];
+            $where[$field] = $subject->getParam($param, 'null');
+            if ($where[$field] !== null) {
+                $data['params'][$param] = $where[$field];
             }
         }
 
