@@ -15,21 +15,16 @@ class ConvertObserver extends AbstractObserver
 
     public function process( $aclModel )
     {
-        $model = $this->getModelData();
-
+        $model      = $this->getModelData();
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-
-        $logic = $subject->getLogicServiceVerify()
-                         ->get( 'convert', $model->getModelName() );
-
+        $logic      = $subject->getLogicServiceVerify()
+                              ->get( 'convert', $model->getModelName() );
         if ($subject->getParamsVerify()->fromPost( 'object_id', null ) !== null
         ) {
             $logic->setData( [ 'save' => true ] );
         }
-
         $logic->trigger( $model );
-
         if (Arr::getDoubtField( $logic->getData(), 'save', false )) {
             $url = $subject->getBackUrl();
             if ($url == null || $url == '/') {
