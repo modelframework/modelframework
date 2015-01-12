@@ -75,6 +75,8 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
             } else {
                 //            elseif ( in_array($viewConfig->mode, ['update', 'convert' ] ) )
                 $model = $subject->getGateway()->findOne($query->getWhere());
+//                prn($query->getWhere());
+//                exit;
                 if ($model == null) {
                     throw new \Exception('Data is not accessible');
                 }
