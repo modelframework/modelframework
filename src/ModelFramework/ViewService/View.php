@@ -62,7 +62,7 @@ class View
         'RowCountObserver', 'ListObserver', 'ViewObserver', 'FormObserver', 'ConvertObserver',
         'RecycleObserver', 'FieldObserver', 'UserObserver', 'ListDetailsObserver', 'UploadObserver',
         'WidgetObserver', 'ParamsObserver', 'SignInObserver', 'SignUpObserver', 'AttachObserver', 'DownloadObserver',
-        'LogicObserver',
+        'LogicObserver', 'HTMLObserver'
     ];
     protected $observers = [ ];
 
