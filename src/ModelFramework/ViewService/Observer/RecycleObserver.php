@@ -9,6 +9,7 @@
 namespace ModelFramework\ViewService\Observer;
 
 use ModelFramework\ViewService\View;
+use Wepo\Model\Status;
 
 class RecycleObserver implements \SplObserver
 {
@@ -71,7 +72,12 @@ class RecycleObserver implements \SplObserver
                 $subject->getLogicServiceVerify()->get($view, $viewConfig->model)->trigger($results[ 'items' ]);
                 $subject->getLogicServiceVerify()->get('post'.$view, $viewConfig->model)
                         ->trigger($results[ 'items' ]);
+
                 $url = $subject->getParams()->fromPost('saurl')[ 'back' ];
+                parse_str(parse_url($url)['query'],$output );
+                if( isset ($output['back']) && $subject->getGateway()->findOne([ '_id' => $id ])->toArray()['status_id']!=Status::DELETED){
+                    $url = $subject->getSaUrlBack($output['back']);
+                }
                 if (!isset($url) || $view == 'clean') {
                     $url = $subject->getParams()->getController()->url()->fromRoute('common', [
                         'data' => $modelRoute, 'view' => $results[ 'view' ] == 'delete' ? 'list' : 'recyclelist'
