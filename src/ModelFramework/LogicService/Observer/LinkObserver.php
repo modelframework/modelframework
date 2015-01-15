@@ -132,6 +132,7 @@ class LinkObserver
         //todo check what is going when collector model updating or linking model.
         $this->setSubject( $subject );
         $models = $subject->getEventObject();
+        $linkGW = $subject->getGatewayServiceVerify()->get('Link');
         if (!is_array( $models )) {
             $models = [ $models ];
         }
@@ -178,23 +179,14 @@ class LinkObserver
                 switch ($this->getRootConfig()['action'])
                 {
                     case 'update' :
-//                        $link
+//                        $links = $linkGW->find(['search_value'=>$model->$config[]])
+                        //search links by linkIds for updating collectors
+                        //get search values from links
                         break;
                     case 'sync':
+                        //search links by values for updating collectors
                         break;
                 }
-                $searchFields = $model->$config[ 'to' ][ 'search' ];
-                $searchValues = [ ];
-                foreach ($searchFields as $field => $params) {
-                    $searchValues = $model->$field;
-                    if (!is_array( $model->$field )) {
-                        array_push( $searchValues, $model->$field );
-                    } else {
-                        array_merge( $searchValues, $model->$field );
-                    }
-                }
-                $searchValues = array_unique( $searchValues );
-                $this->updateCollectorModels( $searchValues, $config );
             }
         }
         exit;
@@ -253,6 +245,8 @@ class LinkObserver
 
     public function updateCollectorModels( $config, $searchValues=null, $updatedLinks = null )
     {
+        //searchValues - for searching collector models
+        //updatesLinks - links that you should add to collector models
 //        if()
         //todo add implementation that works fine when linking model add or update and collector model sync or update
         //todo if updatedLinks == null then find links in db, else update collector models by updatedLinks
