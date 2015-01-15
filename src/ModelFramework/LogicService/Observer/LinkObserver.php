@@ -9,13 +9,11 @@
 
 namespace ModelFramework\LogicService\Observer;
 
-use ModelFramework\AclService\AclDataModel;
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
 use ModelFramework\LogicService\Logic;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
-use Zend\Db\ResultSet\ResultSetInterface;
 
 class LinkObserver
     implements \SplObserver, SubjectAwareInterface, ConfigAwareInterface
@@ -26,47 +24,102 @@ class LinkObserver
 
     protected $linkSettings = [
         [
+            '_id'    => 'unique_id1',
             'to'     => [
-                'model'       => 'Mail',
-                'search'      => [
-                    'to',
-                    'from'
+                'model'  => 'Mail',
+                'update' => 'linkupdate',
+                'search' => [
+                    'to'             => [
+                        'view'    => 'to_view',
+                        'storage' => 'to_storage'
+                    ],
+                    'from'           => [
+                        'view'    => 'from_view',
+                        'storage' => 'from_link'
+                    ],
+                    'common_storage' => '_links'
                 ],
-                'storage'     => 'link_storage',
-                'title_field' => 'link_view'
             ],
             'from'   => [
                 'Lead'    => [
                     'search'  => 'email',
                     'storage' => 'email_id',
                     'title'   => [
-                        'title',
-                        'email'
+                        'title' => [
+                            'pre'  => '',
+                            'post' => ' '
+                        ],
+                        'email' => [
+                            'pre'  => '<',
+                            'post' => '>'
+                        ],
                     ]
                 ],
                 'Patient' => [
                     'search'  => 'email',
                     'storage' => 'email_id',
                     'title'   => [
-                        'title',
-                        'email'
+                        'title' => [
+                            'pre'  => '',
+                            'post' => ' '
+                        ],
+                        'email' => [
+                            'pre'  => '<',
+                            'post' => '>'
+                        ],
                     ]
                 ],
                 'Account' => [
                     'search'  => 'email',
                     'storage' => 'email_id',
                     'title'   => [
-                        'title',
-                        'email'
+                        'title' => [
+                            'pre'  => '',
+                            'post' => ' '
+                        ],
+                        'email' => [
+                            'pre'  => '<',
+                            'post' => '>'
+                        ],
                     ]
-                ]
+                ],
+                'Doctor'  => [
+                    'search'  => 'email',
+                    'storage' => 'email_id',
+                    'title'   => [
+                        'title' => [
+                            'pre'  => '',
+                            'post' => ' '
+                        ],
+                        'email' => [
+                            'pre'  => '<',
+                            'post' => '>'
+                        ],
+                    ]
+                ],
+                'User'    => [
+                    'search'  => 'login',
+                    'storage' => 'email_id',
+                    'title'   => [
+                        'title' => [
+                            'pre'  => '',
+                            'post' => ' '
+                        ],
+                        'email' => [
+                            'pre'  => '<',
+                            'post' => '>'
+                        ],
+                    ]
+                ],
             ],
             'models' => [
                 'Lead',
                 'Patient',
-                'Account'
+                'Account',
+                'User',
+                'Doctor'
             ],
-        ]
+        ],
     ];
 
     /**
@@ -76,72 +129,132 @@ class LinkObserver
      */
     public function update( \SplSubject $subject )
     {
+        //todo check what is going when collector model updating or linking model.
         $this->setSubject( $subject );
         $models = $subject->getEventObject();
         if (!is_array( $models )) {
             $models = [ $models ];
         }
-        foreach ($models as $model) {
-            $configs = [ ];
-            array_walk( $this->$linkSettings, function ( &$config, $key ) use ( &$configs, $model ) {
-                if (in_array( $model->getModelName(), $config[ 'models' ] )) {
-                    $configs[ ] = $config;
+        $collectorConfigs = [ ];
+        $linkConfigs      = [ ];
+        try {
+            $modelName = $models[ 0 ]->getModelName();
+        } catch ( \Exception $ex ) {
+            throw $ex;
+        }
+        array_walk( $this->linkSettings,
+            function ( $config, $key ) use ( &$collectorConfigs, &$linkConfigs, $modelName ) {
+                if (in_array( $modelName, $config[ 'models' ] )) {
+                    $linkConfigs[ ] = $config;
+                } elseif ($config[ 'to' ][ 'model' ] == $modelName) {
+                    $collectorConfigs[ ] = $config;
                 }
             } );
+
+
+
+        foreach ($linkConfigs as $config) {
             //update as link model
-            switch ($this->getRootConfig()[ 'action' ]) {
-                case 'update':
-                    foreach ($configs as $config) {
-                        $this->updateLinkAction( $model, $config );
-                    }
-                    break;
-                case 'delete':
-                    foreach ($configs as $config) {
-                        $this->deleteLinkAction( $model, $config );
-                    }
-                    break;
+            $searchValues = [ ];
+            $linksId      = [ ];
+            foreach ($models as $model) {
+                switch ($this->getRootConfig()[ 'action' ]) {
+                    case 'update':
+                        list( $searchValues[ ], $linksId[ ] ) = $this->updateLink( $model, $config );
+                        break;
+                    case 'delete':
+                        list( $searchValues[ ], $linksId[ ] ) = $this->deleteLink( $model, $config );
+                        break;
+                }
             }
-            //update as collector model
-            switch ($this->getRootConfig()[ 'action' ]) {
-                case 'update':
-                    foreach ($configs as $config) {
-                        $this->updateCollectorAction( $model, $config );
-                    }
-                    break;
-                case 'delete':
-                    foreach ($configs as $config) {
-                        $this->deleteCollectorAction( $model, $config );
-                    }
-                    break;
-            }
-            exit;
+            //todo trigger collector models by $linkId
+            $this->updateCollectorModels( $config, $searchValues, $linksId );
         }
-    }
 
-    public function updateLinkAction( $model, $config )
-    {
 
-        prn( $this->linkSettings );
+        foreach ($collectorConfigs as $config) {
+            //update as collector model
+            foreach ($models as $model) {
+                switch ($this->getRootConfig()['action'])
+                {
+                    case 'update' :
+//                        $link
+                        break;
+                    case 'sync':
+                        break;
+                }
+                $searchFields = $model->$config[ 'to' ][ 'search' ];
+                $searchValues = [ ];
+                foreach ($searchFields as $field => $params) {
+                    $searchValues = $model->$field;
+                    if (!is_array( $model->$field )) {
+                        array_push( $searchValues, $model->$field );
+                    } else {
+                        array_merge( $searchValues, $model->$field );
+                    }
+                }
+                $searchValues = array_unique( $searchValues );
+                $this->updateCollectorModels( $searchValues, $config );
+            }
+        }
         exit;
     }
 
-    public function deleteLinkAction( $model, $config )
+    public function updateLink( $model, $config )
     {
-        prn( $this->linkSettings );
-        exit;
+        $modelName = $model->getModelName();
+        $linkGw    = $this->getSubject()->getGatewayServiceVerify()->get( 'Link' );
+        $link      = $linkGw->find( [
+            'setting_id'    => $config[ '_id' ],
+            'link_model'    => $modelName,
+            'link_model_id' => $model->_id
+        ] )->current();
+        $link      = isset( $link ) ? $link : $this->getSubject()->getModelServiceVerify()->get( 'Link' );
+        foreach ($config[ 'from' ][ $modelName ][ 'title' ] as $titleField => $param) {
+            $value       = trim( $model->$titleField );
+            $pre         = $param[ 'pre' ];
+            $post        = $param[ 'post' ];
+            $link->title = $link->title . $pre . $value . $post;
+        }
+
+        $link->setting_id      = $config[ '_id' ];
+        $link->link_model      = $modelName;
+        $link->link_model_id   = $model->_id;
+        $link->_acl            = $model->_acl;
+        $link->collector_model = $config[ 'to' ][ 'model' ];
+        $link->search_value    = $model->$config[ 'from' ][ $modelName ][ 'search' ];
+
+        $linkGw->save( $link );
+
+        $id = !empty( $link->_id ) ? $link->_id : $linkGw->getLastInsertId();
+        if (empty( $id )) {
+            throw new \Exception( 'Sorry, saving link exception happened' );
+        }
+//        $model->$config[ 'from' ][ $modelName ][ 'storage' ] = $id;
+        return [ $link->search_value, $id ];
+//        return $id;
     }
 
-    public function updateCollectorAction( $model, $config )
+    public function deleteLink( $model, $config )
     {
+        $modelName = $model->getModelName();
+        $linkGw    = $this->getSubject()->getGatewayServiceVerify()->get( 'Link' );
+        $link      = $linkGw->find( [
+            'setting_id'    => $config[ '_id' ],
+            'link_model'    => $modelName,
+            'link_model_id' => $model->_id
+        ] )->current();
 
-        prn( $this->linkSettings );
-        exit;
+        $linkGw->delete( [ '_id' => $link->_id ] );
+
+        return [ $link->search_value, $link->_id ];
+//        return $link->_id;
     }
 
-    public function deleteCollectorAction( $model, $config )
+    public function updateCollectorModels( $config, $searchValues=null, $updatedLinks = null )
     {
-        prn( $this->linkSettings );
-        exit;
+//        if()
+        //todo add implementation that works fine when linking model add or update and collector model sync or update
+        //todo if updatedLinks == null then find links in db, else update collector models by updatedLinks
     }
-
 }
