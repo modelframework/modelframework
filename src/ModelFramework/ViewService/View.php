@@ -230,17 +230,15 @@ class View
         $model           = $this->getAclModelVerify();
         $_aclData        = $model->getAclDataVerify();
         $permittedConfig = $this->getViewConfigVerify();
-        prn($permittedConfig->mode, $_aclData->permissions);
-        if (!is_array( $_aclData->permissions ) ||
-            !in_array( $permittedConfig->mode, $_aclData->permissions )
+        if (!is_array( $_aclData->modes ) ||
+            !in_array( $permittedConfig->mode, $_aclData->modes )
         ) {
             $this->denyPermission();
             return false;
         }
-
         foreach ([ 'actions', 'links' ] as $resource) {
             foreach ($permittedConfig->$resource as $action => $link) {
-                if (!in_array( $action, $_aclData->permissions )) {
+                if (!in_array( $action, $_aclData->modes )) {
                     unset( $permittedConfig->{$resource}[ $action ] );
                 }
             }

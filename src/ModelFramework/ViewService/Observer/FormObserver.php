@@ -22,15 +22,14 @@ class FormObserver extends AbstractObserver
     {
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        if ($viewConfig->mode == 'insert') {
-            $mode = Acl::MODE_CREATE;
-        }
-
-        if ($viewConfig->mode == 'update') {
-            $mode = Acl::MODE_EDIT;
-        }
-
-        $form = $subject->getFormServiceVerify()->get($this->getModel(), $mode, $viewConfig->fields);
+//        if ($viewConfig->mode == 'insert') {
+//            $mode = Acl::MODE_CREATE;
+//        }
+//
+//        if ($viewConfig->mode == 'update') {
+//            $mode = Acl::MODE_EDIT;
+//        }
+        $form = $subject->getFormServiceVerify()->get($this->getModel(), $viewConfig->mode, $viewConfig->fields);
 
         $form->setRoute('common');
         $form->setActionParams([ 'data' => strtolower($viewConfig->model), 'view' => $viewConfig->mode ]);

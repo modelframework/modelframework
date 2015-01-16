@@ -20,9 +20,11 @@ use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 
 class AclService
-    implements AclServiceInterface, GatewayServiceAwareInterface, AuthServiceAwareInterface, ModelServiceAwareInterface,
+    implements AclServiceInterface, GatewayServiceAwareInterface,
+               AuthServiceAwareInterface, ModelServiceAwareInterface,
                ConfigServiceAwareInterface
 {
+
     use GatewayServiceAwareTrait, AuthServiceAwareTrait, ModelServiceAwareTrait, ConfigServiceAwareTrait;
 
     /*
@@ -32,7 +34,7 @@ class AclService
     {
         $user = $this->getAuthServiceVerify()->getUser();
         if ($user == null) {
-            throw new \Exception(' the user does not set in AuthService');
+            throw new \Exception( ' the user does not set in AuthService' );
         }
 
         return $user;
@@ -44,11 +46,11 @@ class AclService
      * @return \ModelFramework\GatewayService\MongoGateway|null
      * @throws \Exception
      */
-    public function getGateway($modelName)
+    public function getGateway( $modelName )
     {
-        $gateway = $this->getGatewayServiceVerify()->get($modelName);
+        $gateway = $this->getGatewayServiceVerify()->get( $modelName );
         if ($gateway == null) {
-            throw new \Exception($modelName.' Gateway can not be created ');
+            throw new \Exception( $modelName . ' Gateway can not be created ' );
         }
 
         return $gateway;
@@ -60,21 +62,15 @@ class AclService
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclData($modelName)
+    public function getAclData( $modelName )
     {
-        //        $aclGateway = $this->getGateway( 'Acl' );
-        $user       = $this->getUser();
-//        prn( 'AclService', $user->role_role );
-//        prn( $this );
-
-        $acl = $this->getConfigServiceVerify()->getByObject($modelName.'.'.$user->role_role,
-                                                                     new AclConfig());
-//        $acl = $aclGateway->findOne( [ 'role_id' => $user->role_id, 'resource' => $modelName ] );
-
-
-//        prn($aclConfig, $modelName . '.' . $user->role_role, $acl);
+        $user = $this->getUser();
+        $acl  = $this->getConfigServiceVerify()->getByObject( $modelName . '.' .
+                                                              $user->role_role,
+            new AclConfig() );
         if ($acl == null) {
-            throw new \Exception($modelName.' - Acl for role '.$user->role.' not found ');
+            throw new \Exception( $modelName . ' acl config for role ' .
+                                  $user->role_role . ' not found ' );
         }
 
         return $acl;
@@ -86,9 +82,9 @@ class AclService
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function get($modelName)
+    public function get( $modelName )
     {
-        return $this->getAclModel($modelName);
+        return $this->getAclModel( $modelName );
     }
 
     /**
@@ -97,15 +93,15 @@ class AclService
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclModel($modelName)
+    public function getAclModel( $modelName )
     {
         $aclData = new AclDataModel();
 
-        $dataModel = $this->getModelServiceVerify()->get($modelName);
-        $aclData->setDataModel($dataModel);
+        $dataModel = $this->getModelServiceVerify()->get( $modelName );
+        $aclData->setDataModel( $dataModel );
 
-        $aclModel = $this->getAclData($modelName);
-        $aclData->setAclData($aclModel);
+        $aclModel = $this->getAclData( $modelName );
+        $aclData->setAclData( $aclModel );
 
         return $aclData;
     }
