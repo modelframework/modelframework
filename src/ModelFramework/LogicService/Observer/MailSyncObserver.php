@@ -256,6 +256,8 @@ class MailSyncObserver
                     $mail->chain_id = $chainGW->getLastInsertId() ?: $chain->_id;
 //                    prn($mail);
                     $mailGW->save( $mail );
+                    $mail->_id = $mailGW->getLastInsertId()  ?:$mail->_id;
+                    $this->createEmailToMail($mail);
                 }
             } catch ( \Exception $ex ) {
                 throw $ex;
@@ -301,5 +303,11 @@ class MailSyncObserver
         $mail->owner_id = $user->id();
         $mail->title    = $mail->header[ 'subject' ];
         $mail->date     = ( new \DateTime( $mail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
+    }
+
+    public function createEmailToMail($mail)
+    {
+        //get emails and create EmailToMail models
+        //trigger updateTitle for $mail
     }
 }
