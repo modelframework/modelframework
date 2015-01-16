@@ -1,6 +1,7 @@
 <?php
 /**
- * Class FormObserver
+ * Class SignOutObserver
+ *
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -21,7 +22,6 @@ use Wepo\Model\Status;
 class SignInObserver
     implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
-
     use ConfigAwareTrait, SubjectAwareTrait;
 
     private $_aclModel = null;
@@ -32,15 +32,15 @@ class SignInObserver
      *
      * @throws \Exception
      */
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-        $this->setSubject( $subject );
-        $subject->getLogicServiceVerify()->setParams( $subject->getParams() );
+        $this->setSubject($subject);
+        $subject->getLogicServiceVerify()->setParams($subject->getParams());
         $form = $this->initForm();
-        $this->process( $form,
-            $subject->getModelServiceVerify()->get( 'MainUser' ) );
+        $this->process($form,
+            $subject->getModelServiceVerify()->get('MainUser'));
         $form->prepare();
-        $subject->setData( [ 'form' => $form ] );
+        $subject->setData(['form' => $form]);
     }
 
     public function getModel()
@@ -61,29 +61,29 @@ class SignInObserver
     {
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        $query      =
-            $subject->getQueryServiceVerify()
-                    ->get( $viewConfig->query )
-                    ->setParams( $subject->getParams() )
-                    ->process();
+        $query
+                    = $subject->getQueryServiceVerify()
+            ->get($viewConfig->query)
+            ->setParams($subject->getParams())
+            ->process();
         $data       = $subject->getData();
-        if (isset( $data[ 'model' ] ) &&
-            $data[ 'model' ] instanceof DataModelInterface
+        if (isset($data['model'])
+            && $data['model'] instanceof DataModelInterface
         ) {
-            $model = $data[ 'model' ];
+            $model = $data['model'];
         } else {
             if ($viewConfig->mode == 'insert') {
                 $model = $subject->getGateway()->model();
 //                $model = $query->setDefaults( $model );
             } elseif ($viewConfig->mode == 'update') {
-                $model = $subject->getGateway()->findOne( $query->getWhere() );
+                $model = $subject->getGateway()->findOne($query->getWhere());
                 if ($model == null) {
-                    throw new \Exception( 'Data is not accessible' );
+                    throw new \Exception('Data is not accessible');
                 }
             } else {
-                throw new \Exception( "Wrong mode  '" . $viewConfig->mode .
-                                      "' in  " . $viewConfig->key .
-                                      ' View Config for the ' . get_class() );
+                throw new \Exception("Wrong mode  '" . $viewConfig->mode .
+                    "' in  " . $viewConfig->key .
+                    ' View Config for the ' . get_class());
             }
         }
         if ($model instanceof AclDataModel) {
@@ -91,20 +91,20 @@ class SignInObserver
             $this->_model    = $this->_aclModel->getDataModel();
         }
         $subject->getLogicServiceVerify()
-                ->get( 'setDefaults', $model->getModelName() )
-                ->trigger( $this->_model );
+            ->get('setDefaults', $model->getModelName())
+            ->trigger($this->_model);
         return $this->_model;
     }
 
-    public function setModel( DataModelInterface $model )
+    public function setModel(DataModelInterface $model)
     {
-        if ($this->_aclModel !== null &&
-            $this->_aclModel instanceof AclDataModel
+        if ($this->_aclModel !== null
+            && $this->_aclModel instanceof AclDataModel
         ) {
-            $this->_aclModel->setDataModel( $model );
+            $this->_aclModel->setDataModel($model);
             $model = $this->_aclModel;
         }
-        $this->getSubject()->setData( [ 'model' => $model ] );
+        $this->getSubject()->setData(['model' => $model]);
         return $model;
     }
 
@@ -113,12 +113,12 @@ class SignInObserver
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
         $form       = new SignInForm();
-        $form->setAttribute( 'method', 'post' );
-        $form->setRoute( 'common' );
-        $form->setActionParams( [
+        $form->setAttribute('method', 'post');
+        $form->setRoute('common');
+        $form->setActionParams([
             'data' => 'signin',
             'view' => $viewConfig->mode
-        ] );
+        ]);
         return $form;
     }
 
@@ -126,63 +126,62 @@ class SignInObserver
      * @param $form
      * @param $mainUser
      */
-    public function process( $form, $mainUser )
+    public function process($form, $mainUser)
     {
         /**
          * @var View $subject
          */
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        $results    = [ ];
+        $results    = [];
         $request    = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
-            $form->setData( $request->getPost() );
+            $form->setData($request->getPost());
 
             if ($form->isValid()) {
-                $credentials = array();
+                $credentials = [];
                 $_data       = $form->getData();
-                if (isset( $_data[ 'fields' ] )) {
-                    $credentials = $_data[ 'fields' ];
+                if (isset($_data['fields'])) {
+                    $credentials = $_data['fields'];
                 }
-                unset( $_data );
+                unset($_data);
                 # :FIXME: implement crypt function for all of password staff
-                $credentials [ 'password' ] =
-                    md5( $credentials [ 'password' ] );
-                $gw                         =
-                    $subject->getGatewayServiceVerify()
-                            ->getGateway( $mainUser->getModelName(),
-                                $mainUser );
-                $check                      = $gw->find( $credentials );
+                $credentials ['password']
+                       = md5($credentials ['password']);
+                $gw    = $subject->getGatewayServiceVerify()
+                    ->getGateway($mainUser->getModelName(),
+                        $mainUser);
+                $check = $gw->find($credentials);
                 if ($check->count()) {
                     $mainUser = $check->current();
 
-                    if (in_array( (string) $mainUser->status_id,
-                        [ Status::NEW_, Status::NORMAL ] )) {
+                    if (in_array((string)$mainUser->status_id,
+                        [Status::NEW_, Status::NORMAL])) {
                         $subject->getAuthServiceVerify()
-                                ->setMainUser( $mainUser );
+                            ->setMainUser($mainUser);
                         $subject->getLogicServiceVerify()
-                                ->get( 'signin', $mainUser->getModelName() )
-                                ->trigger( $mainUser );
+                            ->get('signin', $mainUser->getModelName())
+                            ->trigger($mainUser);
 
                         $url = $subject->getParams()->getController()->url()
-                                       ->fromRoute( 'common',
-                                           [
-                                               'data' => 'dashboard',
-                                               'view' => 'dashboard'
-                                           ] );
-                        $subject->setRedirect( $subject->refresh( 'You have been authorized',
-                            $url ) );
+                            ->fromRoute('common',
+                                [
+                                    'data' => 'dashboard',
+                                    'view' => 'dashboard'
+                                ]);
+                        $subject->setRedirect($subject->refresh('You have been authorized',
+                            $url));
                         return;
                     } else {
-                        $results[ 'message' ] =
-                            'Your account blocked or deleted. Please contact administrator.';
+                        $results['message']
+                            = 'Your account blocked or deleted. Please contact administrator.';
                     }
                 } else {
-                    $results[ 'message' ] =
-                        'There is an error with your Login/Password combination. Please try again.';
+                    $results['message']
+                        = 'There is an error with your Login/Password combination. Please try again.';
                 }
             }
         }
-        $subject->setData( $results );
+        $subject->setData($results);
     }
 }

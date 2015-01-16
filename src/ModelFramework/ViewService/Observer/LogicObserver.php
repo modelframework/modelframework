@@ -8,7 +8,6 @@
 
 namespace ModelFramework\ViewService\Observer;
 
-
 class LogicObserver
     implements \SplObserver
 {

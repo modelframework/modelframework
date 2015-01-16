@@ -11,20 +11,19 @@ namespace ModelFramework\ViewService\Observer;
 class ViewObserver
     implements \SplObserver
 {
-
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
         $viewConfig = $subject->getViewConfigVerify();
         $query      =
             $subject->getQueryServiceVerify()
-                    ->get( $viewConfig->query )
-                    ->setParams( $subject->getParams() )
+                    ->get($viewConfig->query)
+                    ->setParams($subject->getParams())
                     ->process();
-        $subject->setData( $query->getData() );
+        $subject->setData($query->getData());
         $result = [ ];
-        $model  = $subject->getGatewayVerify()->findOne( $query->getWhere() );
+        $model  = $subject->getGatewayVerify()->findOne($query->getWhere());
         if (!$model) {
-            throw new \Exception( 'Data not found' );
+            throw new \Exception('Data not found');
         }
         $data = $subject->getData();
         foreach ([ 'actions', 'links' ] as $datapartam) {
@@ -33,7 +32,7 @@ class ViewObserver
                     foreach ($link[ $keyparams ] as $paramkey => $param) {
                         if ($param{0} == ':') {
                             $_f                                                     =
-                                substr( $param, 1 );
+                                substr($param, 1);
                             $data[ $datapartam ][ $key ][ $keyparams ][ $paramkey ] =
                                 $model->$_f;
                         }
@@ -43,28 +42,28 @@ class ViewObserver
         }
         $result[ 'fieldsets' ] = [ ];
         $aclData               =
-            $subject->getAclServiceVerify()->getAclData( $viewConfig->model );
+            $subject->getAclServiceVerify()->getAclData($viewConfig->model);
         $modelFields           = $subject->getModelConfigVerify()[ 'fields' ];
         $usedGroups            = [ ];
         foreach ($viewConfig->fields as $field) {
-            if (!array_key_exists( $field, $modelFields )) {
+            if (!array_key_exists($field, $modelFields)) {
                 continue;
             }
             $fConfig = $modelFields[ $field ];
             if ($fConfig[ 'type' ] == 'field') {
                 //check $field in acl
-                if (!array_key_exists( $field, $aclData->fields )
+                if (!array_key_exists($field, $aclData->fields)
                     ||
-                    !in_array( $aclData->fields[ $field ], [ 'read', 'write' ] )
+                    !in_array($aclData->fields[ $field ], [ 'read', 'write' ])
                 ) {
                     continue;
                 }
             }
             if ($fConfig[ 'type' ] == 'alias') {
                 //check $fConfig['source'] in acl
-                if (!array_key_exists( $fConfig[ 'source' ], $aclData->fields )
-                    || !in_array( $aclData->fields[ $fConfig[ 'source' ] ],
-                        [ 'r', 'e' ] )
+                if (!array_key_exists($fConfig[ 'source' ], $aclData->fields)
+                    || !in_array($aclData->fields[ $fConfig[ 'source' ] ],
+                        [ 'r', 'e' ])
                 ) {
                     continue;
                 }
@@ -72,9 +71,9 @@ class ViewObserver
             if ($fConfig[ 'type' ] == 'source') {
                 if ($fConfig[ 'source' ] !== $field
                     ||
-                    !array_key_exists( $fConfig[ 'source' ], $aclData->fields )
-                    || !in_array( $aclData->fields[ $fConfig[ 'source' ] ],
-                        [ 'r', 'e' ] )
+                    !array_key_exists($fConfig[ 'source' ], $aclData->fields)
+                    || !in_array($aclData->fields[ $fConfig[ 'source' ] ],
+                        [ 'r', 'e' ])
                 ) {
                     continue;
                 }
@@ -87,16 +86,16 @@ class ViewObserver
         $chosenGroups   = [ ];
         $fieldSet2Group = [ ];
         foreach ($viewConfig->groups as $grKey => $groupBlock) {
-            if (is_array( $groupBlock )) {
+            if (is_array($groupBlock)) {
                 foreach ($groupBlock as $group) {
-                    if (array_key_exists( $group, $usedGroups )) {
+                    if (array_key_exists($group, $usedGroups)) {
                         $chosenGroups[ $group ]   = $usedGroups[ $group ];
                         $fieldSet2Group[ $group ] = $grKey;
                     }
                 }
                 continue;
             }
-            if (array_key_exists( $groupBlock, $usedGroups )) {
+            if (array_key_exists($groupBlock, $usedGroups)) {
                 $chosenGroups[ $groupBlock ]   = $usedGroups[ $groupBlock ];
                 $fieldSet2Group[ $groupBlock ] = $groupBlock;
             }
@@ -114,14 +113,14 @@ class ViewObserver
             $chosenGroups[ $group ] = $fieldSet;
         }
         $result[ 'fieldsets' ] = $chosenGroups;
-        $subject->getLogicServiceVerify()->get( 'preview', $viewConfig->model )
-                ->trigger( $model );
+        $subject->getLogicServiceVerify()->get('preview', $viewConfig->model)
+                ->trigger($model);
         $result[ 'model' ]   = $model;
         $result[ 'title' ]   = $viewConfig->title . ': ' . $model->title;
         $result[ 'actions' ] = $data[ 'actions' ];
         $result[ 'links' ]   = $data[ 'links' ];
-        $subject->setData( $result );
-        $subject->getLogicServiceVerify()->get( 'postview', $viewConfig->model )
-                ->trigger( $model );
+        $subject->setData($result);
+        $subject->getLogicServiceVerify()->get('postview', $viewConfig->model)
+                ->trigger($model);
     }
 }

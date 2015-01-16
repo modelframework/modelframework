@@ -55,7 +55,6 @@ class View
                QueryServiceAwareInterface, ConfigServiceAwareInterface,
                \SplSubject, ResponseAwareInterface
 {
-
     use ViewConfigAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
@@ -65,14 +64,14 @@ class View
     private $_redirect = null;
     private $_isAllowed = true;
 
-    protected function setPermission( $permission )
+    protected function setPermission($permission)
     {
         $this->_isAllowed = $permission;
     }
 
     protected function denyPermission()
     {
-        $this->setPermission( false );
+        $this->setPermission(false);
     }
 
     public function isAllowed()
@@ -93,36 +92,37 @@ class View
         'UploadObserver',
         'WidgetObserver',
         'ParamsObserver',
-        'SignInObserver',
-        'SignUpObserver',
         'AttachObserver',
         'DownloadObserver',
         'LogicObserver',
-        'HTMLObserver'
+        'HTMLObserver',
+        'SignInObserver',
+        'SignOutObserver',
+        'SignUpObserver',
     ];
     protected $observers = [ ];
 
-    public function attach( \SplObserver $observer )
+    public function attach(\SplObserver $observer)
     {
         $this->observers[ ] = $observer;
     }
 
-    public function detach( \SplObserver $observer )
+    public function detach(\SplObserver $observer)
     {
-        $key = array_search( $observer, $this->observers );
+        $key = array_search($observer, $this->observers);
         if ($key) {
-            unset( $this->observers[ $key ] );
+            unset($this->observers[ $key ]);
         }
     }
 
     public function notify()
     {
         foreach ($this->observers as $observer) {
-            $observer->update( $this );
+            $observer->update($this);
         }
     }
 
-    public function setRedirect( $redirect )
+    public function setRedirect($redirect)
     {
         $this->_redirect = $redirect;
     }
@@ -134,7 +134,7 @@ class View
 
     public function hasRedirect()
     {
-        if (!empty( $this->_redirect )) {
+        if (!empty($this->_redirect)) {
             return true;
         }
 
@@ -151,9 +151,9 @@ class View
         return $this->_data;
     }
 
-    public function setData( array $data )
+    public function setData(array $data)
     {
-        $this->_data = Arr::merge( $this->_data, $data );
+        $this->_data = Arr::merge($this->_data, $data);
     }
 
     protected function clearData()
@@ -165,21 +165,21 @@ class View
     {
         foreach ($this->getViewConfigVerify()->observers as $observer =>
                  $obConfig) {
-            if (is_numeric( $observer )) {
+            if (is_numeric($observer)) {
                 $observer = $obConfig;
                 $obConfig = null;
             }
-            if (!in_array( $observer, $this->allowed_observers )) {
-                throw new \Exception( $observer . ' is not allowed in ' .
-                                      get_class( $this ) );
+            if (!in_array($observer, $this->allowed_observers)) {
+                throw new \Exception($observer . ' is not allowed in ' .
+                                      get_class($this));
             }
             $observerClassName =
                 'ModelFramework\ViewService\Observer\\' . $observer;
             $_obs              = new $observerClassName();
-            if (!empty( $obConfig ) && $_obs instanceof ConfigAwareInterface) {
-                $_obs->setRootConfig( $obConfig );
+            if (!empty($obConfig) && $_obs instanceof ConfigAwareInterface) {
+                $_obs->setRootConfig($obConfig);
             }
-            $this->attach( $_obs );
+            $this->attach($_obs);
         }
     }
 
@@ -203,23 +203,23 @@ class View
         $result[ 'actions' ]     = $viewConfig->actions;
         $result[ 'links' ]       = $viewConfig->links;
         $result[ 'labels' ]      = $this->labels();
-        $result[ 'modelname' ]   = strtolower( $viewConfig->model );
+        $result[ 'modelname' ]   = strtolower($viewConfig->model);
         $result[ 'queryparams' ] = [ ];
         $result[ 'user' ]        = $this->getUser();
         $result[ 'saurlhash' ]   = $this->generateLabel();
         $result[ 'saurl' ]       = '?back=' . $result[ 'saurlhash' ];
-        $result[ 'saurlback' ]   = $this->getSaUrlBack( $this->getParams()
-                                                             ->fromQuery( 'back',
-                                                                 'home' ) );
-        $this->setData( $result );
+        $result[ 'saurlback' ]   = $this->getSaUrlBack($this->getParams()
+                                                             ->fromQuery('back',
+                                                                 'home'));
+        $this->setData($result);
     }
 
     public function getAclModelVerify()
     {
         $model = $this->getGatewayVerify()->model();
         if ($model == null || !$model instanceof AclDataModel) {
-            throw new \Exception( 'AclModel does not set in Gateway ' .
-                                  $this->getGatewayVerify()->getTable() );
+            throw new \Exception('AclModel does not set in Gateway ' .
+                                  $this->getGatewayVerify()->getTable());
         }
 
         return $model;
@@ -230,20 +230,20 @@ class View
         $model           = $this->getAclModelVerify();
         $_aclData        = $model->getAclDataVerify();
         $permittedConfig = $this->getViewConfigVerify();
-        if (!is_array( $_aclData->modes ) ||
-            !in_array( $permittedConfig->mode, $_aclData->modes )
+        if (!is_array($_aclData->modes) ||
+            !in_array($permittedConfig->mode, $_aclData->modes)
         ) {
             $this->denyPermission();
             return false;
         }
         foreach ([ 'actions', 'links' ] as $resource) {
             foreach ($permittedConfig->$resource as $action => $link) {
-                if (!in_array( $action, $_aclData->modes )) {
-                    unset( $permittedConfig->{$resource}[ $action ] );
+                if (!in_array($action, $_aclData->modes)) {
+                    unset($permittedConfig->{$resource}[ $action ]);
                 }
             }
         }
-        $this->setViewConfig( $permittedConfig );
+        $this->setViewConfig($permittedConfig);
 
         return true;
     }
@@ -260,10 +260,10 @@ class View
         return $this;
     }
 
-    public function getSaUrlBack( $backHash )
+    public function getSaUrlBack($backHash)
     {
-        $saUrlBack = $this->getGatewayServiceVerify()->get( 'SaUrl' )
-                          ->find( array( 'label' => $backHash ) );
+        $saUrlBack = $this->getGatewayServiceVerify()->get('SaUrl')
+                          ->find(array( 'label' => $backHash ));
         if ($saUrlBack->count() > 0) {
             $saUrlBack = $saUrlBack->current()->url;
         } else {
@@ -276,9 +276,9 @@ class View
     public function getBackUrl()
     {
         $url   = null;
-        $saUrl = $this->getParams()->fromPost( 'saurl', [ ] );
-        if (isset( $saUrl[ 'back' ] )) {
-            $url = $this->getSaurlBack( $saUrl[ 'back' ] );
+        $saUrl = $this->getParams()->fromPost('saurl', [ ]);
+        if (isset($saUrl[ 'back' ])) {
+            $url = $this->getSaurlBack($saUrl[ 'back' ]);
         }
 
         return $url;
@@ -286,30 +286,30 @@ class View
 
     public function generateLabel()
     {
-        $saUrlGateway = $this->getGatewayServiceVerify()->get( 'SaUrl' );
+        $saUrlGateway = $this->getGatewayServiceVerify()->get('SaUrl');
         $saUrl        = $saUrlGateway->model();
         $saUrl->url   = $this->getParams()->getController()->getRequest()
-                             ->getServer( 'REQUEST_URI' );
-        $checkUrl     = $saUrlGateway->findOne( [ 'url' => $saUrl->url ] );
+                             ->getServer('REQUEST_URI');
+        $checkUrl     = $saUrlGateway->findOne([ 'url' => $saUrl->url ]);
         if ($checkUrl) {
             return $checkUrl->label;
         } else {
-            if (strlen( $saUrl->url )) {
-                $saUrl->label = md5( $saUrl->url );
+            if (strlen($saUrl->url)) {
+                $saUrl->label = md5($saUrl->url);
             }
             $i = 0;
             while (++$i < 6 &&
-                   $saUrlGateway->find( [ 'label' => $saUrl->label ] )
+                   $saUrlGateway->find([ 'label' => $saUrl->label ])
                                 ->count()) {
                 $saUrl->label =
-                    md5( $saUrl->url . time() . ( rand() * 10000 ) );
+                    md5($saUrl->url . time() . (rand() * 10000));
             }
             if ($i >= 6) {
                 return '/';
             }
             try {
-                $saUrlGateway->save( $saUrl );
-            } catch ( \Exception $ex ) {
+                $saUrlGateway->save($saUrl);
+            } catch (\Exception $ex) {
                 $saUrl->label = '/';
             }
 
@@ -317,15 +317,15 @@ class View
         }
     }
 
-    public function refresh( $message = null, $toUrl = null, $seconds = 0 )
+    public function refresh($message = null, $toUrl = null, $seconds = 0)
     {
-        $viewModel = new ZendViewModel( [
+        $viewModel = new ZendViewModel([
             'message' => $message,
             'user'    => $this->getUser(),
             'toUrl'   => $toUrl,
             'seconds' => $seconds,
-        ] );
+        ]);
 
-        return $viewModel->setTemplate( 'wepo/partial/refresh.twig' );
+        return $viewModel->setTemplate('wepo/partial/refresh.twig');
     }
 }

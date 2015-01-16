@@ -74,8 +74,8 @@ class RecycleObserver implements \SplObserver
                         ->trigger($results[ 'items' ]);
 
                 $url = $subject->getParams()->fromPost('saurl')[ 'back' ];
-                parse_str(parse_url($url)['query'],$output );
-                if( isset ($output['back']) && $subject->getGateway()->findOne([ '_id' => $id ])->toArray()['status_id']!=Status::DELETED){
+                parse_str(parse_url($url)['query'], $output);
+                if (isset($output['back']) && $subject->getGateway()->findOne([ '_id' => $id ])->toArray()['status_id']!=Status::DELETED) {
                     $url = $subject->getSaUrlBack($output['back']);
                 }
                 if (!isset($url) || $view == 'clean') {
