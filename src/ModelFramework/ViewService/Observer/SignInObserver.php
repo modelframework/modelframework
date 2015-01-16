@@ -22,6 +22,7 @@ use Wepo\Model\Status;
 class SignInObserver
     implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
+
     use ConfigAwareTrait, SubjectAwareTrait;
 
     private $_aclModel = null;
@@ -164,11 +165,7 @@ class SignInObserver
                             ->trigger($mainUser);
 
                         $url = $subject->getParams()->getController()->url()
-                            ->fromRoute('common',
-                                [
-                                    'data' => 'dashboard',
-                                    'view' => 'dashboard'
-                                ]);
+                            ->fromRoute('common', ['data' => 'dashboard']);
                         $subject->setRedirect($subject->refresh('You have been authorized',
                             $url));
                         return;
