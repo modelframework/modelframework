@@ -24,6 +24,7 @@ use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
+use ModelFramework\Utility\Arr;
 use Wepo\Lib\Acl;
 
 class FormService
@@ -136,24 +137,31 @@ class FormService
         $user = $this->getAuthServiceVerify()->getUser();
         $acl  = $model->getAclData();
         if ($acl) {
-            $modelPermissions = $acl->modes;
-            $groups           = $user->groups;
-            $groups[ ]        = $user->_id;
+            $dataPermissions = $acl->data;
+            $modePermissions = $acl->modes;
+            $groups          = $user->groups;
+            $groups[ ]       = $user->_id;
             if (is_array( $model->_acl )) {
                 foreach ($groups as $group_id) {
                     foreach ($model->_acl as $_acl) {
                         if (!empty( $_acl[ 'role_id' ] ) &&
                             $_acl[ 'role_id' ] == $group_id
                         ) {
-                            $modelPermissions = array_merge( $modelPermissions,
-                                $_acl[ 'permissions' ] );
+                            $dataPermissions = array_merge( $dataPermissions,
+                                Arr::getDoubtField( $_acl, 'data', [ ] ) );
+                            $modePermissions = array_merge( $modePermissions,
+                                Arr::getDoubtField( $_acl, 'modes', [ ] ) );
                         }
                     }
                 }
             }
-            $modelPermissions = array_unique( $modelPermissions );
-            if (!in_array( $mode, $modelPermissions )) {
-                throw new \Exception( "This action is not allowed for you" );
+            $dataPermissions = array_unique( $dataPermissions );
+            $modePermissions = array_unique( $modePermissions );
+            if (!in_array( Acl::getDataPerm( $mode ), $dataPermissions )) {
+                throw new \Exception( "This data is not allowed for you" );
+            }
+            if (!in_array( $mode, $modePermissions )) {
+                throw new \Exception( "This mode is not allowed for you" );
             }
             $fieldPermissions = [ ];
             $fieldModes       = Acl::getFieldPerms( $mode );
