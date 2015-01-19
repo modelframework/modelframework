@@ -1,6 +1,7 @@
 <?php
 /**
  * Class AclService
+ *
  * @package ModelFramework\AclService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -18,11 +19,14 @@ use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
+use Wepo\Model\Role;
 
 class AclService
-    implements AclServiceInterface, GatewayServiceAwareInterface, AuthServiceAwareInterface, ModelServiceAwareInterface,
+    implements AclServiceInterface, GatewayServiceAwareInterface,
+               AuthServiceAwareInterface, ModelServiceAwareInterface,
                ConfigServiceAwareInterface
 {
+
     use GatewayServiceAwareTrait, AuthServiceAwareTrait, ModelServiceAwareTrait, ConfigServiceAwareTrait;
 
     /*
@@ -48,7 +52,7 @@ class AclService
     {
         $gateway = $this->getGatewayServiceVerify()->get($modelName);
         if ($gateway == null) {
-            throw new \Exception($modelName.' Gateway can not be created ');
+            throw new \Exception($modelName . ' Gateway can not be created ');
         }
 
         return $gateway;
@@ -62,19 +66,16 @@ class AclService
      */
     public function getAclData($modelName)
     {
-        //        $aclGateway = $this->getGateway( 'Acl' );
-        $user       = $this->getUser();
-//        prn( 'AclService', $user->role_role );
-//        prn( $this );
-
-        $acl = $this->getConfigServiceVerify()->getByObject($modelName.'.'.$user->role_role,
-                                                                     new AclConfig());
-//        $acl = $aclGateway->findOne( [ 'role_id' => $user->role_id, 'resource' => $modelName ] );
-
-
-//        prn($aclConfig, $modelName . '.' . $user->role_role, $acl);
+        $user = $this->getUser();
+        $acl  = $this->getConfigServiceVerify()->getByObject($modelName . '.' .
+            $user->role_title,
+            new AclConfig());
         if ($acl == null) {
-            throw new \Exception($modelName.' - Acl for role '.$user->role.' not found ');
+            if ( $user->role_id == Role::GUEST ) {
+                return new AclConfig();
+            }
+            throw new \Exception($modelName . ' acl config for role ' .
+                $user->role_title . ' not found ');
         }
 
         return $acl;

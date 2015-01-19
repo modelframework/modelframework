@@ -19,7 +19,9 @@ use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
 
-class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface, ResponseAwareInterface
+class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
+                         ViewServiceAwareInterface, AuthServiceAwareInterface,
+                         ResponseAwareInterface
 {
     use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait;
 
@@ -77,14 +79,16 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
     public function process()
     {
         $this->setDataFields();
-
-        $params = [];
-
-        foreach ($this->getViewBoxConfigVerify()->blocks as $blockName => $viewNames) {
+        $params = [ ];
+        foreach ($this->getViewBoxConfigVerify()->blocks as $blockName =>
+                 $viewNames) {
             foreach ($viewNames as $viewName) {
                 $modelView = $this->getViewServiceVerify()->get($viewName);
                 $modelView->setParams($this->getParamsVerify());
                 $modelView->process();
+                if (!$modelView->isAllowed()) {
+                    continue;
+                }
                 if ($modelView->hasRedirect()) {
                     $this->setRedirect($modelView->getRedirect());
 
@@ -95,24 +99,20 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
 
                     return;
                 }
-
-                $data = $modelView->getData();
-
+                $data    = $modelView->getData();
                 $vParams = Arr::getDoubtField($data, 'params', [ ]);
                 if (count($vParams)) {
                     $params = Arr::merge($params, $vParams);
                 }
-
-                $viewResults = [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
-
+                $viewResults =
+                    [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
                 $this->setData($viewResults);
             }
         }
-
-        $params['data'] = strtolower($this->getViewBoxConfigVerify()->document);
-        $params['view'] = strtolower($this->getViewBoxConfigVerify()->mode);
-
-        $this->setData([ 'viewboxparams' => $params ]);
+        $params[ 'data' ] =
+            strtolower($this->getViewBoxConfigVerify()->document);
+        $params[ 'view' ] = strtolower($this->getViewBoxConfigVerify()->mode);
+        $this->setData([ 'viewboxparams' => $params, 'user'=>$this->getAuthServiceVerify()->getUser() ]);
 
         return $this;
     }
@@ -125,8 +125,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface, View
         if ($this->hasResponse()) {
             return $this->getResponse();
         }
-        $data = $this->getData();
-
+        $data      = $this->getData();
         $viewModel = new ZendViewModel($data);
 
         return $viewModel->setTemplate($data[ 'template' ]);

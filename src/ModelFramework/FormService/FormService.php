@@ -26,11 +26,14 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use Wepo\Lib\Acl;
 
-class FormService implements FormServiceInterface, FieldTypesServiceAwareInterface, ConfigServiceAwareInterface,
-                             ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
-                             GatewayServiceAwareInterface, AuthServiceAwareInterface,
-                             FormConfigParserServiceAwareInterface
+class FormService
+    implements FormServiceInterface, FieldTypesServiceAwareInterface,
+               ConfigServiceAwareInterface,
+               ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
+               GatewayServiceAwareInterface, AuthServiceAwareInterface,
+               FormConfigParserServiceAwareInterface
 {
+
     use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ConfigServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
 
     /**
@@ -41,9 +44,9 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      * @return $this
      * @throws \Exception
      */
-    public function get(DataModelInterface $model, $mode, array $fields = [ ])
+    public function get( DataModelInterface $model, $mode, array $fields = [ ] )
     {
-        return $this->getForm($model, $mode, $fields);
+        return $this->getForm( $model, $mode, $fields );
     }
 
     /**
@@ -54,9 +57,12 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      * @return $this
      * @throws \Exception
      */
-    public function getForm(DataModelInterface $model, $mode, array $fields = [ ])
-    {
-        return $this->createForm($model, $mode, $fields);
+    public function getForm(
+        DataModelInterface $model,
+        $mode,
+        array $fields = [ ]
+    ) {
+        return $this->createForm( $model, $mode, $fields );
     }
 
     /**
@@ -67,24 +73,29 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      * @return $this
      * @throws \Exception
      */
-    public function createForm(DataModelInterface $model, $mode, array $fields = [ ])
-    {
-        $configData = $this->getPermittedConfig($model, $mode);
+    public function createForm(
+        DataModelInterface $model,
+        $mode,
+        array $fields = [ ]
+    ) {
+        $configData = $this->getPermittedConfig( $model, $mode );
 
-        if (count($fields)) {
-            $configFields = $configData->fields;
-            $configData->fields = [];
+        if (count( $fields )) {
+            $configFields       = $configData->fields;
+            $configData->fields = [ ];
             foreach ($fields as $fieldName) {
-                if (isset($configFields[$fieldName])) {
-                    $configData->fields[$fieldName] = $configFields[$fieldName];
+                if (isset( $configFields[ $fieldName ] )) {
+                    $configData->fields[ $fieldName ] =
+                        $configFields[ $fieldName ];
                 }
             }
         }
 
-        $cf         = $this->getFormConfigParserServiceVerify()->getFormConfig($configData);
-        $form       = new DataForm();
+        $cf   = $this->getFormConfigParserServiceVerify()
+                     ->getFormConfig( $configData );
+        $form = new DataForm();
 
-        return $form->parseconfig($cf);
+        return $form->parseconfig( $cf );
     }
 
     /**
@@ -94,16 +105,17 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      * @return DataModelInterface|null
      * @throws \Exception
      */
-    public function getPermittedConfig($model, $mode)
+    public function getPermittedConfig( $model, $mode )
     {
-        $fieldPermissions = $this->getFieldPermissions($model, $mode);
+        $fieldPermissions = $this->getFieldPermissions( $model, $mode );
 
-        $cd = $this->getConfigServiceVerify()->getByObject($model->getModelName(), new ModelConfig());
+        $cd = $this->getConfigServiceVerify()
+                   ->getByObject( $model->getModelName(), new ModelConfig() );
 //        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
 
         $allowedFields = [ ];
         foreach ($cd->fields as $k => $v) {
-            if (in_array($k, $fieldPermissions)) {
+            if (in_array( $k, $fieldPermissions )) {
                 $allowedFields[ $k ] = $v;
             }
         }
@@ -119,36 +131,39 @@ class FormService implements FormServiceInterface, FieldTypesServiceAwareInterfa
      * @return array
      * @throws \Exception
      */
-    public function getFieldPermissions($model, $mode)
+    public function getFieldPermissions( $model, $mode )
     {
         $user = $this->getAuthServiceVerify()->getUser();
         $acl  = $model->getAclData();
         if ($acl) {
-            $modelPermissions = $acl->permissions;
+            $modelPermissions = $acl->modes;
             $groups           = $user->groups;
             $groups[ ]        = $user->_id;
-            if (is_array($model->_acl)) {
+            if (is_array( $model->_acl )) {
                 foreach ($groups as $group_id) {
                     foreach ($model->_acl as $_acl) {
-                        if (!empty($_acl[ 'role_id' ]) && $_acl[ 'role_id' ] == $group_id) {
-                            $modelPermissions = array_merge($modelPermissions, $_acl[ 'permissions' ]);
+                        if (!empty( $_acl[ 'role_id' ] ) &&
+                            $_acl[ 'role_id' ] == $group_id
+                        ) {
+                            $modelPermissions = array_merge( $modelPermissions,
+                                $_acl[ 'permissions' ] );
                         }
                     }
                 }
             }
-            $modelPermissions = array_unique($modelPermissions);
-            if (!in_array($mode, $modelPermissions)) {
-                throw new \Exception("This action is not allowed for you");
+            $modelPermissions = array_unique( $modelPermissions );
+            if (!in_array( $mode, $modelPermissions )) {
+                throw new \Exception( "This action is not allowed for you" );
             }
             $fieldPermissions = [ ];
-            $fieldModes       = Acl::getFieldPerms($mode);
+            $fieldModes       = Acl::getFieldPerms( $mode );
             foreach ($acl->fields as $k => $v) {
-                if (in_array($v, $fieldModes)) {
+                if (in_array( $v, $fieldModes )) {
                     $fieldPermissions[ ] = $k;
                 }
             }
         } else {
-            throw new \Exception("Incorrect acl data is in your account");
+            throw new \Exception( "Incorrect acl data is in your account" );
         }
 
         return $fieldPermissions;

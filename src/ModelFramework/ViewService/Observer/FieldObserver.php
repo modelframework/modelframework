@@ -25,7 +25,6 @@ class FieldObserver
     {
         $data = $subject->getParam('data', null);
         $view = $subject->getParam('view', null);
-
         if ($data == null || $view == null) {
             throw new \Exception('Please specify data param');
         }
@@ -55,7 +54,7 @@ class FieldObserver
             if ($fConfig[ 'type' ] == 'field') {
                 //check $field in acl
                 if (!array_key_exists($field, $aclData->fields)
-                     || !in_array($aclData->fields[ $field ], [ 'r', 'e' ])
+                     || !in_array($aclData->fields[ $field ], [ 'read', 'write' ])
                 ) {
                     unset($fieldConfigs[ 'fields' ][ $field ]);
                     continue;
@@ -64,7 +63,7 @@ class FieldObserver
             if ($fConfig[ 'type' ] == 'alias') {
                 //check $fConfig['source'] in acl
                 if (!array_key_exists($fConfig[ 'source' ], $aclData->fields)
-                     || !in_array($aclData->fields[ $fConfig[ 'source' ] ], [ 'r', 'e' ])
+                     || !in_array($aclData->fields[ $fConfig[ 'source' ] ], [ 'read', 'write' ])
                 ) {
                     unset($fieldConfigs[ 'fields' ][ $field ]);
                     continue;
@@ -73,7 +72,7 @@ class FieldObserver
             if ($fConfig[ 'type' ] == 'source') {
                 if ($fConfig['source'] !== $field
                      || !array_key_exists($fConfig[ 'source' ], $aclData->fields)
-                     || !in_array($aclData->fields[ $fConfig[ 'source' ] ], [ 'r', 'e' ])) {
+                     || !in_array($aclData->fields[ $fConfig[ 'source' ] ], [ 'read', 'write' ])) {
                     unset($fieldConfigs[ 'fields' ][ $field ]);
                     continue;
                 }
