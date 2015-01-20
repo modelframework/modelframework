@@ -89,9 +89,7 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
     {
         $user            = $this->getUser();
         $dataPermissions = $this->getAclData()->data;
-//        prn($this->getAclData()->data);
         $modelAcl        = $this->getDataModelVerify()->_acl;
-//        prn( $dataPermissions );
         foreach ($modelAcl as $acl) {
             if ($acl[ 'role_id' ] == (string) $user->id() ||
                 $acl[ 'role_id' ] == (string) $user->role_id
@@ -103,8 +101,6 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
                 }
             }
         }
-//        prn( "Acl DATA MODEL DATA PERMISSION", $dataPermissions );
-//        $modelDataPermissions = $this->getDataModelVerify()->_acl;
         return $dataPermissions;
     }
 

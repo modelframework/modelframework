@@ -13,8 +13,6 @@ class AclObserver extends AbstractConfigObserver
 
     public function process( $model, $key, $value )
     {
-        prn( $model, $key, $value );
-//        exit;
         $user = $this->getSubject()->getAuthService()->getUser();
         $acl  = $model->_acl;
         foreach ($acl as $_key => $_aclArray) {
@@ -46,7 +44,5 @@ class AclObserver extends AbstractConfigObserver
         }
         $acl         = array_values( $acl );
         $model->$key = $acl;
-        prn($model);
-//        exit;
     }
 }
