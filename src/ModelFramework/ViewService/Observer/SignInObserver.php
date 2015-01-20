@@ -138,7 +138,6 @@ class SignInObserver
         $request    = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
             $form->setData($request->getPost());
-
             if ($form->isValid()) {
                 $credentials = [];
                 $_data       = $form->getData();
@@ -166,16 +165,20 @@ class SignInObserver
 
                         $url = $subject->getParams()->getController()->url()
                             ->fromRoute('common', ['data' => 'dashboard']);
+                        $results['good_credentials'] = true;
+                        $results['redirect_url'] = $url;
                         $subject->setRedirect($subject->refresh('You have been authorized',
                             $url));
                         return;
                     } else {
                         $results['message']
                             = 'Your account blocked or deleted. Please contact administrator.';
+                        $results['good_credentials'] = false;
                     }
                 } else {
                     $results['message']
                         = 'There is an error with your Login/Password combination. Please try again.';
+                    $results['good_credentials'] = false;
                 }
             }
         }
