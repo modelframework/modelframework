@@ -7,12 +7,15 @@ use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
 use ModelFramework\DataModel\DataModelAwareInterface;
 use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\DataModel\UserAwareInterface;
+use ModelFramework\DataModel\UserAwareTrait;
+use ModelFramework\Utility\Arr;
 
 class AclDataModel implements DataModelInterface, DataModelAwareInterface,
-                              AclConfigAwareInterface
+                              AclConfigAwareInterface, UserAwareInterface
 {
 
-    use DataModelAwareTrait, AclConfigAwareTrait;
+    use DataModelAwareTrait, AclConfigAwareTrait, UserAwareTrait;
 
     public function __clone()
     {
@@ -82,15 +85,40 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
         return $this->getDataModelVerify()->__set( $name, $value );
     }
 
+    protected function getDataPermissions()
+    {
+        $user            = $this->getUser();
+        $dataPermissions = $this->getAclData()->data;
+//        prn($this->getAclData()->data);
+        $modelAcl        = $this->getDataModelVerify()->_acl;
+//        prn( $dataPermissions );
+        foreach ($modelAcl as $acl) {
+            if ($acl[ 'role_id' ] == (string) $user->id() ||
+                $acl[ 'role_id' ] == (string) $user->role_id
+            ) {
+                foreach ($acl[ 'data' ] as $data) {
+                    if (!in_array( $data, $dataPermissions )) {
+                        $dataPermissions[ ] = $data;
+                    }
+                }
+            }
+        }
+//        prn( "Acl DATA MODEL DATA PERMISSION", $dataPermissions );
+//        $modelDataPermissions = $this->getDataModelVerify()->_acl;
+        return $dataPermissions;
+    }
+
     public function __get( $name )
     {
+        $dataPermissions = $this->getDataPermissions();
         if (in_array( $name,
             [ '_model', '_label', '_adapter', '_acl', 'id' ] )) {
             return $this->getDataModelVerify()->{$name};
         }
         $_aclData = $this->getAclDataVerify();
-        if (!is_array( $_aclData->data ) ||
-            !in_array( 'read', $_aclData->data )
+
+        if (!is_array( $dataPermissions ) ||
+            !in_array( 'read', $dataPermissions )
         ) {
             throw new \Exception( 'reading is not allowed' );
         }
