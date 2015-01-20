@@ -41,7 +41,9 @@ class AgeObserver extends AbstractConfigObserver
         $datetime2 = date_create($date_2);
 
         $interval = date_diff($datetime1, $datetime2);
-
-        return $interval->format($differenceFormat);
+        if($interval)
+        {
+            return $interval->format($differenceFormat);
+        }
     }
 }
