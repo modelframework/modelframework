@@ -244,7 +244,6 @@ class View
         $user            = $this->getUser();
         $modePermissions = $model->getAclDataVerify()->modes;
         $modelAcl        = $model->getDataModelVerify()->_acl;
-//        prn( $user, $modePermissions, $modelAcl );
         foreach ($modelAcl as $acl) {
             if ($acl[ 'role_id' ] == (string) $user->id() ||
                 $acl[ 'role_id' ] == (string) $user->role_id
@@ -260,11 +259,6 @@ class View
             }
         }
 
-//        prn( $user, $modePermissions, $modelAcl );
-//        exit;
-
-//        $_aclData        = $model->getAclDataVerify();
-//        $_aclData        = $modePermissions;
         $permittedConfig = $this->getViewConfigVerify();
         if (!is_array( $modePermissions )
             ||
