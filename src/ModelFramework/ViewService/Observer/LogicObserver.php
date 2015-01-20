@@ -22,11 +22,9 @@ class LogicObserver
                     ->process();
 
         $models = $subject->getGateway()->find($query->getWhere());
-
         foreach ($models as $model) {
             $subject->getLogicServiceVerify()->get($viewConfig->mode, $viewConfig->model)->trigger($model);
         }
-
-        $subject->setRedirect($subject->refresh($viewConfig->title.' successfull', 'http://wepo.loc/common/mail/index.html'));
+        $subject->setRedirect($subject->refresh($viewConfig->title.' successfull', '/common/mail/index.html'));
     }
 }
