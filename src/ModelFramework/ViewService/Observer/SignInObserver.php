@@ -135,6 +135,8 @@ class SignInObserver
         $subject    = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
         $results    = [];
+        $results['redirect_url'] = $subject->getParams()->getController()->url()
+            ->fromRoute('common', ['data' => 'dashboard']);
         $request    = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
             $form->setData($request->getPost());
@@ -166,7 +168,10 @@ class SignInObserver
                         $url = $subject->getParams()->getController()->url()
                             ->fromRoute('common', ['data' => 'dashboard']);
                         $results['good_credentials'] = true;
+                        unset($results['redirect_url']);
                         $results['redirect_url'] = $url;
+//                        prn($results);
+//                        exit();
                         $subject->setRedirect($subject->refresh('You have been authorized',
                             $url));
                         return;

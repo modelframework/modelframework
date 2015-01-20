@@ -90,6 +90,7 @@ abstract class AbstractObserver implements \SplObserver, ConfigAwareInterface, S
 
         if ($model instanceof AclDataModel) {
             $this->_aclModel = $model;
+            $subject -> setDataModel( $model );
             $this->_model    = $this->_aclModel->getDataModel();
         }
 

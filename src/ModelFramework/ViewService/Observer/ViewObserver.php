@@ -9,10 +9,17 @@
 
 namespace ModelFramework\ViewService\Observer;
 
+use ModelFramework\ViewService\View;
+
 class ViewObserver
     implements \SplObserver
 {
 
+    /**
+     * @param \SplSubject|View $subject
+     *
+     * @throws \Exception
+     */
     public function update(\SplSubject $subject)
     {
         $viewConfig = $subject->getViewConfigVerify();
@@ -27,6 +34,7 @@ class ViewObserver
         if ( !$model) {
             throw new \Exception('Data not found');
         }
+        $subject -> setDataModel( $model );
         $data = $subject->getData();
         foreach (['actions', 'links'] as $datapartam) {
             foreach ($data[$datapartam] as $key => $link) {
