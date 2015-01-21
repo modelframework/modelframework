@@ -43,68 +43,73 @@ class CreateEmailObserver
         $mailDetailsToUpdate = [ ];
 
         foreach ($models as $model) {
-            prn( $model );
-            $linkedLinks = $linkGW->find( [ 'model_id' => $model->_id, 'model_data' => $model->getModelName() ] );
-            switch ($action) {
-                case 'update':
-                    $unlinkedLinks = $linkGW->find( [
-                        '-model_id'  => $model->_id,
-                        'mail_email' => $model->$search_field
-                    ] );
-                    prn( 'linked links' );
-                    foreach ($linkedLinks as $link) {
-//                        prn( $link );
-                        $link->model_email = $model->$search_field;
-                        $link->model_title = $model->title;
-                        $link->_acl        = $model->_acl;
-                        prn( $link );
-                        $linkGW->save( $link );
-
-                        $mailDetailsToUpdate[ ] = $link->mail_id;
-                    }
-                    prn( 'unlinked links' );
-                    prn(!count( $unlinkedLinks ) && !count( $linkedLinks ),count($unlinkedLinks),count($linkedLinks));
-                    if (!count( $unlinkedLinks ) && !count( $linkedLinks )) {
-                        prn( 'no links for model found' );
-                        prn(!count( $unlinkedLinks ) && !count( $linkedLinks ),count($unlinkedLinks),count($linkedLinks));
-                        $unlinkedLinks = [ $subject->getModelServiceVerify()->get( 'EmailToMail' ) ];
-                    }
-                    foreach ($unlinkedLinks as $link) {
-                        if ($link->model_id) {
-                            $newLink = $subject->getModelServiceVerify()->get( 'EmailToMail' );
-                            $newLink->exchangeArray( $link->toArray() );
-                            $newLink->model_id    = $model->_id;
-                            $newLink->model_title = $model->title;
-                            $newLink->model_email = $model->$search_field;
-                            $newLink->_acl        = $model->_acl;
-                            $linkGW->save( $newLink );
-                            prn( 'new link', $newLink );
-
-                            $mailDetailsToUpdate[ ] = $link->mail_id;
-                        } else {
-                            $link->model_id    = $model->_id;
-                            $link->model_data  = $model->getModelName();
-                            $link->model_title = $model->title;
+            if (!empty( $model->$search_field )) {
+                //prn( $model );
+                $linkedLinks =
+                    $linkGW->find( [ 'model_id' => (string) $model->_id, 'model_data' => $model->getModelName() ] );
+                switch ($action) {
+                    case 'update':
+                        $unlinkedLinks = $linkGW->find( [
+                            '-model_id'  => (string) $model->_id,
+                            'mail_email' => $model->$search_field
+                        ] );
+                        //prn( 'linked links' );
+                        foreach ($linkedLinks as $link) {
+                            //prn( $link );
                             $link->model_email = $model->$search_field;
+                            $link->model_title = $model->title;
                             $link->_acl        = $model->_acl;
+                            //prn( $link );
                             $linkGW->save( $link );
-                            prn( 'found link', $link );
+
+                            $mailDetailsToUpdate[ ] = (string) $link->mail_id;
+                        }
+                        //prn( 'unlinked links' );
+                        //prn( !count( $unlinkedLinks ) && !count( $linkedLinks ), count( $unlinkedLinks ),
+                        //count( $linkedLinks ) );
+                        if (!count( $unlinkedLinks ) && !count( $linkedLinks )) {
+                            //prn( 'no links for model found' );
+                            //prn( !count( $unlinkedLinks ) && !count( $linkedLinks ), count( $unlinkedLinks ),
+                            //count( $linkedLinks ) );
+                            $unlinkedLinks = [ $subject->getModelServiceVerify()->get( 'EmailToMail' ) ];
+                        }
+                        foreach ($unlinkedLinks as $link) {
+                            if ($link->model_id) {
+                                $newLink = $subject->getModelServiceVerify()->get( 'EmailToMail' );
+                                $newLink->exchangeArray( $link->toArray() );
+                                $newLink->model_id    = (string) $model->_id;
+                                $newLink->model_title = $model->title;
+                                $newLink->model_email = $model->$search_field;
+                                $newLink->_acl        = $model->_acl;
+                                $linkGW->save( $newLink );
+                                //prn( 'new link', $newLink );
+
+                                $mailDetailsToUpdate[ ] = (string) $link->mail_id;
+                            } elseif (!in_array( (string) $link->mail_id, $mailDetailsToUpdate )) {
+                                $link->model_id    = (string) $model->_id;
+                                $link->model_data  = $model->getModelName();
+                                $link->model_title = $model->title;
+                                $link->model_email = $model->$search_field;
+                                $link->_acl        = $model->_acl;
+                                $linkGW->save( $link );
+                                //prn( 'found link', $link );
+
+                                $mailDetailsToUpdate[ ] = (string) $link->mail_id;
+                            }
+                        }
+                        exit;
+
+                        break;
+                    case 'delete':
+                        foreach ($linkedLinks as $link) {
+                            $link->model_id   = 0;
+                            $link->model_data = 'Other';
+                            $linkGW->save( $link );
 
                             $mailDetailsToUpdate[ ] = $link->mail_id;
                         }
-                    }
-                    exit;
-
-                    break;
-                case 'delete':
-                    foreach ($linkedLinks as $link) {
-                        $link->model_id   = 0;
-                        $link->model_data = 'Other';
-                        $linkGW->save( $link );
-
-                        $mailDetailsToUpdate[ ] = $link->mail_id;
-                    }
-                    break;
+                        break;
+                }
             }
         }
         exit;
@@ -117,6 +122,6 @@ class CreateEmailObserver
         }
 
         $subject->getLogicService()->get( 'updateTitle', 'MailDetail' )->trigger( $mailDetails );
-        exit;
+//        exit;
     }
 }

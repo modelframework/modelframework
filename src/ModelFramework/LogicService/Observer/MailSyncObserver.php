@@ -159,6 +159,9 @@ class MailSyncObserver
 //            $newMail->date  = ( new \DateTime( $newMail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
             $this->getSubject()->getLogicService()->get( 'sync', $newMail->getModelName() )->trigger( $newMail );
             $mailGW->save( $newMail );
+            $newMail->_id = $mailGW->getLastInsertId();
+
+            $this->createEmailToMail( $newMail );
             $count++;
         }
 
@@ -256,8 +259,7 @@ class MailSyncObserver
                     $mail->chain_id = $chainGW->getLastInsertId() ?: $chain->_id;
 //                    prn($mail);
                     $mailGW->save( $mail );
-                    $mail->_id = $mailGW->getLastInsertId()  ?:$mail->_id;
-                    $this->createEmailToMail($mail);
+                    $mail->_id = $mailGW->getLastInsertId() ?: $mail->_id;
                 }
             } catch ( \Exception $ex ) {
                 throw $ex;
@@ -292,11 +294,14 @@ class MailSyncObserver
 
     public function configureMail( $user, $setting, $mail )
     {
+        $mail->from_id = $setting->user_id;
         foreach ($mail->header[ 'to' ] as $email) {
             $email        = strtolower( trim( $email ) );
             $settingEmail = strtolower( trim( $setting->email ) );
             if ($email == $settingEmail) {
                 $mail->type = 'inbox';
+                $mail->to_id = $setting->user_id;
+                $mail->from_id = '';
                 break;
             }
         }
@@ -305,9 +310,57 @@ class MailSyncObserver
         $mail->date     = ( new \DateTime( $mail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
     }
 
-    public function createEmailToMail($mail)
+    public function createEmailToMail( $mail )
     {
         //get emails and create EmailToMail models
         //trigger updateTitle for $mail
+
+        //todo need tests
+        //#1 add mail with no linked emailtomail
+        //#2 add mail with some linked emailtomail (to other models)
+        //#3 add mail with some non linked emailtomails and some linked (with cross model_ids)
+        //#3 add mail with some non linked emailtomails and some linked (to check creating clean emailtomail model)
+
+        $searchValues = $mail->type == 'inbox' ? $mail->headers[ 'from' ] : $mail->headers[ 'from' ];
+        $linkGW       = $this->getSubject()->getGatewayServiceVerify()->get( 'EmailToMail' );
+
+        $targets         = [ ];
+        $nonLinkedEmails = $linkGW->find( [ 'model_email' => $searchValues, 'mail_id' => '' ] );
+        foreach ($nonLinkedEmails as $link) {
+            $link->mail_email = $link->model_email;
+            $link->mail_id    = (string) $mail->_id;
+            $link->mail_field = 'from_to_title';
+            $link->mail_title = $mail->title;
+            $targets[ ]       = $link->model_id;
+            unset( $searchValues[ array_search( $link->model_email, $searchValues ) ] );
+            $linkGW->save( $link );
+        }
+        $linkedEmails =
+            $linkGW->find( [ '-model_id' => $targets, 'model_email' => $searchValues, '-mail_id' => '' ] );
+        $targets      = [ ];
+        foreach ($linkedEmails as $link) {
+            if (!in_array( $link->model_id, $targets )) {
+                $newLink = $this->getSubject()->getModelServiceVerify()->get( 'EmailToMail' );
+                $newLink->exchangeArray( $link->toArray() );
+                $newLink->mail_email = $newLink->model_email;
+                $newLink->mail_id    = (string) $mail->_id;
+                $newLink->mail_field = 'from_to_title';
+                $newLink->mail_title = $mail->title;
+                $targets[ ]          = $link->model_id;
+                unset( $searchValues[ array_search( $link->model_email, $searchValues ) ] );
+                $linkGW->save( $newLink );
+            }
+        }
+        if (count( $searchValues )) {
+            foreach ($searchValues as $email) {
+                $newLink             = $this->getSubject()->getModelServiceVerify()->get( 'EmailToMail' );
+                $newLink->mail_email = $email;
+                $newLink->mail_id    = (string) $mail->_id;
+                $newLink->mail_field = 'from_to_title';
+                $newLink->mail_title = $mail->title;
+            }
+        }
+
+        $this->getSubject()->getLogicService()->get( 'updateTitle', 'MailDetail' )->trigger( $mail );
     }
 }
