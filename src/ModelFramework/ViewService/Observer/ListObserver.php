@@ -59,6 +59,7 @@ class ListObserver
                 }
             }
         }
+
         $result[ 'actions' ] = $data[ 'actions' ];
         $result[ 'links' ]   = $data[ 'links' ];
         $result[ 'params' ]  = [

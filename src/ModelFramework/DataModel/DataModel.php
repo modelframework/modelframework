@@ -137,6 +137,11 @@ class DataModel implements DataModelInterface
         return $data;
     }
 
+    public function getFields()
+    {
+        return $this->_fields;
+    }
+
     public function toArray()
     {
         $data = $this->getArrayCopy();
