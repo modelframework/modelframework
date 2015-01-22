@@ -111,15 +111,20 @@ class FieldObserver
                 }
             }
 
-            $url = $subject->getBackUrl();
+//            $url = $subject->getBackUrl();
+            $url = $subject->getSaUrlBack($subject->getParams()->fromQuery('back'));
+            parse_str( parse_url( $url )[ 'query' ], $output );
+            $url = $subject->getSaUrlBack($output['back']);
             if ($url == null || $url == '/') {
+                $data = strtolower($this->viewViewConfig->document);
+                $action = 'index';
+                $mode = $this->viewViewConfig->mode;
                 $url = $subject->getParams()->getController()->url()
                                ->fromRoute('common', [
-                                   'action' => 'index', 'data' => strtolower($this->viewViewConfig->document),
-                                   'mode'   => $this->viewViewConfig->mode
+                                   'action' => $action, 'data' => $data,
+                                   'mode'   => $mode
                                ]);
             }
-
             $subject->setRedirect($subject->refresh('FieldConfig was successfully saved', $url));
 
             return;

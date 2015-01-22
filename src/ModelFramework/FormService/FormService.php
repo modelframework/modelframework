@@ -1,6 +1,7 @@
 <?php
 /**
  * Class FormService
+ *
  * @package ModelFramework\FormService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -45,9 +46,9 @@ class FormService
      * @return $this
      * @throws \Exception
      */
-    public function get( DataModelInterface $model, $mode, array $fields = [ ] )
+    public function get(DataModelInterface $model, $mode, array $fields = [])
     {
-        return $this->getForm( $model, $mode, $fields );
+        return $this->getForm($model, $mode, $fields);
     }
 
     /**
@@ -61,9 +62,9 @@ class FormService
     public function getForm(
         DataModelInterface $model,
         $mode,
-        array $fields = [ ]
+        array $fields = []
     ) {
-        return $this->createForm( $model, $mode, $fields );
+        return $this->createForm($model, $mode, $fields);
     }
 
     /**
@@ -77,26 +78,26 @@ class FormService
     public function createForm(
         DataModelInterface $model,
         $mode,
-        array $fields = [ ]
+        array $fields = []
     ) {
-        $configData = $this->getPermittedConfig( $model, $mode );
+        $configData = $this->getPermittedConfig($model, $mode);
 
-        if (count( $fields )) {
+        if (count($fields)) {
             $configFields       = $configData->fields;
-            $configData->fields = [ ];
+            $configData->fields = [];
             foreach ($fields as $fieldName) {
-                if (isset( $configFields[ $fieldName ] )) {
-                    $configData->fields[ $fieldName ] =
-                        $configFields[ $fieldName ];
+                if (isset($configFields[$fieldName])) {
+                    $configData->fields[$fieldName]
+                        = $configFields[$fieldName];
                 }
             }
         }
 
         $cf   = $this->getFormConfigParserServiceVerify()
-                     ->getFormConfig( $configData );
+            ->getFormConfig($configData);
         $form = new DataForm();
 
-        return $form->parseconfig( $cf );
+        return $form->parseconfig($cf);
     }
 
     /**
@@ -106,18 +107,15 @@ class FormService
      * @return DataModelInterface|null
      * @throws \Exception
      */
-    public function getPermittedConfig( $model, $mode )
+    public function getPermittedConfig($model, $mode)
     {
-        $fieldPermissions = $this->getFieldPermissions( $model, $mode );
-
-        $cd = $this->getConfigServiceVerify()
-                   ->getByObject( $model->getModelName(), new ModelConfig() );
-//        $cd = $this->getModelConfigsServiceVerify()->get( $model->getModelName() );
-
-        $allowedFields = [ ];
+        $fieldPermissions = $this->getFieldPermissions($model, $mode);
+        $cd               = $this->getConfigServiceVerify()
+            ->getByObject($model->getModelName(), new ModelConfig());
+        $allowedFields    = [];
         foreach ($cd->fields as $k => $v) {
-            if (in_array( $k, $fieldPermissions )) {
-                $allowedFields[ $k ] = $v;
+            if (in_array($k, $fieldPermissions)) {
+                $allowedFields[$k] = $v;
             }
         }
         $cd->fields = $allowedFields;
@@ -132,7 +130,7 @@ class FormService
      * @return array
      * @throws \Exception
      */
-    public function getFieldPermissions( $model, $mode )
+    public function getFieldPermissions($model, $mode)
     {
         $user = $this->getAuthServiceVerify()->getUser();
         $acl  = $model->getAclData();
@@ -140,38 +138,38 @@ class FormService
             $dataPermissions = $acl->data;
             $modePermissions = $acl->modes;
             $groups          = $user->groups;
-            $groups[ ]       = $user->_id;
-            if (is_array( $model->_acl )) {
+            $groups[]        = $user->_id;
+            if (is_array($model->_acl)) {
                 foreach ($groups as $group_id) {
                     foreach ($model->_acl as $_acl) {
-                        if (!empty( $_acl[ 'role_id' ] ) &&
-                            $_acl[ 'role_id' ] == $group_id
+                        if ( !empty($_acl['role_id'])
+                            && $_acl['role_id'] == $group_id
                         ) {
-                            $dataPermissions = array_merge( $dataPermissions,
-                                Arr::getDoubtField( $_acl, 'data', [ ] ) );
-                            $modePermissions = array_merge( $modePermissions,
-                                Arr::getDoubtField( $_acl, 'modes', [ ] ) );
+                            $dataPermissions = array_merge($dataPermissions,
+                                Arr::getDoubtField($_acl, 'data', []));
+                            $modePermissions = array_merge($modePermissions,
+                                Arr::getDoubtField($_acl, 'modes', []));
                         }
                     }
                 }
             }
-            $dataPermissions = array_unique( $dataPermissions );
-            $modePermissions = array_unique( $modePermissions );
-            if (!in_array( Acl::getDataPerm( $mode ), $dataPermissions )) {
-                throw new \Exception( "This data is not allowed for you" );
+            $dataPermissions = array_unique($dataPermissions);
+            $modePermissions = array_unique($modePermissions);
+            if ( !in_array(Acl::getDataPerm($mode), $dataPermissions)) {
+                throw new \Exception("This data is not allowed for you");
             }
-            if (!in_array( $mode, $modePermissions )) {
-                throw new \Exception( "This mode is not allowed for you" );
+            if ( !in_array($mode, $modePermissions)) {
+                throw new \Exception("This mode is not allowed for you");
             }
-            $fieldPermissions = [ ];
-            $fieldModes       = Acl::getFieldPerms( $mode );
+            $fieldPermissions = [];
+            $fieldModes       = Acl::getFieldPerms($mode);
             foreach ($acl->fields as $k => $v) {
-                if (in_array( $v, $fieldModes )) {
-                    $fieldPermissions[ ] = $k;
+                if (in_array($v, $fieldModes)) {
+                    $fieldPermissions[] = $k;
                 }
             }
         } else {
-            throw new \Exception( "Incorrect acl data is in your account" );
+            throw new \Exception("Incorrect acl data is in your account");
         }
 
         return $fieldPermissions;

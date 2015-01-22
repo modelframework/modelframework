@@ -41,7 +41,6 @@ class PriceObserver
         $aModels = [ ];
         foreach ($models as $_k => $model) {
             $config = $this->updateDefaultConfigs($model);
-            prn($config);
 
             $total_price = $config[ 'raw_price' ][ 'value' ] * $config[ 'qty' ][ 'value' ];
             if ($config[ 'discount_type' ][ 'value' ] == '% of Price') {

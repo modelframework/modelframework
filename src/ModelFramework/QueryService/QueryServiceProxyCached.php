@@ -1,6 +1,7 @@
 <?php
 /**
  * Class QueryServiceProxyCached
+ *
  * @package ModelFramework\QueryService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -12,8 +13,10 @@ use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
 
 class QueryServiceProxyCached
-    implements QueryServiceInterface, CacheServiceAwareInterface, QueryServiceAwareInterface
+    implements QueryServiceInterface, CacheServiceAwareInterface,
+               QueryServiceAwareInterface
 {
+
     use CacheServiceAwareTrait, QueryServiceAwareTrait;
 
     /**
@@ -25,7 +28,8 @@ class QueryServiceProxyCached
     public function getQuery($key)
     {
         return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod($this->getQueryServiceVerify(), 'getQuery', [ $key ]);
+            ->getCachedObjMethod($this->getQueryServiceVerify(), 'getQuery',
+                [$key]);
     }
 
     /**
@@ -37,5 +41,10 @@ class QueryServiceProxyCached
     public function get($key)
     {
         return $this->getQuery($key);
+    }
+
+    public function setParams($params)
+    {
+        $this->getQueryServiceVerify()->setParams($params);
     }
 }
