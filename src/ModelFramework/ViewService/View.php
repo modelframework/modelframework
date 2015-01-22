@@ -242,6 +242,7 @@ class View
 //        $modelModes = $model->getDataModel()->_acl;
 
         $user            = $this->getUser();
+        $permittedConfig = $this->getViewConfigVerify();
         $modePermissions = $model->getAclDataVerify()->modes;
         $modelAcl        = $model->getDataModelVerify()->_acl;
         foreach ($modelAcl as $acl) {
@@ -259,7 +260,6 @@ class View
             }
         }
 
-        $permittedConfig = $this->getViewConfigVerify();
         if (!is_array( $modePermissions )
             ||
             !in_array( $permittedConfig->mode, $modePermissions )
