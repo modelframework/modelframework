@@ -92,6 +92,7 @@ class View
             'ConvertObserver',
             'RecycleObserver',
             'FieldObserver',
+            'EnsureIndexObserver',
             'UserObserver',
             'ListDetailsObserver',
             'UploadObserver',

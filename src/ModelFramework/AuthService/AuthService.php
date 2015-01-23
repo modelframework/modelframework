@@ -47,10 +47,10 @@ class AuthService
     {
         $this->_session = new Container( 'auth' );
 
-        $this->_user     = $this->getModel( 'User' );
-        $this->_user->role_id =  Role::GUEST;
-        $this->_user->role_title =  Role::GUESTNAME;
-        $this->_mainUser = $this->getModel( 'MainUser' );
+        $this->_user             = $this->getModel( 'User' );
+        $this->_user->role_id    = Role::GUEST;
+        $this->_user->role_title = Role::GUESTNAME;
+        $this->_mainUser         = $this->getModel( 'MainUser' );
         $this->checkAuth();
 
         return $this;
@@ -158,12 +158,8 @@ class AuthService
                                     ->get( $this->_session->main_user_id );
             $company         = $this->getGateway( 'MainCompany' )
                                     ->get( $this->_mainUser->company_id );
-
-//                $cacheHandler = $this -> _serviceManager -> get('Wepo\Lib\CacheService');
-//                $cacheHandler->setCompany($company->id());
-            $dbs = $this->getGateway( 'MainDb' )
-                        ->find( [ 'company_id' => $company->_id ] );
-
+            $dbs             = $this->getGateway( 'MainDb' )
+                                    ->find( [ 'company_id' => $company->_id ] );
             if ($dbs->count() > 0) {
                 $db         = $dbs->current();
                 $connection = $this->getServiceLocator()->get( 'wepo_company' )
@@ -172,8 +168,6 @@ class AuthService
                 $this->_user =
                     $this->getGateway( 'User' )
                          ->findOne( [ 'main_id' => $this->_mainUser->_id ] );
-//                $this->_role =
-//                    $this->getGateway( 'Role' )->get( $this->_user->role_id );
                 if (strlen( $this->_user->theme )) {
                     $config = $this->getServiceLocator()->get( 'Config' );
                     if (is_array( $config ) &&
@@ -192,21 +186,15 @@ class AuthService
                                 __DIR__ .
                                 '/../../../../../../module/Wepo/themes/' .
                                 $this->_user->theme . '/wepo';
-//                                    __DIR__ . '/../themes/view/wepo',
                         }
-
-//                        prn(__DIR__ . '/../../../view/' . 'wepo1', $config[ 'template_path_stack' ]['wepo']);
-
                         $zZfcTwigLoaderTemplatePathStack =
                             $this->getServiceLocator()
                                  ->get( 'ZfcTwigLoaderTemplatePathStack' );
                         $paths                           =
                             $zZfcTwigLoaderTemplatePathStack->getPaths();
                         $zZfcTwigLoaderTemplatePathStack->setPaths( $config[ 'template_path_stack' ] );
-//                        prn($zZfcTwigLoaderTemplatePathStack, $paths );
                     }
                 }
-//                    $cacheHandler->setUser($this -> _user -> id() );
             } else {
                 throw new Exception( 'Could not connect to db' );
             }
