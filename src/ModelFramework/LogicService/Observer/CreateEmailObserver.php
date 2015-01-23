@@ -30,6 +30,7 @@ class CreateEmailObserver
      */
     public function update( \SplSubject $subject )
     {
+        return ;
         //todo check what is going when collector model updating or linking model.
         $this->setSubject( $subject );
         $models       = $subject->getEventObject();
@@ -97,7 +98,7 @@ class CreateEmailObserver
                                 $mailDetailsToUpdate[ ] = (string) $link->mail_id;
                             }
                         }
-                        exit;
+//                        exit;
 
                         break;
                     case 'delete':
@@ -112,7 +113,7 @@ class CreateEmailObserver
                 }
             }
         }
-        exit;
+//        exit;
         $mailDetailsToUpdate = array_unique( $mailDetailsToUpdate );
         $mailDetailGW        = $subject->getGatewayServiceVerify()->get( 'MailDetail' );
         $res                 = $mailDetailGW->find( [ '_id' => $mailDetailsToUpdate ] );
