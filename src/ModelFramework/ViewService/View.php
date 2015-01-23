@@ -239,12 +239,11 @@ class View
     protected function checkPermissions()
     {
         $model = $this->getAclModelVerify();
-//        $modelModes = $model->getDataModel()->_acl;
-
         $user            = $this->getUser();
         $permittedConfig = $this->getViewConfigVerify();
         $modePermissions = $model->getAclDataVerify()->modes;
         $modelAcl        = $model->getDataModelVerify()->_acl;
+        if(!empty($modelAcl) ){
         foreach ($modelAcl as $acl) {
             if ($acl[ 'role_id' ] == (string) $user->id() ||
                 $acl[ 'role_id' ] == (string) $user->role_id
@@ -259,7 +258,7 @@ class View
                 }
             }
         }
-
+        }
         if (!is_array( $modePermissions )
             ||
             !in_array( $permittedConfig->mode, $modePermissions )

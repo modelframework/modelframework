@@ -22,7 +22,7 @@ class FormObserver extends AbstractObserver
 
     public function initForm()
     {
-        $subject    = $this->getSubject();
+        $subject = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
 //        if ($viewConfig->mode == 'insert') {
 //            $mode = Acl::MODE_CREATE;
@@ -59,13 +59,13 @@ class FormObserver extends AbstractObserver
      */
     public function processForm($form, $model)
     {
-        $subject    = $this->getSubject();
+        $subject = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        $results    = [];
-        $old_data   = $model->split($form->getValidationGroup());
+        $results = [];
+        $old_data = $model->split($form->getValidationGroup());
         //Это жесть конечно и забавно, но на время сойдет :)
         $model_bind = $model->toArray();
-        $fieldsAcl  = $model->getAclData()->fields;
+        $fieldsAcl = $model->getAclData()->fields;
         foreach ($model_bind as $_k => $_v) {
             if (substr($_k, -4) == '_dtm' && $fieldsAcl[$_k] == 'write') {
                 $model->$_k = str_replace(' ', 'T', $_v);
@@ -91,7 +91,7 @@ class FormObserver extends AbstractObserver
                     $results['message']
                         = 'Invalid input data.' . $ex->getMessage();
                 }
-                if ( !isset($results['message'])
+                if (!isset($results['message'])
                     || !strlen($results['message'])
                 ) {
                     $subject->getLogicServiceVerify()->get('post'
