@@ -696,9 +696,54 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function ensureIndex($index)
     {
-        $this->collection->deleteIndexes();
+        $this->dropIndexes();
         $this->collection->ensureIndex($index, [
             'name' => $this->table . 'TextIndex',
         ]);
     }
+
+    /**
+     * @param array $index
+     */
+    public function createIndexes($indexes)
+    {
+        $this->dropIndexes();
+        foreach ($indexes as $name => $index )
+        {
+            $this->createIndex($index,['name'=>$name]);
+        }
+    }
+
+    /**
+     * @param array $index
+     */
+    public function createIndex($index, $options = [])
+    {
+        if ( !count($options)) {
+            $options = [
+                'name' => $this->table . 'TextIndex',
+            ];
+        }
+
+        $this->collection->ensureIndex($index, $options);
+    }
+
+    /**
+     * @param $name
+     *
+     * @return array
+     */
+    public function dropIndex($name)
+    {
+        return $this->collection->deleteIndex($name);
+    }
+
+    /**
+     * @return array
+     */
+    public function dropIndexes()
+    {
+        return $this->collection->deleteIndexes();
+    }
+
 }

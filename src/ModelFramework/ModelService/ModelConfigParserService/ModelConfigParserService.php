@@ -14,6 +14,7 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\Utility\Arr;
 
 class ModelConfigParserService
     implements ModelConfigParserServiceInterface,
@@ -100,8 +101,10 @@ class ModelConfigParserService
      */
     protected function createField($name, $conf)
     {
+
         $type                = $conf['type'];
         $_fieldconf          = $this->getField($type);
+
         $_fieldsets          = [];
         $_joins              = [];
         $_fieldconf['label'] = isset($conf['label']) ? $conf['label']
@@ -119,6 +122,7 @@ class ModelConfigParserService
                 }
                 $_fields[$name . $_sign . $_jfield]     = [
                     'type'     => 'alias',
+                    'fieldtype'=> 'alias',
                     'datatype' => 'string',
                     'default'  => '',
                     'source'   => $name . '_id',
@@ -172,6 +176,7 @@ class ModelConfigParserService
         }
         $_infilter['name'] = $name;
         $_filters          = [$name => $_infilter];
+
         $result            = [
             'labels'    => $_labels,
             'fields'    => $_fields,
@@ -212,7 +217,54 @@ class ModelConfigParserService
             'Doctor',
         ];
 
-        prn($models);
         return $models;
+    }
+
+
+    /**
+     * @param $model
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getAvailableIndexes($model)
+    {
+        $modelConfig = $this->getModelConfig($model);
+
+        $indexes = [];
+        foreach ($modelConfig['fields'] as $_key => $_field) {
+            if ($_key == '_id' || $_field['datatype'] == 'array'
+                || $_field['type'] == 'source'
+            ) {
+                continue;
+            }
+            /**
+             * if we want to index all text field in text search
+             */
+            /**
+             * if ($_field['type'] == 'field' && $_field['datatype'] == 'string') {
+             * $indexes = Arr::put2ArrayKey($indexes, 'text', [$_key => 'text']);
+             * }
+             */
+            if ($_key == 'title') {
+                $indexes = Arr::put2ArrayKey($indexes, 'text',
+                    [$_key => 'text']);
+            }
+            /**
+             * end
+             */
+            if ($_field['fieldtype'] == 'textarea') {
+                continue;
+            }
+
+            $indexes = Arr::put2ArrayKey(
+                $indexes,
+                'idx_' . $_key,
+                [$_key => 1]
+            );
+
+        }
+
+        return $indexes;
     }
 }

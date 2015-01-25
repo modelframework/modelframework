@@ -2,6 +2,7 @@
 
 /**
  * Class FieldTypesService
+ *
  * @package ModelFramework\FieldTypesService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -12,8 +13,10 @@ namespace ModelFramework\FieldTypesService;
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
 
-class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterface
+class FiledTypesService
+    implements FieldTypesServiceInterface, ConfigAwareInterface
 {
+
     use ConfigAwareTrait;
 
     /**
@@ -78,14 +81,24 @@ class FiledTypesService implements FieldTypesServiceInterface, ConfigAwareInterf
     {
         return [
             'fields'  => [
-                    '_id' => [
-                        'type' => 'pk', 'datatype' => 'string', 'default' => '', 'label' => 'ID', 'source' => '_id',
-                    ],
-                    '_acl' => [
-                        'type' => 'field', 'datatype' => 'array', 'default' => [ ], 'label' => 'acl', 'source' => '_acl',
-                    ],
+                '_id'  => [
+                    'type'      => 'pk',
+                    'fieldtype' => '_id',
+                    'datatype'  => 'string',
+                    'default'   => '',
+                    'label'     => 'ID',
+                    'source'    => '_id',
                 ],
-            'filters' => [ '_id' => $this->getInputFilter('text') ],
+                '_acl' => [
+                    'type'      => 'field',
+                    'fieldtype' => 'array',
+                    'datatype'  => 'array',
+                    'default'   => [],
+                    'label'     => 'acl',
+                    'source'    => '_acl',
+                ],
+            ],
+            'filters' => ['_id' => $this->getInputFilter('text')],
         ];
     }
 }

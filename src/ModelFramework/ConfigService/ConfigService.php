@@ -1,6 +1,7 @@
 <?php
 /**
  * Class ConfigService
+ *
  * @package ModelFramework\ConfigService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -35,18 +36,18 @@ class ConfigService
     ) {
         //        $configData = new ConfigData();
         $configData = $this->getGatewayServiceVerify()
-                           ->get( $configObject->getModelName(), $configObject )
-                           ->findOne( [ 'key' => strtolower( $keyName ) ] );
+            ->get($configObject->getModelName(), $configObject)
+            ->findOne(['key' => strtolower($keyName)]);
         if ($configData == null) {
             //            $configArray = Arr::getDoubtField( $this->getConfigDomainCustom( $domain ), $keyName, null );
-            $configArray =
-                $this->getConfigDomainCustom( $domain, $keyName, null );
+            $configArray
+                = $this->getConfigDomainCustom($domain, $keyName, null);
             if ($configArray == null) {
                 return;
 //                throw new \Exception( ' unknown config for model ' . $keyName );
             }
             $configData = clone $configObject;
-            $configData->exchangeArray( $configArray );
+            $configData->exchangeArray($configArray);
 //            $configData->key = $keyName;
 //            prn($this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData ));
 //            $this->getGatewayServiceVerify()->get( $configData -> getModelName(), $configData )->save( $configData );
@@ -61,18 +62,18 @@ class ConfigService
      * @return array|bool|int|mixed
      * @throws \Exception
      */
-    public function saveByObject( DataModelInterface $configObject )
+    public function saveByObject(DataModelInterface $configObject)
     {
-        if (empty( $configObject->key )) {
-            throw new \Exception( '"key" field must be set in ' .
-                                  $configObject->getModelName() .
-                                  ' configuration' );
+        if (empty($configObject->key)) {
+            throw new \Exception('"key" field must be set in ' .
+                $configObject->getModelName() .
+                ' configuration');
         }
-        $configObject->key = strtolower( $configObject->key );
+        $configObject->key = strtolower($configObject->key);
 
         return $this->getGatewayServiceVerify()
-                    ->get( $configObject->getModelName(), $configObject )
-                    ->save( $configObject );
+            ->get($configObject->getModelName(), $configObject)
+            ->save($configObject);
     }
 
     /**
@@ -88,14 +89,14 @@ class ConfigService
         $keyName,
         DataModelInterface $configObject
     ) {
-        $configArray =
-            Arr::getDoubtField( $this->getConfigDomainSystem( $domain ),
-                $keyName, null );
+        $configArray
+            = Arr::getDoubtField($this->getConfigDomainSystem($domain),
+            $keyName, null);
         if ($configArray == null) {
-            $configObject =
-                $this->getConfigFromDb( $domain, $keyName, $configObject );
+            $configObject
+                = $this->getConfigFromDb($domain, $keyName, $configObject);
         } else {
-            $configObject->exchangeArray( $configArray );
+            $configObject->exchangeArray($configArray);
         }
 
 //        if ( $configObject == null )
@@ -114,9 +115,9 @@ class ConfigService
      *
      * @return DataModelInterface|DataModelInterface|null
      */
-    public function get( $domain, $keyName, DataModelInterface $configObject )
+    public function get($domain, $keyName, DataModelInterface $configObject)
     {
-        return $this->getConfig( $domain, $keyName, $configObject );
+        return $this->getConfig($domain, $keyName, $configObject);
     }
 
     /**
@@ -125,9 +126,9 @@ class ConfigService
      * @return Config
      * @throws \Exception
      */
-    public function getByObject( $keyName, DataModelInterface $configObject )
+    public function getByObject($keyName, DataModelInterface $configObject)
     {
-        return $this->getConfig( $configObject->getModelName(), $keyName,
-            $configObject );
+        return $this->getConfig($configObject->getModelName(), $keyName,
+            $configObject);
     }
 }

@@ -21,8 +21,9 @@ interface ModelServiceInterface
     public function getModel($modelName);
 
     /**
-     * Returns array with all registered models names
+     * @param string $model
+     *
      * @return array
      */
-    public function getAllModelNames();
+    public function makeIndexes($model);
 }

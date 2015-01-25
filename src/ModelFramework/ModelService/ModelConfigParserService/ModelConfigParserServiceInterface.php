@@ -24,4 +24,14 @@ interface ModelConfigParserServiceInterface
      * @return array
      */
     public function getAllModelNames();
+
+    /**
+     * Calculates all available indexes for the current config
+     *
+     * @param $model
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getAvailableIndexes($model);
 }

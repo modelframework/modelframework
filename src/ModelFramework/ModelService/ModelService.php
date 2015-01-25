@@ -4,6 +4,8 @@ namespace ModelFramework\ModelService;
 
 use ModelFramework\DataModel\DataModel;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 
@@ -15,10 +17,11 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 class ModelService
-    implements ModelServiceInterface, ModelConfigParserServiceAwareInterface
+    implements ModelServiceInterface, ModelConfigParserServiceAwareInterface,
+               GatewayServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait;
+    use ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait;
 
     /**
      * @param string $modelName
@@ -61,13 +64,18 @@ class ModelService
     }
 
     /**
-     * Returns array with all registered models names
+     * @param string $model
      *
-     * @return array
+     * @return bool
+     * @throws \Exception
      */
-    public function getAllModelNames()
+    public function makeIndexes($model)
     {
-        prn('sada');
-        return $this->getModelConfigParserServiceVerify()->getAllModelNames();
+        if ($this->getGatewayService() === null) {
+            return false;
+        }
+        $indexes = $this->getModelConfigParserServiceVerify()->getAvailableIndexes($model);
+        $this->getGatewayServiceVerify()->get($model)->createIndexes($indexes);
+        return [];
     }
 }

@@ -4,8 +4,10 @@ namespace ModelFramework\Utility;
 
 class Arr
 {
+
     /**
      * Gets value from array is it exists in it and checks for lowercase math of keys
+     *
      * @param array|null $a
      * @param string     $key
      * @param null|mixed $default
@@ -16,14 +18,14 @@ class Arr
     {
         $result = $default;
 
-        if (isset($a[ $key ])) {
+        if (isset($a[$key])) {
             //&& !empty( $a[ $key ] )
 
-            $result = $a[ $key ];
+            $result = $a[$key];
         } elseif (strtolower($key) !== $key) {
             foreach (array_keys($a) as $_key) {
                 if (strtolower($_key) == strtolower($key)) {
-                    return $a[ $_key ];
+                    return $a[$_key];
                 }
             }
         } else {
@@ -46,7 +48,7 @@ class Arr
     {
         if ($value !== null) {
             //          if ( !is_array( $a ) ) { $a = [ ]; }
-            $a[ $key ] = $value;
+            $a[$key] = $value;
         }
 
         return $a;
@@ -66,8 +68,36 @@ class Arr
      * @return array
      *
      */
-    public static function merge(array $a, array $b, $preserveNumericKeys = false)
-    {
+    public static function merge(
+        array $a,
+        array $b,
+        $preserveNumericKeys = false
+    ) {
         return \Zend\Stdlib\ArrayUtils::merge($a, $b, $preserveNumericKeys);
     }
+
+    public static function put2ArrayKey(array $a, $key, $value)
+    {
+        if ( !isset($a[$key])) {
+            $a[$key] = [];
+        }
+        if ( !is_array($a[$key])) {
+            $a[$key] = (array)$a[$key];
+        }
+
+        if ($value instanceof \ArrayObject
+            || $value instanceof \ArrayIterator
+        ) {
+            $value = $value->getArrayCopy();
+        }
+        if (is_array($value)) {
+            foreach ($value as $_k => $_v) {
+                $a[$key][$_k] = $_v;
+            }
+        } else {
+            $a[$key][] = $value;
+        }
+        return $a;
+    }
+
 }
