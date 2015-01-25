@@ -19,4 +19,10 @@ interface ModelServiceInterface
      * @return DataModel
      */
     public function getModel($modelName);
+
+    /**
+     * Returns array with all registered models names
+     * @return array
+     */
+    public function getAllModelNames();
 }

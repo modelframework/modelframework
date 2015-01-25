@@ -13,6 +13,7 @@ use Zend\Mvc\Controller\Plugin\Params;
 
 trait ParamsAwareTrait
 {
+
     private $_params = null;
     private $_paramSource = null;
 
@@ -64,7 +65,8 @@ trait ParamsAwareTrait
     {
         $params = $this->getParams();
         if ($params === null || !$params instanceof Params) {
-            throw new \Exception('Params does not set in the ParamsAware instance of '.get_class($this));
+            throw new \Exception('Params does not set in the ParamsAware instance of '
+                . get_class($this));
         }
 
         return $params;
@@ -86,6 +88,10 @@ trait ParamsAwareTrait
         $param = $this->getParamsVerify()->fromQuery($name, $default);
         if ($param === $default) {
             $param = $this->getParamsVerify()->fromRoute($name, $default);
+        }
+
+        if (is_array($default) && !is_array($param)) {
+            $param = (array)$param;
         }
 
         return $param;

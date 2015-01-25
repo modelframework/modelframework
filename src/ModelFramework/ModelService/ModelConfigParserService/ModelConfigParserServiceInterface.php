@@ -10,10 +10,18 @@ namespace ModelFramework\ModelService\ModelConfigParserService;
 
 interface ModelConfigParserServiceInterface
 {
+
     /**
      * @param string $modelName
      *
      * @return array
      */
     public function getModelConfig($modelName);
+
+    /**
+     * Returns array with all registered models names
+     *
+     * @return array
+     */
+    public function getAllModelNames();
 }

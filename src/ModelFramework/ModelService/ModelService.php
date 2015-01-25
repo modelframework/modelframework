@@ -9,6 +9,7 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
 
 /**
  * Class ModelService
+ *
  * @package ModelFramework\ModelService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -16,6 +17,7 @@ use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServic
 class ModelService
     implements ModelServiceInterface, ModelConfigParserServiceAwareInterface
 {
+
     use ModelConfigParserServiceAwareTrait;
 
     /**
@@ -45,15 +47,27 @@ class ModelService
      */
     protected function createModel($modelName)
     {
-        $modelConfig     = $this->getModelConfigParserServiceVerify()->getModelConfig($modelName);
+        $modelConfig     = $this->getModelConfigParserServiceVerify()
+            ->getModelConfig($modelName);
         $model           = new DataModel();
-        $model->_fields  = $modelConfig[ 'fields' ];
-        $model->_model   = $modelConfig[ 'model' ];
-        $model->_table   = $modelConfig[ 'table' ];
-        $model->_label   = $modelConfig[ 'label' ];
-        $model->_adapter = $modelConfig[ 'adapter' ];
-        $model->exchangeArray([ ]);
+        $model->_fields  = $modelConfig['fields'];
+        $model->_model   = $modelConfig['model'];
+        $model->_table   = $modelConfig['table'];
+        $model->_label   = $modelConfig['label'];
+        $model->_adapter = $modelConfig['adapter'];
+        $model->exchangeArray([]);
 
         return $model;
+    }
+
+    /**
+     * Returns array with all registered models names
+     *
+     * @return array
+     */
+    public function getAllModelNames()
+    {
+        prn('sada');
+        return $this->getModelConfigParserServiceVerify()->getAllModelNames();
     }
 }
