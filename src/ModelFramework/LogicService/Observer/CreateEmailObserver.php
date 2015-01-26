@@ -30,11 +30,14 @@ class CreateEmailObserver
      */
     public function update( \SplSubject $subject )
     {
-        return ;
+//        return;
         //todo check what is going when collector model updating or linking model.
         $this->setSubject( $subject );
-        $models       = $subject->getEventObject();
-        $linkGW       = $subject->getGatewayServiceVerify()->get( 'EmailToMail' );
+        $models  = $subject->getEventObject();
+        $linkGW  =
+            $subject->getGatewayServiceVerify()->get( 'EmailToMail' );
+        $emailGW = $subject->getGatewayServiceVerify()->get( 'Email' );
+//        $mailDetailGW      = $subject->getGatewayServiceVerify()->get( 'MailDetail' );
         $action       = $this->getRootConfig()[ 'action' ];
         $search_field = $this->getRootConfig()[ 'search_field' ];
         if (!is_array( $models )) {
@@ -46,83 +49,94 @@ class CreateEmailObserver
         foreach ($models as $model) {
             if (!empty( $model->$search_field )) {
                 //prn( $model );
-                $linkedLinks =
-                    $linkGW->find( [ 'model_id' => (string) $model->_id, 'model_data' => $model->getModelName() ] );
                 switch ($action) {
                     case 'update':
+                        $email = $emailGW->find( [
+                            'data'     => $model->getModelName(),
+                            'model_id' => (string) $model->_id
+                        ] )->current();
+
+                        if (!isset( $email )) {
+                            $email           = $subject->getModelServiceVerify()
+                                                       ->get( 'Email' );
+                            $email->data     = $model->getModelName();
+                            $email->model_id = (string) $model->_id;
+                        }
+                        $email->_acl  = $model->_acl;
+                        $email->email = $model->$search_field;
+                        $email->title = $model->title;
+//                        prn($email);
+//                        exit;
+                        $emailGW->save( $email );
+
+                        $email->_id                     =
+                            isset( $email->_id ) ?
+                                $email->_id :
+                                $emailGW->getLastInsertId();
+                        $model->{$search_field . '_id'} = $email->_id;
+
                         $unlinkedLinks = $linkGW->find( [
-                            '-model_id'  => (string) $model->_id,
                             'mail_email' => $model->$search_field
                         ] );
-                        //prn( 'linked links' );
-                        foreach ($linkedLinks as $link) {
-                            //prn( $link );
-                            $link->model_email = $model->$search_field;
-                            $link->model_title = $model->title;
-                            $link->_acl        = $model->_acl;
-                            //prn( $link );
-                            $linkGW->save( $link );
 
-                            $mailDetailsToUpdate[ ] = (string) $link->mail_id;
-                        }
-                        //prn( 'unlinked links' );
-                        //prn( !count( $unlinkedLinks ) && !count( $linkedLinks ), count( $unlinkedLinks ),
-                        //count( $linkedLinks ) );
-                        if (!count( $unlinkedLinks ) && !count( $linkedLinks )) {
-                            //prn( 'no links for model found' );
-                            //prn( !count( $unlinkedLinks ) && !count( $linkedLinks ), count( $unlinkedLinks ),
-                            //count( $linkedLinks ) );
-                            $unlinkedLinks = [ $subject->getModelServiceVerify()->get( 'EmailToMail' ) ];
-                        }
                         foreach ($unlinkedLinks as $link) {
-                            if ($link->model_id) {
-                                $newLink = $subject->getModelServiceVerify()->get( 'EmailToMail' );
-                                $newLink->exchangeArray( $link->toArray() );
-                                $newLink->model_id    = (string) $model->_id;
-                                $newLink->model_title = $model->title;
-                                $newLink->model_email = $model->$search_field;
-                                $newLink->_acl        = $model->_acl;
-                                $linkGW->save( $newLink );
-                                //prn( 'new link', $newLink );
+                            if (!in_array( (string) $link->mail_id,
+                                $mailDetailsToUpdate )
+                            ) {
+                                $mailDetailsToUpdate[ ] =
+                                    (string) $link->mail_id;
+                                if ($link->model_id) {
+                                    $newLink =
+                                        $subject->getModelServiceVerify()
+                                                ->get( 'EmailToMail' );
+                                    $newLink->exchangeArray( $link->toArray() );
+                                    $newLink->email_id = $email->_id;
+                                    $link              = $newLink;
 
-                                $mailDetailsToUpdate[ ] = (string) $link->mail_id;
-                            } elseif (!in_array( (string) $link->mail_id, $mailDetailsToUpdate )) {
-                                $link->model_id    = (string) $model->_id;
-                                $link->model_data  = $model->getModelName();
-                                $link->model_title = $model->title;
-                                $link->model_email = $model->$search_field;
-                                $link->_acl        = $model->_acl;
-                                $linkGW->save( $link );
-                                //prn( 'found link', $link );
-
-                                $mailDetailsToUpdate[ ] = (string) $link->mail_id;
+                                } else {
+                                    $link->email_id = $email->_id;
+                                }
                             }
+                            $subject->getLogicService()
+                                    ->get( 'update', 'EmailToMail' )
+                                    ->trigger( $link );
+                            $linkGW->save( $link );
                         }
-//                        exit;
-
                         break;
                     case 'delete':
+                        $linkedLinks = $linkGW->find( [
+                            'email_model_id' => (string) $model->_id,
+                            'email_data'     => $model->getModelName()
+                        ] );
+                        $emailGW->delete( [
+                            'model_id' => (string) $model->_id,
+                            'data'     => $model->getModelName()
+                        ] );
                         foreach ($linkedLinks as $link) {
-                            $link->model_id   = 0;
-                            $link->model_data = 'Other';
-                            $linkGW->save( $link );
-
                             $mailDetailsToUpdate[ ] = $link->mail_id;
                         }
+                        $linkGW->delete( [
+                            'email_data'     => $model->getMOdelName(),
+                            'email_model_id' => (string) $model->_id
+                        ] );
                         break;
                 }
             }
         }
-//        exit;
         $mailDetailsToUpdate = array_unique( $mailDetailsToUpdate );
-        $mailDetailGW        = $subject->getGatewayServiceVerify()->get( 'MailDetail' );
-        $res                 = $mailDetailGW->find( [ '_id' => $mailDetailsToUpdate ] );
+        $mailDetailGW        =
+            $subject->getGatewayServiceVerify()->get( 'MailDetail' );
+        $res                 =
+            $mailDetailGW->find( [ '_id' => $mailDetailsToUpdate ] );
         $mailDetails         = [ ];
         foreach ($res as $mailDetail) {
             $mailDetails[ ] = $mailDetail;
         }
 
-        $subject->getLogicService()->get( 'updateTitle', 'MailDetail' )->trigger( $mailDetails );
+        if(count($mailDetails)) {
+            $subject->getLogicService()->get( 'updateTitle', 'MailDetail' )
+                    ->trigger( $mailDetails );
+        }
 //        exit;
     }
 }
