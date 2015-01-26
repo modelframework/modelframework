@@ -1,4 +1,11 @@
 <?php
+/**
+ * Class AuthService
+ *
+ * @package ModelFramework\AuthService
+ * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
+ * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
+ */
 
 namespace ModelFramework\AuthService;
 
@@ -11,16 +18,11 @@ use ModelFramework\ModelService\ModelService;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\Session\Container; // Use the session with Zend libraries
+use Zend\Session\Container;
 use Wepo\Model\Role;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\AclInterface;
 
-/**
- * Description of AuthService
- *
- * @author PROG-3
- */
 class AuthService
     implements AuthServiceInterface, ServiceLocatorAwareInterface,
                ModelServiceAwareInterface, GatewayServiceAwareInterface,
@@ -45,8 +47,7 @@ class AuthService
 
     public function init()
     {
-        $this->_session = new Container( 'auth' );
-
+        $this->_session          = new Container( 'auth' );
         $this->_user             = $this->getModel( 'User' );
         $this->_user->role_id    = Role::GUEST;
         $this->_user->role_title = Role::GUESTNAME;
@@ -103,10 +104,17 @@ class AuthService
         } else {
             $this->_session->offsetSet( 'main_user_id', 0 );
         }
-
         $this->checkAuth();
 
         return $this;
+    }
+
+    public function cleanUsers()
+    {
+        $this->setMainUser( $this->getModelServiceVerify()
+                                 ->get( 'MainUser' ) );
+        $this->setUser( $this->getModelServiceVerify()
+                             ->get( 'User' ) );
     }
 
     public function initAcl( $rules )
@@ -119,9 +127,7 @@ class AuthService
             }
             $this->_acl->addRole( new \Zend\Permissions\Acl\Role\GenericRole( $role ),
                 $extends );
-            //var_dump('addRole('.var_export($role, true).', '.var_export($extends, true));
         }
-        //var_dump($rules['allows']);
         foreach ($rules[ 'allows' ] as $role => $allow) {
             foreach ($allow as $controller => $actions) {
                 if (is_int( $controller ) && is_string( $actions )) {
@@ -132,16 +138,13 @@ class AuthService
                     $this->_acl->addResource( new \Zend\Permissions\Acl\Resource\GenericResource( $controller ) );
                 }
                 $this->_acl->allow( $role, $controller, $actions );
-                //var_dump('allow('.var_export($role, true).', '.var_export($controller, true).', '.var_export($actions, true));
             }
         }
-
         foreach ($rules[ 'dataAccess' ] as $role => $dataAllow) {
             foreach ($dataAllow as $dataType => $mode) {
                 if (!$this->_acl->hasResource( $dataType )) {
                     $this->_acl->addResource( $dataType );
                 }
-
                 $this->_acl->allow( $role, $dataType, $mode );
             }
         }
@@ -149,8 +152,6 @@ class AuthService
 
     public function checkAuth()
     {
-        // If the session does not exist
-        // at the beginning of this variable is equal to zero
         if (isset( $this->_session->main_user_id ) &&
             $this->_session->main_user_id
         ) {
@@ -165,9 +166,14 @@ class AuthService
                 $connection = $this->getServiceLocator()->get( 'wepo_company' )
                                    ->getDriver()->getConnection();
                 $connection->setConnectionParameters( $db->toArray() );
-                $this->_user =
+                $user =
                     $this->getGateway( 'User' )
                          ->findOne( [ 'main_id' => $this->_mainUser->_id ] );
+                if ($user == null) {
+                    $this->cleanUsers();
+                    throw new \Exception( 'User does not exist' );
+                }
+                $this->_user = $user;
                 if (strlen( $this->_user->theme )) {
                     $config = $this->getServiceLocator()->get( 'Config' );
                     if (is_array( $config ) &&
@@ -190,13 +196,11 @@ class AuthService
                         $zZfcTwigLoaderTemplatePathStack =
                             $this->getServiceLocator()
                                  ->get( 'ZfcTwigLoaderTemplatePathStack' );
-                        $paths                           =
-                            $zZfcTwigLoaderTemplatePathStack->getPaths();
                         $zZfcTwigLoaderTemplatePathStack->setPaths( $config[ 'template_path_stack' ] );
                     }
                 }
             } else {
-                throw new Exception( 'Could not connect to db' );
+                throw new \Exception( 'Could not connect to db' );
             }
         }
     }

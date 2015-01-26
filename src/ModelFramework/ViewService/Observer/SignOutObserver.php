@@ -22,6 +22,7 @@ use Wepo\Model\Status;
 class SignOutObserver
     implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
+
     use ConfigAwareTrait, SubjectAwareTrait;
 
     /**
@@ -29,13 +30,9 @@ class SignOutObserver
      *
      * @throws \Exception
      */
-    public function update(\SplSubject $subject)
+    public function update( \SplSubject $subject )
     {
-        $this->setSubject($subject);
-
-        $subject->getAuthServiceVerify()
-            ->setMainUser($subject->getModelServiceVerify()->get('MainUser'));
-        $subject->getAuthServiceVerify()
-            ->setUser($subject->getModelServiceVerify()->get('User'));
+        $this->setSubject( $subject );
+        $subject->getAuthServiceVerify()->cleanUsers();
     }
 }
