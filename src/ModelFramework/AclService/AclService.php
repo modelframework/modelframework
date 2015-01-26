@@ -36,7 +36,7 @@ class AclService
     {
         $user = $this->getAuthServiceVerify()->getUser();
         if ($user == null) {
-            throw new \Exception( ' the user does not set in AuthService' );
+            throw new \Exception( 'User is not set in AuthService' );
         }
 
         return $user;
