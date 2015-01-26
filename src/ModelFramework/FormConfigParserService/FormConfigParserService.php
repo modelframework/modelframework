@@ -232,6 +232,7 @@ class FormConfigParserService
             }
             $_elementConf[ 'options' ][ 'label' ] = $conf[ 'fields' ][ $_lAll->attributes[ 'select_field' ] ];
         }
+
         $_elementConf[ 'attributes' ][ 'name' ] = $name;
         if (isset( $conf[ 'required' ] )) {
             $_elementConf[ 'attributes' ][ 'required' ] = 'required';
