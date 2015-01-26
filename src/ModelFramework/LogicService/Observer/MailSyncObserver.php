@@ -343,7 +343,7 @@ class MailSyncObserver
         //#3 add mail with some non linked emailtomails and some linked (to check creating clean emailtomail model)
 
         $searchValues = $mail->type == 'inbox' ? $mail->header[ 'from' ] :
-            $mail->header[ 'from' ];
+            $mail->header[ 'to' ];
 //        prn( 'search values', $searchValues );
         $emailGW =
             $this->getSubject()->getGatewayServiceVerify()->get( 'Email' );
