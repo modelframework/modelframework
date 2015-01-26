@@ -13,6 +13,6 @@ class ConstantObserver extends AbstractConfigObserver
 {
     public function process($model, $key, $value)
     {
-        $model->$key = $value;
+            $model->$key = $value;
     }
 }
