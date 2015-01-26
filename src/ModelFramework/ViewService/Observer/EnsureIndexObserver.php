@@ -18,6 +18,8 @@ class EnsureIndexObserver
     implements \SplObserver, SubjectAwareInterface
 {
 
+    private $viewViewConfig = null;
+
     use SubjectAwareTrait;
 
     /**
@@ -27,56 +29,170 @@ class EnsureIndexObserver
      */
     public function update(\SplSubject $subject)
     {
-        $count = 0;
-        $indexed = [];
-        $models  = [];
         $this->setSubject($subject);
-        $data    = $subject->getParam('data', null);
-        $checked = $subject->getParam('checked', []);
-        foreach (
-            $subject->getModelConfigParserServiceVerify()
-                ->getAllModelNames() as $model
-        ) {
-            $_check = in_array($model, $checked) || $data == $model;
-            if ($_check) {
-                $count++;
-            }
-            $models[] = [
-                'name'    => $model,
-                'checked' => $_check
-            ];
-
-            if ($_check) {
-                $indexed[] = $model;
-            }
+        $all    = false;
+        $subEnabled = false;
+        $models = [
+            'User',
+            'Mail',
+            'Lead',
+            'Patient',
+            'Account',
+            'Document',
+            'Product',
+            'Pricebook',
+            'PricebookDetail',
+            'Activity',
+            'Quote',
+            'QuoteDetail',
+            'Order',
+            'OrderDetail',
+            'Invoice',
+            'InvoiceDetail',
+            'Payment',
+            'EventLog',
+            'Doctor',
+        ];
+        $data   = $subject->getParam('data', null);
+        if ('all' === $data) {
+            $all = true;
+            $subEnabled = true;
         }
-        $this->makeIndex($indexed);
 
-        if ($count == count($models)) {
-            $data = 'all';
-        }
+        prn($data);
+
         $subject->setData([
             'models' => $models,
-            'all'    => $data == 'All',
+            'all'    => $all,
             'data'   => $data,
-            'count'  => $count,
+            'subEnabled'   => $subEnabled,
         ]);
-
         return;
+//        prn($data, $view);
+        return $this->upd1();
     }
 
 
-    protected function makeIndex($models)
+    protected function upd1()
     {
-        /** @var View $subject */
         $subject = $this->getSubject();
-        $subject->getModelServiceVerify()
-            ->setGatewayService($subject->getGatewayServiceVerify());
-        foreach ($models as $model) {
-            $subject->getModelServiceVerify()->makeIndexes($model);
+        $data    = $subject->getParam('data', null);
+        $view    = $subject->getParam('view', null);
+        if ($data == null || $view == null) {
+            throw new \Exception('Please specify data param');
         }
-        return;
+        $data       = ucfirst($data);
+        $viewConfig = $subject->getConfigServiceVerify()->getByObject($data
+            . '.' . $view, new ViewConfig());
+        if ($viewConfig == null) {
+            throw new \Exception('Please fill ViewConfig for the ' . $data . '.'
+                . $view);
+        }
+        $this->viewViewConfig = $viewConfig;
+        $modelConfig          = $subject->getModelConfigParserService()
+            ->getModelConfig($data);
+        $aclData              = $subject->getAclServiceVerify()
+            ->getAclData($data);
+        $fieldConfigs         = ['fields' => [], 'labels' => []];
+        foreach ($viewConfig->fields as $field) {
+            if (array_key_exists($field, $modelConfig['fields'])
+//                && array_key_exists( $field, $aclData->fields )
+//                && $aclData->fields[ $field ] !== 'x'
+            ) {
+                $fieldConfigs['fields'][$field] = false;
+            }
+        }
 
+//        ksort( $modelConfig['fields']);
+        uasort($modelConfig['fields'], function ($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
+        foreach ($modelConfig['fields'] as $field => $fConfig) {
+            if ($fConfig['type'] == 'field') {
+                //check $field in acl
+                if ( !array_key_exists($field, $aclData->fields)
+                    || !in_array($aclData->fields[$field], ['read', 'write'])
+                ) {
+                    unset($fieldConfigs['fields'][$field]);
+                    continue;
+                }
+            }
+            if ($fConfig['type'] == 'alias') {
+                //check $fConfig['source'] in acl
+                if ( !array_key_exists($fConfig['source'], $aclData->fields)
+                    || !in_array($aclData->fields[$fConfig['source']],
+                        ['read', 'write'])
+                ) {
+                    unset($fieldConfigs['fields'][$field]);
+                    continue;
+                }
+            }
+            if ($fConfig['type'] == 'source') {
+                if ($fConfig['source'] !== $field
+                    || !array_key_exists($fConfig['source'], $aclData->fields)
+                    || !in_array($aclData->fields[$fConfig['source']],
+                        ['read', 'write'])
+                ) {
+                    unset($fieldConfigs['fields'][$field]);
+                    continue;
+                }
+            }
+            if ($fConfig['type'] == 'pk') {
+                continue;
+            }
+            $fieldConfigs['fields'][$field] = in_array($field,
+                $viewConfig->fields) ? true : false;
+            $fieldConfigs['labels'][$field] = $fConfig['label'];
+        }
+
+        $result                 = [];
+        $result['fieldconfigs'] = $fieldConfigs;
+        $result['params']       = ['data' => $data, 'view' => $view];
+        $subject->setData($result);
+        $this->postVerify($subject);
     }
 
+    public function postVerify(View $subject)
+    {
+        $fields  = [];
+        $request = $subject->getParams()->getController()->getRequest();
+        if ($request->isPost()) {
+            $_rows = $subject->getParams()->fromPost('row');
+
+            if (is_array($_rows)) {
+                foreach ($_rows as $_k => $_row) {
+                    if ( !empty($_row['visible']) && $_row['visible'] == 1) {
+                        $fields[] = $_k;
+                    }
+                }
+
+                if (count($fields)) {
+                    $this->viewViewConfig->fields = $fields;
+                    $subject->getConfigServiceVerify()
+                        ->saveByObject($this->viewViewConfig);
+                }
+            }
+
+//            $url = $subject->getBackUrl();
+            $url = $subject->getSaUrlBack($subject->getParams()
+                ->fromQuery('back'));
+            parse_str(parse_url($url)['query'], $output);
+            $url = $subject->getSaUrlBack($output['back']);
+            if ($url == null || $url == '/') {
+                $data   = strtolower($this->viewViewConfig->document);
+                $action = 'index';
+                $mode   = $this->viewViewConfig->mode;
+                $url    = $subject->getParams()->getController()->url()
+                    ->fromRoute('common', [
+                        'action' => $action,
+                        'data'   => $data,
+                        'mode'   => $mode
+                    ]);
+            }
+            $subject->setRedirect($subject->refresh('FieldConfig was successfully saved',
+                $url));
+
+            return;
+        }
+    }
 }
