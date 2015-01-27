@@ -161,39 +161,39 @@ class AttachObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
         if ($request->isPost()) {
             $post = $request->getPost();
 
-            $attach_to       = $model->attach_to;
-            $attach_to_names = $model->attach_to_names;
-            if (!empty($post[ 'attach_lead' ])) {
-                $leads      = explode(',', $post[ 'attach_lead' ]);
-                $leadsnames = [ ];
-                foreach ($leads as $_lead) {
-                    $tmp           = $subject->getGatewayServiceVerify()->get('Lead')->findOne([ '_id' => $_lead ]);
-                    $leadsnames[ ] = $tmp->title;
-                }
-            } else {
-                $leads      = $attach_to[ 'Lead' ];
-                $leadsnames = $attach_to_names[ 'Lead' ];
-            }
-            if (!empty($post[ 'attach_patient' ])) {
-                $patients      = explode(',', $post[ 'attach_patient' ]);
-                $patientsnames = [ ];
-                foreach ($patients as $_patient) {
-                    $tmp              =
-                        $subject->getGatewayServiceVerify()->get('Patient')->findOne([ '_id' => $_patient ]);
-                    $patientsnames[ ] = $tmp->title;
-                }
-            } else {
-                $patients      = $attach_to[ 'Patient' ];
-                $patientsnames = $attach_to_names[ 'Patient' ];
-            }
-            $attach_to[ 'Lead' ]          = $leads;
-            $attach_to[ 'Patient' ]       = $patients;
-            $attach_to_names[ 'Lead' ]    = $leadsnames;
-            $attach_to_names[ 'Patient' ] = $patientsnames;
-
+//            $attach_to       = $model->attach_to;
+//            $attach_to_names = $model->attach_to_names;
+//            if (!empty($post[ 'attach_lead' ])) {
+//                $leads      = explode(',', $post[ 'attach_lead' ]);
+//                $leadsnames = [ ];
+//                foreach ($leads as $_lead) {
+//                    $tmp           = $subject->getGatewayServiceVerify()->get('Lead')->findOne([ '_id' => $_lead ]);
+//                    $leadsnames[ ] = $tmp->title;
+//                }
+//            } else {
+//                $leads      = $attach_to[ 'Lead' ];
+//                $leadsnames = $attach_to_names[ 'Lead' ];
+//            }
+//            if (!empty($post[ 'attach_patient' ])) {
+//                $patients      = explode(',', $post[ 'attach_patient' ]);
+//                $patientsnames = [ ];
+//                foreach ($patients as $_patient) {
+//                    $tmp              =
+//                        $subject->getGatewayServiceVerify()->get('Patient')->findOne([ '_id' => $_patient ]);
+//                    $patientsnames[ ] = $tmp->title;
+//                }
+//            } else {
+//                $patients      = $attach_to[ 'Patient' ];
+//                $patientsnames = $attach_to_names[ 'Patient' ];
+//            }
+//            $attach_to[ 'Lead' ]          = $leads;
+//            $attach_to[ 'Patient' ]       = $patients;
+//            $attach_to_names[ 'Lead' ]    = $leadsnames;
+//            $attach_to_names[ 'Patient' ] = $patientsnames;
+//
             $exchange = $model->getDataModel();
-            $exchange->attach_to          = $attach_to;
-            $exchange->attach_to_names    = $attach_to_names;
+//            $exchange->attach_to          = $attach_to;
+//            $exchange->attach_to_names    = $attach_to_names;
             $model->setDataModel($exchange);
         }
 
