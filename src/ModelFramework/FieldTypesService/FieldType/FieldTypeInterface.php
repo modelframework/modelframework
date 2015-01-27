@@ -6,9 +6,9 @@
  * Time: 19:42
  */
 
-namespace ModelFramework\ModelService\ModelField\FieldConfig;
+namespace ModelFramework\FieldTypesService\FieldType;
 
-interface FieldConfigInterface
+interface FieldTypeInterface
 {
 
     /**

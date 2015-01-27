@@ -8,16 +8,20 @@
 
 namespace ModelFramework\ModelService\ModelField;
 
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\ModelService\ModelField\FieldConfig\ParsedFieldConfigAwareInterface;
 use ModelFramework\ModelService\ModelField\FieldConfig\ParsedFieldConfigAwareTrait;
 use ModelFramework\ModelService\ModelField\Strategy\DefaultStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\LookupStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\ModelFieldStrategyInterface;
 
-class ModelField implements ModelFieldInterface, ParsedFieldConfigAwareInterface, ModelFieldStrategyInterface
+class ModelField
+    implements ModelFieldInterface, ParsedFieldConfigAwareInterface,
+               ModelFieldStrategyInterface, FieldTypesServiceAwareInterface
 {
 
-    use ParsedFieldConfigAwareTrait;
+    use ParsedFieldConfigAwareTrait, FieldTypesServiceAwareTrait;
 
     /**
      * @var string
@@ -37,6 +41,7 @@ class ModelField implements ModelFieldInterface, ParsedFieldConfigAwareInterface
     public function setName($name)
     {
         $this->name = $name;
+        $this->getStrategy()->setName($name);
         return $this;
     }
 
@@ -46,6 +51,14 @@ class ModelField implements ModelFieldInterface, ParsedFieldConfigAwareInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->getStrategy()->getType();
     }
 
     /**
@@ -90,11 +103,77 @@ class ModelField implements ModelFieldInterface, ParsedFieldConfigAwareInterface
      *
      * @return $this
      */
-    public function setFieldConfig(array $config)
+    public function setFieldConfig($config)
     {
-        prn($this->getStrategy());
         $this->getStrategy()->setFieldConfig($config);
         return $this;
+    }
+
+
+    /**
+     * @return FieldConfig\FieldConfigInterface
+     */
+    public function getFieldConfig()
+    {
+        return $this->getStrategy()->getFieldConfig();
+    }
+
+    /**
+     * @return FieldConfig\FieldConfigInterface
+     */
+    public function getFieldConfigVerify()
+    {
+        return $this->getStrategy()->getFieldConfigVerify();
+    }
+
+    /**
+     * @param array $aConfig
+     *
+     * @return FieldConfig\FieldConfigInterface
+     * @throws \Exception
+     */
+    public function parseFieldConfigArray(array $aConfig)
+    {
+        return $this->getStrategy()->parseFieldConfigArray($aConfig);
+    }
+
+    /**
+     * @param array|FieldTypeInterface $aConfig
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setFieldType($aConfig)
+    {
+        return $this->getStrategy()->setFieldType($aConfig);
+    }
+
+    /**
+     * @param array $aConfig
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function parseFieldTypeArray(array $aConfig)
+    {
+        return $this->getStrategy()->parseFieldTypeArray($aConfig);
+    }
+
+    /**
+     * @return FieldTypeInterface
+     */
+    public function getFieldType()
+    {
+        return $this->getStrategy()->getFieldType();
+    }
+
+    /**
+     * @return FieldTypeInterface
+     * @throws \Exception
+     */
+    public function getFieldTypeVerify()
+    {
+        return $this->getStrategy()->getFieldTypeVerify();
     }
 
     /**
@@ -102,14 +181,23 @@ class ModelField implements ModelFieldInterface, ParsedFieldConfigAwareInterface
      */
     public function init()
     {
+        $this->setFieldType(
+            $this
+                ->getFieldTypesServiceVerify()
+                ->getField($this->getType())
+        );
+        $this->getStrategy()->init();
         return $this;
     }
 
+
     /**
-     *
+     * @return $this
      */
     public function parse()
     {
+//        $config = $this->getStrategy()->parse();
+        $this->addParsedConfig($this->getStrategy()->parse());
         return $this;
     }
 

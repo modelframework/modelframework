@@ -6,9 +6,7 @@
  * Time: 5:48 PM
  */
 
-namespace ModelFramework\ModelService\ModelField;
-
-use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigInterface;
+namespace ModelFramework\ModelService\ModelField\FieldConfig;
 
 trait FieldConfigAwareTrait
 {
@@ -16,7 +14,7 @@ trait FieldConfigAwareTrait
     /**
      * @var FieldConfigInterface
      */
-    private $_inputConfig = null;
+    private $_fieldConfig = null;
 
     /**
      * @param array|FieldConfigInterface $aConfig

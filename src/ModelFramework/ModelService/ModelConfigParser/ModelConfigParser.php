@@ -8,6 +8,8 @@
 
 namespace ModelFramework\ModelService\ModelConfigParser;
 
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareInterface;
@@ -21,20 +23,23 @@ use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\SplSubject\SplSubjectTrait;
 
 class ModelConfigParser
-    implements ModelConfigAwareInterface, \SplSubject, ParsedModelConfigAwareInterface
+    implements ModelConfigAwareInterface, \SplSubject,
+               ParsedModelConfigAwareInterface, FieldTypesServiceAwareInterface
 {
 
-    use ModelConfigAwareTrait, SplSubjectTrait, ParsedModelConfigAwareTrait;
+    use ModelConfigAwareTrait, SplSubjectTrait, ParsedModelConfigAwareTrait, FieldTypesServiceAwareTrait;
 
     private $allowed_observers = [];
 
     public function init()
     {
-        $this->attach( new InitObserver() );
-        $this->attach( new GroupsObserver() );
-        $this->attach( new IdObserver() );
-        $this->attach( new AclObserver() );
-        $this->attach( new FieldsObserver() );
+        $this->attach(new InitObserver());
+        $this->attach(new GroupsObserver());
+        $this->attach(new IdObserver());
+        $this->attach(new AclObserver());
+        $fieldsObserver = new FieldsObserver();
+        $fieldsObserver->setFieldTypesService($this->getFieldTypesServiceVerify());
+        $this->attach($fieldsObserver);
 
         foreach (
             $this->getModelConfigVerify()->observers as $observer =>

@@ -8,13 +8,37 @@
 
 namespace ModelFramework\ModelService\ModelField\Strategy;
 
-interface ModelFieldStrategyInterface
+use ModelFramework\FieldTypesService\FieldType\FieldTypeAwareInterface;
+use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigAwareInterface;
+
+interface ModelFieldStrategyInterface extends FieldConfigAwareInterface, FieldTypeAwareInterface
 {
 
     /**
-     * @param array $config
+     * @param string $name
      *
      * @return $this
      */
-    public function setFieldConfig(array $config);
+    public function setName($name);
+
+    /**
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * @return string
+     */
+    public function getType();
+
+    /**
+     * @return $this
+     */
+    public function parse();
+
+    /**
+     * @return $this
+     */
+    public function init();
+
 }

@@ -51,6 +51,7 @@ class ModelConfigParser2Service
     {
 
         $modelConfigParser = new ModelConfigParser();
+        $modelConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
         $modelConfigParser->setModelConfig($modelConfig);
         $modelConfigParser->init()->notify();
 
