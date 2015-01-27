@@ -26,8 +26,8 @@ use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicServiceAwareInterface;
 use ModelFramework\LogicService\LogicServiceAwareTrait;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareInterface;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareTrait;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
@@ -48,7 +48,7 @@ use ModelFramework\ConfigService\ConfigAwareInterface;
 
 class View
     implements ViewInterface, ViewConfigAwareInterface,
-               ModelConfigAwareInterface,
+               ParsedModelConfigAwareInterface,
                ModelConfigParserServiceAwareInterface,
                ModelServiceAwareInterface, GatewayAwareInterface,
                ParamsAwareInterface, GatewayServiceAwareInterface,
@@ -59,7 +59,7 @@ class View
                \SplSubject, ResponseAwareInterface, DataModelAwareInterface
 {
 
-    use ViewConfigAwareTrait, ModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
+    use ViewConfigAwareTrait, ParsedModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
         AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait;
@@ -198,7 +198,7 @@ class View
 
     public function labels()
     {
-        return $this->getModelConfigVerify()[ 'labels' ];
+        return $this->getParsedModelConfigVerify()[ 'labels' ];
     }
 
     public function setDataFields()

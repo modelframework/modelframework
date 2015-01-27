@@ -83,8 +83,10 @@ class ViewService
         $view->setModelService($this->getModelServiceVerify());
 
         // info about model - how it is organized. it will be useful
+//        $modelConfigParser = $this->getModelConfigParserServiceVerify()->getModelConfigParser($viewConfig->model);
+//        $view->setModelConfigParser($modelConfigParser);
         $modelConfigArray = $this->getModelConfigParserServiceVerify()->getModelConfig($viewConfig->model);
-        $view->setModelConfig($modelConfigArray);
+        $view->setParsedModelConfig($modelConfigArray);
 
         // model view should deal with acl enabled model
         $aclModel = $this->getAclServiceVerify()->getAclModel($viewConfig->model);

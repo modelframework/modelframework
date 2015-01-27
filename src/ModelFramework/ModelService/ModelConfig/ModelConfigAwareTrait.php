@@ -13,11 +13,11 @@ trait ModelConfigAwareTrait
     private $_modelConfig = null;
 
     /**
-     * @param array $modelConfig
+     * @param ModelConfig $modelConfig
      *
      * @return $this
      */
-    public function setModelConfig(array $modelConfig)
+    public function setModelConfig(ModelConfig $modelConfig)
     {
         $this->_modelConfig = $modelConfig;
 
@@ -25,7 +25,7 @@ trait ModelConfigAwareTrait
     }
 
     /**
-     * @return array
+     * @return ModelConfig
      */
     public function getModelConfig()
     {
@@ -39,10 +39,10 @@ trait ModelConfigAwareTrait
     public function getModelConfigVerify()
     {
         $modelConfig = $this->getModelConfig();
-        if ($modelConfig == null || !is_array($modelConfig)) {
-            throw new \Exception('ModelConfig does not set in ModelView');
+        if ($modelConfig == null || !$modelConfig instanceof ModelConfig ) {
+            throw new \Exception('ModelConfig is not set in ' . get_class($this) );
         }
 
-        return $this->getModelConfig();
+        return $modelConfig;
     }
 }

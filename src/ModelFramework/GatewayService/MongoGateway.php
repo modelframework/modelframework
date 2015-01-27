@@ -3,8 +3,8 @@
 namespace ModelFramework\GatewayService;
 
 use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareInterface;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareTrait;
 use MonZend\Paginator\Adapter\MongoCursor;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Adapter\Profiler\ProfilerInterface;
@@ -17,10 +17,10 @@ use Zend\Db\TableGateway\Feature\FeatureSet;
 use Zend\Db\TableGateway\Feature\AbstractFeature;
 use Zend\Paginator\Paginator;
 
-class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
+class MongoGateway implements GatewayInterface, ParsedModelConfigAwareInterface
 {
 
-    use ModelConfigAwareTrait;
+    use ParsedModelConfigAwareTrait;
 
     /**
      * @var bool
@@ -580,7 +580,7 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function isUnique(DataModelInterface $model)
     {
-        $modelConfig = $this->getModelConfig();
+        $modelConfig = $this->getParsedModelConfigVerify();
         if ($modelConfig && isset($modelConfig['unique'])
             && is_array($modelConfig['unique'])
         ) {

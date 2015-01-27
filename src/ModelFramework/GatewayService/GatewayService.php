@@ -34,7 +34,7 @@ class GatewayService extends GatewayServiceRaw
             $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig($name);
         }
         $gw = parent::getGateway('', $model);
-        $gw->setModelConfig($modelConfig);
+        $gw->setParsedModelConfig($modelConfig);
 
         return $gw;
     }
