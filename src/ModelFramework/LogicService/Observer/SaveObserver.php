@@ -32,6 +32,7 @@ class SaveObserver
             } else {
                 $dataModel = $model;
             }
+//            prn($dataModel);
             $subject->getGatewayServiceVerify()->get($dataModel->getModelName())->save($dataModel);
         }
     }

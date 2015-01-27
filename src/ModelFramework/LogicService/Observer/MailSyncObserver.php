@@ -34,8 +34,8 @@ class MailSyncObserver
             try {
                 $count = $this->syncMails( $user );
             } catch ( \Exception $ex ) {
-                prn( $ex->getMessage() );
-//            throw $ex;
+//                prn( $ex->getMessage() );
+                throw $ex;
                 $count = 0;
             }
 //            prn($count);
@@ -43,7 +43,7 @@ class MailSyncObserver
 
             $this->updateMailChains( $user );
 //            prn( 'finished normal' );
-//            exit;
+            exit;
         }
     }
 
@@ -332,39 +332,29 @@ class MailSyncObserver
 
     public function createEmailToMail( $mail )
     {
-//        prn( 'inside create email to mail method', $mail );
-        //get emails and create EmailToMail models
-        //trigger updateTitle for $mail
-
-        //todo need tests
-        //#1 add mail with no linked emailtomail
-        //#2 add mail with some linked emailtomail (to other models)
-        //#3 add mail with some non linked emailtomails and some linked (with cross model_ids)
-        //#3 add mail with some non linked emailtomails and some linked (to check creating clean emailtomail model)
-
         $searchValues = $mail->type == 'inbox' ? $mail->header[ 'from' ] :
             $mail->header[ 'to' ];
-//        prn( 'search values', $searchValues );
         $emailGW =
             $this->getSubject()->getGatewayServiceVerify()->get( 'Email' );
-        $linkGW =
-            $this->getSubject()->getGatewayServiceVerify()->get( 'EmailToMail' );
+        $linkGW  =
+            $this->getSubject()->getGatewayServiceVerify()
+                 ->get( 'EmailToMail' );
 
-        $targets         = [ ];
         $nonLinkedEmails = $emailGW->find( [ 'email' => $searchValues ] );
-//        $links           = [ ];
         foreach ($nonLinkedEmails as $email) {
-            $link             = $this->getSubject()->getModelFrameworkVerify()
+            $link             = $this->getSubject()->getModelServiceVerify()
                                      ->get( 'EmailToMail' );
             $link->email_id   = $email->_id;
             $link->mail_id    = (string) $mail->_id;
             $link->mail_field = 'from_to_title';
             $link->mail_title = $mail->title;
-            unset( $searchValues[ array_search( $link->model_email,
-                    $searchValues ) ] );
+            $link->mail_email = $email->email;
+            $link->_acl       = $mail->_acl;
+            $link->owner_id   = $mail->owner_id;
             $this->getSubject()->getLogicService()
                  ->get( 'update', 'EmailToMail' )->trigger( $link );
-//            prn( 'linked link', $link );
+            unset( $searchValues[ array_search( $link->mail_email,
+                    $searchValues ) ] );
             $linkGW->save( $link );
         }
         if (count( $searchValues )) {
@@ -376,7 +366,10 @@ class MailSyncObserver
                 $newLink->mail_id    = (string) $mail->_id;
                 $newLink->mail_field = 'from_to_title';
                 $newLink->mail_title = $mail->title;
-//                prn( 'unlinked links', $newLink );
+                $newLink->_acl       = $mail->_acl;
+                $newLink->owner_id   = $mail->owner_id;
+                $this->getSubject()->getLogicService()
+                     ->get( 'update', 'EmailToMail' )->trigger( $newLink );
                 $linkGW->save( $newLink );
             }
         }

@@ -70,7 +70,7 @@ class Logic extends AbstractService
         'DebugObserver',
         'SetAsDefaultObserver',
         'MailSyncObserver',
-        'CreateEmailObserver',
+        'EmailObserver',
         'UpdateMailFields',
         'CheckNumFieldObserver'
     ];

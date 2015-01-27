@@ -154,7 +154,7 @@ class DataModel implements DataModelInterface
             if (isset($this->_fields[$name]['datatype']) &&
                 $value !== null
             ) {
-//                prn($name, $this->_data[ $name ] );
+//                prn($name, $this->_data[ $name ],$this->_fields[$name]['datatype'] );
                 settype($this->_data[$name],
                     $this->_fields[$name]['datatype']);
             }

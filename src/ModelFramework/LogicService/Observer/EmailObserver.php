@@ -15,7 +15,7 @@ use ModelFramework\LogicService\Logic;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
-class CreateEmailObserver
+class EmailObserver
     implements \SplObserver, SubjectAwareInterface, ConfigAwareInterface
 {
 
@@ -62,11 +62,15 @@ class CreateEmailObserver
                             $email->data     = $model->getModelName();
                             $email->model_id = (string) $model->_id;
                         }
-                        $email->_acl  = $model->_acl;
-                        $email->email = $model->$search_field;
-                        $email->title = $model->title;
+                        $email->owner_id = $model->owner_id;
+                        $email->_acl     = $model->_acl;
+                        $email->email    = $model->$search_field;
+                        $email->title    = $model->title;
 //                        prn($email);
 //                        exit;
+                        $subject->getLogicService()
+                                ->get( 'update', 'Email' )
+                                ->trigger( $email );
                         $emailGW->save( $email );
 
                         $email->_id                     =
@@ -76,16 +80,26 @@ class CreateEmailObserver
                         $model->{$search_field . '_id'} = $email->_id;
 
                         $unlinkedLinks = $linkGW->find( [
-                            'mail_email' => $model->$search_field
+                            '$or'      => [
+                                [ 'mail_email' => $model->$search_field ],
+                                [ 'email_id' => $email->_id ]
+                            ],
+                            'owner_id' => (string) $subject->getAuthServiceVerify()
+                                                           ->getUser()->_id
                         ] );
+//                        prn([ 'mail_email' => $model->$search_field ],
+//                            [ 'email_id' => $email->_id ]);
 
                         foreach ($unlinkedLinks as $link) {
+//                            prn($link);
                             if (!in_array( (string) $link->mail_id,
                                 $mailDetailsToUpdate )
                             ) {
                                 $mailDetailsToUpdate[ ] =
                                     (string) $link->mail_id;
-                                if ($link->model_id) {
+                                if (!empty( $link->email_model_id ) &&
+                                    ( $link->email_id != $email->_id )
+                                ) {
                                     $newLink =
                                         $subject->getModelServiceVerify()
                                                 ->get( 'EmailToMail' );
@@ -93,15 +107,19 @@ class CreateEmailObserver
                                     $newLink->email_id = $email->_id;
                                     $link              = $newLink;
 
-                                } else {
-                                    $link->email_id = $email->_id;
                                 }
+                                $link->email_id = $email->_id;
                             }
-                            $subject->getLogicService()
-                                    ->get( 'update', 'EmailToMail' )
-                                    ->trigger( $link );
-                            $linkGW->save( $link );
+                            if ($link->email_id == $email->_id) {
+                                $subject->getLogicService()
+                                        ->get( 'update', 'EmailToMail' )
+                                        ->trigger( $link );
+//                                prn('updated link',$link);
+                                $linkGW->save( $link );
+                            }
                         }
+//                        prn('exit');
+//                        exit;
                         break;
                     case 'delete':
                         $linkedLinks = $linkGW->find( [
@@ -133,7 +151,7 @@ class CreateEmailObserver
             $mailDetails[ ] = $mailDetail;
         }
 
-        if(count($mailDetails)) {
+        if (count( $mailDetails )) {
             $subject->getLogicService()->get( 'updateTitle', 'MailDetail' )
                     ->trigger( $mailDetails );
         }
