@@ -34,7 +34,7 @@ class ViewObserver
         if ( !$model) {
             throw new \Exception('Data not found');
         }
-        $subject -> setDataModel( $model );
+        $subject->setDataModel($model);
         $data = $subject->getData();
         foreach (['actions', 'links'] as $datapartam) {
             foreach ($data[$datapartam] as $key => $link) {
@@ -54,41 +54,23 @@ class ViewObserver
         $aclData
                              = $subject->getAclServiceVerify()
             ->getAclData($viewConfig->model);
-        $modelFields         = $subject->getParsedModelConfigVerify()['fields'];
-        $usedGroups          = [];
+
+        $modelFields = $subject->getParsedModelConfigVerify()->fields;
+
+        $usedGroups = [];
         foreach ($viewConfig->fields as $field) {
             if ( !array_key_exists($field, $modelFields)) {
                 continue;
             }
             $fConfig = $modelFields[$field];
-            if ($fConfig['type'] == 'field') {
-                //check $field in acl
-                if ( !array_key_exists($field, $aclData->fields)
-                    ||
-                    !in_array($aclData->fields[$field], ['read', 'write'])
-                ) {
-                    continue;
-                }
+            //check $field in acl
+            if ( !array_key_exists($field, $aclData->fields)
+                ||
+                !in_array($aclData->fields[$field], ['read', 'write'])
+            ) {
+                continue;
             }
-            if ($fConfig['type'] == 'alias') {
-                //check $fConfig['source'] in acl
-                if ( !array_key_exists($fConfig['source'], $aclData->fields)
-                    || !in_array($aclData->fields[$fConfig['source']],
-                        ['read', 'write'])
-                ) {
-                    continue;
-                }
-            }
-            if ($fConfig['type'] == 'source') {
-                if ($fConfig['source'] !== $field
-                    ||
-                    !array_key_exists($fConfig['source'], $aclData->fields)
-                    || !in_array($aclData->fields[$fConfig['source']],
-                        ['read', 'write'])
-                ) {
-                    continue;
-                }
-            }
+
             if ($fConfig['type'] == 'pk') {
                 continue;
             }
@@ -113,7 +95,7 @@ class ViewObserver
         }
         foreach ($chosenGroups as $group => $groupElements) {
             $fieldSet
-                                  = $subject->getParsedModelConfigVerify()['fieldsets'][$group];
+                                  = $subject->getParsedModelConfigVerify()->fieldsets[$group];
             $elements             = $fieldSet['elements'];
             $fieldSet['elements'] = [];
             foreach ($groupElements as $field) {

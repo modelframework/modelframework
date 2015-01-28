@@ -581,10 +581,8 @@ class MongoGateway implements GatewayInterface, ParsedModelConfigAwareInterface
     public function isUnique(DataModelInterface $model)
     {
         $modelConfig = $this->getParsedModelConfigVerify();
-        if ($modelConfig && isset($modelConfig['unique'])
-            && is_array($modelConfig['unique'])
-        ) {
-            foreach ($modelConfig['unique'] as $_unique) {
+        if ($modelConfig !== null) {
+            foreach ($modelConfig->unique as $_unique) {
                 $_data = [];
                 foreach ((array)$_unique as $_key) {
                     $_data[$_key] = $model->$_key;
@@ -708,9 +706,8 @@ class MongoGateway implements GatewayInterface, ParsedModelConfigAwareInterface
     public function createIndexes($indexes)
     {
         $this->dropIndexes();
-        foreach ($indexes as $name => $index )
-        {
-            $this->createIndex($index,['name'=>$name]);
+        foreach ($indexes as $name => $index) {
+            $this->createIndex($index, ['name' => $name]);
         }
     }
 

@@ -11,19 +11,19 @@ namespace ModelFramework\ModelService\ModelConfig;
 interface ParsedModelConfigAwareInterface
 {
     /**
-     * @param array $parsedModelConfig
+     * @param ParsedModelConfig $parsedModelConfig
      *
      * @return $this
      */
-    public function setParsedModelConfig(array $parsedModelConfig);
+    public function setParsedModelConfig(ParsedModelConfig $parsedModelConfig);
 
     /**
-     * @return array
+     * @return ParsedModelConfig
      */
     public function getParsedModelConfig();
 
     /**
-     * @return array
+     * @return ParsedModelConfig
      * @throws \Exception
      */
     public function getParsedModelConfigVerify();

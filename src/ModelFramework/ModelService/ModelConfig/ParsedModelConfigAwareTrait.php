@@ -16,11 +16,11 @@ trait ParsedModelConfigAwareTrait
     private $_parsedModelConfig = null;
 
     /**
-     * @param array $parsedModelConfig
+     * @param ParsedModelConfig $parsedModelConfig
      *
      * @return $this
      */
-    public function setParsedModelConfig(array $parsedModelConfig)
+    public function setParsedModelConfig(ParsedModelConfig $parsedModelConfig = null )
     {
         $this->_parsedModelConfig = $parsedModelConfig;
 
@@ -28,7 +28,7 @@ trait ParsedModelConfigAwareTrait
     }
 
     /**
-     * @return array
+     * @return ParsedModelConfig
      */
     public function getParsedModelConfig()
     {
@@ -36,13 +36,15 @@ trait ParsedModelConfigAwareTrait
     }
 
     /**
-     * @return array
+     * @return ParsedModelConfig
      * @throws \Exception
      */
     public function getParsedModelConfigVerify()
     {
         $parsedModelConfig = $this->getParsedModelConfig();
-        if ($parsedModelConfig == null || !is_array($parsedModelConfig)) {
+        if ($parsedModelConfig == null
+            || !$parsedModelConfig instanceof ParsedModelConfig
+        ) {
             throw new \Exception('ParsedModelConfig is not set in '
                 . get_class($this));
         }
@@ -52,8 +54,13 @@ trait ParsedModelConfigAwareTrait
 
     public function addParsedConfig(array $a)
     {
-        return $this->setParsedModelConfig(
-            Arr::merge($this->getParsedModelConfig(), $a)
-        );
+        $parsedModelConfig = $this->getParsedModelConfig();
+        if ($parsedModelConfig === null) {
+            $parsedModelConfig = new ParsedModelConfig();
+        }
+        $conf = $parsedModelConfig->toArray();
+        $newConf = Arr::merge($conf, $a);
+        $parsedModelConfig->exchangeArray($newConf);
+        return $this->setParsedModelConfig($parsedModelConfig);
     }
 }

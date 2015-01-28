@@ -50,6 +50,11 @@ class ModelConfig extends DataModel
                 'datatype' => 'string',
                 'default'  => ''
             ],
+            'config'     => [
+                'type'     => 'field',
+                'datatype' => 'string',
+                'default'  => 'custom'
+            ],
             'fields'    => [
                 'type'     => 'field',
                 'datatype' => 'array',
@@ -75,6 +80,7 @@ class ModelConfig extends DataModel
     public $_unique = ['model'];
 
     public $_id = '';
+    public $config = 'custom';
     public $label = '';
     public $adapter = '';
     public $model = '';

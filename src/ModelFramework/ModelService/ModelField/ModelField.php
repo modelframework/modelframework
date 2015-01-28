@@ -13,6 +13,8 @@ use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\ModelService\ModelField\FieldConfig\ParsedFieldConfigAwareInterface;
 use ModelFramework\ModelService\ModelField\FieldConfig\ParsedFieldConfigAwareTrait;
 use ModelFramework\ModelService\ModelField\Strategy\DefaultStrategy;
+use ModelFramework\ModelService\ModelField\Strategy\EmailStrategy;
+use ModelFramework\ModelService\ModelField\Strategy\FieldStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\LookupStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\ModelFieldStrategyInterface;
 
@@ -93,8 +95,11 @@ class ModelField
             case 'static_lookup':
                 $this->setStrategy(new LookupStrategy());
                 break;
+            case 'email':
+                $this->setStrategy(new EmailStrategy());
+                break;
             default:
-                $this->setStrategy(new DefaultStrategy());
+                $this->setStrategy(new FieldStrategy());
         }
         return $this;
     }

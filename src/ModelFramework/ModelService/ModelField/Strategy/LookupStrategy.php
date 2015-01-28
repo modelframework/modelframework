@@ -106,7 +106,7 @@ class LookupStrategy
                 'fieldtype' => 'alias',
                 'datatype'  => 'string',
                 'default'   => '',
-                'source'    => $this->getName() . '_id',
+                //              'source'    => $this->getName() . $_sign . 'id',
                 'label'     => $_jlabel,
                 'group'     => isset($conf->group) ? $conf->group
                     : 'fields',
@@ -120,19 +120,21 @@ class LookupStrategy
                 $_fieldType->group = $conf->group;
             }
         }
-        $_joins[]                          = [
+        $_joins[]                                  = [
             'model'  => $conf->model,
-            'on'     => [$this->getName() . '_id' => '_id'],
+            'on'     => [$this->getName() . $_sign . 'id' => '_id'],
             'fields' => $_joinfields,
             'type'   => $conf->type,
         ];
-        $_fieldType->source                = $this->getName();
-        $_fieldType->default               = isset($conf->default)
+        $_fieldType->source                        = $this->getName();
+        $_fieldType->default                       = isset($conf->default)
             ? $conf->default
             : '';
-        $_fields[$this->getName() . '_id'] = $_fieldType->toArray();
-        $_labels[$this->getName() . '_id'] = $_jlabel;
+        $_fields[$this->getName() . $_sign . 'id'] = $_fieldType->toArray();
+        $_labels[$this->getName() . $_sign . 'id'] = $_jlabel;
 //        $this->getName() .= '_id';
+        $_fieldSets[$conf->group]['elements'][$this->getName() . $_sign . 'id']
+            = $_jlabel;
 
         $result = [
             'labels'    => $_labels,

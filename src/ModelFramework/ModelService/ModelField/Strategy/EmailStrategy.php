@@ -13,8 +13,9 @@ use ModelFramework\FieldTypesService\FieldType\FieldTypeInterface;
 use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfig;
 use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigInterface;
 use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigAwareTrait;
+use ModelFramework\Utility\Arr;
 
-class DefaultStrategy
+class EmailStrategy
     implements ModelFieldStrategyInterface
 {
 
@@ -102,13 +103,16 @@ class DefaultStrategy
         $_fields             = [$this->getName() => $_fieldType->toArray()];
         $_labels             = [$this->getName() => $_fieldType->label];
 
-        /* :FIXME: */
-//        $_utility = $this->getFieldPart($conf->type, 'utility');
-//
-//        if (count($_utility)) {
-//            $_fields = array_merge($_fields, $_utility);
-//        }
-        /**/
+        $_fields = Arr::merge($_fields, [
+            $this->getName() . '_id' => [
+                'type'      => 'field',
+                'fieldtype' => 'source',
+                'datatype'  => 'string',
+                'default'   => 0,
+                'label'     => '',
+//                'source'    => $this->getName(),
+            ]
+        ]);
 
         $result = [
             'labels'    => $_labels,

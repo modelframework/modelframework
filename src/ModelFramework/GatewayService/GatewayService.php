@@ -8,6 +8,7 @@
 
 namespace ModelFramework\GatewayService;
 
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfig;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
@@ -27,11 +28,16 @@ class GatewayService extends GatewayServiceRaw
      * @return null|MongoGateway
      * @throws \Exception
      */
-    public function getGateway($name, DataModelInterface $model = null, array $modelConfig = [])
+    public function getGateway($name, DataModelInterface $model = null, ParsedModelConfig $modelConfig = null )
     {
         if ($model == null) {
             $model = $this->getModel($name);
             $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig($name);
+        }
+        if ( is_array($modelConfig) )
+        {
+            prn($name, $model, $modelConfig);
+            throw new \Exception('wrang ');
         }
         $gw = parent::getGateway('', $model);
         $gw->setParsedModelConfig($modelConfig);

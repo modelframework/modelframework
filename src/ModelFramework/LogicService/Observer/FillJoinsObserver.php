@@ -47,7 +47,7 @@ class FillJoinsObserver
                 $mymodel = $aclModel;
             }
 
-            foreach ($modelConfig[ 'joins' ] as $_k => $join) {
+            foreach ($modelConfig->joins as $_k => $join) {
                 if ($join[ 'type' ] == 'lookup') {
                     $this->fillLookup($join, $subject, $mymodel);
                 } elseif ($join[ 'type' ] == 'static_lookup') {

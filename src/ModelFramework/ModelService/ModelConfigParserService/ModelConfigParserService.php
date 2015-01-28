@@ -14,14 +14,17 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\ModelService\ModelConfigParser\ModelConfigParser;
+use ModelFramework\ModelService\ModelConfigParser\ModelConfigParserAwareInterface;
+use ModelFramework\ModelService\ModelConfigParser\ModelConfigParserAwareTrait;
 use ModelFramework\Utility\Arr;
 
 class ModelConfigParserService
-    implements ModelConfigParserServiceInterface,
+    implements ModelConfigParserServiceInterface, ModelConfigParserAwareInterface,
                FieldTypesServiceAwareInterface, ConfigServiceAwareInterface
 {
 
-    use FieldTypesServiceAwareTrait, ConfigServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, ConfigServiceAwareTrait, ModelConfigParserAwareTrait;
 
     /**
      * @param string $modelName
@@ -33,13 +36,12 @@ class ModelConfigParserService
     {
         $cd = $this->getConfigServiceVerify()
             ->getByObject($modelName, new ModelConfig());
-
         if ($cd == null) {
             throw new \Exception('Please fill ModelConfig for the ' . $modelName
                 . '. I can\'t work on');
         }
 
-        return $this->pullModelConfig($cd);
+        return $this->pullModelConfig($cd)->getParsedModelConfig();
     }
 
     /**
@@ -47,145 +49,15 @@ class ModelConfigParserService
      *
      * @return array
      */
-    public function pullModelConfig(ModelConfig $cm)
-    {
-        $start_config = [
-            'fields'    => [],
-            'joins'     => [],
-            //            'unique'       => [ ],
-            'adapter'   => $cm->adapter,
-            'model'     => $cm->model,
-            'label'     => $cm->label,
-            'table'     => $cm->table,
-            'fieldsets' => [],
-            'unique'    => $cm->unique,
-        ];
-
-        foreach ($cm->groups as $_grp => $_fls) {
-            if (is_numeric($_grp)) {
-                $_grp   = $_fls;
-                $_label = $cm->model . ' information';
-                if ($_grp == 'fields') {
-                    $_baseFieldSet = true;
-                } else {
-                    $_baseFieldSet = false;
-                }
-                $_fls = [
-                    'label'    => $_label,
-                    'elements' => [],
-                    'base'     => $_baseFieldSet,
-                ];
-            } else {
-                $_fls ['elements'] = [];
-                $_fls ['base']
-                                   =
-                    isset($_fls ['base']) && $_fls ['base'] == true;
-            }
-            $start_config ['fieldsets'] [$_grp] = $_fls;
-        }
-        $modelConfig = array_merge_recursive($start_config,
-            $this->getUtilityFields($cm->model));
-        foreach ($cm->fields as $field_name => $field_conf) {
-            $modelConfig = array_merge_recursive($modelConfig,
-                $this->createField($field_name, $field_conf));
-        }
-
-        return $modelConfig;
-    }
-
-    /**
-     * @param string $name
-     * @param array  $conf
-     *
-     * @return array
-     */
-    protected function createField($name, $conf)
+    public function pullModelConfig(ModelConfig $modelConfig)
     {
 
-        $type                = $conf['type'];
-        $_fieldconf          = $this->getField($type);
+        $modelConfigParser = new ModelConfigParser();
+        $modelConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
+        $modelConfigParser->setModelConfig($modelConfig);
+        $modelConfigParser->init()->notify();
 
-        $_fieldsets          = [];
-        $_joins              = [];
-        $_fieldconf['label'] = isset($conf['label']) ? $conf['label']
-            : ucfirst($name);
-        $_labels             = [];
-
-        if (in_array($type, ['static_lookup', 'lookup'])) {
-            $_sign       = '_';
-            $_joinfields = [];
-            $_i          = 0;
-            $_fields     = [];
-            foreach ($conf['fields'] as $_jfield => $_jlabel) {
-                if ( !$_i++) {
-                    $_fieldconf['alias'] = $name . $_sign . $_jfield;
-                }
-                $_fields[$name . $_sign . $_jfield]     = [
-                    'type'     => 'alias',
-                    'fieldtype'=> 'alias',
-                    'datatype' => 'string',
-                    'default'  => '',
-                    'source'   => $name . '_id',
-                    'label'    => $_jlabel,
-                    'source'   => $name,
-                    'group'    => isset($conf['group']) ? $conf['group']
-                        : 'fields',
-                ];
-                $_labels[$name . $_sign . $_jfield]     = $_jlabel;
-                $_joinfields[$name . $_sign . $_jfield] = $_jfield;
-                if (isset($conf['group'])) {
-                    $_fieldsets[$conf['group']]['elements'][$name . $_sign
-                    . $_jfield]
-                                         = $_jlabel;
-                    $_fieldconf['group'] = $conf['group'];
-                }
-            }
-            $_joins[]               = [
-                'model'  => $conf['model'],
-                'on'     => [$name . '_id' => '_id'],
-                'fields' => $_joinfields,
-                'type'   => $type,
-            ];
-            $_fieldconf['source']   = $name;
-            $_fieldconf['default']  = isset($conf['default']) ? $conf['default']
-                : '';
-            $_fields[$name . '_id'] = $_fieldconf;
-            $_labels[$name . '_id'] = $_jlabel;
-            $name .= '_id';
-        } else {
-            if (isset($conf['group'])) {
-                $_fieldsets[$conf['group']]['elements'][$name]
-                                     = $_fieldconf['label'];
-                $_fieldconf['group'] = $conf['group'];
-            }
-            //FIXME this does not work for lookup fields, only for source fields. Need update.
-            $_fieldconf['default'] = isset($conf['default']) ? $conf['default']
-                : '';
-            $_fieldconf['source']  = $name;
-            $_fields               = [$name => $_fieldconf];
-            $_labels               = [$name => $_fieldconf['label']];
-
-            $_utility = $this->getFieldPart($conf['type'], 'utility');
-            if (count($_utility)) {
-                $_fields = array_merge($_fields, $_utility);
-            }
-        }
-        $_infilter = $this->getInputFilter($type);
-        if (isset($conf['required'])) {
-            $_infilter['required'] = true;
-        }
-        $_infilter['name'] = $name;
-        $_filters          = [$name => $_infilter];
-
-        $result            = [
-            'labels'    => $_labels,
-            'fields'    => $_fields,
-            'filters'   => $_filters,
-            'joins'     => $_joins,
-            'fieldsets' => $_fieldsets,
-        ];
-
-        return $result;
+        return $modelConfigParser;
     }
 
     /**
@@ -193,31 +65,74 @@ class ModelConfigParserService
      *
      * @return array
      */
-    public function getAllModelNames()
+    public function getAllModelNames($scope = null)
     {
         $models = [
-            'User',
-            'Mail',
-            'Lead',
-            'Patient',
-            'Account',
-            'Document',
-            'Product',
-            'Pricebook',
-            'PricebookDetail',
-            'Activity',
-            'Quote',
-            'QuoteDetail',
-            'Order',
-            'OrderDetail',
-            'Invoice',
-            'InvoiceDetail',
-            'Payment',
-            'EventLog',
-            'Doctor',
+            'custom' => [
+
+                'Lead',
+                'Patient',
+                'Account',
+                'Document',
+                'Product',
+                'Pricebook',
+                'PricebookDetail',
+                'Activity',
+                'Quote',
+                'QuoteDetail',
+                'Order',
+                'OrderDetail',
+                'Invoice',
+                'InvoiceDetail',
+                'Payment',
+                'EventLog',
+                'Doctor',
+                'CardPatient',
+                'CardLead',
+                'Note',
+                'NoteLead',
+                'NotePatient',
+                'Call',
+                'Task',
+                'Event',
+                'Vendor',
+            ],
+            'system' => [
+                'User',
+                'Mail',
+                'Test',
+                'EmailToMail',
+                'Acl',
+                'MainUser',
+                'MainCompany',
+                'MainDb',
+                'User',
+                'SaUrl',
+                'Role',
+                'Mail',
+                'MailDetail',
+                'MailReceiveSetting',
+                'MailSendSetting',
+                'Email0',
+                'Email',
+                'EventLog',
+            ]
         ];
 
-        return $models;
+        if ($scope !== null && $scope === 'all') {
+            $result = $models['custom'];
+            $result = Arr::merge($result, $models['system']);
+            return $result;
+        }
+
+        if ($scope == null || !isset($models[$scope])) {
+            $result   = $models['custom'];
+            $result[] = 'User';
+            $result[] = 'Mail';
+            return $result;
+        }
+
+        return $models[$scope];
     }
 
 

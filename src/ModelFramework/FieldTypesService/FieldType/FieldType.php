@@ -16,7 +16,8 @@ class FieldType implements FieldTypeInterface
     public $datatype = '';
     public $default = 0;
     public $label = '';
-    public $source = '';
+    public $group = '';
+//    public $source = '';
 
     /**
      * @param array $a
@@ -30,7 +31,8 @@ class FieldType implements FieldTypeInterface
         $this->datatype  = (isset($a['datatype'])) ? $a['datatype'] : '';
         $this->default   = (isset($a['default'])) ? $a['default'] : '';
         $this->label     = (isset($a['label'])) ? $a['label'] : '';
-        $this->source    = (isset($a['source'])) ? $a['source'] : '';
+        $this->group     = (isset($a['group'])) ? $a['group'] : '';
+//      $this->source  = (isset($a['source'])) ? $a['source'] : '';
     }
 
 
@@ -45,7 +47,8 @@ class FieldType implements FieldTypeInterface
             'datatype'  => $this->datatype,
             'default'   => $this->default,
             'label'     => $this->label,
-            'source'    => $this->source,
+            'group'     => $this->group,
+//          'source'    => $this->source,
         ];
     }
 
