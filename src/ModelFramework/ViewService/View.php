@@ -105,6 +105,7 @@ class View
             'SignInObserver',
             'SignOutObserver',
             'SignUpObserver',
+            'MailSendObserver'
         ];
     protected $observers = [ ];
 

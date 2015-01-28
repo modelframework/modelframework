@@ -34,16 +34,11 @@ class MailSyncObserver
             try {
                 $count = $this->syncMails( $user );
             } catch ( \Exception $ex ) {
-//                prn( $ex->getMessage() );
                 throw $ex;
                 $count = 0;
             }
-//            prn($count);
-//            exit;
 
             $this->updateMailChains( $user );
-//            prn( 'finished normal' );
-            exit;
         }
     }
 
@@ -66,34 +61,6 @@ class MailSyncObserver
                 Status::NEW_,
             ],
         ] );
-//        prn( $settings->toArray() );
-//        exit;
-//        switch ( $actionType )
-//        {
-//            case 'sync':
-//                $settings = $this->table( 'MailSetting' )->find( [
-//                                                                     'user_id'          => $user->id(),
-//                                                                     'setting_protocol' => \Wepo\Model\MailSetting::receiveProtocols(),
-//                                                                     'status_id'        => [
-//                                                                         Status::NORMAL,
-//                                                                         Status::NEW_
-//                                                                     ]
-//                                                                 ] );
-//                break;
-//            case 'send': //change when mail setting become apart for send and sync
-//                $settings = $this->table( 'MailSetting' )->find( [
-//                                                                     'user_id'          => $user->id(),
-//                                                                     'setting_protocol' => \Wepo\Model\MailSetting::sendProtocols(),
-//                                                                     'status_id'        => [
-//                                                                         Status::NORMAL,
-//                                                                         Status::NEW_
-//                                                                     ]
-//                                                                 ] );
-//                break;
-//            default:
-//                throw new \Exception( 'actionType is wrong' );
-//                break;
-//        }
 
         return $settings;
     }
@@ -126,8 +93,9 @@ class MailSyncObserver
             $syncService  = $this->mail( $setting );
             $fetchedMails = $syncService->fetchAll( $exceptUids );
 //            prn($fetchedMails);
+//            exit;
             if ($syncService->lastSyncIsSuccessful()) {
-                $mailGW->delete( [ 'header.message-id' => 'send' ] );
+                $mailGW->delete( [ 'status_id' => Status::SENDING ] );
             }
 //            prn( $fetchedMails );
 //            exit;
@@ -242,6 +210,7 @@ class MailSyncObserver
             $title         = $chain->title;
             $date          = $chain->date;
             $last_mail     = $chain->last_mail;
+            $status        = Status::NEW_;
             foreach ($chainMails as $mail) {
                 $mailDate = strtotime( $mail->date );
 //                prn( $mail->date, $mailDate, $firstMailDate, $lastMailDate );
@@ -253,6 +222,7 @@ class MailSyncObserver
                     $date         = $mail->date;//$oldChainDate;
                     $lastMailDate = $mailDate;
                     $last_mail    = $mail->_id;
+                    $status       = $mail->status_id;
                 }
             }
 
@@ -262,7 +232,7 @@ class MailSyncObserver
             $chain->date      = $date;
             $chain->last_mail = $last_mail;
             $chain->count     = $chain->count + count( $chainMails );
-            $chain->status_id = Status::NEW_;
+            $chain->status_id = $status;
 //            prn( 'result', $chain );
 
             try {
@@ -313,14 +283,17 @@ class MailSyncObserver
 
     public function configureMail( $user, $setting, $mail )
     {
-        $mail->from_id = $setting->user_id;
+        $mail->from_id   = $setting->user_id;
+        $mail->status_id = Status::NORMAL;
         foreach ($mail->header[ 'to' ] as $email) {
             $email        = strtolower( trim( $email ) );
             $settingEmail = strtolower( trim( $setting->email ) );
             if ($email == $settingEmail) {
-                $mail->type    = 'inbox';
-                $mail->to_id   = $setting->user_id;
-                $mail->from_id = '';
+                $mail->type      = 'inbox';
+                $mail->to_id     = $setting->user_id;
+                $mail->from_id   = '';
+                $mail->status_id = Status::NEW_;
+
                 break;
             }
         }
@@ -334,9 +307,9 @@ class MailSyncObserver
     {
         $searchValues = $mail->type == 'inbox' ? $mail->header[ 'from' ] :
             $mail->header[ 'to' ];
-        $emailGW =
+        $emailGW      =
             $this->getSubject()->getGatewayServiceVerify()->get( 'Email' );
-        $linkGW  =
+        $linkGW       =
             $this->getSubject()->getGatewayServiceVerify()
                  ->get( 'EmailToMail' );
 
