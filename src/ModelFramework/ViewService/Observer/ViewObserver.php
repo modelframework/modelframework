@@ -54,7 +54,7 @@ class ViewObserver
         $aclData
                              = $subject->getAclServiceVerify()
             ->getAclData($viewConfig->model);
-        $modelFields         = $subject->getModelConfigVerify()['fields'];
+        $modelFields         = $subject->getParsedModelConfigVerify()['fields'];
         $usedGroups          = [];
         foreach ($viewConfig->fields as $field) {
             if ( !array_key_exists($field, $modelFields)) {
@@ -113,7 +113,7 @@ class ViewObserver
         }
         foreach ($chosenGroups as $group => $groupElements) {
             $fieldSet
-                                  = $subject->getModelConfigVerify()['fieldsets'][$group];
+                                  = $subject->getParsedModelConfigVerify()['fieldsets'][$group];
             $elements             = $fieldSet['elements'];
             $fieldSet['elements'] = [];
             foreach ($groupElements as $field) {

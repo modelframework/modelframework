@@ -37,8 +37,10 @@ class ModelConfigParser
         $this->attach(new GroupsObserver());
         $this->attach(new IdObserver());
         $this->attach(new AclObserver());
+
         $fieldsObserver = new FieldsObserver();
         $fieldsObserver->setFieldTypesService($this->getFieldTypesServiceVerify());
+
         $this->attach($fieldsObserver);
 
         foreach (

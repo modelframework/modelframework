@@ -89,6 +89,7 @@ class ModelField
     {
         switch ($type) {
             case 'lookup':
+            case 'jlookup':
             case 'static_lookup':
                 $this->setStrategy(new LookupStrategy());
                 break;

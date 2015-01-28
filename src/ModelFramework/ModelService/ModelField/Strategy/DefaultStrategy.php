@@ -90,7 +90,6 @@ class DefaultStrategy
         $_joins            = [];
         $_fieldType->label = isset($conf->label) ? $conf->label
             : ucfirst($this->getName());
-        $_labels           = [];
 
         if (isset($conf->group)) {
             $_fieldSets[$conf->group]['elements'][$this->getName()]
