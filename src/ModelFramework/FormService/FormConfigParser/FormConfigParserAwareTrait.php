@@ -13,7 +13,7 @@ trait ModelConfigParserAwareTrait
     private $_modelConfigParser = null;
 
     /**
-     * @param ModelConfigParser $modelConfigParser
+     * @param array $modelConfigParser
      *
      * @return $this
      */
@@ -25,7 +25,7 @@ trait ModelConfigParserAwareTrait
     }
 
     /**
-     * @return ModelConfigParser
+     * @return array
      */
     public function getModelConfigParser()
     {
@@ -33,7 +33,7 @@ trait ModelConfigParserAwareTrait
     }
 
     /**
-     * @return ModelConfigParser
+     * @return array
      * @throws \Exception
      */
     public function getModelConfigParserVerify()

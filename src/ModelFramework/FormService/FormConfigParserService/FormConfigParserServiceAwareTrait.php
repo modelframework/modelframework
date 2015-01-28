@@ -6,7 +6,7 @@
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\FormConfigParserService;
+namespace ModelFramework\FormService\FormConfigParserService;
 
 trait FormConfigParserServiceAwareTrait
 {
@@ -49,4 +49,5 @@ trait FormConfigParserServiceAwareTrait
 
         return $formConfigParserService;
     }
+
 }

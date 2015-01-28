@@ -18,8 +18,8 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareInterface;
-use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareTrait;
+use ModelFramework\FormService\FormConfigParserService\FormConfigParserServiceAwareInterface;
+use ModelFramework\FormService\FormConfigParserService\FormConfigParserServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
@@ -76,6 +76,29 @@ class FormService
      * @throws \Exception
      */
     public function createForm(
+        DataModelInterface $model,
+        $mode,
+        array $fields = []
+    ) {
+        $parsedFormConfig = $this->getFormConfigParserServiceVerify()
+            ->setDataModel($model)
+            ->limitFields($fields)
+            ->parse();
+
+        $form = new DataForm();
+        $form->parseconfig($parsedFormConfig);
+        return $model;
+    }
+
+    /**
+     * @param DataModelInterface $model
+     * @param string             $mode
+     * @param array              $fields
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function createForm0(
         DataModelInterface $model,
         $mode,
         array $fields = []
