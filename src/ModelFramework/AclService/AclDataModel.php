@@ -17,6 +17,8 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
 
     use DataModelAwareTrait, AclConfigAwareTrait, UserAwareTrait;
 
+    private $mixedAclData = null;
+
     public function __clone()
     {
         $this->setDataModel(clone $this->getDataModel());
@@ -44,22 +46,21 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
 
     public function __get($name)
     {
-        $dataPermissions = $this->getDataPermissions();
+        $aclData = $this->getDataPermissions();
         if (in_array($name,
             ['_model', '_label', '_adapter', '_acl', 'id', '_id'])) {
             return $this->getDataModelVerify()->{$name};
         }
-        $_aclData = $this->getAclDataVerify();
 
-        if ( !is_array($dataPermissions)
-            ||
-            !in_array('read', $dataPermissions)
+        if ( !in_array('read', $aclData->data)
         ) {
             throw new \Exception('reading is not allowed');
         }
-
-        if (empty($_aclData->fields[$name])) {
+        if (empty($aclData->fields[$name])) {
             return 'denied';
+        }
+        if ($aclData->fields[$name] == 'x') {
+            return 'reading is not allowed';
         }
 
         return $this->getDataModelVerify()->__get($name);
@@ -67,20 +68,18 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
 
     public function __set($name, $value)
     {
-        $_aclData = $this->getAclDataVerify();
-        if ( !is_array($_aclData->data)
-            ||
-            !in_array('write', $_aclData->data)
+        $aclData = $this->getDataPermissions();
+        if ( !in_array('write', $aclData->data)
         ) {
             throw new \Exception('writing is not allowed');
         }
-        if (empty($_aclData->fields[$name])) {
+        if (empty($aclData->fields[$name])) {
             return 'denied';
         }
-        if ($_aclData->fields[$name] == 'x') {
+        if ($aclData->fields[$name] == 'x') {
             return 'reading is not allowed';
         }
-        if ($_aclData->fields[$name] !== 'write') {
+        if ($aclData->fields[$name] !== 'write') {
             return 'writing is not allowed';
         }
 
@@ -137,22 +136,31 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
         return $this->getDataModelVerify()->getFields();
     }
 
-    protected function getDataPermissions()
+    /**
+     * @return AclConfig\AclConfig|DataModelInterface
+     * @throws \Exception
+     */
+    public function getDataPermissions()
     {
-        $user            = $this->getUser();
-        $dataPermissions = $this->getAclData()->data;
-        $modelAcl        = $this->getDataModelVerify()->_acl;
+        if ($this->mixedAclData !== null) {
+            return $this->mixedAclData;
+        }
+
+        $this->mixedAclData = $this->getAclData();
+
+        $user     = $this->getUser();
+        $modelAcl = $this->getDataModelVerify()->_acl;
         foreach ($modelAcl as $acl) {
             if ($acl['role_id'] == (string)$user->id()
                 || $acl['role_id'] == (string)$user->role_id
             ) {
                 foreach ($acl['data'] as $data) {
-                    if ( !in_array($data, $dataPermissions)) {
-                        $dataPermissions[] = $data;
+                    if ( !in_array($data, $this->mixedAclData->data)) {
+                        $this->mixedAclData->data[] = $data;
                     }
                 }
             }
         }
-        return $dataPermissions;
+        return $this->mixedAclData;
     }
 }
