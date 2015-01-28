@@ -11,28 +11,32 @@ namespace ModelFramework\ViewService\Observer;
 class HTMLObserver
     implements \SplObserver
 {
-    public function update(\SplSubject $subject)
+
+    public function update( \SplSubject $subject )
     {
         $viewConfig = $subject->getViewConfigVerify();
 
         $query =
             $subject->getQueryServiceVerify()
-                    ->get($viewConfig->query)
-                    ->setParams($subject->getParams())
+                    ->get( $viewConfig->query )
+                    ->setParams( $subject->getParams() )
                     ->process();
 
-        $subject->setData($query->getData());
+        $subject->setData( $query->getData() );
 
         $result = [ ];
-        $model  = $subject->getGatewayVerify()->findOne($query->getWhere());
+        $model  = $subject->getGatewayVerify()->findOne( $query->getWhere() );
         if (!$model) {
-            throw new \Exception('Data not found');
+            $result[ 'data' ] =
+                'Sorry, some error occured. We can\'t display message. Ask administrator';
+        }
+        else{
+            $result[ 'data' ] = $model->text;
         }
 
 //        $data = $subject->getData();
 
-        $result[ 'data' ]   = $model->text;
 
-        $subject->setData($result);
+        $subject->setData( $result );
     }
 }
