@@ -16,6 +16,8 @@ use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\FileService\FileServiceAwareInterface;
+use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicConfig\LogicConfigAwareInterface;
@@ -33,11 +35,11 @@ use Zend\Db\ResultSet\ResultSetInterface;
 class Logic extends AbstractService
     implements GatewayServiceAwareInterface, ModelConfigParserServiceAwareInterface, LogicConfigAwareInterface,
                AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject, LogicServiceAwareInterface,
-               ConfigServiceAwareInterface, QueryServiceAwareInterface
+               ConfigServiceAwareInterface, QueryServiceAwareInterface, FileServiceAwareInterface
 {
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, ModelConfigParserServiceAwareTrait, LogicConfigAwareTrait,
         AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait, ConfigServiceAwareTrait, MailServiceAwareTrait,
-        QueryServiceAwareTrait;
+        QueryServiceAwareTrait, FileServiceAwareTrait;
 
     /**
      * @var array|DataModel|null
@@ -72,7 +74,8 @@ class Logic extends AbstractService
         'MailSyncObserver',
         'EmailObserver',
         'UpdateMailFields',
-        'CheckNumFieldObserver'
+        'CheckNumFieldObserver',
+        'AvatarCopyObserver'
     ];
 
     protected $observers = [ ];

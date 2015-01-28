@@ -22,8 +22,16 @@ class FileService implements FileServiceInterface
 
         return $destenation;
     }
+    public function moveFile($from, $to)
+    {
+        if (!@rename($from, $to)) {
+            return false;
+        }
 
-    private function setDestenation($filename, $ispublic = false, $userdir = null)
+        return true;
+    }
+
+    public function setDestenation($filename, $ispublic = false, $userdir = null)
     {
         $auth = $this->service->get('ModelFramework\AuthService');
         if ($ispublic) {
