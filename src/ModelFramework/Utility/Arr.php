@@ -68,12 +68,21 @@ class Arr
      * @return array
      *
      */
-    public static function merge(
-        array $a,
-        array $b,
-        $preserveNumericKeys = false
-    ) {
-        return \Zend\Stdlib\ArrayUtils::merge($a, $b, $preserveNumericKeys);
+    public static function merge($a, $b, $preserveNumericKeys = false)
+    {
+        return \Zend\Stdlib\ArrayUtils::merge(self::arr($a), self::arr($b),
+            $preserveNumericKeys);
+    }
+
+    public static function arr($a)
+    {
+        if ($a === null) {
+            $a = [];
+        }
+        if ( !is_array($a)) {
+            $a = (array)$a;
+        }
+        return $a;
     }
 
     public static function put2ArrayKey(array $a, $key, $value)

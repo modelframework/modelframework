@@ -11,19 +11,19 @@ namespace ModelFramework\ModelService\ModelConfig;
 interface ModelConfigAwareInterface
 {
     /**
-     * @param array $modelConfig
+     * @param ModelConfig $modelConfig
      *
      * @return $this
      */
-    public function setModelConfig(array $modelConfig);
+    public function setModelConfig(ModelConfig $modelConfig);
 
     /**
-     * @return array
+     * @return ModelConfig
      */
     public function getModelConfig();
 
     /**
-     * @return array
+     * @return ModelConfig
      * @throws \Exception
      */
     public function getModelConfigVerify();

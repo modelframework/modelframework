@@ -3,8 +3,8 @@
 namespace ModelFramework\GatewayService;
 
 use ModelFramework\DataModel\DataModelInterface;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareInterface;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareTrait;
 use MonZend\Paginator\Adapter\MongoCursor;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Adapter\Profiler\ProfilerInterface;
@@ -17,10 +17,10 @@ use Zend\Db\TableGateway\Feature\FeatureSet;
 use Zend\Db\TableGateway\Feature\AbstractFeature;
 use Zend\Paginator\Paginator;
 
-class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
+class MongoGateway implements GatewayInterface, ParsedModelConfigAwareInterface
 {
 
-    use ModelConfigAwareTrait;
+    use ParsedModelConfigAwareTrait;
 
     /**
      * @var bool
@@ -580,11 +580,9 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
      */
     public function isUnique(DataModelInterface $model)
     {
-        $modelConfig = $this->getModelConfig();
-        if ($modelConfig && isset($modelConfig['unique'])
-            && is_array($modelConfig['unique'])
-        ) {
-            foreach ($modelConfig['unique'] as $_unique) {
+        $modelConfig = $this->getParsedModelConfigVerify();
+        if ($modelConfig !== null) {
+            foreach ($modelConfig->unique as $_unique) {
                 $_data = [];
                 foreach ((array)$_unique as $_key) {
                     $_data[$_key] = $model->$_key;
@@ -708,9 +706,8 @@ class MongoGateway implements GatewayInterface, ModelConfigAwareInterface
     public function createIndexes($indexes)
     {
         $this->dropIndexes();
-        foreach ($indexes as $name => $index )
-        {
-            $this->createIndex($index,['name'=>$name]);
+        foreach ($indexes as $name => $index) {
+            $this->createIndex($index, ['name' => $name]);
         }
     }
 

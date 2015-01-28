@@ -14,6 +14,8 @@ use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
+use ModelFramework\FileService\FileServiceAwareInterface;
+use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicConfig\LogicConfig;
@@ -30,10 +32,10 @@ use Zend\Db\ResultSet\ResultSetInterface;
 class LogicService
     implements LogicServiceInterface, ConfigServiceAwareInterface, ModelConfigParserServiceAwareInterface,
                GatewayServiceAwareInterface, ParamsAwareInterface,
-               AuthServiceAwareInterface, ModelServiceAwareInterface, QueryServiceAwareInterface
+               AuthServiceAwareInterface, ModelServiceAwareInterface, QueryServiceAwareInterface, FileServiceAwareInterface
 {
     use ConfigServiceAwareTrait, ModelConfigParserServiceAwareTrait, GatewayServiceAwareTrait,
-        AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait, QueryServiceAwareTrait;
+        AuthServiceAwareTrait, ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait;
 
     public function dispatch($event)
     {
@@ -91,6 +93,7 @@ class LogicService
         $logic->setLogicService($this);
         $logic->setMailService($this->getMailService());
         $logic->setQueryService($this->getQueryServiceVerify());
+        $logic->setFileService($this->getFileServiceVerify());
         if ($this->getParams() != null) {
             $logic->setParams($this->getParams());
         }

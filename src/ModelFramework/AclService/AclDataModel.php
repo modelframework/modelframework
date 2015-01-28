@@ -58,15 +58,8 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
             throw new \Exception('reading is not allowed');
         }
 
-        if (empty(
-        $_aclData->fields[$this->getDataModelVerify()->getFieldSource($name)])
-        ) {
+        if (empty($_aclData->fields[$name])) {
             return 'denied';
-        }
-        if ($_aclData->fields[$this->getDataModelVerify()
-                ->getFieldSource($name)] == 'x'
-        ) {
-            return 'reading is not allowed';
         }
 
         return $this->getDataModelVerify()->__get($name);

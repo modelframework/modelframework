@@ -2,6 +2,8 @@
 
 namespace ModelFramework\DataModel;
 
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfig;
+
 /**
  * Class DataModel
  * @package ModelFramework\DataModel
@@ -18,9 +20,20 @@ class DataModel implements DataModelInterface
     protected $_fields = [];
     public $_data = [];
 
-    public function __construct($data = array())
+    public function __construct($data = [])
     {
         $this->exchangeArray($data);
+    }
+
+    public function setParsedModelConfig( ParsedModelConfig $modelConfig )
+    {
+        $this->_fields  = $modelConfig->fields;
+        $this->_model   = $modelConfig->model;
+        $this->_table   = $modelConfig->table;
+        $this->_label   = $modelConfig->label;
+        $this->_adapter = $modelConfig->adapter;
+        $this->exchangeArray([]);
+        return $this;
     }
 
     public function getModelName()
@@ -217,12 +230,13 @@ class DataModel implements DataModelInterface
         unset($this->_data[$name]);
     }
 
-    public function getFieldSource($fieldName)
-    {
-        if (isset($this->_fields[$fieldName])) {
-            return $this->_fields[$fieldName]['source'];
-        } else {
-            throw new \Exception('Field ' . $fieldName . ' is not set');
-        }
-    }
+//    public function getFieldSource($fieldName)
+//    {
+////        if (isset($this->_fields[$fieldName])) {
+////            return $this->_fields[$fieldName]['source'];
+////            return $this->_fields[$fieldName]['source'];
+////        } else {
+////            throw new \Exception('Field ' . $fieldName . ' is not set');
+////        }
+//    }
 }
