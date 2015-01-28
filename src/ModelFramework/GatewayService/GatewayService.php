@@ -32,6 +32,8 @@ class GatewayService extends GatewayServiceRaw
     {
         if ($model == null) {
             $model = $this->getModel($name);
+        }
+        if ($modelConfig == null) {
             $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig($name);
         }
         if ( is_array($modelConfig) )
