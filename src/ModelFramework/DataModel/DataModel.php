@@ -230,13 +230,13 @@ class DataModel implements DataModelInterface
         unset($this->_data[$name]);
     }
 
-//    public function getFieldSource($fieldName)
+//    /**
+//     * @return AclConfig
+//     * @throws \Exception
+//     */
+//    public function getDataPermissions()
 //    {
-////        if (isset($this->_fields[$fieldName])) {
-////            return $this->_fields[$fieldName]['source'];
-////            return $this->_fields[$fieldName]['source'];
-////        } else {
-////            throw new \Exception('Field ' . $fieldName . ' is not set');
-////        }
+//        return null;
 //    }
+
 }

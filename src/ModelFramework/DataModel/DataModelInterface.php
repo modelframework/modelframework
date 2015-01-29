@@ -2,6 +2,8 @@
 
 namespace ModelFramework\DataModel;
 
+use ModelFramework\AclService\AclConfig\AclConfig;
+
 interface DataModelInterface
 {
     public function getModelName();
@@ -23,4 +25,11 @@ interface DataModelInterface
     public function __isset($name);
 
     public function __unset($name);
+
+//    /**
+//     * @return AclConfig
+//     * @throws \Exception
+//     */
+//    public function getDataPermissions();
+
 }

@@ -8,6 +8,8 @@
 
 namespace ModelFramework\FormService\FormConfigParser;
 
+use ModelFramework\AclService\AclDataAwareInterface;
+use ModelFramework\AclService\AclDataAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\FormConfig\FormConfigAwareInterface;
@@ -19,14 +21,16 @@ use ModelFramework\FormService\FormConfigParser\Observer\FieldsObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\GroupsObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\IdObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\InitObserver;
+use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
 use ModelFramework\Utility\SplSubject\SplSubjectTrait;
+use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
 
 class FormConfigParser
-    implements FormConfigAwareInterface, \SplSubject,
-               ParsedFormConfigAwareInterface, FieldTypesServiceAwareInterface
+    implements \SplSubject, FormConfigAwareInterface, ParsedFormConfigAwareInterface,
+               FieldTypesServiceAwareInterface, ModelConfigAwareInterface, AclDataAwareInterface
 {
 
-    use FormConfigAwareTrait, SplSubjectTrait, ParsedFormConfigAwareTrait, FieldTypesServiceAwareTrait;
+    use FormConfigAwareTrait, SplSubjectTrait, ParsedFormConfigAwareTrait, FieldTypesServiceAwareTrait, ModelConfigAwareTrait, AclDataAwareTrait;
 
     private $allowed_observers = [];
 

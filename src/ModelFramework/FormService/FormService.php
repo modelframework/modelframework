@@ -9,29 +9,44 @@
 
 namespace ModelFramework\FormService;
 
+use ModelFramework\AclService\AclConfig\AclConfig;
+use ModelFramework\AclService\AclDataModel;
 use ModelFramework\AclService\AclServiceAwareInterface;
 use ModelFramework\AclService\AclServiceAwareTrait;
-use ModelFramework\AuthService\AuthServiceAwareInterface;
-use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
+use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\GatewayService\GatewayServiceAwareInterface;
-use ModelFramework\GatewayService\GatewayServiceAwareTrait;
+use ModelFramework\FormService\FormConfigParser\FormConfigParser;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\ModelService\ModelServiceAwareInterface;
+use ModelFramework\ModelService\ModelServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use Wepo\Lib\Acl;
 
 class FormService
     implements FormServiceInterface, FieldTypesServiceAwareInterface,
                ConfigServiceAwareInterface, AclServiceAwareInterface,
-               GatewayServiceAwareInterface, AuthServiceAwareInterface
+               ModelServiceAwareInterface
 {
 
     use FieldTypesServiceAwareTrait, ConfigServiceAwareTrait,
-        AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
+        AclServiceAwareTrait, DataModelAwareTrait, ModelServiceAwareTrait;
+
+    private $_limitFields = [];
+
+    /**
+     * @param array $fields
+     *
+     * @return $this
+     */
+    public function limitFields(array $fields = [])
+    {
+        $this->_limitFields = $fields;
+        return $this;
+    }
 
     /**
      * @param DataModelInterface $model
@@ -76,7 +91,7 @@ class FormService
         array $fields = []
     ) {
 
-        $parsedFormConfig = $this->getFormConfigParserServiceVerify()
+        $parsedFormConfig = $this
             ->setDataModel($model)
             ->limitFields($fields)
             ->parse();
@@ -86,17 +101,28 @@ class FormService
         return $model;
     }
 
+
     public function parse()
     {
-        $modelName = $this->getDataModelVerify()->getModelName();
-        $modelConfig = $this->getConfigServiceVerify()->getByObject($modelName, new ModelConfig());
-        if ($modelConfig == null) {
-            throw new \Exception('Please fill ModelConfig for the ' . $modelName
-                . '. I can\'t work on');
-        }
+        $dataModel = $this->getDataModelVerify();
+        $modelName = $dataModel->getModelName();
 
         $formConfigParser = new FormConfigParser();
-//        $formConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
+
+        $formConfigParser->setModelConfig(
+            $this->getModelServiceVerify()->getModelConfig($modelName)
+        );
+
+        $aclData = null;
+        if ($dataModel instanceof AclDataModel) {
+            /**
+             * @var AclConfig $aclData
+             */
+            $aclData = $dataModel->getDataPermissions();
+            $formConfigParser->setAclData($aclData);
+        }
+
+        $formConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
 //        $formConfigParser->setModelConfi($modelConfig);
         $formConfigParser->init()->notify();
 
