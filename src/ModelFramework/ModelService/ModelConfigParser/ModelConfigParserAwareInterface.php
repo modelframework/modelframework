@@ -11,20 +11,19 @@ namespace ModelFramework\ModelService\ModelConfigParser;
 interface ModelConfigParserAwareInterface
 {
     /**
-     * @param array $modelConfig
+     * @param ModelConfigParser $modelConfigParser
      *
      * @return $this
      */
     public function setModelConfigParser(ModelConfigParser $modelConfigParser);
 
     /**
-     * @return array
+     * @return ModelConfigParser
      */
     public function getModelConfigParser();
 
     /**
-     * @return array
-     * @throws \Exception
+     * @return ModelConfigParser
      */
     public function getModelConfigParserVerify();
 }

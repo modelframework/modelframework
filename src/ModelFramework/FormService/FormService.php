@@ -18,25 +18,20 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareInterface;
-use ModelFramework\FormConfigParserService\FormConfigParserServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
-use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use Wepo\Lib\Acl;
 
 class FormService
     implements FormServiceInterface, FieldTypesServiceAwareInterface,
-               ConfigServiceAwareInterface,
-               ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
-               GatewayServiceAwareInterface, AuthServiceAwareInterface,
-               FormConfigParserServiceAwareInterface
+               ConfigServiceAwareInterface, AclServiceAwareInterface,
+               GatewayServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ConfigServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, ConfigServiceAwareTrait,
+        AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
      * @param DataModelInterface $model
@@ -76,6 +71,48 @@ class FormService
      * @throws \Exception
      */
     public function createForm(
+        DataModelInterface $model,
+        $mode,
+        array $fields = []
+    ) {
+
+        $parsedFormConfig = $this->getFormConfigParserServiceVerify()
+            ->setDataModel($model)
+            ->limitFields($fields)
+            ->parse();
+
+        $form = new DataForm();
+        $form->parseconfig($parsedFormConfig);
+        return $model;
+    }
+
+    public function parse()
+    {
+        $modelName = $this->getDataModelVerify()->getModelName();
+        $modelConfig = $this->getConfigServiceVerify()->getByObject($modelName, new ModelConfig());
+        if ($modelConfig == null) {
+            throw new \Exception('Please fill ModelConfig for the ' . $modelName
+                . '. I can\'t work on');
+        }
+
+        $formConfigParser = new FormConfigParser();
+//        $formConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
+//        $formConfigParser->setModelConfi($modelConfig);
+        $formConfigParser->init()->notify();
+
+        return $formConfigParser;
+
+    }
+
+    /**
+     * @param DataModelInterface $model
+     * @param string             $mode
+     * @param array              $fields
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function createForm0(
         DataModelInterface $model,
         $mode,
         array $fields = []

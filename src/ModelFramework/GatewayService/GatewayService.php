@@ -11,38 +11,40 @@ namespace ModelFramework\GatewayService;
 use ModelFramework\ModelService\ModelConfig\ParsedModelConfig;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
-use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 
 class GatewayService extends GatewayServiceRaw
-    implements ModelServiceAwareInterface, ModelConfigParserServiceAwareInterface
+    implements ModelServiceAwareInterface
 {
-    use ModelServiceAwareTrait, ModelConfigParserServiceAwareTrait;
+
+    use ModelServiceAwareTrait;
 
     /**
      * @param string             $name
      * @param DataModelInterface $model
-     * @param array              $modelConfig
+     * @param ParsedModelConfig  $modelConfig
      *
      * @return null|MongoGateway
      * @throws \Exception
      */
-    public function getGateway($name, DataModelInterface $model = null, ParsedModelConfig $modelConfig = null )
-    {
+    public function getGateway(
+        $name,
+        DataModelInterface $model = null,
+        ParsedModelConfig $modelConfig = null
+    ) {
         if ($model == null) {
-            $model = $this->getModel($name);
+            $model = $this->getModel( $name );
         }
         if ($modelConfig == null) {
-            $modelConfig = $this->getModelConfigParserServiceVerify()->getModelConfig($name);
+            $modelConfig =
+                $this->getModelServiceVerify()->getParsedModelConfig( $name );
         }
-        if ( is_array($modelConfig) )
-        {
-            prn($name, $model, $modelConfig);
-            throw new \Exception('wrang ');
+        if (is_array( $modelConfig )) {
+            prn( $name, $model, $modelConfig );
+            throw new \Exception( 'wrang ' );
         }
-        $gw = parent::getGateway('', $model);
-        $gw->setParsedModelConfig($modelConfig);
+        $gw = parent::getGateway( '', $model );
+        $gw->setParsedModelConfig( $modelConfig );
 
         return $gw;
     }
@@ -52,8 +54,8 @@ class GatewayService extends GatewayServiceRaw
      *
      * @return DataModelInterface
      */
-    public function getModel($modelName)
+    public function getModel( $modelName )
     {
-        return $this->getModelServiceVerify()->get($modelName);
+        return $this->getModelServiceVerify()->get( $modelName );
     }
 }

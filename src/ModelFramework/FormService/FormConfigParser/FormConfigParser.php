@@ -6,27 +6,27 @@
  * Time: 13:07
  */
 
-namespace ModelFramework\ModelService\ModelConfigParser;
+namespace ModelFramework\FormService\FormConfigParser;
 
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
-use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
-use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareInterface;
-use ModelFramework\ModelService\ModelConfig\ParsedModelConfigAwareTrait;
-use ModelFramework\ModelService\ModelConfigParser\Observer\AclObserver;
-use ModelFramework\ModelService\ModelConfigParser\Observer\FieldsObserver;
-use ModelFramework\ModelService\ModelConfigParser\Observer\GroupsObserver;
-use ModelFramework\ModelService\ModelConfigParser\Observer\IdObserver;
-use ModelFramework\ModelService\ModelConfigParser\Observer\InitObserver;
+use ModelFramework\FormService\FormConfig\FormConfigAwareInterface;
+use ModelFramework\FormService\FormConfig\FormConfigAwareTrait;
+use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareInterface;
+use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareTrait;
+use ModelFramework\FormService\FormConfigParser\Observer\AclObserver;
+use ModelFramework\FormService\FormConfigParser\Observer\FieldsObserver;
+use ModelFramework\FormService\FormConfigParser\Observer\GroupsObserver;
+use ModelFramework\FormService\FormConfigParser\Observer\IdObserver;
+use ModelFramework\FormService\FormConfigParser\Observer\InitObserver;
 use ModelFramework\Utility\SplSubject\SplSubjectTrait;
 
-class ModelConfigParser
-    implements ModelConfigAwareInterface, \SplSubject,
-               ParsedModelConfigAwareInterface, FieldTypesServiceAwareInterface
+class FormConfigParser
+    implements FormConfigAwareInterface, \SplSubject,
+               ParsedFormConfigAwareInterface, FieldTypesServiceAwareInterface
 {
 
-    use ModelConfigAwareTrait, SplSubjectTrait, ParsedModelConfigAwareTrait, FieldTypesServiceAwareTrait;
+    use FormConfigAwareTrait, SplSubjectTrait, ParsedFormConfigAwareTrait, FieldTypesServiceAwareTrait;
 
     private $allowed_observers = [];
 
@@ -43,7 +43,7 @@ class ModelConfigParser
         $this->attach($fieldsObserver);
 
         foreach (
-            $this->getModelConfigVerify()->observers as $observer =>
+            $this->getFormConfigVerify()->observers as $observer =>
             $obConfig
         ) {
             if (is_numeric($observer)) {
@@ -55,7 +55,7 @@ class ModelConfigParser
                     get_class($this));
             }
             $observerClassName
-                  = 'ModelFramework\ModelService\ModelConfigParer\Observer\\'
+                  = 'ModelFramework\FormService\FormConfigParer\Observer\\'
                 . $observer;
             $_obs = new $observerClassName();
             if ( !empty($obConfig) && $_obs instanceof ConfigAwareInterface) {

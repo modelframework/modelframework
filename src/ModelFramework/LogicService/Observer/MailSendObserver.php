@@ -1,6 +1,7 @@
 <?php
 /**
  * Class AclObserver
+ *
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -10,7 +11,6 @@ namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\FormConfigParserService\StaticDataConfig\StaticDataConfig;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use Wepo\Model\Status;
@@ -21,29 +21,26 @@ class MailSendObserver
 
     use ConfigAwareTrait, SubjectAwareTrait;
 
-    public function update( \SplSubject $subject )
+    public function update(\SplSubject $subject)
     {
-//        prn( 'in mail send logic observer' );
-        $this->setSubject( $subject );
+        $this->setSubject($subject);
 
         $mails = $subject->getEventObject();
-        if (!( is_array( $mails ) || $mails instanceof ResultSetInterface )) {
-            $mails = [ $mails ];
+        if ( !(is_array($mails) || $mails instanceof ResultSetInterface)) {
+            $mails = [$mails];
         }
-//        prn($mails);
 
         foreach ($mails as $mail) {
-            $setting = $subject->getGatewayService()->get( 'MailSendSetting' )
-                               ->find( [ '_id' => $mail->protocol_ids[ 0 ] ] )
-                               ->current();
-            $gw      = $this->getTransport( $setting );
+            $setting = $subject->getGatewayService()->get('MailSendSetting')
+                ->find(['_id' => $mail->protocol_ids[0]])
+                ->current();
+            $gw      = $this->getTransport($setting);
 
-            $res = $gw->sendMail( [
+            $res = $gw->sendMail([
                 'text'   => $mail->text,
                 'header' => $mail->header,
-                'link'   => [ ]
-            ] );
-//            prn($res);
+                'link'   => []
+            ]);
         }
     }
 
@@ -52,15 +49,14 @@ class MailSendObserver
      *
      * @return \Mail\Receive\BaseTransport|\Mail\Send\BaseTransport
      */
-    public function getTransport( $setting )
+    public function getTransport($setting)
     {
         $tm = $this->getSubject()->getMailService();
 
         $purpose      = 'Send';
         $protocolName = $setting->setting_protocol_id;
-        $settingId    = (string) $setting->_id;
+        $settingId    = (string)$setting->_id;
 
-//        prn($setting);
         $setting = [
             'name'              => 'Wepo',
             'host'              => $setting->setting_host,
@@ -72,8 +68,7 @@ class MailSendObserver
                 'password' => $setting->pass,
             ],
         ];
-//        prn($setting);
 
-        return $tm->getGateway( $purpose, $protocolName, $setting, $settingId );
+        return $tm->getGateway($purpose, $protocolName, $setting, $settingId);
     }
 }

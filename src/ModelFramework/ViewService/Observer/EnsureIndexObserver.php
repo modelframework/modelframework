@@ -34,7 +34,7 @@ class EnsureIndexObserver
         $data    = $subject->getParam('data', null);
         $checked = $subject->getParam('checked', []);
         foreach (
-            $subject->getModelConfigParserServiceVerify()
+            $subject->getModelServiceVerify()
                 ->getAllModelNames() as $model
         ) {
             $_check = in_array($model, $checked) || $data == $model;
