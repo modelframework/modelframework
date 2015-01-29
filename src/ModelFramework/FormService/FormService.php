@@ -18,25 +18,20 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\FormService\FormConfigParserService\FormConfigParserServiceAwareInterface;
-use ModelFramework\FormService\FormConfigParserService\FormConfigParserServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
-use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareInterface;
-use ModelFramework\ModelService\ModelConfigParserService\ModelConfigParserServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use Wepo\Lib\Acl;
 
 class FormService
     implements FormServiceInterface, FieldTypesServiceAwareInterface,
-               ConfigServiceAwareInterface,
-               ModelConfigParserServiceAwareInterface, AclServiceAwareInterface,
-               GatewayServiceAwareInterface, AuthServiceAwareInterface,
-               FormConfigParserServiceAwareInterface
+               ConfigServiceAwareInterface, AclServiceAwareInterface,
+               GatewayServiceAwareInterface, AuthServiceAwareInterface
 {
 
-    use ModelConfigParserServiceAwareTrait, FieldTypesServiceAwareTrait, ConfigServiceAwareTrait, AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait, FormConfigParserServiceAwareTrait;
+    use FieldTypesServiceAwareTrait, ConfigServiceAwareTrait,
+        AclServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait;
 
     /**
      * @param DataModelInterface $model

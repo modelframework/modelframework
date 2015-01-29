@@ -34,7 +34,7 @@ class FieldObserver
             throw new \Exception('Please fill ViewConfig for the '.$data.'.'.$view);
         }
         $this->viewViewConfig = $viewConfig;
-        $modelConfig          = $subject->getModelConfigParserService()->getModelConfig($data);
+        $modelConfig          = $subject->getModelServiceVerify()->getParsedModelConfig($data);
         $aclData              = $subject->getAclServiceVerify()->getAclData($data);
         $fieldConfigs = [ 'fields' => [ ], 'labels' => [ ] ];
         foreach ($viewConfig->fields as $field) {

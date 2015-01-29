@@ -36,8 +36,8 @@ class FillJoinsObserver
     protected function fillJoins($subject)
     {
         $models      = $subject->getEventObject();
-        $modelConfig = $subject->getModelConfigParserService()
-            ->getModelConfig($subject->getModelName());
+        $modelConfig = $subject->getModelService()
+            ->getParsedModelConfig($subject->getModelName());
         if ( !(is_array($models) || $models instanceof ResultSetInterface)) {
             $models = [$models];
         }
