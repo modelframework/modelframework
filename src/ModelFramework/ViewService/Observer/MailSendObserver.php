@@ -179,14 +179,12 @@ class MailSendObserver extends FormObserver
                 $this->configureMail( $model, $model_data, $old_data );
                 try {
                     $subject->getLogicServiceVerify()
+                            ->get( 'presend', $model->getModelName() )
+                            ->trigger( $model->getDataModel() );
+                    $subject->getGateway()->save( $model->getDataModel() );
+                    $subject->getLogicServiceVerify()
                             ->get( 'send', $model->getModelName() )
                             ->trigger( $model->getDataModel() );
-                    try {
-                        $subject->getGateway()->save( $model->getDataModel() );
-                    } catch ( \Exception $ex ) {
-                        $results[ 'message' ]
-                            = 'Invalid input data.' . $ex->getMessage();
-                    }
                     $subject->getLogicServiceVerify()
                             ->get( 'mailsync', 'User' )
                             ->trigger( $this->getSubject()
