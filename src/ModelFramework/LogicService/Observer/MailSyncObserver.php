@@ -1,6 +1,6 @@
 <?php
 /**
- * Class AclObserver
+ * Class MailSyncObserver
  * @package ModelFramework\ModelViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
@@ -10,7 +10,7 @@ namespace ModelFramework\LogicService\Observer;
 
 use ModelFramework\ConfigService\ConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigAwareTrait;
-use ModelFramework\FormConfigParserService\StaticDataConfig\StaticDataConfig;
+use ModelFramework\FormService\StaticDataConfig\StaticDataConfig;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use Wepo\Model\Status;

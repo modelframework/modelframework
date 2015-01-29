@@ -1,15 +1,16 @@
 <?php
 /**
  * Class StaticDataConfigAwareInterface
+ *
  * @package ModelFramework\DataModel\Custom
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
-
-namespace ModelFramework\FormConfigParserService\StaticDataConfig;
+namespace ModelFramework\FormService\StaticDataConfig;
 
 interface StaticDataConfigAwareInterface
 {
+
     /**
      * @param StaticDataConfig $logicConfig
      *

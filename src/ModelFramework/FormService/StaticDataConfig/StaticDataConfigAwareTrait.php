@@ -6,7 +6,7 @@
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\FormConfigParserService\StaticDataConfig;
+namespace ModelFramework\FormService\StaticDataConfig;
 
 use ModelFramework\DataModel\DataModelInterface;
 

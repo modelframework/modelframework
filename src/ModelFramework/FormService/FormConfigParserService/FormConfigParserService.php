@@ -15,7 +15,7 @@ use ModelFramework\DataModel\DataModelAwareInterface;
 use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\FormConfigParserService\StaticDataConfig\StaticDataConfig;
+use ModelFramework\FormService\StaticDataConfig\StaticDataConfig;
 use ModelFramework\FormService\ConfigForm;
 use ModelFramework\FormService\FormConfigParser\FormConfigParser;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;

@@ -80,6 +80,7 @@ class FormService
         $mode,
         array $fields = []
     ) {
+
         $parsedFormConfig = $this->getFormConfigParserServiceVerify()
             ->setDataModel($model)
             ->limitFields($fields)
@@ -88,6 +89,24 @@ class FormService
         $form = new DataForm();
         $form->parseconfig($parsedFormConfig);
         return $model;
+    }
+
+    public function parse()
+    {
+        $modelName = $this->getDataModelVerify()->getModelName();
+        $modelConfig = $this->getConfigServiceVerify()->getByObject($modelName, new ModelConfig());
+        if ($modelConfig == null) {
+            throw new \Exception('Please fill ModelConfig for the ' . $modelName
+                . '. I can\'t work on');
+        }
+
+        $formConfigParser = new FormConfigParser();
+//        $formConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
+//        $formConfigParser->setModelConfi($modelConfig);
+        $formConfigParser->init()->notify();
+
+        return $formConfigParser;
+
     }
 
     /**

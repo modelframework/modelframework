@@ -1,6 +1,6 @@
 <?php
 
-namespace ModelFramework\FormConfigParserService\StaticDataConfig;
+namespace ModelFramework\FormService\StaticDataConfig;
 
 use ModelFramework\DataModel\DataModel;
 
