@@ -8,46 +8,66 @@
 
 namespace ModelFramework\FormService\FormConfigParser;
 
-use ModelFramework\AclService\AclDataAwareInterface;
-use ModelFramework\AclService\AclDataAwareTrait;
+use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
+use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
-use ModelFramework\FormService\FormConfig\FormConfigAwareInterface;
-use ModelFramework\FormService\FormConfig\FormConfigAwareTrait;
 use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareInterface;
 use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareTrait;
-use ModelFramework\FormService\FormConfigParser\Observer\AclObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\FieldsObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\GroupsObserver;
-use ModelFramework\FormService\FormConfigParser\Observer\IdObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\InitObserver;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
 use ModelFramework\Utility\SplSubject\SplSubjectTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
 
 class FormConfigParser
-    implements \SplSubject, FormConfigAwareInterface, ParsedFormConfigAwareInterface,
-               FieldTypesServiceAwareInterface, ModelConfigAwareInterface, AclDataAwareInterface
+    implements \SplSubject, ParsedFormConfigAwareInterface,
+               FieldTypesServiceAwareInterface, ModelConfigAwareInterface, AclConfigAwareInterface
 {
 
-    use FormConfigAwareTrait, SplSubjectTrait, ParsedFormConfigAwareTrait, FieldTypesServiceAwareTrait, ModelConfigAwareTrait, AclDataAwareTrait;
+    use SplSubjectTrait, ParsedFormConfigAwareTrait, FieldTypesServiceAwareTrait, ModelConfigAwareTrait, AclConfigAwareTrait;
 
     private $allowed_observers = [];
 
+
+    private $_limitFields = [];
+
+    /*
+     * @param array $fields
+     *
+     * @return $this
+     */
+    public function setLimitFields(array $fields = [])
+    {
+        $this->_limitFields = $fields;
+        return $this;
+    }
+
+    /*
+     * @param array $fields
+     *
+     * @return $this
+     */
+    public function getLimitFields()
+    {
+        return $this->_limitFields;
+    }
+
     public function init()
     {
+        $this->setParsedFormConfig();
         $this->attach(new InitObserver());
         $this->attach(new GroupsObserver());
-        $this->attach(new IdObserver());
-        $this->attach(new AclObserver());
+//        $this->attach(new IdObserver());
+//        $this->attach(new AclObserver());
 
         $fieldsObserver = new FieldsObserver();
         $fieldsObserver->setFieldTypesService($this->getFieldTypesServiceVerify());
-
         $this->attach($fieldsObserver);
 
         foreach (
-            $this->getFormConfigVerify()->observers as $observer =>
+            $this->getModelConfigVerify()->observers as $observer =>
             $obConfig
         ) {
             if (is_numeric($observer)) {

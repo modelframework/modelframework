@@ -20,6 +20,7 @@ use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\FormConfigParser\FormConfigParser;
+use ModelFramework\FormService\FormConfigParser\Observer\AclObserver;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
 use ModelFramework\ModelService\ModelServiceAwareInterface;
 use ModelFramework\ModelService\ModelServiceAwareTrait;
@@ -37,15 +38,25 @@ class FormService
 
     private $_limitFields = [];
 
-    /**
+    /*
      * @param array $fields
      *
      * @return $this
      */
-    public function limitFields(array $fields = [])
+    public function setLimitFields(array $fields = [])
     {
         $this->_limitFields = $fields;
         return $this;
+    }
+
+    /*
+     * @param array $fields
+     *
+     * @return $this
+     */
+    public function getLimitFields()
+    {
+        return $this->_limitFields;
     }
 
     /**
@@ -93,21 +104,23 @@ class FormService
 
         $parsedFormConfig = $this
             ->setDataModel($model)
-            ->limitFields($fields)
-            ->parse();
+            ->setLimitFields($fields)
+            ->parse()->getParsedFormConfig();
 
         $form = new DataForm();
-        $form->parseconfig($parsedFormConfig);
-        return $model;
+        $form->setParsedFormConfig($parsedFormConfig);
+        return $form;
     }
 
 
     public function parse()
     {
+        $formConfigParser = new FormConfigParser();
+
         $dataModel = $this->getDataModelVerify();
         $modelName = $dataModel->getModelName();
 
-        $formConfigParser = new FormConfigParser();
+        $formConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
 
         $formConfigParser->setModelConfig(
             $this->getModelServiceVerify()->getModelConfig($modelName)
@@ -119,11 +132,11 @@ class FormService
              * @var AclConfig $aclData
              */
             $aclData = $dataModel->getDataPermissions();
-            $formConfigParser->setAclData($aclData);
+            $formConfigParser->setAclConfig($aclData);
+            // $formConfigParser ->attach( {new AclObserver()} -> setAclData( $aclData ) )
         }
 
-        $formConfigParser->setFieldTypesService($this->getFieldTypesServiceVerify());
-//        $formConfigParser->setModelConfi($modelConfig);
+        $formConfigParser->setLimitFields( $this->_limitFields );
         $formConfigParser->init()->notify();
 
         return $formConfigParser;
@@ -196,7 +209,7 @@ class FormService
     public function getFieldPermissions($model, $mode)
     {
         $user = $this->getAuthServiceVerify()->getUser();
-        $acl  = $model->getAclData();
+        $acl  = $model->getAclConfig();
         if ($acl) {
             $dataPermissions = $acl->data;
             $modePermissions = $acl->modes;

@@ -33,7 +33,7 @@ trait ModelConfigAwareTrait
     }
 
     /**
-     * @return array
+     * @return ModelConfig
      * @throws \Exception
      */
     public function getModelConfigVerify()

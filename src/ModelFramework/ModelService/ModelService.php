@@ -98,7 +98,7 @@ class ModelService
     /**
      * @param string $modelName
      *
-     * @return array
+     * @return ParsedModelConfig
      * @throws \Exception
      */
     public function getParsedModelConfig($modelName)

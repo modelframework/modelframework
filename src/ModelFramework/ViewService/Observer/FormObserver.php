@@ -65,7 +65,7 @@ class FormObserver extends AbstractObserver
         $old_data = $model->split($form->getValidationGroup());
         //Это жесть конечно и забавно, но на время сойдет :)
         $model_bind = $model->toArray();
-        $fieldsAcl = $model->getAclData()->fields;
+        $fieldsAcl = $model->getAclConfig()->fields;
         foreach ($model_bind as $_k => $_v) {
             if (substr($_k, -4) == '_dtm' && $fieldsAcl[$_k] == 'write') {
                 $model->$_k = str_replace(' ', 'T', $_v);

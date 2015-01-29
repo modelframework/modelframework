@@ -2,6 +2,7 @@
 
 namespace ModelFramework\AclService;
 
+use ModelFramework\AclService\AclConfig\AclConfig;
 use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
 use ModelFramework\DataModel\DataModelAwareInterface;
@@ -22,7 +23,7 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
     public function __clone()
     {
         $this->setDataModel(clone $this->getDataModel());
-        $this->setAclData(clone $this->getAclData());
+        $this->setAclConfig(clone $this->getAclConfig());
     }
 
     public function merge($data)
@@ -137,7 +138,7 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
     }
 
     /**
-     * @return AclConfig\AclConfig|DataModelInterface
+     * @return AclConfig
      * @throws \Exception
      */
     public function getDataPermissions()
@@ -146,7 +147,7 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
             return $this->mixedAclData;
         }
 
-        $this->mixedAclData = $this->getAclData();
+        $this->mixedAclData = $this->getAclConfig();
 
         $user     = $this->getUser();
         $modelAcl = $this->getDataModelVerify()->_acl;

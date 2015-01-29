@@ -15,16 +15,16 @@ interface AclConfigAwareInterface
      *
      * @return $this
      */
-    public function setAclData(AclConfig $aclConfig);
+    public function setAclConfig(AclConfig $aclConfig);
 
     /**
      * @return AclConfig
      */
-    public function getAclData();
+    public function getAclConfig();
 
     /**
      * @return AclConfig
      * @throws \Exception
      */
-    public function getAclDataVerify();
+    public function getAclConfigVerify();
 }

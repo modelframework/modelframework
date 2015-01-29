@@ -22,7 +22,7 @@ trait AclConfigAwareTrait
      *
      * @return $this
      */
-    public function setAclData(AclConfig $aclConfig)
+    public function setAclConfig(AclConfig $aclConfig)
     {
         $this->_aclConfig = $aclConfig;
     }
@@ -31,7 +31,7 @@ trait AclConfigAwareTrait
      * @return AclConfig|DataModelInterface
      *
      */
-    public function getAclData()
+    public function getAclConfig()
     {
         return $this->_aclConfig;
     }
@@ -40,9 +40,9 @@ trait AclConfigAwareTrait
      * @return AclConfig|DataModelInterface
      * @throws \Exception
      */
-    public function getAclDataVerify()
+    public function getAclConfigVerify()
     {
-        $aclConfig = $this->getAclData();
+        $aclConfig = $this->getAclConfig();
         if ($aclConfig == null || !$aclConfig instanceof AclConfig) {
             throw new \Exception('AclConfig is not set');
         }

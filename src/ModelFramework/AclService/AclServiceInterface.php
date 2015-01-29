@@ -13,12 +13,12 @@ use ModelFramework\DataModel\DataModelInterface;
 interface AclServiceInterface
 {
     /**
-     * @param $modelName
+     * @param string $modelName
      *
-     * @return DataModelInterface
+     * @return AclConfig
      * @throws \Exception
      */
-    public function getAclModel($modelName);
+    public function getAclConfig($modelName);
 
     /**
      * @param $modelName
@@ -29,10 +29,10 @@ interface AclServiceInterface
     public function get($modelName);
 
     /**
-     * @param $modelName
+     * @param string $modelName
      *
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclData($modelName);
+    public function getAclDataModel($modelName);
 }

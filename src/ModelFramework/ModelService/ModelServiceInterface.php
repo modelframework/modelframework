@@ -4,6 +4,7 @@ namespace ModelFramework\ModelService;
 
 use ModelFramework\DataModel\DataModel;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfig;
 
 interface ModelServiceInterface
 {
@@ -36,4 +37,13 @@ interface ModelServiceInterface
      * @throws \Exception
      */
     public function getModelConfig($modelName);
+
+    /**
+     * @param string $modelName
+     *
+     * @return ParsedModelConfig
+     * @throws \Exception
+     */
+    public function getParsedModelConfig($modelName);
+
 }

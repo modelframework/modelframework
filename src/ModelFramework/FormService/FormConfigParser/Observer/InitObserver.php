@@ -15,22 +15,29 @@ class InitObserver implements \SplObserver
     public function update(\SplSubject $subject) {
         /** @var FormConfigParser $subject */
 
-        $modelConfig = $subject->getFormConfig();
+        $modelConfig = $subject->getModelConfigVerify();
 
         // init
-        $config = [
-            'fields'    => [],
-            'joins'     => [],
-            //            'unique'       => [ ],
-            'adapter'   => $modelConfig->adapter,
-            'model'     => $modelConfig->model,
-            'label'     => $modelConfig->label,
-            'table'     => $modelConfig->table,
-            'fieldsets' => [],
-            'unique'    => $modelConfig->unique,
+        $formConfig    = [
+            'name'            => $modelConfig->model . 'Form',
+            'group'           => 'form',
+            'type'            => 'form',
+            'options'         => [
+                'label'  => $modelConfig->model . ' information',
+            ],
+            'attributes'      => [
+                'class'  => 'validate',
+                'method' => 'post',
+                'name'   => $modelConfig->model . 'form',
+            ],
+            // , 'action' => 'reg'
+            'fieldsets'       => [],
+            'elements'        => [],
+            'filters'         => [],
+            'validationGroup' => [],
         ];
 
-        $subject->addParsedConfig( $config );
+        $subject->addParsedConfig( $formConfig );
 
     }
 }

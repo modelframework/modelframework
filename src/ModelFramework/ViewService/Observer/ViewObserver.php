@@ -53,7 +53,7 @@ class ViewObserver
         $result['fieldsets'] = [];
         $aclData
                              = $subject->getAclServiceVerify()
-            ->getAclData($viewConfig->model);
+            ->getAclConfig($viewConfig->model);
 
         $modelFields = $subject->getParsedModelConfigVerify()->fields;
 

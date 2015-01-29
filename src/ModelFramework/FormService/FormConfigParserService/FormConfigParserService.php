@@ -147,6 +147,7 @@ class FormConfigParserService
             'filters'         => [],
             'validationGroup' => [],
         ];
+
         $_fsGroups     = [];
         $_filterGroups = [];
         foreach ($cd->fields as $field_name => $field_conf) {
@@ -155,6 +156,7 @@ class FormConfigParserService
                 $_fsGroups[$_grp]     = [];
                 $_filterGroups[$_grp] = [];
             }
+
             $_field = $this->createFormElement($field_name, $field_conf);
 
             $_fsGroups[$_grp] += $_field['elements'];
@@ -164,6 +166,7 @@ class FormConfigParserService
                 $formConfig['validationGroup'][$_grp][] = $_k;
             }
         }
+
         $fssConfigs = [];
         foreach ($cd->groups as $_grp => $_fls) {
             if (is_numeric($_grp)) {
@@ -189,6 +192,7 @@ class FormConfigParserService
                 'elements'        => [],
                 'validationGroup' => [],
             ];
+
             if (isset($_fsGroups[$_grp])) {
                 if ( !isset($formConfig['filters'][$_grp])) {
                     $formConfig['filters'][$_grp] = [];

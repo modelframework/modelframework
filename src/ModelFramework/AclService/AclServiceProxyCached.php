@@ -11,33 +11,13 @@ namespace ModelFramework\AclService;
 use ModelFramework\CacheService\CacheServiceAwareInterface;
 use ModelFramework\CacheService\CacheServiceAwareTrait;
 
-class AclServiceProxyCached implements AclServiceInterface, AclServiceAwareInterface, CacheServiceAwareInterface
+class AclServiceProxyCached
+    implements AclServiceInterface,
+               AclServiceAwareInterface,
+               CacheServiceAwareInterface
 {
+
     use AclServiceAwareTrait, CacheServiceAwareTrait;
-
-    /**
-     * @param $modelName
-     *
-     * @return DataModelInterface
-     * @throws \Exception
-     */
-    public function getAclModel($modelName)
-    {
-        return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod($this->getAclServiceVerify(), 'getAclModel', [ $modelName ]);
-    }
-
-    /**
-     * @param $modelName
-     *
-     * @return DataModelInterface
-     * @throws \Exception
-     */
-    public function getAclData($modelName)
-    {
-        return $this->getCacheServiceVerify()
-                    ->getCachedObjMethod($this->getAclServiceVerify(), 'getAclData', [ $modelName ]);
-    }
 
     /**
      * @param $modelName
@@ -47,6 +27,32 @@ class AclServiceProxyCached implements AclServiceInterface, AclServiceAwareInter
      */
     public function get($modelName)
     {
-        return $this->getAclModel($modelName);
+        return $this->getAclDataModel($modelName);
+    }
+
+    /**
+     * @param $modelName
+     *
+     * @return DataModelInterface
+     * @throws \Exception
+     */
+    public function getAclConfig($modelName)
+    {
+        return $this->getCacheServiceVerify()
+            ->getCachedObjMethod($this->getAclServiceVerify(), 'getAclConfig',
+                [$modelName]);
+    }
+
+    /**
+     * @param $modelName
+     *
+     * @return DataModelInterface
+     * @throws \Exception
+     */
+    public function getAclDataModel($modelName)
+    {
+        return $this->getCacheServiceVerify()
+            ->getCachedObjMethod($this->getAclServiceVerify(),
+                'getAclDataModel', [$modelName]);
     }
 }

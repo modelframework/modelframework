@@ -6,7 +6,7 @@
  * Time: 18:21
  */
 
-namespace ModelFramework\FormService\ModelField;
+namespace ModelFramework\FormService\FormField;
 
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;

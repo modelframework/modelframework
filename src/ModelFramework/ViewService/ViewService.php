@@ -91,7 +91,7 @@ class ViewService
 
         // model view should deal with acl enabled model
         $aclModel =
-            $this->getAclServiceVerify()->getAclModel( $viewConfig->model );
+            $this->getAclServiceVerify()->getAclDataModel( $viewConfig->model );
         // primary gateway for data ops
         $gateway = $this->getGatewayServiceVerify()
                         ->get( $viewConfig->model, $aclModel );
