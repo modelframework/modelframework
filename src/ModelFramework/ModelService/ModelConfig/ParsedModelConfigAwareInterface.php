@@ -15,7 +15,7 @@ interface ParsedModelConfigAwareInterface
      *
      * @return $this
      */
-    public function setParsedModelConfig(ParsedModelConfig $parsedModelConfig);
+    public function setParsedModelConfig(ParsedModelConfig $parsedModelConfig = null);
 
     /**
      * @return ParsedModelConfig
