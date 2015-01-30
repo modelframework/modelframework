@@ -41,6 +41,30 @@ class MailChainObserver
         }
     }
 
+    public function unchainMailChains( $mails )
+    {
+        $chainIds = [ ];
+        foreach ($mails as $mail) {
+            prn($mail);
+            $chainIds[ ] = $mail->chain_id;
+        }
+
+        $chainIds = array_unique( $chainIds );
+        $this->getSubject()->getGatewayService()->get( 'Mail' )
+             ->delete( [ '_id' => $chainIds ] );
+        $mailGW         =
+            $this->getSubject()->getGatewayService()->get( 'MailDetail' );
+        $chainedMails   = $mailGW->find( [ 'chain_id' => $chainIds ] );
+        $unchainedMails = [ ];
+        foreach ($chainedMails as $mail) {
+            $mail->chain_id = '';
+            $mailGW->save( $mail );
+            $unchainedMails[ ] = $mail;
+        }
+        return $unchainedMails;
+    }
+
+
     public function updateMailChains( $noChainMails )
     {
         $mailGW       =

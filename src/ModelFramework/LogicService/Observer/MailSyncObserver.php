@@ -53,6 +53,7 @@ class MailSyncObserver
         }
         $this->getSubject()->getLogicService()
              ->get( 'postsync', 'MailDetail' )->trigger( $mails );
+        exit;
 
     }
 
@@ -117,11 +118,16 @@ class MailSyncObserver
                 ] );
             $gw      = $this->getSendTransport( $setting );
             foreach ($mails as $mail) {
-                $res      = $gw->sendMail( [
-                    'text'   => $mail->text,
-                    'header' => $mail->header,
-                    'link'   => [ ]
-                ] );
+                try {
+                    $res = $gw->sendMail( [
+                        'text'   => $mail->text,
+                        'header' => $mail->header,
+                        'link'   => [ ]
+                    ] );
+                } catch ( \Exception $ex ) {
+                    $mail->errors =
+                        array_merge( $ex->getMessage(), $mail->errors );
+                }
                 $mails[ ] = $mail;
             }
         }
@@ -167,7 +173,7 @@ class MailSyncObserver
                     'email'   => $email,
                     'user_id' => $user->_id
                 ] );
-                $ssIds = [];
+                $ssIds        = [ ];
 
                 foreach ($sendSettings as $sendSetting) {
                     $ssIds[ ] = $sendSetting->_id;
@@ -176,12 +182,13 @@ class MailSyncObserver
                     'status_id'    => Status::SENDING,
                     'protocol_ids' => $ssIds
                 ] );
+                $mailsToUnchain = [];
                 foreach ($resMails as $mail) {
-                    $mails[] = $mail;
+                    $mailsToUnchain[ ] = $mail;
                 }
                 $this->getSubject()->getLogicService()
                      ->get( 'delete', 'MailDetail' )
-                     ->trigger( $mails );
+                     ->trigger( $mailsToUnchain );
 
                 $mailGW->delete( [
                     'status_id'    => Status::SENDING,
@@ -218,23 +225,24 @@ class MailSyncObserver
                 array_merge( $newMail->protocol_ids, $oldMail->protocol_ids );
             $mailGW->save( $oldMail );
         }
+        $returnMails = [];
 
         foreach ($newMails as $newMail) {
             //$newMail->owner_id = $user->id();
             //$newMail->title = $newMail->header[ 'subject' ];
             //$newMail->date  = ( new \DateTime( $newMail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
             $this->getSubject()->getLogicService()
-                 ->get( 'presave', $newMail->getModelName() )
+                 ->get( 'presave', 'MailDetail' )
                  ->trigger( $newMail );
             $mailGW->save( $newMail );
             $newMail->_id = $mailGW->getLastInsertId();
             //$this->createEmailToMail( $newMail );
+            $returnMails[] = $newMail;
             $count++;
         }
 
-        return [ $count, $newMails ];
+        return [ $count, $returnMails ];
     }
-
 
 
     /**

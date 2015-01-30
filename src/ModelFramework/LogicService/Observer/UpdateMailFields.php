@@ -37,9 +37,10 @@ class UpdateMailFields
             $models = [ $models ];
         }
 
+
         $linkGW = $subject->getGatewayServiceVerify()->get( 'EmailToMail' );
-        $destinationValue = [];
         foreach ($models as $model) {
+            $destinationValue = [];
             $links = $linkGW->find( [ 'mail_id' => (string) $model->_id ] );
             foreach ($links as $link) {
                 if(!empty($link->email_id)) {
