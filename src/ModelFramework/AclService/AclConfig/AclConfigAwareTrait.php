@@ -12,6 +12,7 @@ use ModelFramework\DataModel\DataModelInterface;
 
 trait AclConfigAwareTrait
 {
+
     /**
      * @var AclConfig|DataModelInterface
      */
@@ -22,9 +23,11 @@ trait AclConfigAwareTrait
      *
      * @return $this
      */
-    public function setAclConfig(AclConfig $aclConfig)
+    public function setAclConfig( AclConfig $aclConfig )
     {
         $this->_aclConfig = $aclConfig;
+
+        return $this;
     }
 
     /**
@@ -44,7 +47,7 @@ trait AclConfigAwareTrait
     {
         $aclConfig = $this->getAclConfig();
         if ($aclConfig == null || !$aclConfig instanceof AclConfig) {
-            throw new \Exception('AclConfig is not set');
+            throw new \Exception( 'AclConfig is not set' );
         }
 
         return $aclConfig;

@@ -16,7 +16,6 @@ class InitObserver implements \SplObserver
         /** @var FormConfigParser $subject */
 
         $modelConfig = $subject->getModelConfigVerify();
-
         // init
         $formConfig    = [
             'name'            => $modelConfig->model . 'Form',

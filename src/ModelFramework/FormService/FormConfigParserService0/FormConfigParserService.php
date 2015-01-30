@@ -193,6 +193,8 @@ class FormConfigParserService
                 'validationGroup' => [],
             ];
 
+            //Add When elements are created
+            //
             if (isset($_fsGroups[$_grp])) {
                 if ( !isset($formConfig['filters'][$_grp])) {
                     $formConfig['filters'][$_grp] = [];
@@ -200,6 +202,9 @@ class FormConfigParserService
                 $fsConfig['elements'] = $_fsGroups[$_grp];
                 $formConfig['filters'][$_grp] += $_filterGroups[$_grp];
             }
+            //elements created
+            //
+
             $fssConfigs[$_grp]              = $fsConfig;
             $formConfig['fieldsets'][$_grp] = [
                 'type' => $modelName . 'Fieldset'
@@ -210,6 +215,8 @@ class FormConfigParserService
             }
         }
         $formConfig['fieldsets_configs'] = $fssConfigs;
+
+
         $ufs                             = $this->getUtilityFieldsetsConfigs();
         foreach ($ufs as $fieldSet) {
             $formConfig['fieldsets'][$fieldSet['name']]

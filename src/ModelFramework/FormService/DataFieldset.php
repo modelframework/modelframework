@@ -2,6 +2,7 @@
 
 namespace ModelFramework\FormService;
 
+use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
 use ModelFramework\FormService\FormConfig\ParsedFormConfig;
 use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareInterface;
 use Zend\Form\Fieldset;
@@ -64,17 +65,23 @@ class DataFieldset extends Fieldset implements InputFilterProviderInterface, Par
             if (!isset($config->fieldsets_configs[ $_k ])) {
                 throw new \Exception("Config for $_k fieldset is not set in $config->name ConfigForm");
             }
-            $fc       = $config->fieldsets_configs[ $_k ];
-            $cf       = new ConfigForm();
+            $parsedFSConfig = $config->fieldsets_configs[ $_k ];
             $fieldset = new DataFieldset();
-            $fieldset->parseconfig($cf->exchangeArray($fc));
+            $fieldset->setParsedFormConfig( $parsedFSConfig );
+
             if (!empty($_v[ 'options' ])) {
                 $fieldset->setOptions($_v[ 'options' ]);
             }
             $this->add($fieldset);
         }
         foreach ($config->elements as $_k => $_v) {
-            $this->add($_v);
+            if(is_array($_v)){
+                $this->add($_v);
+            }
+            elseif($_v instanceof FormElementConfigInterface)
+            {
+                $this->add($_v->toArray());
+            }
         }
 
         return $this;

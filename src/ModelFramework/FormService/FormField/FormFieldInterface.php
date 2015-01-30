@@ -28,4 +28,25 @@ interface FormFieldInterface
      */
     public function parse();
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName( $name );
+
+    /**
+     * @param array $config
+     *
+     * @return $this
+     */
+    public function setFieldConfig( $config );
+
+
+    /**
+     * @return string
+     */
+    public function getType();
+
+
 }

@@ -26,9 +26,9 @@ class FiledTypesService
      * @return array
      * @throws \Exception
      */
-    public function getFieldPart($type, $part)
+    public function getFieldPart( $type, $part )
     {
-        return $this->getConfigDomainPart('fieldTypes', $type, $part);
+        return $this->getConfigDomainPart( 'fieldTypes', $type, $part );
 
 //        $_config = $this->getConfigPart( $type );
 //        if ( !isset( $_config[ $part ] ) )
@@ -45,9 +45,9 @@ class FiledTypesService
      * @return array
      * @throws \Exception
      */
-    public function getInputFilter($type)
+    public function getInputFilter( $type )
     {
-        return $this->getFieldPart($type, 'filter');
+        return $this->getFieldPart( $type, 'filter' );
     }
 
     /**
@@ -56,9 +56,9 @@ class FiledTypesService
      * @return array
      * @throws \Exception
      */
-    public function getField($type)
+    public function getField( $type )
     {
-        return $this->getFieldPart($type, 'field');
+        return $this->getFieldPart( $type, 'field' );
     }
 
     /**
@@ -67,9 +67,9 @@ class FiledTypesService
      * @return array
      * @throws \Exception
      */
-    public function getFormElement($type)
+    public function getFormElement( $type )
     {
-        return $this->getFieldPart($type, 'element');
+        return $this->getFieldPart( $type, 'element' );
     }
 
     /**
@@ -77,7 +77,7 @@ class FiledTypesService
      *
      * @return array
      */
-    public function getUtilityFields($modelName = '')
+    public function getUtilityFields( $modelName = '' )
     {
         return [
             'fields'  => [
@@ -93,12 +93,12 @@ class FiledTypesService
                     'type'      => 'field',
                     'fieldtype' => 'array',
                     'datatype'  => 'array',
-                    'default'   => [],
+                    'default'   => [ ],
                     'label'     => 'acl',
                     'source'    => '_acl',
                 ],
             ],
-            'filters' => ['_id' => $this->getInputFilter('text')],
+            'filters' => [ '_id' => $this->getInputFilter( 'text' ) ],
         ];
     }
 }

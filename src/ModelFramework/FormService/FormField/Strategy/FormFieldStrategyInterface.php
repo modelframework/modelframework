@@ -8,10 +8,10 @@
 
 namespace ModelFramework\FormService\FormField\Strategy;
 
-use ModelFramework\FieldTypesService\FieldType\FieldTypeAwareInterface;
 use ModelFramework\FormService\FormField\FieldConfig\FieldConfigAwareInterface;
 
-interface FormFieldStrategyInterface extends FieldConfigAwareInterface, FieldTypeAwareInterface
+interface FormFieldStrategyInterface
+    extends FieldConfigAwareInterface
 {
 
     /**
@@ -19,7 +19,7 @@ interface FormFieldStrategyInterface extends FieldConfigAwareInterface, FieldTyp
      *
      * @return $this
      */
-    public function setName($name);
+    public function setName( $name );
 
     /**
      * @return string

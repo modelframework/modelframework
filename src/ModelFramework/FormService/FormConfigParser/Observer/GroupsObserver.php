@@ -21,9 +21,7 @@ class GroupsObserver implements \SplObserver, ParsedFormConfigAwareInterface
     public function update(\SplSubject $subject)
     {
         /** @var FormConfigParser $subject */
-
         $modelConfig = $subject->getModelConfigVerify();
-
         $config = [];
         // process groups
         foreach ($modelConfig->groups as $_grp => $_fls) {
@@ -51,17 +49,14 @@ class GroupsObserver implements \SplObserver, ParsedFormConfigAwareInterface
                 'name'  => $_grp,
                 'class' => 'table'
             ];
-
             $config ['fieldsets'] [$_grp] = [
                 'type'    => $modelConfig->model . 'Fieldset',
                 'options' => ['label' => $_label],
             ];
-
             if ($_baseFieldSet == true) {
                 $config['fieldsets'][$_grp]['options']['use_as_base_fieldset']
                     = true;
             }
-
             $config['fieldsets_configs'][$_grp] = $parsedFSConfig;
         }
 

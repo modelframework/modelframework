@@ -14,78 +14,63 @@ use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareInterface;
 use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareTrait;
+use ModelFramework\FormService\FormConfigParser\Observer\ButtonObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\FieldsObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\GroupsObserver;
 use ModelFramework\FormService\FormConfigParser\Observer\InitObserver;
+use ModelFramework\FormService\FormConfigParser\Observer\SaUrlObserver;
+use ModelFramework\FormService\LimitFieldsAwareInterface;
+use ModelFramework\FormService\LimitFieldsAwareTrait;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\Utility\SplSubject\SplSubjectTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfigAwareTrait;
 
 class FormConfigParser
     implements \SplSubject, ParsedFormConfigAwareInterface,
-               FieldTypesServiceAwareInterface, ModelConfigAwareInterface, AclConfigAwareInterface
+               FieldTypesServiceAwareInterface, ModelConfigAwareInterface,
+               AclConfigAwareInterface, LimitFieldsAwareInterface,
+               QueryServiceAwareInterface, GatewayServiceAwareInterface
 {
 
-    use SplSubjectTrait, ParsedFormConfigAwareTrait, FieldTypesServiceAwareTrait, ModelConfigAwareTrait, AclConfigAwareTrait;
+    use SplSubjectTrait, ParsedFormConfigAwareTrait,
+        FieldTypesServiceAwareTrait, ModelConfigAwareTrait, AclConfigAwareTrait,
+        LimitFieldsAwareTrait, QueryServiceAwareTrait, GatewayServiceAwareTrait;
 
-    private $allowed_observers = [];
-
-
-    private $_limitFields = [];
-
-    /*
-     * @param array $fields
-     *
-     * @return $this
-     */
-    public function setLimitFields(array $fields = [])
-    {
-        $this->_limitFields = $fields;
-        return $this;
-    }
-
-    /*
-     * @param array $fields
-     *
-     * @return $this
-     */
-    public function getLimitFields()
-    {
-        return $this->_limitFields;
-    }
+    private $allowed_observers = [ ];
 
     public function init()
     {
         $this->setParsedFormConfig();
-        $this->attach(new InitObserver());
-        $this->attach(new GroupsObserver());
-//        $this->attach(new IdObserver());
-//        $this->attach(new AclObserver());
-
-        $fieldsObserver = new FieldsObserver();
-        $fieldsObserver->setFieldTypesService($this->getFieldTypesServiceVerify());
-        $this->attach($fieldsObserver);
-
+//        prn( 'Form Service -> init()', $this->getParsedFormConfig() );
+        $this->attach( new InitObserver() );
+        $this->attach( new GroupsObserver() );
+        $this->attach( new SaUrlObserver() );
+        $this->attach( new ButtonObserver() );
+        $this->attach( new FieldsObserver() );
         foreach (
             $this->getModelConfigVerify()->observers as $observer =>
             $obConfig
         ) {
-            if (is_numeric($observer)) {
+            if (is_numeric( $observer )) {
                 $observer = $obConfig;
                 $obConfig = null;
             }
-            if ( !in_array($observer, $this->allowed_observers)) {
-                throw new \Exception($observer . ' is not allowed in ' .
-                    get_class($this));
+            if (!in_array( $observer, $this->allowed_observers )) {
+                throw new \Exception( $observer . ' is not allowed in ' .
+                                      get_class( $this ) );
             }
             $observerClassName
                   = 'ModelFramework\FormService\FormConfigParer\Observer\\'
-                . $observer;
+                    . $observer;
             $_obs = new $observerClassName();
-            if ( !empty($obConfig) && $_obs instanceof ConfigAwareInterface) {
-                $_obs->setRootConfig($obConfig);
+            if (!empty( $obConfig ) && $_obs instanceof ConfigAwareInterface) {
+                $_obs->setRootConfig( $obConfig );
             }
-            $this->attach($_obs);
+            $this->attach( $_obs );
         }
 
         return $this;

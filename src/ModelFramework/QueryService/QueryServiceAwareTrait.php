@@ -10,6 +10,7 @@ namespace ModelFramework\QueryService;
 
 trait QueryServiceAwareTrait
 {
+
     /**
      * @var QueryServiceInterface
      */
@@ -20,9 +21,11 @@ trait QueryServiceAwareTrait
      *
      * @return $this
      */
-    public function setQueryService(QueryServiceInterface $queryService)
+    public function setQueryService( QueryServiceInterface $queryService )
     {
         $this->_queryService = $queryService;
+
+        return $this;
     }
 
     /**
@@ -40,9 +43,11 @@ trait QueryServiceAwareTrait
     public function getQueryServiceVerify()
     {
         $_queryService = $this->getQueryService();
-        if ($_queryService == null || !$_queryService instanceof QueryServiceInterface) {
-            throw new \Exception('QueryService does not set in the QueryServiceAware instance of '.
-                                  get_class($this));
+        if ($_queryService == null ||
+            !$_queryService instanceof QueryServiceInterface
+        ) {
+            throw new \Exception( 'QueryService does not set in the QueryServiceAware instance of ' .
+                                  get_class( $this ) );
         }
 
         return $_queryService;
