@@ -52,7 +52,7 @@ class EnsureIndexObserver
         }
         $this->makeIndex($indexed);
 
-        if ($count == count($models)) {
+        if ($count >= count($models)) {
             $data = 'all';
         }
         $subject->setData([
