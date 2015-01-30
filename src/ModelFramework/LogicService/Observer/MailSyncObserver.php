@@ -26,19 +26,29 @@ class MailSyncObserver
         $this->setSubject( $subject );
 
         $users = $subject->getEventObject();
+        $action = $this->getRootConfig()['action'];
         if (!( is_array( $users ) || $users instanceof ResultSetInterface )) {
             $users = [ $users ];
         }
+        switch($action)
+        {
+            case 'fetch':
+                exit;
+                foreach ($users as $_k => $user) {
+                    try {
+                        $count = $this->syncMails( $user );
+                    } catch ( \Exception $ex ) {
+                        throw $ex;
+                        $count = 0;
+                    }
 
-        foreach ($users as $_k => $user) {
-            try {
-                $count = $this->syncMails( $user );
-            } catch ( \Exception $ex ) {
-                throw $ex;
-                $count = 0;
-            }
-
-            $this->updateMailChains( $user );
+                    $this->updateMailChains( $user );
+                }
+                break;
+            case 'send':
+                exit;
+                //todo move heare mail send observer logic
+                break;
         }
     }
 
@@ -90,7 +100,7 @@ class MailSyncObserver
             }
 //            prn($exceptUids, $setting);
 //            exit();
-            $syncService  = $this->mail( $setting );
+            $syncService  = $this->getFetchTransport( $setting );
             $fetchedMails = $syncService->fetchAll( $exceptUids );
 //            prn($fetchedMails);
 //            exit;
@@ -108,7 +118,7 @@ class MailSyncObserver
                     //                    $newMails[ $key ] = $this->model( 'Mail' )->exchangeArray( $mail );
                     $newMails[ $key ] = $modelService->get( 'MailDetail' )
                                                      ->exchangeArray( $mail );
-                    $this->configureMail( $user, $setting, $newMails[ $key ] );
+                    $this->configureFetchedMail( $user, $setting, $newMails[ $key ] );
                 }
             }
         }
@@ -132,10 +142,11 @@ class MailSyncObserver
 //            $newMail->title = $newMail->header[ 'subject' ];
 //            $newMail->date  = ( new \DateTime( $newMail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
             $this->getSubject()->getLogicService()
-                 ->get( 'sync', $newMail->getModelName() )->trigger( $newMail );
+                 ->get( 'presave', $newMail->getModelName() )->trigger( $newMail );
             $mailGW->save( $newMail );
             $newMail->_id = $mailGW->getLastInsertId();
-
+            $this->getSubject()->getLogicService()
+                 ->get( 'postsync', $newMail->getModelName() )->trigger( $newMail );
             $this->createEmailToMail( $newMail );
             $count++;
         }
@@ -144,125 +155,125 @@ class MailSyncObserver
     }
 
     //todo rewrite update method to work in
-    public function updateMailChains( $user )
-    {
-        $mailGW       =
-            $this->getSubject()->getGatewayService()->get( 'MailDetail' );
-        $chainGW      = $this->getSubject()->getGatewayService()->get( 'Mail' );
-        $modelService = $this->getSubject()->getModelServiceVerify();
-
-        $mails        =
-            $mailGW->find( [ 'chain_id' => '', 'owner_id' => $user->id() ] );
-        $noChainMails = [ ];
-        foreach ($mails as $mail) {
-            $noChainMails[ ] = $mail;
-        }
-
-        while (count( $noChainMails )) {
-            $mail        = array_pop( $noChainMails );
-            $chainMails  = [ ];
-            $MInReplyTo  = isset( $mail->header[ 'in-reply-to' ] ) ?
-                $mail->header[ 'in-reply-to' ] : null;
-            $MMessageId  = $mail->header[ 'message-id' ];
-            $MReferences = isset( $mail->header[ 'references' ] ) ?
-                $mail->header[ 'references' ] : [ ];
-            $chainWhere  = $MReferences;
-            if (isset( $MInReplyTo )) {
-                array_push( $chainWhere, $MMessageId, $MInReplyTo );
-            } else {
-                array_push( $chainWhere, $MMessageId );
-            }
-
-            foreach ($noChainMails as $key => $mailToCheck) {
-                $MInReplyTo     =
-                    isset( $mailToCheck->header[ 'in-reply-to' ] ) ?
-                        $mailToCheck->header[ 'in-reply-to' ] : null;
-                $MMessageId     = $mailToCheck->header[ 'message-id' ];
-                $MReferences    =
-                    isset( $mailToCheck->header[ 'references' ] ) ?
-                        $mailToCheck->header[ 'references' ] : [ ];
-                $testChainWhere = $MReferences;
-                if (isset( $MInReplyTo )) {
-                    array_push( $testChainWhere, $MMessageId, $MInReplyTo );
-                } else {
-                    array_push( $testChainWhere, $MMessageId );
-                }
-//                prn($testChainWhere, $chainWhere);
-                if (count( array_intersect( $testChainWhere, $chainWhere ) )) {
-                    $chainWhere = array_unique( array_merge( $testChainWhere,
-                        $chainWhere ) );
-                    reset( $noChainMails );
-                    unset( $noChainMails[ $key ] );
-                    $chainMails[ ] = $mailToCheck;
-                }
-            }
-            $chainMails[ ] = $mail;
-
-//            $chain = $modelService->get( 'Mail' );
-
-            $chain =
-                $chainGW->find( [ 'reference' => array_values( $chainWhere ) ] )
-                        ->current();
-            $chain = isset( $chain ) ? $chain : $modelService->get( 'Mail' );
-
-            $firstMailDate = strtotime( $chain->date );
-            $lastMailDate  = strtotime( $chain->date );
-            $title         = $chain->title;
-            $date          = $chain->date;
-            $last_mail     = $chain->last_mail;
-            $status        = Status::NEW_;
-            foreach ($chainMails as $mail) {
-                $mailDate = strtotime( $mail->date );
-//                prn( $mail->date, $mailDate, $firstMailDate, $lastMailDate );
-                if (( $mailDate < $firstMailDate ) || !$firstMailDate) {
-                    $title         = $mail->title;
-                    $firstMailDate = $mailDate;
-                }
-                if (( $mailDate > $lastMailDate ) || !$lastMailDate) {
-                    $date         = $mail->date;//$oldChainDate;
-                    $lastMailDate = $mailDate;
-                    $last_mail    = $mail->_id;
-                    $status       = $mail->status_id;
-                }
-            }
-
-            $chain->reference =
-                array_unique( array_merge( $chainWhere, $chain->reference ) );
-            $chain->title     = $title;
-            $chain->date      = $date;
-            $chain->last_mail = $last_mail;
-            $chain->count     = $chain->count + count( $chainMails );
-            $chain->status_id = $status;
-//            prn( 'result', $chain );
-
-            try {
-                $chain->owner_id = $user->id();
-
-                $this->getSubject()->getLogicService()
-                     ->get( 'sync', $chain->getModelName() )->trigger( $chain );
-//                prn($chain);
-//                prn($chainMails);
-                $chainGW->save( $chain );
-                foreach ($chainMails as $mail) {
-                    $mail->chain_id =
-                        $chainGW->getLastInsertId() ?: $chain->_id;
-//                    prn($mail);
-                    $mailGW->save( $mail );
-                    $mail->_id = $mailGW->getLastInsertId() ?: $mail->_id;
-                }
-            } catch ( \Exception $ex ) {
-                throw $ex;
-                continue;
-            }
-        }
-    }
+//    public function updateMailChains( $user )
+//    {
+//        $mailGW       =
+//            $this->getSubject()->getGatewayService()->get( 'MailDetail' );
+//        $chainGW      = $this->getSubject()->getGatewayService()->get( 'Mail' );
+//        $modelService = $this->getSubject()->getModelServiceVerify();
+//
+//        $mails        =
+//            $mailGW->find( [ 'chain_id' => '', 'owner_id' => $user->id() ] );
+//        $noChainMails = [ ];
+//        foreach ($mails as $mail) {
+//            $noChainMails[ ] = $mail;
+//        }
+//
+//        while (count( $noChainMails )) {
+//            $mail        = array_pop( $noChainMails );
+//            $chainMails  = [ ];
+//            $MInReplyTo  = isset( $mail->header[ 'in-reply-to' ] ) ?
+//                $mail->header[ 'in-reply-to' ] : null;
+//            $MMessageId  = $mail->header[ 'message-id' ];
+//            $MReferences = isset( $mail->header[ 'references' ] ) ?
+//                $mail->header[ 'references' ] : [ ];
+//            $chainWhere  = $MReferences;
+//            if (isset( $MInReplyTo )) {
+//                array_push( $chainWhere, $MMessageId, $MInReplyTo );
+//            } else {
+//                array_push( $chainWhere, $MMessageId );
+//            }
+//
+//            foreach ($noChainMails as $key => $mailToCheck) {
+//                $MInReplyTo     =
+//                    isset( $mailToCheck->header[ 'in-reply-to' ] ) ?
+//                        $mailToCheck->header[ 'in-reply-to' ] : null;
+//                $MMessageId     = $mailToCheck->header[ 'message-id' ];
+//                $MReferences    =
+//                    isset( $mailToCheck->header[ 'references' ] ) ?
+//                        $mailToCheck->header[ 'references' ] : [ ];
+//                $testChainWhere = $MReferences;
+//                if (isset( $MInReplyTo )) {
+//                    array_push( $testChainWhere, $MMessageId, $MInReplyTo );
+//                } else {
+//                    array_push( $testChainWhere, $MMessageId );
+//                }
+////                prn($testChainWhere, $chainWhere);
+//                if (count( array_intersect( $testChainWhere, $chainWhere ) )) {
+//                    $chainWhere = array_unique( array_merge( $testChainWhere,
+//                        $chainWhere ) );
+//                    reset( $noChainMails );
+//                    unset( $noChainMails[ $key ] );
+//                    $chainMails[ ] = $mailToCheck;
+//                }
+//            }
+//            $chainMails[ ] = $mail;
+//
+////            $chain = $modelService->get( 'Mail' );
+//
+//            $chain =
+//                $chainGW->find( [ 'reference' => array_values( $chainWhere ) ] )
+//                        ->current();
+//            $chain = isset( $chain ) ? $chain : $modelService->get( 'Mail' );
+//
+//            $firstMailDate = strtotime( $chain->date );
+//            $lastMailDate  = strtotime( $chain->date );
+//            $title         = $chain->title;
+//            $date          = $chain->date;
+//            $last_mail     = $chain->last_mail;
+//            $status        = Status::NEW_;
+//            foreach ($chainMails as $mail) {
+//                $mailDate = strtotime( $mail->date );
+////                prn( $mail->date, $mailDate, $firstMailDate, $lastMailDate );
+//                if (( $mailDate < $firstMailDate ) || !$firstMailDate) {
+//                    $title         = $mail->title;
+//                    $firstMailDate = $mailDate;
+//                }
+//                if (( $mailDate > $lastMailDate ) || !$lastMailDate) {
+//                    $date         = $mail->date;//$oldChainDate;
+//                    $lastMailDate = $mailDate;
+//                    $last_mail    = $mail->_id;
+//                    $status       = $mail->status_id;
+//                }
+//            }
+//
+//            $chain->reference =
+//                array_unique( array_merge( $chainWhere, $chain->reference ) );
+//            $chain->title     = $title;
+//            $chain->date      = $date;
+//            $chain->last_mail = $last_mail;
+//            $chain->count     = $chain->count + count( $chainMails );
+//            $chain->status_id = $status;
+////            prn( 'result', $chain );
+//
+//            try {
+//                $chain->owner_id = $user->id();
+//
+//                $this->getSubject()->getLogicService()
+//                     ->get( 'sync', $chain->getModelName() )->trigger( $chain );
+////                prn($chain);
+////                prn($chainMails);
+//                $chainGW->save( $chain );
+//                foreach ($chainMails as $mail) {
+//                    $mail->chain_id =
+//                        $chainGW->getLastInsertId() ?: $chain->_id;
+////                    prn($mail);
+//                    $mailGW->save( $mail );
+//                    $mail->_id = $mailGW->getLastInsertId() ?: $mail->_id;
+//                }
+//            } catch ( \Exception $ex ) {
+//                throw $ex;
+//                continue;
+//            }
+//        }
+//    }
 
     /**
      * @param Object $setting
      *
      * @return \Mail\Receive\BaseTransport|\Mail\Send\BaseTransport
      */
-    public function mail( $setting )
+    public function getFetchTransport( $setting )
     {
         $tm = $this->getSubject()->getMailService();
 
@@ -281,7 +292,7 @@ class MailSyncObserver
         return $tm->getGateway( $purpose, $protocolName, $setting, $settingId );
     }
 
-    public function configureMail( $user, $setting, $mail )
+    public function configureFetchedMail( $user, $setting, $mail )
     {
         $mail->from_id   = $setting->user_id;
         $mail->status_id = Status::NORMAL;
@@ -303,51 +314,52 @@ class MailSyncObserver
             ( new \DateTime( $mail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
     }
 
-    public function createEmailToMail( $mail )
-    {
-        $searchValues = $mail->type == 'inbox' ? $mail->header[ 'from' ] :
-            $mail->header[ 'to' ];
-        $emailGW      =
-            $this->getSubject()->getGatewayServiceVerify()->get( 'Email' );
-        $linkGW       =
-            $this->getSubject()->getGatewayServiceVerify()
-                 ->get( 'EmailToMail' );
-
-        $nonLinkedEmails = $emailGW->find( [ 'email' => $searchValues ] );
-        foreach ($nonLinkedEmails as $email) {
-            $link             = $this->getSubject()->getModelServiceVerify()
-                                     ->get( 'EmailToMail' );
-            $link->email_id   = $email->_id;
-            $link->mail_id    = (string) $mail->_id;
-            $link->mail_field = 'from_to_title';
-            $link->mail_title = $mail->title;
-            $link->mail_email = $email->email;
-            $link->_acl       = $mail->_acl;
-            $link->owner_id   = $mail->owner_id;
-            $this->getSubject()->getLogicService()
-                 ->get( 'update', 'EmailToMail' )->trigger( $link );
-            unset( $searchValues[ array_search( $link->mail_email,
-                    $searchValues ) ] );
-            $linkGW->save( $link );
-        }
-        if (count( $searchValues )) {
-            foreach ($searchValues as $email) {
-                $newLink             =
-                    $this->getSubject()->getModelServiceVerify()
-                         ->get( 'EmailToMail' );
-                $newLink->mail_email = $email;
-                $newLink->mail_id    = (string) $mail->_id;
-                $newLink->mail_field = 'from_to_title';
-                $newLink->mail_title = $mail->title;
-                $newLink->_acl       = $mail->_acl;
-                $newLink->owner_id   = $mail->owner_id;
-                $this->getSubject()->getLogicService()
-                     ->get( 'update', 'EmailToMail' )->trigger( $newLink );
-                $linkGW->save( $newLink );
-            }
-        }
-
-        $this->getSubject()->getLogicService()
-             ->get( 'updateTitle', 'MailDetail' )->trigger( $mail );
-    }
+    //todo move to linkObserver
+//    public function createEmailToMail( $mail )
+//    {
+//        $searchValues = $mail->type == 'inbox' ? $mail->header[ 'from' ] :
+//            $mail->header[ 'to' ];
+//        $emailGW      =
+//            $this->getSubject()->getGatewayServiceVerify()->get( 'Email' );
+//        $linkGW       =
+//            $this->getSubject()->getGatewayServiceVerify()
+//                 ->get( 'EmailToMail' );
+//
+//        $nonLinkedEmails = $emailGW->find( [ 'email' => $searchValues ] );
+//        foreach ($nonLinkedEmails as $email) {
+//            $link             = $this->getSubject()->getModelServiceVerify()
+//                                     ->get( 'EmailToMail' );
+//            $link->email_id   = $email->_id;
+//            $link->mail_id    = (string) $mail->_id;
+//            $link->mail_field = 'from_to_title';
+//            $link->mail_title = $mail->title;
+//            $link->mail_email = $email->email;
+//            $link->_acl       = $mail->_acl;
+//            $link->owner_id   = $mail->owner_id;
+//            $this->getSubject()->getLogicService()
+//                 ->get( 'update', 'EmailToMail' )->trigger( $link );
+//            unset( $searchValues[ array_search( $link->mail_email,
+//                    $searchValues ) ] );
+//            $linkGW->save( $link );
+//        }
+//        if (count( $searchValues )) {
+//            foreach ($searchValues as $email) {
+//                $newLink             =
+//                    $this->getSubject()->getModelServiceVerify()
+//                         ->get( 'EmailToMail' );
+//                $newLink->mail_email = $email;
+//                $newLink->mail_id    = (string) $mail->_id;
+//                $newLink->mail_field = 'from_to_title';
+//                $newLink->mail_title = $mail->title;
+//                $newLink->_acl       = $mail->_acl;
+//                $newLink->owner_id   = $mail->owner_id;
+//                $this->getSubject()->getLogicService()
+//                     ->get( 'update', 'EmailToMail' )->trigger( $newLink );
+//                $linkGW->save( $newLink );
+//            }
+//        }
+//
+//        $this->getSubject()->getLogicService()
+//             ->get( 'updateTitle', 'MailDetail' )->trigger( $mail );
+//    }
 }

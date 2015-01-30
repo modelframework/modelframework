@@ -23,7 +23,7 @@ class LogicObserver
 
         $models = $subject->getGateway()->find($query->getWhere());
         foreach ($models as $model) {
-            $subject->getLogicServiceVerify()->get($viewConfig->mode, $viewConfig->model)->trigger($model);
+            $subject->getLogicServiceVerify()->get($viewConfig->mode, $viewConfig->model)->trigger($model->getDataModel());
         }
         $subject->setRedirect($subject->refresh($viewConfig->title.' successfull', '/common/mail/index.html'));
     }

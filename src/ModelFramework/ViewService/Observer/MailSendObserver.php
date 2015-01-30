@@ -179,14 +179,11 @@ class MailSendObserver extends FormObserver
                 $this->configureMail( $model, $model_data, $old_data );
                 try {
                     $subject->getLogicServiceVerify()
-                            ->get( 'presend', $model->getModelName() )
+                            ->get( 'presave', $model->getModelName() )
                             ->trigger( $model->getDataModel() );
                     $subject->getGateway()->save( $model->getDataModel() );
                     $subject->getLogicServiceVerify()
-                            ->get( 'send', $model->getModelName() )
-                            ->trigger( $model->getDataModel() );
-                    $subject->getLogicServiceVerify()
-                            ->get( 'mailsync', 'User' )
+                            ->get( 'mailsend', 'User' )
                             ->trigger( $this->getSubject()
                                             ->getAclServiceVerify()
                                             ->getAclServiceVerify()
