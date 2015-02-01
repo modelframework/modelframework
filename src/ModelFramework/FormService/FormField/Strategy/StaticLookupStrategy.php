@@ -22,57 +22,62 @@ class StaticLookupStrategy extends AbstractFormFieldStrategy
         FormElementConfigInterface $_formElement,
         InputFilterConfigInterface $_inputFilter
     ) {
-        prn( 'StaticLookupStrategy ->s()', $conf, $_formElement, $_inputFilter );
+        prn('StaticLookupStrategy ->s()', $conf, $_formElement, $_inputFilter);
 
         /* if ($type == 'static_lookup') { */
         $name = $this->getName() . '_id';
-        if (!$this->isAllowed( $name ) || !$this->isNotLimited( $name )) {
+        if ( !$this->isAllowed($name) || !$this->isNotLimited($name)) {
             return [
-                'elements' => [ ],
-                'filters'  => [ ]
+                'elements' => [],
+                'filters'  => []
             ];
         }
-        $_inputFilter->name = $name;
-        $_formElement->options[ 'label' ] = !empty( $conf->label )
-            ? $conf->label : ucfirst( $this->getName() );
+        $_inputFilter->name             = $name;
+        $_formElement->options['label'] = !empty($conf->label)
+            ? $conf->label : ucfirst($this->getName());
 
-        $_lAll          = $this->getConfigService()
-                ->get('StaticDataSource', $conf->model,
-                    new StaticDataConfig());
-        $_options       = [];
-            foreach ($_lAll->options as $_key => $_lRow) {
-                $_lLabel = $_lRow[$_lAll->attributes['select_field']];
-                $_lvalue = $_key;
+        $_lAll    = $this->getConfigService()
+            ->get('StaticDataSource', $conf->model,
+                new StaticDataConfig());
+        if ( $_lAll == null )
+        {
+            $_lAll = new StaticDataConfig();
+        }
+        $_options = [];
+        foreach ($_lAll->options as $_key => $_lRow) {
+            $_lLabel = $_lRow[$_lAll->attributes['select_field']];
+            $_lvalue = $_key;
 
-                $_options[$_lvalue] = $_lLabel;
-            }
-            if (isset($conf->default)) {
-                $_options[]
-                $_formElement->options['value_options'] = $_options;
+            $_options[$_lvalue] = $_lLabel;
+        }
+        if ( !empty($conf->default) && isset($_options[$conf->default])) {
+            $options = [$conf->default => $_options[$conf->default]];
+            unset ($_options[$conf->default]);
+            $options += $_options;
+            $_formElement->options['value_options'] = $options;
 //                $_formElement->attributes[ 'value' ]      = $conf[ 'default' ];
-            } else {
-                $_formElement->options['value_options'] += $_options;
-            }
-            $_formElement->options['label']
-                = $conf->fields[$_lAll->attributes['select_field']];
+        } else {
+            $_formElement->options['value_options'] += $_options;
+        }
+        $_formElement->options['label']
+            = $conf->fields[$_lAll->attributes['select_field']];
         /* } */
 
-        $_formElement->attributes[ 'name' ] = $name;
-        if (!empty( $conf->required )) {
-            $_formElement->attributes[ 'required' ] = 'required';
-            if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )
-                &&
-                strlen( $_formElement->options[ 'label_attributes' ][ 'class' ] )
+        $_formElement->attributes['name'] = $name;
+        if ( !empty($conf->required)) {
+            $_formElement->attributes['required'] = 'required';
+            if ( !empty($_formElement->options['label_attributes']['class'])
+                && strlen($_formElement->options['label_attributes']['class'])
             ) {
-                $_formElement->options[ 'label_attributes' ][ 'class' ] .= ' required';
+                $_formElement->options['label_attributes']['class'] .= ' required';
             } else {
-                $_formElement->options[ 'label_attributes' ]
-                    = [ 'class' => 'required' ];
+                $_formElement->options['label_attributes']
+                    = ['class' => 'required'];
             }
         }
         $result = [
-            'filters'  => [ $name => $_inputFilter ],
-            'elements' => [ $name => $_formElement ]
+            'filters'  => [$name => $_inputFilter],
+            'elements' => [$name => $_formElement]
         ];
 
         return $result;

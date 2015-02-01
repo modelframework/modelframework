@@ -112,6 +112,7 @@ class FormField
         switch ($type) {
             case 'lookup':
                 $this->setStrategy( new LookupStrategy() );
+                break;
             case 'static_lookup':
                 $this->setStrategy( new StaticLookupStrategy() );
                 break;

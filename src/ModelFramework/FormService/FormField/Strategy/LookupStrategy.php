@@ -72,7 +72,16 @@ class LookupStrategy extends AbstractFormFieldStrategy
             }
             $_options[ $_lvalue ] = $_lLabel;
         }
-        $_formElement->options[ 'value_options' ] += $_options;
+        if ( !empty($conf->default) && isset($_options[$conf->default])) {
+            $options = [ $conf->default => $_options[$conf->default] ];
+            unset ($_options[$conf->default]);
+            $options += $_options;
+            $_formElement->options['value_options'] = $options;
+//                $_formElement->attributes[ 'value' ]      = $conf[ 'default' ];
+        } else {
+            $_formElement->options['value_options'] += $_options;
+        }
+//        $_formElement->options[ 'value_options' ] += $_options;
         $_formElement->attributes[ 'name' ] = $name;
         if (!empty( $conf->required )) {
             $_formElement->attributes[ 'required' ] = 'required';
