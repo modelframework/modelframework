@@ -8,7 +8,21 @@
 
 namespace ModelFramework\FormService\FormField;
 
-interface FormFieldInterface
+use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
+use ModelFramework\FormService\FormField\FieldConfig\ParsedFieldConfigAwareInterface;
+use ModelFramework\FormService\LimitFieldsAwareInterface;
+use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\QueryService\QueryServiceAwareInterface;
+
+interface FormFieldInterface extends ParsedFieldConfigAwareInterface,
+                                     FieldTypesServiceAwareInterface,
+                                     AclConfigAwareInterface,
+                                     LimitFieldsAwareInterface,
+                                     QueryServiceAwareInterface,
+                                     GatewayServiceAwareInterface,
+                                     ConfigServiceAwareInterface
 {
 
     /**
@@ -33,20 +47,19 @@ interface FormFieldInterface
      *
      * @return $this
      */
-    public function setName( $name );
+    public function setName($name);
 
     /**
      * @param array $config
      *
      * @return $this
      */
-    public function setFieldConfig( $config );
+    public function setFieldConfig($config);
 
 
     /**
      * @return string
      */
     public function getType();
-
 
 }

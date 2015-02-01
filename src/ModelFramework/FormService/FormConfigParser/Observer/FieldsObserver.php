@@ -47,6 +47,7 @@ class FieldsObserver
 
     protected function createField( $name, $config )
     {
+        /** @var FormConfigParser $subject */
         $subject   = $this->getSubject();
         $formField = new FormField();
         $formField
@@ -54,6 +55,8 @@ class FieldsObserver
             ->setFieldTypesService( $subject->getFieldTypesServiceVerify() )
             ->setQueryService( $subject->getQueryServiceVerify() )
             ->setGatewayService( $subject->getGatewayServiceVerify() )
+            ->setGatewayService( $subject->getGatewayServiceVerify() )
+            ->setConfigService( $subject->getConfigServiceVerify() )
             ->setAclConfig( $subject->getAclConfigVerify() )
             ->setLimitFields( $subject->getLimitFields() )
             ->setName( $name )

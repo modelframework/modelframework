@@ -10,6 +10,8 @@ namespace ModelFramework\FormService\FormField\Strategy;
 
 use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigAwareTrait;
 use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
 use ModelFramework\FieldTypesService\InputFilterConfig\InputFilterConfigAwareTrait;
@@ -27,12 +29,12 @@ use ModelFramework\QueryService\QueryServiceAwareTrait;
 abstract class AbstractFormFieldStrategy
     implements FormFieldStrategyInterface, AclConfigAwareInterface,
                LimitFieldsAwareInterface, QueryServiceAwareInterface,
-               GatewayServiceAwareInterface
+               GatewayServiceAwareInterface, ConfigServiceAwareInterface
 {
 
     use FieldConfigAwareTrait, InputFilterConfigAwareTrait,
         FormElementConfigAwareTrait, AclConfigAwareTrait, LimitFieldsAwareTrait,
-        QueryServiceAwareTrait, GatewayServiceAwareTrait;
+        QueryServiceAwareTrait, GatewayServiceAwareTrait, ConfigServiceAwareTrait;
 
     /**
      * @var string

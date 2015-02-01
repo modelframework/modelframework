@@ -100,6 +100,7 @@ class FormService
         $formConfigParser->setFieldTypesService( $this->getFieldTypesServiceVerify() );
         $formConfigParser->setQueryService( $this->getQueryServiceVerify() );
         $formConfigParser->setGatewayService( $this->getGatewayServiceVerify() );
+        $formConfigParser->setConfigService( $this->getConfigServiceVerify() );
         $formConfigParser->setModelConfig(
             $this->getModelServiceVerify()->getModelConfig( $modelName )
         );

@@ -10,6 +10,8 @@ namespace ModelFramework\FormService\FormConfigParser;
 
 use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareInterface;
@@ -33,12 +35,12 @@ class FormConfigParser
     implements \SplSubject, ParsedFormConfigAwareInterface,
                FieldTypesServiceAwareInterface, ModelConfigAwareInterface,
                AclConfigAwareInterface, LimitFieldsAwareInterface,
-               QueryServiceAwareInterface, GatewayServiceAwareInterface
+               QueryServiceAwareInterface, GatewayServiceAwareInterface, ConfigServiceAwareInterface
 {
 
     use SplSubjectTrait, ParsedFormConfigAwareTrait,
         FieldTypesServiceAwareTrait, ModelConfigAwareTrait, AclConfigAwareTrait,
-        LimitFieldsAwareTrait, QueryServiceAwareTrait, GatewayServiceAwareTrait;
+        LimitFieldsAwareTrait, QueryServiceAwareTrait, GatewayServiceAwareTrait, ConfigServiceAwareTrait;
 
     private $allowed_observers = [ ];
 

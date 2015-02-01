@@ -32,9 +32,7 @@ class LookupStrategy extends AbstractFormFieldStrategy
         $_inputFilter->name               = $name;
         $_formElement->options[ 'label' ] = !empty( $conf->label )
             ? $conf->label : ucfirst( $this->getName() );
-        $filter[ 'name' ]                 = $name;
-        $_where                           =
-            [ 'status_id' => [ Status::NEW_, Status::NORMAL ] ];
+        $_where  = [ 'status_id' => [ Status::NEW_, Status::NORMAL ] ];
         $_order                           = $conf->fields;
         $_fields                          = array_keys( $conf->fields );
         $_mask = null;

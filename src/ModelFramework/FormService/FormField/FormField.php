@@ -10,6 +10,8 @@ namespace ModelFramework\FormService\FormField;
 
 use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
+use ModelFramework\ConfigService\ConfigServiceAwareInterface;
+use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
@@ -22,6 +24,7 @@ use ModelFramework\FormService\FormField\Strategy\FieldStrategy;
 use ModelFramework\FormService\FormField\Strategy\JLookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\LookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\FormFieldStrategyInterface;
+use ModelFramework\FormService\FormField\Strategy\StaticLookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\TextStrategy;
 use ModelFramework\FormService\LimitFieldsAwareInterface;
 use ModelFramework\FormService\LimitFieldsAwareTrait;
@@ -31,15 +34,12 @@ use ModelFramework\QueryService\QueryServiceAwareInterface;
 use ModelFramework\QueryService\QueryServiceAwareTrait;
 
 class FormField
-    implements FormFieldInterface, ParsedFieldConfigAwareInterface,
-               FieldTypesServiceAwareInterface, AclConfigAwareInterface,
-               LimitFieldsAwareInterface, QueryServiceAwareInterface,
-               GatewayServiceAwareInterface
+    implements FormFieldInterface
 {
 
     use ParsedFieldConfigAwareTrait, FieldTypesServiceAwareTrait,
         AclConfigAwareTrait, LimitFieldsAwareTrait, QueryServiceAwareTrait,
-        GatewayServiceAwareTrait;
+        GatewayServiceAwareTrait, ConfigServiceAwareTrait;
 
 
     /**
@@ -111,8 +111,9 @@ class FormField
     {
         switch ($type) {
             case 'lookup':
-            case 'static_lookup':
                 $this->setStrategy( new LookupStrategy() );
+            case 'static_lookup':
+                $this->setStrategy( new StaticLookupStrategy() );
                 break;
             case 'jlookup':
                 $this->setStrategy( new JLookupStrategy() );
@@ -211,6 +212,7 @@ class FormField
         $this->getStrategy()
              ->setGatewayService( $this->getGatewayServiceVerify() );
         $this->getStrategy()->setAclConfig( $this->getAclConfigVerify() );
+        $this->getStrategy()->setConfigService( $this->getConfigServiceVerify() );
         $this->getStrategy()->setLimitFields( $this->getLimitFields() );
         $this->getStrategy()->init();
         return $this;
