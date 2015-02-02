@@ -28,11 +28,13 @@ class JLookupStrategy extends AbstractFormFieldStrategy
                 'filters'  => [ ]
             ];
         }
-        $_inputFilter->name                 = $name;
-        $_formElement->options[ 'label' ]   = !empty( $conf->label )
+        $_inputFilter->name                       = $name;
+        $_formElement->options[ 'label' ]         = !empty( $conf->label )
             ? $conf->label : ucfirst( $this->getName() );
-        $filter[ 'name' ]                   = $name;
-        $_formElement->attributes[ 'name' ] = $name;
+        $filter[ 'name' ]                         = $name;
+        $_formElement->attributes[ 'name' ]       = $name;
+        $_formElement->attributes[ 'class' ]      = 'select2';
+        $_formElement->attributes[ 'data-scope' ] = strtolower( $conf->model );
         if (!empty( $conf->required )) {
             $_formElement->attributes[ 'required' ] = 'required';
             if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )
