@@ -28,6 +28,6 @@ class ConditionObserver extends AbstractConfigObserver
         } elseif ($status_id == $value[ 0 ]) {
             $model->$key = $value[ 1 ];
         }
-        $this->getSubject()->getGatewayServiceVerify()->get( $modelName )->save( $model );
+//        $this->getSubject()->getGatewayServiceVerify()->get( $modelName )->save( $model );
     }
 }

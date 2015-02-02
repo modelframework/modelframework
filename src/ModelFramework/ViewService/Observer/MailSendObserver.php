@@ -9,6 +9,7 @@
 
 namespace ModelFramework\ViewService\Observer;
 
+use Wepo\Model\Status;
 use Zend\InputFilter\Factory;
 use Zend\InputFilter\InputFilter;
 
@@ -179,18 +180,16 @@ class MailSendObserver extends FormObserver
                 $this->configureMail( $model, $model_data, $old_data );
                 try {
                     $subject->getLogicServiceVerify()
-                            ->get( 'presend', $model->getModelName() )
+                            ->get( 'presave', $model->getModelName() )
                             ->trigger( $model->getDataModel() );
                     $subject->getGateway()->save( $model->getDataModel() );
                     $subject->getLogicServiceVerify()
-                            ->get( 'send', $model->getModelName() )
-                            ->trigger( $model->getDataModel() );
-                    $subject->getLogicServiceVerify()
-                            ->get( 'mailsync', 'User' )
+                            ->get( 'mailsend', 'User' )
                             ->trigger( $this->getSubject()
                                             ->getAclServiceVerify()
                                             ->getAclServiceVerify()
                                             ->getUser() );
+                    exit;
                 } catch ( \Exception $ex ) {
                     $results[ 'message' ]
                         = 'Send mail problems happened: ' . $ex->getMessage();
@@ -198,10 +197,10 @@ class MailSendObserver extends FormObserver
                 if (!isset( $results[ 'message' ] )
                     || !strlen( $results[ 'message' ] )
                 ) {
-                    $subject->getLogicServiceVerify()->get( 'post'
-                                                            . $viewConfig->mode,
-                        $model->getModelName() )
-                            ->trigger( $model->getDataModel() );
+                    //$subject->getLogicServiceVerify()->get( 'post'
+                    //. $viewConfig->mode,
+                    //$model->getModelName() )
+                    //->trigger( $model->getDataModel() );
                     $url = $subject->getBackUrl();
                     if ($url == null || $url == '/') {
                         $url = $subject->getParams()->getController()->url()
@@ -241,6 +240,9 @@ class MailSendObserver extends FormObserver
         $mail->text         = $data[ 'text' ];
         $mail->title        = $data[ 'title' ];
         $mail->header       = $header;
+        $mail->date         = date( 'Y-m-d H:i:s' );
+        $mail->status_id    = Status::SENDING;
+        $mail->from_id      = $send_setting->user_id;
         $model->setDataModel( $mail );
     }
 }
