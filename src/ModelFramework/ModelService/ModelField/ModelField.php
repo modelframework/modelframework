@@ -17,6 +17,7 @@ use ModelFramework\ModelService\ModelField\Strategy\EmailStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\FieldStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\LookupStrategy;
 use ModelFramework\ModelService\ModelField\Strategy\ModelFieldStrategyInterface;
+use ModelFramework\ModelService\ModelField\Strategy\StaticLookupStrategy;
 
 class ModelField
     implements ModelFieldInterface, ParsedFieldConfigAwareInterface,
@@ -92,8 +93,10 @@ class ModelField
         switch ($type) {
             case 'lookup':
             case 'jlookup':
-            case 'static_lookup':
                 $this->setStrategy(new LookupStrategy());
+                break;
+            case 'static_lookup':
+                $this->setStrategy(new StaticLookupStrategy());
                 break;
             case 'email':
                 $this->setStrategy(new EmailStrategy());

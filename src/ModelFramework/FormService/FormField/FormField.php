@@ -12,6 +12,8 @@ use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
+use ModelFramework\DataModel\DataModelAwareInterface;
+use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
@@ -34,12 +36,12 @@ use ModelFramework\QueryService\QueryServiceAwareInterface;
 use ModelFramework\QueryService\QueryServiceAwareTrait;
 
 class FormField
-    implements FormFieldInterface
+    implements FormFieldInterface, DataModelAwareInterface
 {
 
     use ParsedFieldConfigAwareTrait, FieldTypesServiceAwareTrait,
         AclConfigAwareTrait, LimitFieldsAwareTrait, QueryServiceAwareTrait,
-        GatewayServiceAwareTrait, ConfigServiceAwareTrait;
+        GatewayServiceAwareTrait, ConfigServiceAwareTrait, DataModelAwareTrait;
 
 
     /**
@@ -212,8 +214,10 @@ class FormField
         $this->getStrategy()->setQueryService( $this->getQueryServiceVerify() );
         $this->getStrategy()
              ->setGatewayService( $this->getGatewayServiceVerify() );
+        $this->getStrategy()->setDataModel( $this->getDataModel() );
         $this->getStrategy()->setAclConfig( $this->getAclConfigVerify() );
-        $this->getStrategy()->setConfigService( $this->getConfigServiceVerify() );
+        $this->getStrategy()
+             ->setConfigService( $this->getConfigServiceVerify() );
         $this->getStrategy()->setLimitFields( $this->getLimitFields() );
         $this->getStrategy()->init();
         return $this;

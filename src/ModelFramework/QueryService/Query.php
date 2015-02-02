@@ -18,8 +18,10 @@ use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
 
 class Query
-    implements QueryInterface, QueryConfigAwareInterface, \SplSubject, ParamsAwareInterface, AuthServiceAwareInterface
+    implements QueryInterface, QueryConfigAwareInterface, \SplSubject,
+               ParamsAwareInterface, AuthServiceAwareInterface
 {
+
     use QueryConfigAwareTrait, ParamsAwareTrait, AuthServiceAwareTrait;
 
     private $_data = [ ];
@@ -27,29 +29,37 @@ class Query
     private $_order = [ ];
 
     protected $allowed_observers = [
-        'RouteParamObserver', 'LetterParamObserver', 'StaticObserver', 'SearchObserver', 'OrderObserver',
-        'PermissionObserver', 'AclObserver', 'CurrentUserObserver', 'FormatObserver',
+        'RouteParamObserver',
+        'LetterParamObserver',
+        'LikeObserver',
+        'StaticObserver',
+        'SearchObserver',
+        'OrderObserver',
+        'PermissionObserver',
+        'AclObserver',
+        'CurrentUserObserver',
+        'FormatObserver',
     ];
 
     protected $observers = [ ];
 
-    public function attach(\SplObserver $observer)
+    public function attach( \SplObserver $observer )
     {
         $this->observers[ ] = $observer;
     }
 
-    public function detach(\SplObserver $observer)
+    public function detach( \SplObserver $observer )
     {
-        $key = array_search($observer, $this->observers);
+        $key = array_search( $observer, $this->observers );
         if ($key) {
-            unset($this->observers[ $key ]);
+            unset( $this->observers[ $key ] );
         }
     }
 
     public function notify()
     {
         foreach ($this->observers as $observer) {
-            $observer->update($this);
+            $observer->update( $this );
         }
     }
 
@@ -58,9 +68,9 @@ class Query
         return $this->_data;
     }
 
-    public function setData(array $data)
+    public function setData( array $data )
     {
-        $this->_data = Arr::merge($this->_data, $data);
+        $this->_data = Arr::merge( $this->_data, $data );
 //        $this->_data += $data;
     }
 
@@ -69,17 +79,17 @@ class Query
         $this->_data = [ ];
     }
 
-    public function swipeDataKey($key)
+    public function swipeDataKey( $key )
     {
-        $ar = Arr::getDoubtField($this->getData(), $key, [ ]);
-        unset($this->_data[ $key ]);
+        $ar = Arr::getDoubtField( $this->getData(), $key, [ ] );
+        unset( $this->_data[ $key ] );
 
         return $ar;
     }
 
-    public function setWhere(array $where)
+    public function setWhere( array $where )
     {
-        $this->_where = Arr::merge($this->_where, $where);
+        $this->_where = Arr::merge( $this->_where, $where );
 
         return $this;
     }
@@ -89,9 +99,9 @@ class Query
         return $this->_where;
     }
 
-    public function setOrder(array $order)
+    public function setOrder( array $order )
     {
-        $this->_order = Arr::merge($this->_order, $order);
+        $this->_order = Arr::merge( $this->_order, $order );
 
         return $this;
     }
@@ -111,10 +121,10 @@ class Query
         return $this->getQueryConfigVerify()->model;
     }
 
-    public function getFormat($field)
+    public function getFormat( $field )
     {
         $data = $this->getData();
-        if (isset($data[ 'format' ][ $field ])) {
+        if (isset( $data[ 'format' ][ $field ] )) {
             return $data[ 'format' ][ $field ];
         }
 
@@ -123,23 +133,26 @@ class Query
 
     public function init()
     {
-        foreach ($this->getQueryConfigVerify()->observers as $observer => $obConfig) {
-            if (is_numeric($observer)) {
+        foreach ($this->getQueryConfigVerify()->observers as $observer =>
+                 $obConfig) {
+            if (is_numeric( $observer )) {
                 $observer = $obConfig;
                 $obConfig = null;
             }
-            if (!in_array($observer, $this->allowed_observers)) {
-                throw new \Exception($observer.' is not allowed in '.get_class($this));
+            if (!in_array( $observer, $this->allowed_observers )) {
+                throw new \Exception( $observer . ' is not allowed in ' .
+                                      get_class( $this ) );
             }
-            $observerClassName = 'ModelFramework\QueryService\Observer\\'.$observer;
+            $observerClassName =
+                'ModelFramework\QueryService\Observer\\' . $observer;
             /**
              * @var AbstractObserver $_obs
              */
             $_obs = new $observerClassName();
-            if (!empty($obConfig)) {
-                $_obs->setRootConfig($obConfig);
+            if (!empty( $obConfig )) {
+                $_obs->setRootConfig( $obConfig );
             }
-            $this->attach($_obs);
+            $this->attach( $_obs );
         }
     }
 
