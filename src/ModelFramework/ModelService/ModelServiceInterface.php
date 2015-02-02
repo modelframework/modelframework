@@ -3,9 +3,12 @@
 namespace ModelFramework\ModelService;
 
 use ModelFramework\DataModel\DataModel;
+use ModelFramework\ModelService\ModelConfig\ModelConfig;
+use ModelFramework\ModelService\ModelConfig\ParsedModelConfig;
 
 interface ModelServiceInterface
 {
+
     /**
      * @param string $modelName
      *
@@ -26,4 +29,21 @@ interface ModelServiceInterface
      * @return array
      */
     public function makeIndexes($model);
+
+    /**
+     * @param string $modelName
+     *
+     * @return ModelConfig
+     * @throws \Exception
+     */
+    public function getModelConfig($modelName);
+
+    /**
+     * @param string $modelName
+     *
+     * @return ParsedModelConfig
+     * @throws \Exception
+     */
+    public function getParsedModelConfig($modelName);
+
 }

@@ -8,139 +8,96 @@
 
 namespace ModelFramework\FormService\FormField\Strategy;
 
-use ModelFramework\FieldTypesService\FieldType\FieldTypeAwareTrait;
-use ModelFramework\FieldTypesService\FieldType\FieldTypeInterface;
-use ModelFramework\FormService\FormField\FieldConfig\LookupConfig;
-use ModelFramework\FormService\FormField\FieldConfig\FieldConfigInterface;
-use ModelFramework\FormService\FormField\FieldConfig\FieldConfigAwareTrait;
+use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
+use ModelFramework\FieldTypesService\InputFilterConfig\InputFilterConfigInterface;
+use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigInterface;
+use Wepo\Model\Status;
 
-class LookupStrategy
-    implements FormFieldStrategyInterface
+class LookupStrategy extends AbstractFormFieldStrategy
 {
-
-    use FieldConfigAwareTrait, FieldTypeAwareTrait;
-
-    /**
-     * @var string
-     */
-    private $name = '';
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->getFieldConfigVerify()->type;
-    }
-
-    /**
-     * @param array $aConfig
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    public function parseFieldConfigArray(array $aConfig)
-    {
-        $lookupConfig = new LookupConfig();
-        $lookupConfig->exchangeArray($aConfig);
-        return $lookupConfig;
-    }
-
-    /**
-     * @return $this
-     */
-    public function parse()
-    {
-        return $this->s($this->getFieldConfigVerify(),
-            $this->getFieldTypeVerify());
-    }
-
-    /**
-     * @return $this
-     */
-    public function init()
-    {
-
-    }
-
 
     public function s(
         FieldConfigInterface $conf,
-        FieldTypeInterface $_fieldType
+        FormElementConfigInterface $_formElement,
+        InputFilterConfigInterface $_inputFilter
     ) {
-        $_fieldSets        = [];
-        $_joins            = [];
-        $_fieldType->label = isset($conf->label) ? $conf->label
-            : ucfirst($this->getName());
-        $_labels           = [];
-
-        $_sign       = '_';
-        $_joinfields = [];
-        $_i          = 0;
-        $_fields     = [];
-        foreach ($conf->fields as $_jfield => $_jlabel) {
-            if ( !$_i++) {
-                $_fieldType->alias = $this->getName() . $_sign . $_jfield;
-            }
-            $_fields[$this->getName() . $_sign . $_jfield]     = [
-                'type'      => 'alias',
-                'fieldtype' => 'alias',
-                'datatype'  => 'string',
-                'default'   => '',
-                //              'source'    => $this->getName() . $_sign . 'id',
-                'label'     => $_jlabel,
-                'group'     => isset($conf->group) ? $conf->group
-                    : 'fields',
+//        prn( 'LookupStrategy ->s()', $conf, $_formElement, $_inputFilter );
+        $name = $this->getName() . '_id';
+        if (!$this->isAllowed( $name ) || !$this->isNotLimited( $name )) {
+            return [
+                'elements' => [ ],
+                'filters'  => [ ]
             ];
-            $_labels[$this->getName() . $_sign . $_jfield]     = $_jlabel;
-            $_joinfields[$this->getName() . $_sign . $_jfield] = $_jfield;
-            if (isset($conf->group)) {
-                $_fieldSets[$conf->group]['elements'][$this->getName() . $_sign
-                . $_jfield]
-                                   = $_jlabel;
-                $_fieldType->group = $conf->group;
+        }
+        $_inputFilter->name               = $name;
+        $_formElement->options[ 'label' ] = !empty( $conf->label )
+            ? $conf->label : ucfirst( $this->getName() );
+        $_where  = [ 'status_id' => [ Status::NEW_, Status::NORMAL ] ];
+        $_order                           = $conf->fields;
+        $_fields                          = array_keys( $conf->fields );
+        $_mask = null;
+        if (!empty( $conf->query ) && strlen( $conf->query )) {
+            $query   =
+                $this->getQueryServiceVerify()->get( $conf->query )
+                     ->process();
+            $_where  = $query->getWhere();
+            $_order  = $query->getOrder();
+            $_fields = $query->getFields();
+            $_mask   = $query->getFormat( 'label' );
+        }
+        $_lAll    =
+            $this->getGatewayServiceVerify()->get( $conf->model )
+                 ->find( $_where, $_order );
+        $_options = [ ];
+        foreach ($_lAll as $_lRow) {
+            $_lLabel = '';
+            $_lvalue = $_lRow->id();
+
+            if ($_mask !== null && strlen( $_mask )) {
+                $_vals = [ ];
+                foreach ($_fields as $field) {
+                    $_vals[ $field ] = $_lRow->$field;
+                }
+                $_lLabel = vsprintf( $_mask, $_vals );
+            } else {
+                foreach ($_fields as $_k) {
+                    if (strlen( $_lLabel )) {
+                        $_lLabel .= '  [ ';
+                        $_lLabel .= $_lRow->$_k;
+                        $_lLabel .= ' ] ';
+                    } else {
+                        $_lLabel .= $_lRow->$_k;
+                    }
+                }
+            }
+            $_options[ $_lvalue ] = $_lLabel;
+        }
+        if ( !empty($conf->default) && isset($_options[$conf->default])) {
+            $options = [ $conf->default => $_options[$conf->default] ];
+            unset ($_options[$conf->default]);
+            $options += $_options;
+            $_formElement->options['value_options'] = $options;
+//                $_formElement->attributes[ 'value' ]      = $conf[ 'default' ];
+        } else {
+            $_formElement->options['value_options'] += $_options;
+        }
+//        $_formElement->options[ 'value_options' ] += $_options;
+        $_formElement->attributes[ 'name' ] = $name;
+        if (!empty( $conf->required )) {
+            $_formElement->attributes[ 'required' ] = 'required';
+            if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )
+                &&
+                strlen( $_formElement->options[ 'label_attributes' ][ 'class' ] )
+            ) {
+                $_formElement->options[ 'label_attributes' ][ 'class' ] .= ' required';
+            } else {
+                $_formElement->options[ 'label_attributes' ]
+                    = [ 'class' => 'required' ];
             }
         }
-        $_joins[]                                  = [
-            'model'  => $conf->model,
-            'on'     => [$this->getName() . $_sign . 'id' => '_id'],
-            'fields' => $_joinfields,
-            'type'   => $conf->type,
-        ];
-        $_fieldType->source                        = $this->getName();
-        $_fieldType->default                       = isset($conf->default)
-            ? $conf->default
-            : '';
-        $_fields[$this->getName() . $_sign . 'id'] = $_fieldType->toArray();
-        $_labels[$this->getName() . $_sign . 'id'] = $_jlabel;
-//        $this->getName() .= '_id';
-        $_fieldSets[$conf->group]['elements'][$this->getName() . $_sign . 'id']
-            = $_jlabel;
-
         $result = [
-            'labels'    => $_labels,
-            'fields'    => $_fields,
-            'joins'     => $_joins,
-            'fieldsets' => $_fieldSets,
+            'filters'  => [ $name => $_inputFilter ],
+            'elements' => [ $name => $_formElement ]
         ];
 
         return $result;

@@ -64,7 +64,7 @@ class AclService
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclData( $modelName )
+    public function getAclConfig( $modelName )
     {
         $user = $this->getUser();
         $acl  = $this->getConfigServiceVerify()->getByObject( $modelName . '.' .
@@ -89,7 +89,7 @@ class AclService
      */
     public function get( $modelName )
     {
-        return $this->getAclModel( $modelName );
+        return $this->getAclDataModel( $modelName );
     }
 
     /**
@@ -98,15 +98,15 @@ class AclService
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclModel( $modelName )
+    public function getAclDataModel( $modelName )
     {
         $aclModel = new AclDataModel();
 
         $dataModel = $this->getModelServiceVerify()->get( $modelName );
         $aclModel->setDataModel( $dataModel );
 
-        $aclData = $this->getAclData( $modelName );
-        $aclModel->setAclData( $aclData );
+        $aclConfig = $this->getAclConfig( $modelName );
+        $aclModel->setAclConfig( $aclConfig );
 
         $aclModel->setUser( $this->getUser() );
 

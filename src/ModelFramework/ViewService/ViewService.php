@@ -83,34 +83,22 @@ class ViewService
         }
         $view->setViewConfig( $viewConfig );
         $view->setModelService( $this->getModelServiceVerify() );
-
         // info about model - how it is organized. it will be useful
         $parsedModelConfig = $this->getModelServiceVerify()
                                   ->getParsedModelConfig( $viewConfig->model );
         $view->setParsedModelConfig( $parsedModelConfig );
-
         // model view should deal with acl enabled model
         $aclModel =
-            $this->getAclServiceVerify()->getAclModel( $viewConfig->model );
+            $this->getAclServiceVerify()->getAclDataModel( $viewConfig->model );
         // primary gateway for data ops
         $gateway = $this->getGatewayServiceVerify()
                         ->get( $viewConfig->model, $aclModel );
         $view->setGateway( $gateway );
-
-        // gateway service for queries
         $view->setGatewayService( $this->getGatewayServiceVerify() );
-
-        // form service for form creation
         $view->setFormService( $this->getFormServiceVerify() );
-
         $view->setConfigService( $this->getConfigServiceVerify() );
-
         $view->setQueryService( $this->getQueryServiceVerify() );
-
         $view->setFileService( $this->getFileServiceVerify() );
-//        $view->setDataMappingService( $this->getDataMappingServiceVerify() );
-
-        // initialize stuff. observers as primary
         $view->init();
 
         return $view;

@@ -8,51 +8,63 @@
 
 namespace ModelFramework\FormService\FormConfigParser\Observer;
 
-use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
-use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FormService\FormConfigParser\FormConfigParser;
-use ModelFramework\FormService\ModelField\ModelField;
-use ModelFramework\Utility\Arr;
+use ModelFramework\FormService\FormField\FormField;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 
-class FieldsObserver implements \SplObserver, SubjectAwareInterface,
-                                FieldTypesServiceAwareInterface
+class FieldsObserver
+    implements \SplObserver, SubjectAwareInterface
 {
 
-    use SubjectAwareTrait, FieldTypesServiceAwareTrait;
+    use SubjectAwareTrait;
 
-    public function update(\SplSubject $subject)
+    public function update( \SplSubject $subject )
     {
         /** @var FormConfigParser $subject */
-        $this->setSubject($subject);
-
-        $modelConfig = $subject->getFormConfig();
-
-        $config = [];
-        // process fields
+        $this->setSubject( $subject );
+        $modelConfig      = $subject->getModelConfigVerify();
+        $parsedFormConfig = $subject->getParsedFormConfig();
         foreach ($modelConfig->fields as $field_name => $field_conf) {
-            $config = Arr::merge($config, $this->createField($field_name, $field_conf));
+            $field = $this->createField( $field_name, $field_conf );
+            foreach ($field[ 'elements' ] as $key => $element) {
+                if (isset( $parsedFormConfig->fieldsets_configs[ $field_conf[ 'group' ] ] )) {
+                    $parsedFormConfig->fieldsets_configs[ $field_conf[ 'group' ] ]->elements[ ] =
+                        $element;
+                }
+                $parsedFormConfig->validationGroup[ $field_conf[ 'group' ] ][ ] =
+                    $key;
+            }
+            foreach ($field[ 'filters' ] as $key => $filter) {
+                if (isset( $parsedFormConfig->fieldsets_configs[ $field_conf[ 'group' ] ] )) {
+                    $parsedFormConfig->filters[ $field_conf[ 'group' ] ][ $key ] =
+                        $filter;
+                }
+            }
         }
-
-        $subject->addParsedConfig($config);
-
+        $subject->setParsedFormConfig( $parsedFormConfig );
     }
 
-    protected function createField($name, $config)
+    protected function createField( $name, $config )
     {
-        $subject = $this->getSubject();
-
-        $modelField = new ModelField();
-        $modelField
-            ->chooseStrategy($config['type'])
-            ->setFieldTypesService($subject->getFieldTypesServiceVerify())
-            ->setName($name)
-            ->setFieldConfig($config)
+        /** @var FormConfigParser $subject */
+        $subject   = $this->getSubject();
+        $formField = new FormField();
+        $formField
+            ->chooseStrategy( $config[ 'type' ] )
+            ->setFieldTypesService( $subject->getFieldTypesServiceVerify() )
+            ->setQueryService( $subject->getQueryServiceVerify() )
+            ->setGatewayService( $subject->getGatewayServiceVerify() )
+            ->setGatewayService( $subject->getGatewayServiceVerify() )
+            ->setConfigService( $subject->getConfigServiceVerify() )
+            ->setAclConfig( $subject->getAclConfigVerify() )
+            ->setLimitFields( $subject->getLimitFields() )
+            ->setName( $name )
+            ->setFieldConfig( $config )
             ->init()
             ->parse();
 
-        return $modelField->getParsedFieldConfig();
+        return $formField->getParsedFieldConfig();
     }
 
 }

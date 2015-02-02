@@ -20,6 +20,7 @@ trait ConfigServiceAwareTrait
     public function setConfigService(ConfigServiceInterface $configService)
     {
         $this->_configService = $configService;
+        return $this;
     }
 
     /**

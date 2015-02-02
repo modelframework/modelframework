@@ -13,6 +13,7 @@ use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\ModelService\ModelConfig\ModelConfig;
 use ModelFramework\ModelService\ModelConfig\ParsedModelConfig;
 use ModelFramework\ModelService\ModelConfigParser\ModelConfigParser;
+use ModelFramework\Utility\Arr;
 
 /**
  * Class ModelService
@@ -98,7 +99,7 @@ class ModelService
     /**
      * @param string $modelName
      *
-     * @return array
+     * @return ParsedModelConfig
      * @throws \Exception
      */
     public function getParsedModelConfig($modelName)
@@ -208,10 +209,10 @@ class ModelService
      */
     public function getAvailableIndexes($model)
     {
-        $modelConfig = $this->getModelConfig($model);
+        $modelConfig = $this->getParsedModelConfig($model);
 
         $indexes = [];
-        foreach ($modelConfig['fields'] as $_key => $_field) {
+        foreach ($modelConfig->fields as $_key => $_field) {
             if ($_key == '_id' || $_field['datatype'] == 'array'
                 || $_field['type'] == 'source'
             ) {

@@ -13,20 +13,20 @@ use ModelFramework\DataModel\DataModelInterface;
 interface AclDataAwareInterface
 {
     /**
-     * @param DataModelInterface $aclData
+     * @param DataModelInterface $aclDataModel
      *
      * @return $this
      */
-    public function setAclData(DataModelInterface $aclData);
+    public function setAclDataModel(DataModelInterface $aclDataModel);
 
     /**
      * @return DataModelInterface
      */
-    public function getAclData();
+    public function getAclDataModel();
 
     /**
      * @return DataModelInterface
      * @throws \Exception
      */
-    public function getAclDataVerify();
+    public function getAclDataModelVerify();
 }

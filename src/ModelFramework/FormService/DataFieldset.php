@@ -2,14 +2,58 @@
 
 namespace ModelFramework\FormService;
 
+use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
+use ModelFramework\FormService\FormConfig\ParsedFormConfig;
+use ModelFramework\FormService\FormConfig\ParsedFormConfigAwareInterface;
 use Zend\Form\Fieldset;
 use Zend\InputFilter\InputFilterProviderInterface;
 
-class DataFieldset extends Fieldset implements InputFilterProviderInterface
+class DataFieldset extends Fieldset implements InputFilterProviderInterface, ParsedFormConfigAwareInterface
 {
+    private $_parsedFormConfig = null;
     protected $_name = '';
+    /**
+     * @param ParsedFormConfig $parsedFormConfig
+     *
+     * @return $this
+     */
+    public function setParsedFormConfig(
+        ParsedFormConfig $parsedFormConfig = null
+    ) {
+        if ($parsedFormConfig === null) {
+            $parsedFormConfig = new ParsedFormConfig();
+        }
+        $this->_parsedFormConfig = $parsedFormConfig;
+        $this->parseConfig($parsedFormConfig);
+        return $this;
+    }
 
-    public function parseConfig(ConfigForm $config)
+    /**
+     * @return ParsedFormConfig
+     */
+    public function getParsedFormConfig()
+    {
+        return $this->_parsedFormConfig;
+    }
+
+    /**
+     * @return ParsedFormConfig
+     * @throws \Exception
+     */
+    public function getParsedFormConfigVerify()
+    {
+        $parsedFormConfig = $this->getParsedFormConfig();
+        if ($parsedFormConfig == null
+            || !$parsedFormConfig instanceof ParsedFormConfig
+        ) {
+            throw new \Exception('ParsedFormConfig is not set in '
+                . get_class($this));
+        }
+
+        return $this->getParsedFormConfig();
+    }
+
+    public function parseConfig(ParsedFormConfig $config)
     {
         $this->_name = $config->name;
         $this->setName($config->group);
@@ -21,17 +65,23 @@ class DataFieldset extends Fieldset implements InputFilterProviderInterface
             if (!isset($config->fieldsets_configs[ $_k ])) {
                 throw new \Exception("Config for $_k fieldset is not set in $config->name ConfigForm");
             }
-            $fc       = $config->fieldsets_configs[ $_k ];
-            $cf       = new ConfigForm();
+            $parsedFSConfig = $config->fieldsets_configs[ $_k ];
             $fieldset = new DataFieldset();
-            $fieldset->parseconfig($cf->exchangeArray($fc));
+            $fieldset->setParsedFormConfig( $parsedFSConfig );
+
             if (!empty($_v[ 'options' ])) {
                 $fieldset->setOptions($_v[ 'options' ]);
             }
             $this->add($fieldset);
         }
         foreach ($config->elements as $_k => $_v) {
-            $this->add($_v);
+            if(is_array($_v)){
+                $this->add($_v);
+            }
+            elseif($_v instanceof FormElementConfigInterface)
+            {
+                $this->add($_v->toArray());
+            }
         }
 
         return $this;
@@ -70,10 +120,10 @@ class DataFieldset extends Fieldset implements InputFilterProviderInterface
 
     public function getInputFilterSpecification()
     {
-        return array(
-            'name' => array(
+        return [
+            'name' => [
                 'required' => true,
-            ),
-        );
+            ],
+        ];
     }
 }

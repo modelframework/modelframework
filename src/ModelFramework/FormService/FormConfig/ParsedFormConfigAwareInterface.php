@@ -10,12 +10,15 @@ namespace ModelFramework\FormService\FormConfig;
 
 interface ParsedFormConfigAwareInterface
 {
+
     /**
      * @param ParsedFormConfig $parsedFormConfig
      *
      * @return $this
      */
-    public function setParsedFormConfig(ParsedFormConfig $parsedFormConfig);
+    public function setParsedFormConfig(
+        ParsedFormConfig $parsedFormConfig = null
+    );
 
     /**
      * @return ParsedFormConfig

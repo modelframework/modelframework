@@ -20,8 +20,12 @@ trait ParsedFormConfigAwareTrait
      *
      * @return $this
      */
-    public function setParsedFormConfig(ParsedFormConfig $parsedFormConfig = null )
-    {
+    public function setParsedFormConfig(
+        ParsedFormConfig $parsedFormConfig = null
+    ) {
+        if ($parsedFormConfig === null) {
+            $parsedFormConfig = new ParsedFormConfig();
+        }
         $this->_parsedFormConfig = $parsedFormConfig;
 
         return $this;

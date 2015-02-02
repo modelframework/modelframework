@@ -23,12 +23,13 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
                          ViewServiceAwareInterface, AuthServiceAwareInterface,
                          ResponseAwareInterface
 {
+
     use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
 
-    public function setRedirect($redirect)
+    public function setRedirect( $redirect )
     {
         $this->_redirect = $redirect;
     }
@@ -40,7 +41,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
 
     public function hasRedirect()
     {
-        if (!empty($this->_redirect)) {
+        if (!empty( $this->_redirect )) {
             return true;
         }
 
@@ -52,9 +53,9 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         return $this->_data;
     }
 
-    public function setData(array $data)
+    public function setData( array $data )
     {
-        $this->_data = Arr::merge($this->_data, $data);
+        $this->_data = Arr::merge( $this->_data, $data );
     }
 
     protected function clearData()
@@ -73,7 +74,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         $result[ 'title' ]    = $viewBoxConfig->title;
         $result[ 'mode' ]     = $viewBoxConfig->mode;
         $result[ 'user' ]     = $this->getAuthServiceVerify()->getUser();
-        $this->setData($result);
+        $this->setData( $result );
     }
 
     public function process()
@@ -83,36 +84,39 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         foreach ($this->getViewBoxConfigVerify()->blocks as $blockName =>
                  $viewNames) {
             foreach ($viewNames as $viewName) {
-                $modelView = $this->getViewServiceVerify()->get($viewName);
-                $modelView->setParams($this->getParamsVerify());
+                $modelView = $this->getViewServiceVerify()->get( $viewName );
+                $modelView->setParams( $this->getParamsVerify() );
                 $modelView->process();
                 if (!$modelView->isAllowed()) {
                     continue;
                 }
                 if ($modelView->hasRedirect()) {
-                    $this->setRedirect($modelView->getRedirect());
+                    $this->setRedirect( $modelView->getRedirect() );
 
                     return;
                 }
                 if ($modelView->hasResponse()) {
-                    $this->setResponse($modelView->getResponse());
+                    $this->setResponse( $modelView->getResponse() );
 
                     return;
                 }
                 $data    = $modelView->getData();
-                $vParams = Arr::getDoubtField($data, 'params', [ ]);
-                if (count($vParams)) {
-                    $params = Arr::merge($params, $vParams);
+                $vParams = Arr::getDoubtField( $data, 'params', [ ] );
+                if (count( $vParams )) {
+                    $params = Arr::merge( $params, $vParams );
                 }
                 $viewResults =
                     [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
-                $this->setData($viewResults);
+                $this->setData( $viewResults );
             }
         }
         $params[ 'data' ] =
-            strtolower($this->getViewBoxConfigVerify()->document);
-        $params[ 'view' ] = strtolower($this->getViewBoxConfigVerify()->mode);
-        $this->setData([ 'viewboxparams' => $params, 'user'=>$this->getAuthServiceVerify()->getUser() ]);
+            strtolower( $this->getViewBoxConfigVerify()->document );
+        $params[ 'view' ] = strtolower( $this->getViewBoxConfigVerify()->mode );
+        $this->setData( [ 'viewboxparams' => $params,
+                          'user'          => $this->getAuthServiceVerify()
+                                                  ->getUser()
+        ] );
 
         return $this;
     }
@@ -126,8 +130,8 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
             return $this->getResponse();
         }
         $data      = $this->getData();
-        $viewModel = new ZendViewModel($data);
+        $viewModel = new ZendViewModel( $data );
 
-        return $viewModel->setTemplate($data[ 'template' ]);
+        return $viewModel->setTemplate( $data[ 'template' ] );
     }
 }

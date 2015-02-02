@@ -13,6 +13,9 @@ use ModelFramework\Utility\Arr;
 trait ParsedModelConfigAwareTrait
 {
 
+    /**
+     * @var ParsedModelConfig
+     */
     private $_parsedModelConfig = null;
 
     /**

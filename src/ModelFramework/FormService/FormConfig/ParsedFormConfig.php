@@ -11,15 +11,17 @@ namespace ModelFramework\FormService\FormConfig;
 class ParsedFormConfig
 {
 
-    public $fields = [];
-    public $joins = [];
-    public $adapter = '';
-    public $model = '';
-    public $label = '';
-    public $table = '';
+    public $_id = '';
+    public $name = '';
+    public $group = '';
+    public $type = '';
+    public $options = [];
+    public $attributes = [];
     public $fieldsets = [];
-    public $unique = [];
-    public $labels = [];
+    public $fieldsets_configs = [];
+    public $elements = [];
+    public $filters = [];
+    public $validationGroup = [];
 
     /**
      * @param array $a
@@ -28,16 +30,22 @@ class ParsedFormConfig
      */
     public function exchangeArray(array $a)
     {
-        $this->fields    = (isset($a['fields'])) ? $a['fields'] : [];
-        $this->joins     = (isset($a['joins'])) ? $a['joins'] : [];
-        $this->adapter   = (isset($a['adapter'])) ? $a['adapter'] : '';
-        $this->model     = (isset($a['model'])) ? $a['model'] : '';
-        $this->label     = (isset($a['label'])) ? $a['label'] : '';
-        $this->table     = (isset($a['table'])) ? $a['table'] : '';
-        $this->fieldsets = (isset($a['fieldsets'])) ? $a['fieldsets'] : [];
-        $this->unique    = (isset($a['unique'])) ? $a['unique'] : [];
-        $this->labels    = (isset($a['labels'])) ? $a['labels'] : [];
-
+        $this->_id               = (isset($a['_id'])) ? $a['_id'] : 0;
+        $this->name              = (isset($a['name'])) ? $a['name'] : '';
+        $this->group             = (isset($a['group'])) ? $a['group'] : '';
+        $this->type              = (isset($a['type'])) ? $a['type'] : '';
+        $this->options           = (isset($a['options'])) ? $a['options'] : [];
+        $this->attributes        = (isset($a['attributes'])) ? $a['attributes']
+            : [];
+        $this->fieldsets         = (isset($a['fieldsets'])) ? $a['fieldsets']
+            : [];
+        $this->fieldsets_configs = (isset($a['fieldsets_configs']))
+            ? $a['fieldsets_configs'] : [];
+        $this->elements          = (isset($a['elements'])) ? $a['elements']
+            : [];
+        $this->filters           = (isset($a['filters'])) ? $a['filters'] : [];
+        $this->validationGroup   = (isset($a['validationGroup']))
+            ? $a['validationGroup'] : [];
     }
 
 
@@ -47,15 +55,17 @@ class ParsedFormConfig
     public function toArray()
     {
         return [
-            'fields'    => $this->fields,
-            'joins'     => $this->joins,
-            'adapter'   => $this->adapter,
-            'model'     => $this->model,
-            'label'     => $this->label,
-            'table'     => $this->table,
-            'fieldsets' => $this->fieldsets,
-            'unique'    => $this->unique,
-            'labels'    => $this->labels,
+            '_id'               => $this->_id,
+            'name'              => $this->name,
+            'group'             => $this->group,
+            'type'              => $this->type,
+            'options'           => $this->options,
+            'attributes'        => $this->attributes,
+            'fieldsets'         => $this->fieldsets,
+            'fieldsets_configs' => $this->fieldsets_configs,
+            'elements'          => $this->elements,
+            'filters'           => $this->filters,
+            'validationGroup'   => $this->validationGroup,
         ];
     }
 
