@@ -35,6 +35,7 @@ class MailChainObserver
                 $this->updateMailChains( $mails );
                 break;
             case 'delete':
+//                $this->unchainMailChains( $mails );
                 $unchainedMails = $this->unchainMailChains( $mails );
                 $this->updateMailChains( $unchainedMails );
                 break;
@@ -45,7 +46,6 @@ class MailChainObserver
     {
         $chainIds = [ ];
         foreach ($mails as $mail) {
-            prn($mail);
             $chainIds[ ] = $mail->chain_id;
         }
 
@@ -59,7 +59,9 @@ class MailChainObserver
         foreach ($chainedMails as $mail) {
             $mail->chain_id = '';
             $mailGW->save( $mail );
-            $unchainedMails[ ] = $mail;
+            if ($mail->status_id != Status::SENDING) {
+                $unchainedMails[ ] = $mail;
+            }
         }
         return $unchainedMails;
     }

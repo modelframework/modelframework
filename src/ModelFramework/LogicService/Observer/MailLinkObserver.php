@@ -28,7 +28,7 @@ class MailLinkObserver
         $mails  = $subject->getEventObject();
         $action = $this->getRootConfig()[ 'action' ];
         switch ($action) {
-            case 'create':
+            case 'update':
                 if (!( is_array( $mails ) ||
                        $mails instanceof ResultSetInterface )
                 ) {
