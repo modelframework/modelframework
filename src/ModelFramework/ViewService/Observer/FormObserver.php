@@ -107,6 +107,10 @@ class FormObserver extends AbstractObserver
                 }
             }
         } else {
+//            $_formElement->options['value_options'] = $options;
+
+//            prn($form);
+//            prn($model->toArray());
             $form->bind( $model );
         }
         $form->prepare();
