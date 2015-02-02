@@ -82,10 +82,15 @@ class MailSendObserver extends FormObserver
                 $option->title . ' <' . $option->email . '>';
         }
         $defaultOption = $this->getSubject()->getParam( 'to', 0 );
+        if($defaultOption&&!isset($toOptions[$defaultOption]))
+        {
+            $toOptions[$defaultOption] = $defaultOption;
+        }
 //        if (!isset( $toOptions[ $defaultOption ] )) {
 //            $toOptions[ $defaultOption ] = $defaultOption ?: 'Please select...';
 //        }
         ksort( $toOptions );
+//        prn($toOptions,$defaultOption);
 
         $form->getFieldsets()[ 'fields' ]->add( array(
             'type'       => 'Zend\Form\Element\Select',
@@ -95,8 +100,8 @@ class MailSendObserver extends FormObserver
                 'value_options' => $toOptions,
             ),
             'attributes' => array(
-                'id' => 'email',
-                //                'value' => $defaultOption
+                'id'    => 'email',
+                'value' => $defaultOption
             )
         ) );
 
@@ -189,7 +194,6 @@ class MailSendObserver extends FormObserver
                                             ->getAclServiceVerify()
                                             ->getAclServiceVerify()
                                             ->getUser() );
-                    exit;
                 } catch ( \Exception $ex ) {
                     $results[ 'message' ]
                         = 'Send mail problems happened: ' . $ex->getMessage();
