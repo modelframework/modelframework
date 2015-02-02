@@ -18,6 +18,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface;
 class GatewayServiceRaw
     implements GatewayServiceInterface, ServiceLocatorAwareInterface
 {
+
     use ServiceLocatorAwareTrait;
 
     /**
@@ -26,9 +27,9 @@ class GatewayServiceRaw
      *
      * @return null|MongoGateway
      */
-    public function get($name, DataModelInterface $model = null)
+    public function get( $name, DataModelInterface $model = null )
     {
-        return $this->getGateway($name, $model);
+        return $this->getGateway( $name, $model );
     }
 
     /**
@@ -38,41 +39,34 @@ class GatewayServiceRaw
      * @return null|MongoGateway
      * @throws \Exception
      */
-    public function getGateway($name, DataModelInterface $model = null)
+    public function getGateway( $name, DataModelInterface $model = null )
     {
         if ($model == null) {
-            throw new \Exception(' Raw Gateway needs a DataModelInterface instance as the second parameter ');
+            throw new \Exception( ' Raw Gateway needs a DataModelInterface instance as the second parameter ' );
         }
-
-        $adapterConfig = $this->getConfig($model);
-        $gwName        = Arr::getDoubtField($adapterConfig, 'gateway', null);
+        $adapterConfig = $this->getConfig( $model );
+        $gwName        = Arr::getDoubtField( $adapterConfig, 'gateway', null );
         if ($gwName === null) {
-            $gwName = Arr::getDoubtField($adapterConfig, 'driver', null);
+            $gwName = Arr::getDoubtField( $adapterConfig, 'driver', null );
         }
         if ($gwName === null) {
-            throw new \Exception('Unknown gateway');
+            throw new \Exception( 'Unknown gateway' );
         }
-
         // create resultSet prototype
         $resultSetPrototype = new ResultSet();
-        $resultSetPrototype->setArrayObjectPrototype($model);
-
+        $resultSetPrototype->setArrayObjectPrototype( $model );
         // create custom transport for the model
-        $dbAdapter = $this->getServiceLocator()->get($model->_adapter);
-
+        $dbAdapter = $this->getServiceLocator()->get( $model->_adapter );
         // use general gw class
-
         if ($gwName == 'Pdo') {
-            throw new \Exception(' TODO: Needs to implement PDO Gateway create !! ');
+            throw new \Exception( ' TODO: Needs to implement PDO Gateway create !! ' );
         }
-        $gw = Obj::create('\\ModelFramework\\GatewayService\\MongoGateway',
-                           [
-                               'table'              => $model->getTableName(), 'adapter' => $dbAdapter,
-                               'resultSetPrototype' => $resultSetPrototype
-                           ]);
-
-//        $gw->setServiceLocator( $this->getServiceLocator() );
-//        $gw->setModelService( $this->getServiceLocator()->get( 'ModelFramework\ModelService' ) );
+        $gw = Obj::create( '\\ModelFramework\\GatewayService\\MongoGateway',
+            [
+                'table'              => $model->getTableName(),
+                'adapter'            => $dbAdapter,
+                'resultSetPrototype' => $resultSetPrototype
+            ] );
 
         return $gw;
     }
@@ -83,13 +77,15 @@ class GatewayServiceRaw
      * @return array
      * @throws \Exception
      */
-    protected function getConfig(DataModelInterface $model)
+    protected function getConfig( DataModelInterface $model )
     {
-        if (!$this->getServiceLocator()->has($model->_adapter)) {
-            throw new \Exception('Wrong adapter name '.$model->_adapter.' in model '.$model->getModelName());
+        if (!$this->getServiceLocator()->has( $model->_adapter )) {
+            throw new \Exception( 'Wrong adapter name ' . $model->_adapter .
+                                  ' in model ' . $model->getModelName() );
         }
 
-        return $this->getServiceLocator()->get($model->_adapter)->getDriver()->getConnection()
+        return $this->getServiceLocator()->get( $model->_adapter )->getDriver()
+                    ->getConnection()
                     ->getConnectionParameters();
     }
 }
