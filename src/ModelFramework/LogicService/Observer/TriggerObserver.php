@@ -17,7 +17,7 @@ class TriggerObserver extends AbstractConfigObserver
     public function process($model, $key, $value)
     {
         $action    = $value;
-        $srcConfig = $this->getSubject()->getModelServiceVerify()->getParsedModelConfig($model->getModelName())[ 'joins' ];
+        $srcConfig = $this->getSubject()->getModelServiceVerify()->getParsedModelConfig($model->getModelName())->joins;
         foreach ($srcConfig as $join) {
             if (isset($join[ 'on' ][ $key ])) {
                 $trgModelName   = $join[ 'model' ];
