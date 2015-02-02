@@ -29,6 +29,7 @@ class StaticLookupStrategy extends AbstractFormFieldStrategy
             ];
         }
         $_inputFilter->name               = $name;
+        $_formElement->attributes[ 'class' ]      = 'static-select2';
         $_formElement->options[ 'label' ] = !empty( $conf->label )
             ? $conf->label : ucfirst( $this->getName() );
 
@@ -52,7 +53,7 @@ class StaticLookupStrategy extends AbstractFormFieldStrategy
             $_formElement->options[ 'value_options' ] = $options;
 //                $_formElement->attributes[ 'value' ]      = $conf[ 'default' ];
         } else {
-            $_formElement->options[ 'value_options' ] += $_options;
+            $_formElement->options[ 'value_options' ] = $_options;
         }
         $_formElement->options[ 'label' ]
             = $conf->fields[ $_lAll->attributes[ 'select_field' ] ];

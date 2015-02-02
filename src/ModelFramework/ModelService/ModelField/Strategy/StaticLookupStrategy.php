@@ -14,7 +14,7 @@ use ModelFramework\ModelService\ModelField\FieldConfig\LookupConfig;
 use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigInterface;
 use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigAwareTrait;
 
-class LookupStrategy
+class StaticLookupStrategy
     implements ModelFieldStrategyInterface
 {
 
@@ -124,7 +124,7 @@ class LookupStrategy
             'model'  => $conf->model,
             'on'     => [$this->getName() . $_sign . 'id' => '_id'],
             'fields' => $_joinfields,
-            'type'   => 'lookup',
+            'type'   => $conf->type,
         ];
         $_fieldType->source                        = $this->getName();
         $_fieldType->default                       = isset($conf->default)
