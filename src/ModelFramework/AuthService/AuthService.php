@@ -155,12 +155,17 @@ class AuthService
         if (isset( $this->_session->main_user_id ) &&
             $this->_session->main_user_id
         ) {
-            $this->_mainUser = $this->getGateway( 'MainUser' )
-                                    ->get( $this->_session->main_user_id );
-            $company         = $this->getGateway( 'MainCompany' )
-                                    ->get( $this->_mainUser->company_id );
-            $dbs             = $this->getGateway( 'MainDb' )
-                                    ->find( [ 'company_id' => $company->_id ] );
+            try {
+                $this->_mainUser = $this->getGateway( 'MainUser' )
+                                        ->get( $this->_session->main_user_id );
+            } catch ( \Exception $e ) {
+                $this->_session->main_user_id = 0;
+                return false;
+            }
+            $company = $this->getGateway( 'MainCompany' )
+                            ->get( $this->_mainUser->company_id );
+            $dbs     = $this->getGateway( 'MainDb' )
+                            ->find( [ 'company_id' => $company->_id ] );
             if ($dbs->count() > 0) {
                 $db         = $dbs->current();
                 $connection = $this->getServiceLocator()->get( 'wepo_company' )
