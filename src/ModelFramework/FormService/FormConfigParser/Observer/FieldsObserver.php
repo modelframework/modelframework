@@ -57,6 +57,7 @@ class FieldsObserver
             ->setGatewayService( $subject->getGatewayServiceVerify() )
             ->setGatewayService( $subject->getGatewayServiceVerify() )
             ->setConfigService( $subject->getConfigServiceVerify() )
+            ->setDataModel( $subject->getDataModel() )
             ->setAclConfig( $subject->getAclConfigVerify() )
             ->setLimitFields( $subject->getLimitFields() )
             ->setName( $name )

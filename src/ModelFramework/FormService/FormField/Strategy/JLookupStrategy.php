@@ -35,6 +35,48 @@ class JLookupStrategy extends AbstractFormFieldStrategy
         $_formElement->attributes[ 'name' ]       = $name;
         $_formElement->attributes[ 'class' ]      = 'select2';
         $_formElement->attributes[ 'data-scope' ] = strtolower( $conf->model );
+        if (!empty( $this->getDataModel()->$name )) {
+            $_where  = [ '_id' => $this->getDataModel()->$name ];
+            $_order  = $conf->fields;
+            $_fields = array_keys( $conf->fields );
+            $_mask   = null;
+            if (!empty( $conf->query ) && strlen( $conf->query )) {
+                $query   =
+                    $this->getQueryServiceVerify()->get( $conf->query )
+                         ->process();
+                $_order  = $query->getOrder();
+                $_fields = $query->getFields();
+                $_mask   = $query->getFormat( 'label' );
+            }
+            $_lAll    =
+                $this->getGatewayServiceVerify()->get( $conf->model )
+                     ->find( $_where, $_order );
+            $_options = [ ];
+            foreach ($_lAll as $_lRow) {
+                $_lLabel = '';
+                $_lvalue = $_lRow->id();
+
+                if ($_mask !== null && strlen( $_mask )) {
+                    $_vals = [ ];
+                    foreach ($_fields as $field) {
+                        $_vals[ $field ] = $_lRow->$field;
+                    }
+                    $_lLabel = vsprintf( $_mask, $_vals );
+                } else {
+                    foreach ($_fields as $_k) {
+                        if (strlen( $_lLabel )) {
+                            $_lLabel .= '  [ ';
+                            $_lLabel .= $_lRow->$_k;
+                            $_lLabel .= ' ] ';
+                        } else {
+                            $_lLabel .= $_lRow->$_k;
+                        }
+                    }
+                }
+                $_options[ $_lvalue ] = $_lLabel;
+            }
+            $_formElement->options[ 'value_options' ] += $_options;
+        }
         if (!empty( $conf->required )) {
             $_formElement->attributes[ 'required' ] = 'required';
             if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )

@@ -111,6 +111,11 @@ class FormService
              */
             $aclData = $dataModel->getDataPermissions();
             $formConfigParser->setAclConfig( $aclData );
+            $formConfigParser->setDataModel( $dataModel->getDataModel() );
+        }
+        else
+        {
+            $formConfigParser->setDataModel( $dataModel );
         }
         $formConfigParser->setLimitFields( $this->getLimitFields() );
         $formConfigParser->init()->notify();
