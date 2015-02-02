@@ -21,17 +21,27 @@ class MailLinkObserver
 
     use ConfigAwareTrait, SubjectAwareTrait;
 
-    public function update(\SplSubject $subject)
+    public function update( \SplSubject $subject )
     {
-        $this->setSubject($subject);
+        $this->setSubject( $subject );
 
-        $mails = $subject->getEventObject();
-        if ( !(is_array($mails) || $mails instanceof ResultSetInterface)) {
-            $mails = [$mails];
-        }
+        $mails  = $subject->getEventObject();
+        $action = $this->getRootConfig()[ 'action' ];
+        switch ($action) {
+            case 'create':
+                if (!( is_array( $mails ) ||
+                       $mails instanceof ResultSetInterface )
+                ) {
+                    $mails = [ $mails ];
+                }
 
-        foreach ($mails as $mail) {
-            $this->createEmailToMail($mail);
+                foreach ($mails as $mail) {
+                    $this->createEmailToMail( $mail );
+                }
+                break;
+            case 'delete':
+                $this->deleteEmailToMail( $mails );
+                break;
         }
     }
 
@@ -81,5 +91,17 @@ class MailLinkObserver
 
 //        $this->getSubject()->getLogicService()
 //             ->get( 'updateTitle', 'MailDetail' )->trigger( $mail );
+    }
+
+    public function deleteEmailToMail( $mails )
+    {
+        $ids = [ ];
+        foreach ($mails as $mail) {
+            $ids[ ] = $mail->id();
+        }
+
+        $emtmGW = $this->getSubject()->getGatewayServiceVerify()
+                       ->get( 'EmailToMail' );
+        $emtmGW->delete( [ 'mail_id' => $ids ] );
     }
 }
