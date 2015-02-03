@@ -27,7 +27,7 @@ class LikeObserver extends AbstractObserver
         foreach ($this->getRootConfig() as $field => $param) {
             $letter = $subject->getParam($param, '');
             if (strlen($letter)) {
-                $where[ $field ] = new \MongoRegex('/^'.$letter.'/i');
+                $where[ $field ] = new \MongoRegex('/'.$letter.'/i');
 
                 $data['queryparams'][$param] = $letter;
                 $data['search_query'] = $letter;
