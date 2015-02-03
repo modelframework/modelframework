@@ -120,15 +120,16 @@ class MailSyncObserver
                         'header' => $mail->header,
                         'link'   => [ ]
                     ] );
+                    $mail->status_id = Status::SEND;
                 } catch ( \Exception $ex ) {
                     $mail->error =
                         array_merge( [ $ex->getMessage() ], $mail->error );
+                    $mail->status_id = Status::SENDERROR;
                 }
                 $mails[ ] = $mail;
             }
         }
         return $mails;
-
     }
 
 
@@ -157,6 +158,8 @@ class MailSyncObserver
             }
             //prn($exceptUids, $setting);
             //exit();
+//            prn($setting,$user);
+//            exit;
             $syncService  = $this->getFetchTransport( $setting );
             $fetchedMails = $syncService->fetchAll( $exceptUids );
             //prn($fetchedMails);
@@ -175,7 +178,7 @@ class MailSyncObserver
                     $ssIds[ ] = $sendSetting->_id;
                 }
                 $resMails       = $mailGW->find( [
-                    'status_id'    => Status::SENDING,
+                    'status_id'    => Status::SEND,
                     'protocol_ids' => $ssIds
                 ] );
                 $mailsToUnchain = [ ];
@@ -186,7 +189,7 @@ class MailSyncObserver
                      ->get( 'delete', 'MailDetail' )
                      ->trigger( $mailsToUnchain );
                 $mailGW->delete( [
-                    'status_id'    => Status::SENDING,
+                    'status_id'    => Status::SEND,
                     'protocol_ids' => $ssIds
                 ] );
             }
