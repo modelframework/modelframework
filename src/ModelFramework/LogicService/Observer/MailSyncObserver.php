@@ -115,14 +115,14 @@ class MailSyncObserver
             $gw          = $this->getSendTransport( $setting );
             foreach ($mailsToSend as $mail) {
                 try {
-                    $res = $gw->sendMail( [
+                    $res             = $gw->sendMail( [
                         'text'   => $mail->text,
                         'header' => $mail->header,
                         'link'   => [ ]
                     ] );
                     $mail->status_id = Status::SEND;
                 } catch ( \Exception $ex ) {
-                    $mail->error =
+                    $mail->error     =
                         array_merge( [ $ex->getMessage() ], $mail->error );
                     $mail->status_id = Status::SENDERROR;
                 }
@@ -149,6 +149,9 @@ class MailSyncObserver
         $mails    = $mailGW->find( [ 'owner_id' => $user->id() ] );
         $newMails = [ ];
 
+        $fetchedMailsGW =
+            $this->getSubject()->getGatewayService()->get( 'MailRaw' );
+
         foreach ($settings as $setting) {
             $exceptUids = [ ];
             foreach ($mails as $mail) {
@@ -160,8 +163,8 @@ class MailSyncObserver
             //exit();
 //            prn($setting,$user);
 //            exit;
-            $syncService  = $this->getFetchTransport( $setting );
-            $fetchedMails = $syncService->fetchAll( $exceptUids );
+            $syncService = $this->getFetchTransport( $setting );
+            $uids        = $syncService->fetchAll( $exceptUids );
             //prn($fetchedMails);
             //exit;
             if ($syncService->lastSyncIsSuccessful()) {
@@ -195,7 +198,15 @@ class MailSyncObserver
             }
             //prn( $fetchedMails );
             //exit;
-            foreach ($fetchedMails as $key => $mail) {
+            $fetchedMails = $fetchedMailsGW->find( [
+                'protocol_ids.' . $setting->id() => $uids
+            ] );
+            foreach ($fetchedMails as $mail) {
+                $key                       = $mail->message_id;
+                $temp                      = $mail->converted_mail;
+                $temp[ 'protocol_ids' ] = $mail->protocol_ids;
+                $mail                      = $temp;
+
                 if (isset( $newMails[ $key ] )) {
                     $newMails[ $key ]->protocol_ids =
                         array_merge( $mail->protocol_ids,
