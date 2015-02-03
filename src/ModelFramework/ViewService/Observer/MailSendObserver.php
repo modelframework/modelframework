@@ -25,6 +25,9 @@ class MailSendObserver extends FormObserver
     public function initCustomForm()
     {
         $form = $this->initForm();
+
+        $form->getFieldsets()[ 'button' ]->getElements()[ 'submit' ]->setValue( 'Send' );
+
         //updating default form
 
         $re = $this->getSubject()->getParam( 're' );
@@ -82,9 +85,8 @@ class MailSendObserver extends FormObserver
                 $option->title . ' <' . $option->email . '>';
         }
         $defaultOption = $this->getSubject()->getParam( 'to', 0 );
-        if($defaultOption&&!isset($toOptions[$defaultOption]))
-        {
-            $toOptions[$defaultOption] = $defaultOption;
+        if ($defaultOption && !isset( $toOptions[ $defaultOption ] )) {
+            $toOptions[ $defaultOption ] = $defaultOption;
         }
 //        if (!isset( $toOptions[ $defaultOption ] )) {
 //            $toOptions[ $defaultOption ] = $defaultOption ?: 'Please select...';
