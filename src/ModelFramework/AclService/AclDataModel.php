@@ -10,7 +10,6 @@ use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\DataModel\UserAwareInterface;
 use ModelFramework\DataModel\UserAwareTrait;
-use ModelFramework\Utility\Arr;
 
 class AclDataModel implements DataModelInterface, DataModelAwareInterface,
                               AclConfigAwareInterface, UserAwareInterface
@@ -22,94 +21,92 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
 
     public function __clone()
     {
-        $this->setDataModel(clone $this->getDataModel());
-        $this->setAclConfig(clone $this->getAclConfig());
+        $this->setDataModel( clone $this->getDataModel() );
+        $this->setAclConfig( clone $this->getAclConfig() );
     }
 
-    public function merge($data)
+    public function merge( $data )
     {
-        $this->getDataModelVerify()->merge($data);
+        $this->getDataModelVerify()->merge( $data );
 
         return $this;
     }
 
-    public function split($data)
+    public function split( $data )
     {
-        $this->getDataModelVerify()->split($data);
-
-        return $this;
+        return $this->getDataModelVerify()->split( $data );
     }
 
-    public function __call($name, $arguments)
+    public function __call( $name, $arguments )
     {
-        return $this->getDataModelVerify()->__call($name, $arguments);
+        return $this->getDataModelVerify()->__call( $name, $arguments );
     }
 
-    public function __get($name)
+    public function __get( $name )
     {
         $aclData = $this->getDataPermissions();
-        if (in_array($name,
-            ['_model', '_label', '_adapter', '_acl', 'id', '_id'])) {
+        if (in_array( $name,
+            [ '_model', '_label', '_adapter', '_acl', 'id', '_id' ] )) {
             return $this->getDataModelVerify()->{$name};
         }
 
-        if ( !in_array('read', $aclData->data)
+        if (!in_array( 'read', $aclData->data )
         ) {
-            throw new \Exception('reading is not allowed');
+            throw new \Exception( 'reading is not allowed' );
         }
-        if (empty($aclData->fields[$name])) {
+        if (empty( $aclData->fields[ $name ] )) {
             return 'denied';
         }
-        if ($aclData->fields[$name] == 'x') {
+        if ($aclData->fields[ $name ] == 'x') {
             return 'reading is not allowed';
         }
 
-        return $this->getDataModelVerify()->__get($name);
+        return $this->getDataModelVerify()->__get( $name );
     }
 
-    public function __set($name, $value)
+    public function __set( $name, $value )
     {
         $aclData = $this->getDataPermissions();
-        if ( !in_array('write', $aclData->data)
+        if (!in_array( 'write', $aclData->data )
         ) {
-            throw new \Exception('writing is not allowed');
+            throw new \Exception( 'writing is not allowed' );
         }
-        if (empty($aclData->fields[$name])) {
+        if (empty( $aclData->fields[ $name ] )) {
             return 'denied';
         }
-        if ($aclData->fields[$name] == 'x') {
+        if ($aclData->fields[ $name ] == 'x') {
             return 'reading is not allowed';
         }
-        if ($aclData->fields[$name] !== 'write') {
+        if ($aclData->fields[ $name ] !== 'write') {
             return 'writing is not allowed';
         }
 
-        return $this->getDataModelVerify()->__set($name, $value);
+        return $this->getDataModelVerify()->__set( $name, $value );
     }
 
-    public function __isset($name)
+    public function __isset( $name )
     {
-        return $this->getDataModelVerify()->__isset($name);
+        return $this->getDataModelVerify()->__isset( $name );
     }
 
-    public function __unset($name)
+    public function __unset( $name )
     {
-        return $this->getDataModelVerify()->__unset($name);
+        return $this->getDataModelVerify()->__unset( $name );
     }
 
-    public function exchangeArray(array $data)
+    public function exchangeArray( array $data )
     {
-        $this->getDataModelVerify()->exchangeArray($data);
+        $this->getDataModelVerify()->exchangeArray( $data );
 
         return $this;
     }
 
     public function getArrayCopy()
     {
-        $data = [];
+        $data = [ ];
         foreach ($this->getFields() as $_field => $_properties) {
             if ($_field !== '_acl') {
-                $data[$_field] = $this->{$_field};
+                $data[ $_field ] = $this->{$_field};
             }
         }
 
@@ -152,12 +149,12 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
         $user     = $this->getUser();
         $modelAcl = $this->getDataModelVerify()->_acl;
         foreach ($modelAcl as $acl) {
-            if ($acl['role_id'] == (string)$user->id()
-                || $acl['role_id'] == (string)$user->role_id
+            if ($acl[ 'role_id' ] == (string) $user->id()
+                || $acl[ 'role_id' ] == (string) $user->role_id
             ) {
-                foreach ($acl['data'] as $data) {
-                    if ( !in_array($data, $this->mixedAclData->data)) {
-                        $this->mixedAclData->data[] = $data;
+                foreach ($acl[ 'data' ] as $data) {
+                    if (!in_array( $data, $this->mixedAclData->data )) {
+                        $this->mixedAclData->data[ ] = $data;
                     }
                 }
             }

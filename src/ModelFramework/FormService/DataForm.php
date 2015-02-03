@@ -81,7 +81,7 @@ class DataForm extends Form
      *
      * @return array
      */
-    protected function extract()
+    public function extract()
     {
         $values = parent::extract();
         foreach ($this->getFieldsets() as $fieldset) {
