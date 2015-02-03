@@ -115,20 +115,21 @@ class MailSyncObserver
             $gw          = $this->getSendTransport( $setting );
             foreach ($mailsToSend as $mail) {
                 try {
-                    $res = $gw->sendMail( [
+                    $res             = $gw->sendMail( [
                         'text'   => $mail->text,
                         'header' => $mail->header,
                         'link'   => [ ]
                     ] );
+                    $mail->status_id = Status::SEND;
                 } catch ( \Exception $ex ) {
-                    $mail->error =
+                    $mail->error     =
                         array_merge( [ $ex->getMessage() ], $mail->error );
+                    $mail->status_id = Status::SENDERROR;
                 }
                 $mails[ ] = $mail;
             }
         }
         return $mails;
-
     }
 
 
@@ -148,6 +149,9 @@ class MailSyncObserver
         $mails    = $mailGW->find( [ 'owner_id' => $user->id() ] );
         $newMails = [ ];
 
+        $fetchedMailsGW =
+            $this->getSubject()->getGatewayService()->get( 'MailRaw' );
+
         foreach ($settings as $setting) {
             $exceptUids = [ ];
             foreach ($mails as $mail) {
@@ -157,8 +161,10 @@ class MailSyncObserver
             }
             //prn($exceptUids, $setting);
             //exit();
-            $syncService  = $this->getFetchTransport( $setting );
-            $fetchedMails = $syncService->fetchAll( $exceptUids );
+//            prn($setting,$user);
+//            exit;
+            $syncService = $this->getFetchTransport( $setting );
+            $uids        = $syncService->fetchAll( $exceptUids );
             //prn($fetchedMails);
             //exit;
             if ($syncService->lastSyncIsSuccessful()) {
@@ -175,7 +181,7 @@ class MailSyncObserver
                     $ssIds[ ] = $sendSetting->_id;
                 }
                 $resMails       = $mailGW->find( [
-                    'status_id'    => Status::SENDING,
+                    'status_id'    => Status::SEND,
                     'protocol_ids' => $ssIds
                 ] );
                 $mailsToUnchain = [ ];
@@ -186,13 +192,21 @@ class MailSyncObserver
                      ->get( 'delete', 'MailDetail' )
                      ->trigger( $mailsToUnchain );
                 $mailGW->delete( [
-                    'status_id'    => Status::SENDING,
+                    'status_id'    => Status::SEND,
                     'protocol_ids' => $ssIds
                 ] );
             }
             //prn( $fetchedMails );
             //exit;
-            foreach ($fetchedMails as $key => $mail) {
+            $fetchedMails = $fetchedMailsGW->find( [
+                'protocol_ids.' . $setting->id() => $uids
+            ] );
+            foreach ($fetchedMails as $mail) {
+                $key                    = $mail->message_id;
+                $temp                   = $mail->converted_mail;
+                $temp[ 'protocol_ids' ] = $mail->protocol_ids;
+                $mail                   = $temp;
+
                 if (isset( $newMails[ $key ] )) {
                     $newMails[ $key ]->protocol_ids =
                         array_merge( $mail->protocol_ids,
@@ -311,7 +325,9 @@ class MailSyncObserver
         }
         $mail->owner_id = $user->id();
         $mail->title    = $mail->header[ 'subject' ];
-        $mail->date     =
-            ( new \DateTime( $mail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
+        $timezone       = new \DateTimeZone( date_default_timezone_get() );
+        $date           = new \DateTime( $mail->header[ 'date' ] );
+        $date->setTimezone( $timezone );
+        $mail->date = $date->format( 'Y-m-d H:i:s' );
     }
 }

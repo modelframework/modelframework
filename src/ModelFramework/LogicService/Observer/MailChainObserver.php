@@ -59,7 +59,7 @@ class MailChainObserver
         foreach ($chainedMails as $mail) {
             $mail->chain_id = '';
             $mailGW->save( $mail );
-            if ($mail->status_id != Status::SENDING) {
+            if ($mail->status_id != Status::SEND) {
                 $unchainedMails[ ] = $mail;
             }
         }
