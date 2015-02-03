@@ -202,10 +202,10 @@ class MailSyncObserver
                 'protocol_ids.' . $setting->id() => $uids
             ] );
             foreach ($fetchedMails as $mail) {
-                $key                       = $mail->message_id;
-                $temp                      = $mail->converted_mail;
+                $key                    = $mail->message_id;
+                $temp                   = $mail->converted_mail;
                 $temp[ 'protocol_ids' ] = $mail->protocol_ids;
-                $mail                      = $temp;
+                $mail                   = $temp;
 
                 if (isset( $newMails[ $key ] )) {
                     $newMails[ $key ]->protocol_ids =
@@ -325,7 +325,9 @@ class MailSyncObserver
         }
         $mail->owner_id = $user->id();
         $mail->title    = $mail->header[ 'subject' ];
-        $mail->date     =
-            ( new \DateTime( $mail->header[ 'date' ] ) )->format( 'Y-m-d H:i:s' );
+        $timezone       = new \DateTimeZone( date_default_timezone_get() );
+        $date           = new \DateTime( $mail->header[ 'date' ] );
+        $date->setTimezone( $timezone );
+        $mail->date = $date->format( 'Y-m-d H:i:s' );
     }
 }
