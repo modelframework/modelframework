@@ -62,10 +62,11 @@ class EmailObserver
                             $email->data     = $model->getModelName();
                             $email->model_id = (string) $model->_id;
                         }
-                        $email->owner_id = $model->owner_id;
-                        $email->_acl     = $model->_acl;
-                        $email->email    = $model->$search_field;
-                        $email->title    = $model->title;
+                        $email->owner_id    = $model->owner_id;
+                        $email->_acl        = $model->_acl;
+                        $email->email       = $model->$search_field;
+                        $email->model_title = $model->title;
+                        $email->title       = $model->title.' <'.$model->$search_field.'>';
 //                        prn($email);
 //                        exit;
                         $subject->getLogicService()

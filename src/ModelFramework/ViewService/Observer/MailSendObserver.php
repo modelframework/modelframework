@@ -65,34 +65,23 @@ class MailSendObserver extends FormObserver
                 'value_options' => $mailSendSettingsOptions,
             ),
             'attributes' => array(
-                'value' => $defaultOption //set selected to '1'
+                'value' => $defaultOption, //set selected to '1'
+                'class' => 'static-select2'
             )
         ) );
 
         //TO FIELD INITIALIZATION
 
-        $query  =
-            $this->getSubject()->getQueryServiceVerify()->get( 'Email.lookup' )
-                 ->process();
-        $_where = $query->getWhere();
-        $res    = $this->getSubject()->getGatewayServiceVerify()->get( 'Email' )
-                       ->find( $_where );
+        $defaultOption = $this->getSubject()->getParam( 'to', 0 );
 
         $toOptions = [ ];
 
-        foreach ($res as $option) {
-            $toOptions[ $option->email ] =
-                $option->title . ' <' . $option->email . '>';
-        }
-        $defaultOption = $this->getSubject()->getParam( 'to', 0 );
-        if ($defaultOption && !isset( $toOptions[ $defaultOption ] )) {
+
+        if(!empty($defaultOption))
+        {
             $toOptions[ $defaultOption ] = $defaultOption;
         }
-//        if (!isset( $toOptions[ $defaultOption ] )) {
-//            $toOptions[ $defaultOption ] = $defaultOption ?: 'Please select...';
-//        }
-        ksort( $toOptions );
-//        prn($toOptions,$defaultOption);
+
 
         $form->getFieldsets()[ 'fields' ]->add( array(
             'type'       => 'Zend\Form\Element\Select',
@@ -102,8 +91,11 @@ class MailSendObserver extends FormObserver
                 'value_options' => $toOptions,
             ),
             'attributes' => array(
-                'id'    => 'email',
-                'value' => $defaultOption
+                'id'         => 'email',
+                'value'      => $defaultOption,
+                'class'      => 'email-select2',
+                'data-scope' => 'Email',
+                'multiple'   => 'multiple'
             )
         ) );
 
@@ -140,11 +132,7 @@ class MailSendObserver extends FormObserver
                 ],
                 'validators' => [
                     [
-                        'name' => 'EmailAddress',
-                        //                        'options' => [
-                        //                            'encoding' => 'UTF-8',
-                        //                            'min'      => 1,
-                        //                        ],
+                        'name' => 'NotEmpty',
                     ],
                 ],
             ] )
@@ -177,6 +165,8 @@ class MailSendObserver extends FormObserver
         //Конец жести
         $request = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
+            prn($request->getPost());
+            exit;
             $form->setData( $request->getPost() );
             if ($form->isValid()) {
                 $model_data = [ ];
@@ -237,7 +227,7 @@ class MailSendObserver extends FormObserver
                  ->find( [ '_id' => $data[ 'from' ] ] )->current();
         $header             = [
             'from'         => $send_setting->email,
-            'to'           => [ $data[ 'to' ] ],
+            'to'           => $data[ 'to' ],
             'message-id'   => 'send',
             'content-type' => 'text/html',
             'subject'      => $data[ 'title' ],

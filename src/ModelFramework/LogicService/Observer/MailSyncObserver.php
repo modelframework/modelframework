@@ -326,7 +326,13 @@ class MailSyncObserver
         $mail->owner_id = $user->id();
         $mail->title    = $mail->header[ 'subject' ];
         $timezone       = new \DateTimeZone( date_default_timezone_get() );
-        $date           = new \DateTime( $mail->header[ 'date' ] );
+        try {
+            $date = new \DateTime( $mail->header[ 'date' ] );
+        }catch (\Exception $ex)
+        {
+            $date = strstr($mail->header[ 'date' ], " (", true);
+            $date =  new \DateTime( $date );
+        }
         $date->setTimezone( $timezone );
         $mail->date = $date->format( 'Y-m-d H:i:s' );
     }
