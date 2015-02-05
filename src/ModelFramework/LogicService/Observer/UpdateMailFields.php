@@ -48,7 +48,7 @@ class UpdateMailFields
                         $link->email_model_title . ' <' . $link->mail_email . '>';
                 }else
                 {
-                    $destinationValue['Other'][] = '<' . $link->mail_email . '>';
+                    $destinationValue['Other'][] = $link->mail_email;
                 }
             }
             $model->$destinationField = $destinationValue;

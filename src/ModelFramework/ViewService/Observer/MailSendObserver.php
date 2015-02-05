@@ -76,12 +76,9 @@ class MailSendObserver extends FormObserver
 
         $toOptions = [ ];
 
-
-        if(!empty($defaultOption))
-        {
-            $toOptions[ $defaultOption ] = $defaultOption;
+        if (!empty( $defaultOption )) {
+            $toOptions[ $defaultOption ] = urldecode( $defaultOption );
         }
-
 
         $form->getFieldsets()[ 'fields' ]->add( array(
             'type'       => 'Zend\Form\Element\Select',
@@ -162,11 +159,10 @@ class MailSendObserver extends FormObserver
                 $model->$_k = str_replace( ' ', 'T', $_v );
             }
         }
+        $this->replyTo( $model, $form );
         //Конец жести
         $request = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
-            prn($request->getPost());
-            exit;
             $form->setData( $request->getPost() );
             if ($form->isValid()) {
                 $model_data = [ ];
@@ -235,10 +231,56 @@ class MailSendObserver extends FormObserver
         $mail->protocol_ids = [ $data[ 'from' ] ];
         $mail->text         = $data[ 'text' ];
         $mail->title        = $data[ 'title' ];
-        $mail->header       = $header;
-        $mail->date         = date( 'Y-m-d H:i:s' );
-        $mail->status_id    = Status::SENDING;
-        $mail->from_id      = $send_setting->user_id;
+        if (!empty( $mail->header )) {
+            $header = array_merge( $mail->header, $header );
+        }
+        $mail->header    = $header;
+        $mail->date      = date( 'Y-m-d H:i:s' );
+        $mail->status_id = Status::SENDING;
+        $mail->from_id   = $send_setting->user_id;
         $model->setDataModel( $mail );
+    }
+
+    public function replyTo( $model, $form )
+    {
+        $dataModel         = $model->getDataModel();
+        $replyMessageQuery = $this->getSubject()->getQueryServiceVerify()
+                                  ->get( 'MailDetail.reply' )->process();
+        $chainQuery        = $this->getSubject()->getQueryServiceVerify()
+                                  ->get( 'Mail.reply' )->process();
+
+        $replyMessage =
+            $this->getSubject()->getGatewayService()->get( 'MailDetail' )
+                 ->find( $replyMessageQuery->getWhere() )->current();
+        if (isset( $replyMessage )) {
+            $chainWhere          = $chainQuery->getWhere();
+            $chainWhere[ '_id' ] = $replyMessage->chain_id;
+            $chain               =
+                $this->getSubject()->getGatewayService()->get( 'Mail' )
+                     ->find( $chainWhere )->current();
+            $dataModel->title    = 'RE: ' . $chain->title;
+            $references          =
+                isset( $replyMessage->header[ 'references' ] ) ?
+                    $replyMessage->header[ 'references' ] : [ ];
+            $references[ ]       = $replyMessage->header[ 'message-id' ];
+            $header              = [
+                'in-reply-to' => $replyMessage->header[ 'message-id' ],
+                'references'  => $references,
+
+            ];
+            $dataModel->header   = $header;
+            if (!count( $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->getValueOptions() )) {
+                $temp = $replyMessage->type == 'inbox' ?
+                    $replyMessage->header[ 'from' ] :
+                    $replyMessage->header[ 'to' ];
+                $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValue( $temp );
+                $options = [ ];
+                foreach ($temp as $address) {
+                    $options[ $address ] = $address;
+                }
+                $options[ 'test' ] = 'test';
+                $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValueOptions( $options );
+            }
+        }
     }
 }
