@@ -22,6 +22,24 @@ class FileService implements FileServiceInterface
 
         return $destenation;
     }
+
+    /**
+     * @param $filename
+     * @param $stream
+     * @param bool $ispublic
+     * @param null $userdir
+     * @return bool|string
+     */
+    public function saveStramToFile($filename, $stream, $ispublic = false, $userdir = null)
+    {
+        $destenation = $this->setDestenation($filename, $ispublic, $userdir);
+        if (!$destenation || !@file_put_contents($destenation, $stream)) {
+            return false;
+        }
+
+        return $destenation;
+    }
+
     public function moveFile($from, $to)
     {
         if (!@rename($from, $to)) {
@@ -128,9 +146,9 @@ class FileService implements FileServiceInterface
         return $response;
     }
 
-    public function downloadFile($filename, $ispublic = false)
+    public function downloadFile($filename, $ispublic = false, $userdir = null)
     {
-        $destenation = $this->checkDestenation($filename, $ispublic);
+        $destenation = $this->checkDestenation($filename, $ispublic, $userdir);
         if (!$destenation) {
             return false;
         }

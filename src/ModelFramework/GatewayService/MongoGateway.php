@@ -619,6 +619,7 @@ class MongoGateway implements GatewayInterface, ParsedModelConfigAwareInterface
         }
         if (empty( $_id )) {
             $insertResult = $this->insert( $data );
+
             $result       = empty( $insertResult[ 'ok' ] ) ? 0
                 : $insertResult[ 'ok' ];
             if ($result) {

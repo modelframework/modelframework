@@ -67,6 +67,10 @@ class AclDataModel implements DataModelInterface, DataModelAwareInterface,
     public function __set( $name, $value )
     {
         $aclData = $this->getDataPermissions();
+        if (in_array( $name,
+            [ 'id', '_id' ] )) {
+            return $this->getDataModelVerify()->__set( '_id', $value );
+        }
         if (!in_array( 'write', $aclData->data )
         ) {
             throw new \Exception( 'writing is not allowed' );

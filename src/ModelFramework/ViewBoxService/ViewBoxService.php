@@ -11,14 +11,16 @@ use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
+use ModelFramework\PDFService\PDFServiceAwareInterface;
+use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfig;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
 
 class ViewBoxService
-    implements ViewBoxServiceInterface, ConfigServiceAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface
+    implements ViewBoxServiceInterface, ConfigServiceAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface, PDFServiceAwareInterface
 {
-    use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait;
+    use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait, PDFServiceAwareTrait;
 
     /**
      * @param string $viewBoxName
@@ -62,6 +64,7 @@ class ViewBoxService
 
         $viewBox->setViewService($this->getViewServiceVerify());
         $viewBox->setAuthService($this->getAuthServiceVerify());
+        $viewBox->setPDFService($this->getPDFServiceVerify());
 
         return $viewBox;
     }

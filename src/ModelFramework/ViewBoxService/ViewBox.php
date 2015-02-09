@@ -10,6 +10,8 @@ namespace ModelFramework\ViewBoxService;
 
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
+use ModelFramework\PDFService\PDFServiceAwareInterface;
+use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
@@ -17,17 +19,25 @@ use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareInterface;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareTrait;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
-use Zend\View\Model\ViewModel as ZendViewModel;
+use ModelFramework\ViewBoxService\Output\Strategy\OutputStrategyInterface;
+use ModelFramework\ViewBoxService\Output\Strategy\OutputStrategyAwareTrait;
+
 
 class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
                          ViewServiceAwareInterface, AuthServiceAwareInterface,
-                         ResponseAwareInterface
+                         ResponseAwareInterface, PDFServiceAwareInterface
+
 {
 
-    use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait;
+    use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait, PDFServiceAwareTrait, OutputStrategyAwareTrait;
 
     private $_data = [ ];
     private $_redirect = null;
+    /**
+     * @var OutputStrategyInterface
+     */
+    private $strategy = null;
+
 
     public function setRedirect( $redirect )
     {
@@ -79,6 +89,8 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
 
     public function process()
     {
+
+
         $this->setDataFields();
         $params = [ ];
         foreach ($this->getViewBoxConfigVerify()->blocks as $blockName =>
@@ -129,9 +141,38 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         if ($this->hasResponse()) {
             return $this->getResponse();
         }
-        $data      = $this->getData();
-        $viewModel = new ZendViewModel( $data );
 
-        return $viewModel->setTemplate( $data[ 'template' ] );
+        $this->getStrategy()->setViewBox($this);
+        return $this->getStrategy()->output();
+
+
+
     }
+
+    public function outputPDF()
+    {
+
+
+        if ($this->hasRedirect()) {
+            return $this->getRedirect();
+        }
+        if ($this->hasResponse()) {
+            return $this->getResponse();
+        }
+        $data = $this->getData();
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment;filename=file.pdf');
+        header('Content-Transfer-Encoding: binary');
+        //  header('Content-Length: 55766');
+        header('Accept-Ranges: bytes');
+
+        $pdf= $this->getPDFServiceVerify();
+        echo $pdf->getPDFtoSave($data[ 'template' ],$data);
+        exit;
+    }
+
+
+
+
 }

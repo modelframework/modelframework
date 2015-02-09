@@ -15,6 +15,8 @@ use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
+use ModelFramework\PDFService\PDFServiceAwareInterface;
+use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
@@ -33,12 +35,12 @@ class ViewService
                ModelServiceAwareInterface,
                FormServiceAwareInterface, AuthServiceAwareInterface,
                LogicServiceAwareInterface,
-               QueryServiceAwareInterface, FileServiceAwareInterface
+               QueryServiceAwareInterface, FileServiceAwareInterface, PDFServiceAwareInterface
 {
 
     use ConfigServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait,
         ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait,
-        LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait;
+        LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait, PDFServiceAwareTrait;
 
     /**
      * @param string $viewName
@@ -99,6 +101,7 @@ class ViewService
         $view->setConfigService( $this->getConfigServiceVerify() );
         $view->setQueryService( $this->getQueryServiceVerify() );
         $view->setFileService( $this->getFileServiceVerify() );
+        $view->setPDFService( $this->getPDFServiceVerify() );
         $view->init();
 
         return $view;

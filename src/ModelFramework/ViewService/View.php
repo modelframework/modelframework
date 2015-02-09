@@ -20,6 +20,8 @@ use ModelFramework\DataModel\DataModelAwareInterface;
 use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
+use ModelFramework\PDFService\PDFServiceAwareInterface;
+use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayAwareInterface;
 use ModelFramework\GatewayService\GatewayAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
@@ -51,13 +53,13 @@ class View
                ParamsAwareInterface, GatewayServiceAwareInterface,
                FormServiceAwareInterface, FileServiceAwareInterface,
                AclServiceAwareInterface, AuthServiceAwareInterface,
-               LogicServiceAwareInterface,
+               LogicServiceAwareInterface, PDFServiceAwareInterface,
                QueryServiceAwareInterface, ConfigServiceAwareInterface,
                \SplSubject, ResponseAwareInterface, DataModelAwareInterface
 {
 
     use ViewConfigAwareTrait, ParsedModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
-        GatewayServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait,
+        GatewayServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, PDFServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
         AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait;
 
@@ -83,7 +85,8 @@ class View
             'SignInObserver',
             'SignOutObserver',
             'SignUpObserver',
-            'MailSendObserver'
+            'MailSendObserver',
+            'PDFObserver',
         ];
     protected $observers = [];
     private $_data = [];
