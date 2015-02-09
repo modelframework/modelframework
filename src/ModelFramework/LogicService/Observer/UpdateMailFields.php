@@ -45,10 +45,10 @@ class UpdateMailFields
             foreach ($links as $link) {
                 if(!empty($link->email_id)) {
                     $destinationValue[ $link->email_data ][ $link->email_model_id ] =
-                        $link->email_title . ' <' . $link->mail_email . '>';
+                        $link->email_model_title . ' <' . $link->mail_email . '>';
                 }else
                 {
-                    $destinationValue['Other'][] = '<' . $link->mail_email . '>';
+                    $destinationValue['Other'][] = $link->mail_email;
                 }
             }
             $model->$destinationField = $destinationValue;

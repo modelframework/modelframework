@@ -12,31 +12,32 @@ use ModelFramework\FormService\FormConfigParser\FormConfigParser;
 
 class InitObserver implements \SplObserver
 {
-    public function update(\SplSubject $subject) {
-        /** @var FormConfigParser $subject */
 
+    public function update( \SplSubject $subject )
+    {
+        /** @var FormConfigParser $subject */
         $modelConfig = $subject->getModelConfigVerify();
-        // init
-        $formConfig    = [
+        $formConfig  = [
             'name'            => $modelConfig->model . 'Form',
             'group'           => 'form',
             'type'            => 'form',
             'options'         => [
-                'label'  => $modelConfig->model . ' information',
+                'label' => $modelConfig->model . ' information',
             ],
             'attributes'      => [
-                'class'  => 'validate',
-                'method' => 'post',
-                'name'   => $modelConfig->model . 'form',
+                'class'      => 'validate apiform',
+                'method'     => 'post',
+                'name'       => $modelConfig->model . 'form',
+                'data-scope' => strtolower( $modelConfig->model ),
+                'data-id'    => $subject->getDataModel()->id(),
             ],
             // , 'action' => 'reg'
-            'fieldsets'       => [],
-            'elements'        => [],
-            'filters'         => [],
-            'validationGroup' => [],
+            'fieldsets'       => [ ],
+            'elements'        => [ ],
+            'filters'         => [ ],
+            'validationGroup' => [ ],
         ];
 
         $subject->addParsedConfig( $formConfig );
-
     }
 }

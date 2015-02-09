@@ -134,7 +134,6 @@ class ModelService
     {
         $models = [
             'custom' => [
-
                 'Lead',
                 'Patient',
                 'Account',

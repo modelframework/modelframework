@@ -202,6 +202,7 @@ class MailSyncObserver
                 'protocol_ids.' . $setting->id() => $uids
             ] );
             foreach ($fetchedMails as $mail) {
+//                prn($mail->message_id, $mail->protocol_ids);
                 $key                    = $mail->message_id;
                 $temp                   = $mail->converted_mail;
                 $temp[ 'protocol_ids' ] = $mail->protocol_ids;
@@ -209,8 +210,8 @@ class MailSyncObserver
 
                 if (isset( $newMails[ $key ] )) {
                     $newMails[ $key ]->protocol_ids =
-                        array_merge( $mail->protocol_ids,
-                            $newMails[ $key ]->protocol_ids );
+                        array_merge( $newMails[ $key ]->protocol_ids,
+                            $mail['protocol_ids'] );
                 } else {
                     //$newMails[ $key ] = $this->model( 'Mail' )->exchangeArray( $mail );
                     $newMails[ $key ] = $modelService->get( 'MailDetail' )
@@ -220,8 +221,8 @@ class MailSyncObserver
                 }
             }
         }
+//        exit;
 
-        //prn($newMails);
         $oldMails = count( $newMails ) ? $mailGW->find( [
             'header.message-id' => array_keys( $newMails ),
             'owner_id'          => $user->id(),
@@ -231,7 +232,7 @@ class MailSyncObserver
             $newMail = $newMails[ $oldMail->header[ 'message-id' ] ];
             unset( $newMails[ $oldMail->header[ 'message-id' ] ] );
             $oldMail->protocol_ids =
-                array_merge( $newMail->protocol_ids, $oldMail->protocol_ids );
+                array_merge( $oldMail->protocol_ids, $newMail->protocol_ids );
             $mailGW->save( $oldMail );
         }
         $returnMails   = [ ];
@@ -241,12 +242,14 @@ class MailSyncObserver
 //        }
 
         foreach ($newMails as $newMail) {
-            $this->getSubject()->getLogicService()
-                 ->get( 'presave', 'MailDetail' )
-                 ->trigger( $newMail );
-            $mailGW->save( $newMail );
-            $newMail->_id   = $mailGW->getLastInsertId();
-            $returnMails[ ] = $newMail;
+            if(count($newMail->header)>3) {
+                $this->getSubject()->getLogicService()
+                     ->get( 'presave', 'MailDetail' )
+                     ->trigger( $newMail );
+                $mailGW->save( $newMail );
+                $newMail->_id   = $mailGW->getLastInsertId();
+                $returnMails[ ] = $newMail;
+            }
             $count++;
         }
 
@@ -326,7 +329,12 @@ class MailSyncObserver
         $mail->owner_id = $user->id();
         $mail->title    = $mail->header[ 'subject' ];
         $timezone       = new \DateTimeZone( date_default_timezone_get() );
-        $date           = new \DateTime( $mail->header[ 'date' ] );
+        try {
+            $date = new \DateTime( $mail->header[ 'date' ] );
+        } catch ( \Exception $ex ) {
+            $date = strstr( $mail->header[ 'date' ], " (", true );
+            $date = new \DateTime( $date );
+        }
         $date->setTimezone( $timezone );
         $mail->date = $date->format( 'Y-m-d H:i:s' );
     }

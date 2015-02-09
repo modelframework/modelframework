@@ -65,34 +65,20 @@ class MailSendObserver extends FormObserver
                 'value_options' => $mailSendSettingsOptions,
             ),
             'attributes' => array(
-                'value' => $defaultOption //set selected to '1'
+                'value' => $defaultOption, //set selected to '1'
+                'class' => 'static-select2'
             )
         ) );
 
         //TO FIELD INITIALIZATION
 
-        $query  =
-            $this->getSubject()->getQueryServiceVerify()->get( 'Email.lookup' )
-                 ->process();
-        $_where = $query->getWhere();
-        $res    = $this->getSubject()->getGatewayServiceVerify()->get( 'Email' )
-                       ->find( $_where );
+        $defaultOption = $this->getSubject()->getParam( 'to', 0 );
 
         $toOptions = [ ];
 
-        foreach ($res as $option) {
-            $toOptions[ $option->email ] =
-                $option->title . ' <' . $option->email . '>';
+        if (!empty( $defaultOption )) {
+            $toOptions[ $defaultOption ] = urldecode( $defaultOption );
         }
-        $defaultOption = $this->getSubject()->getParam( 'to', 0 );
-        if ($defaultOption && !isset( $toOptions[ $defaultOption ] )) {
-            $toOptions[ $defaultOption ] = $defaultOption;
-        }
-//        if (!isset( $toOptions[ $defaultOption ] )) {
-//            $toOptions[ $defaultOption ] = $defaultOption ?: 'Please select...';
-//        }
-        ksort( $toOptions );
-//        prn($toOptions,$defaultOption);
 
         $form->getFieldsets()[ 'fields' ]->add( array(
             'type'       => 'Zend\Form\Element\Select',
@@ -102,8 +88,11 @@ class MailSendObserver extends FormObserver
                 'value_options' => $toOptions,
             ),
             'attributes' => array(
-                'id'    => 'email',
-                'value' => $defaultOption
+                'id'         => 'email',
+                'value'      => $defaultOption,
+                'class'      => 'email-select2',
+                'data-scope' => 'Email',
+                'multiple'   => 'multiple'
             )
         ) );
 
@@ -140,11 +129,7 @@ class MailSendObserver extends FormObserver
                 ],
                 'validators' => [
                     [
-                        'name' => 'EmailAddress',
-                        //                        'options' => [
-                        //                            'encoding' => 'UTF-8',
-                        //                            'min'      => 1,
-                        //                        ],
+                        'name' => 'NotEmpty',
                     ],
                 ],
             ] )
@@ -174,6 +159,7 @@ class MailSendObserver extends FormObserver
                 $model->$_k = str_replace( ' ', 'T', $_v );
             }
         }
+        $this->replyTo( $model, $form );
         //Конец жести
         $request = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
@@ -237,7 +223,7 @@ class MailSendObserver extends FormObserver
                  ->find( [ '_id' => $data[ 'from' ] ] )->current();
         $header             = [
             'from'         => $send_setting->email,
-            'to'           => [ $data[ 'to' ] ],
+            'to'           => $data[ 'to' ],
             'message-id'   => 'send',
             'content-type' => 'text/html',
             'subject'      => $data[ 'title' ],
@@ -245,10 +231,56 @@ class MailSendObserver extends FormObserver
         $mail->protocol_ids = [ $data[ 'from' ] ];
         $mail->text         = $data[ 'text' ];
         $mail->title        = $data[ 'title' ];
-        $mail->header       = $header;
-        $mail->date         = date( 'Y-m-d H:i:s' );
-        $mail->status_id    = Status::SENDING;
-        $mail->from_id      = $send_setting->user_id;
+        if (!empty( $mail->header )) {
+            $header = array_merge( $mail->header, $header );
+        }
+        $mail->header    = $header;
+        $mail->date      = date( 'Y-m-d H:i:s' );
+        $mail->status_id = Status::SENDING;
+        $mail->from_id   = $send_setting->user_id;
         $model->setDataModel( $mail );
+    }
+
+    public function replyTo( $model, $form )
+    {
+        $dataModel         = $model->getDataModel();
+        $replyMessageQuery = $this->getSubject()->getQueryServiceVerify()
+                                  ->get( 'MailDetail.reply' )->process();
+        $chainQuery        = $this->getSubject()->getQueryServiceVerify()
+                                  ->get( 'Mail.reply' )->process();
+
+        $replyMessage =
+            $this->getSubject()->getGatewayService()->get( 'MailDetail' )
+                 ->find( $replyMessageQuery->getWhere() )->current();
+        if (isset( $replyMessage )) {
+            $chainWhere          = $chainQuery->getWhere();
+            $chainWhere[ '_id' ] = $replyMessage->chain_id;
+            $chain               =
+                $this->getSubject()->getGatewayService()->get( 'Mail' )
+                     ->find( $chainWhere )->current();
+            $dataModel->title    = 'RE: ' . $chain->title;
+            $references          =
+                isset( $replyMessage->header[ 'references' ] ) ?
+                    $replyMessage->header[ 'references' ] : [ ];
+            $references[ ]       = $replyMessage->header[ 'message-id' ];
+            $header              = [
+                'in-reply-to' => $replyMessage->header[ 'message-id' ],
+                'references'  => $references,
+
+            ];
+            $dataModel->header   = $header;
+            if (!count( $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->getValueOptions() )) {
+                $temp = $replyMessage->type == 'inbox' ?
+                    $replyMessage->header[ 'from' ] :
+                    $replyMessage->header[ 'to' ];
+                $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValue( $temp );
+                $options = [ ];
+                foreach ($temp as $address) {
+                    $options[ $address ] = $address;
+                }
+                $options[ 'test' ] = 'test';
+                $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValueOptions( $options );
+            }
+        }
     }
 }
