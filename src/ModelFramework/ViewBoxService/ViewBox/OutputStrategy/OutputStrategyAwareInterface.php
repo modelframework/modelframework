@@ -1,5 +1,5 @@
 <?php
-namespace ModelFramework\ViewBoxService\Output\Strategy;
+namespace ModelFramework\ViewBoxService\ViewBox\OutputStrategy;
 
 /**
  * Interface OutputStrategyAwareInterface

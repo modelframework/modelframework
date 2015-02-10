@@ -1,6 +1,7 @@
 <?php
-namespace ModelFramework\ViewBoxService\Output\Strategy;
+namespace ModelFramework\ViewBoxService\ViewBox\OutputStrategy;
 
+use ModelFramework\ViewBoxService\ViewBox\ViewBoxAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
 
 /**
@@ -10,22 +11,10 @@ use Zend\View\Model\ViewModel as ZendViewModel;
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Artem Bondarenko a.bondarenko@cronagency.com
  */
-class HtmlOutStrategy
+class HtmlOutputStrategy
     implements OutputStrategyInterface
 {
-    /**
-     * @var $ViewBox
-     */
-    protected $ViewBox;
-
-    /**
-     * Set $ViewBox in property
-     * @param $ViewBox
-     * @return $this
-     */
-    public function setViewBox($ViewBox){
-        $this->ViewBox=$ViewBox;
-    }
+    use ViewBoxAwareTrait;
 
     /**
      * Generate output data
@@ -33,7 +22,7 @@ class HtmlOutStrategy
      */
     public function output()
     {
-        $data=$this->ViewBox->getData();
+        $data=$this->getViewBoxVerify()->getData();
         $viewModel = new ZendViewModel( $data );
 
         return $viewModel->setTemplate( $data[ 'template' ] );

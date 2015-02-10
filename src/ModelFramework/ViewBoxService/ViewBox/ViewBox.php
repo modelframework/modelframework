@@ -1,12 +1,13 @@
 <?php
 /**
  * Class ViewBox
+ *
  * @package ModelFramework\ViewService
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Stanislav Burikhin stanislav.burikhin@gmail.com
  */
 
-namespace ModelFramework\ViewBoxService;
+namespace ModelFramework\ViewBoxService\ViewBox;
 
 use ModelFramework\AuthService\AuthServiceAwareInterface;
 use ModelFramework\AuthService\AuthServiceAwareTrait;
@@ -15,31 +16,28 @@ use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\Utility\Arr;
 use ModelFramework\Utility\Params\ParamsAwareInterface;
 use ModelFramework\Utility\Params\ParamsAwareTrait;
+use ModelFramework\ViewBoxService\ResponseAwareInterface;
+use ModelFramework\ViewBoxService\ResponseAwareTrait;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareInterface;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfigAwareTrait;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
-use ModelFramework\ViewBoxService\Output\Strategy\OutputStrategyInterface;
-use ModelFramework\ViewBoxService\Output\Strategy\OutputStrategyAwareTrait;
+use ModelFramework\ViewBoxService\ViewBox\OutputStrategy\OutputStrategyInterface;
+use ModelFramework\ViewBoxService\ViewBox\OutputStrategy\OutputStrategyAwareTrait;
+use Zend\View\Model\ViewModel as ZendViewModel;
 
-
-class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
+class ViewBox implements ViewBoxInterface, ViewBoxConfigAwareInterface, ParamsAwareInterface,
                          ViewServiceAwareInterface, AuthServiceAwareInterface,
-                         ResponseAwareInterface, PDFServiceAwareInterface
+                         ResponseAwareInterface
 
 {
 
     use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait, PDFServiceAwareTrait, OutputStrategyAwareTrait;
 
-    private $_data = [ ];
+    private $_data = [];
     private $_redirect = null;
-    /**
-     * @var OutputStrategyInterface
-     */
-    private $strategy = null;
 
-
-    public function setRedirect( $redirect )
+    public function setRedirect(ZendViewModel $redirect)
     {
         $this->_redirect = $redirect;
     }
@@ -51,7 +49,7 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
 
     public function hasRedirect()
     {
-        if (!empty( $this->_redirect )) {
+        if ( !empty($this->_redirect)) {
             return true;
         }
 
@@ -63,76 +61,85 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         return $this->_data;
     }
 
-    public function setData( array $data )
+    public function setData(array $data)
     {
-        $this->_data = Arr::merge( $this->_data, $data );
+        $this->_data = Arr::merge($this->_data, $data);
     }
 
-    protected function clearData()
+    public function clearData()
     {
-        $this->_data = [ ];
+        $this->_data = [];
     }
 
     public function setDataFields()
     {
-        $viewBoxConfig        = $this->getViewBoxConfigVerify();
-        $result               = [ ];
-        $result[ 'data' ]     = [ ];
-        $result[ 'document' ] = $viewBoxConfig->document;
-        $result[ 'blocks' ]   = $viewBoxConfig->blocks;
-        $result[ 'template' ] = $viewBoxConfig->template;
-        $result[ 'title' ]    = $viewBoxConfig->title;
-        $result[ 'mode' ]     = $viewBoxConfig->mode;
-        $result[ 'user' ]     = $this->getAuthServiceVerify()->getUser();
-        $this->setData( $result );
+        $viewBoxConfig      = $this->getViewBoxConfigVerify();
+        $result             = [];
+        $result['data']     = [];
+        $result['document'] = $viewBoxConfig->document;
+        $result['blocks']   = $viewBoxConfig->blocks;
+        $result['template'] = $viewBoxConfig->template;
+        $result['title']    = $viewBoxConfig->title;
+        $result['mode']     = $viewBoxConfig->mode;
+        $result['user']     = $this->getAuthServiceVerify()->getUser();
+        $this->setData($result);
     }
 
+    /**
+     * @return $this|void
+     * @throws \Exception
+     */
     public function process()
     {
 
-
         $this->setDataFields();
-        $params = [ ];
-        foreach ($this->getViewBoxConfigVerify()->blocks as $blockName =>
-                 $viewNames) {
+        $params = [];
+        foreach (
+            $this->getViewBoxConfigVerify()->blocks as $blockName =>
+            $viewNames
+        ) {
             foreach ($viewNames as $viewName) {
-                $modelView = $this->getViewServiceVerify()->get( $viewName );
-                $modelView->setParams( $this->getParamsVerify() );
+                $modelView = $this->getViewServiceVerify()->get($viewName);
+                $modelView->setParams($this->getParamsVerify());
                 $modelView->process();
-                if (!$modelView->isAllowed()) {
+                if ( !$modelView->isAllowed()) {
                     continue;
                 }
                 if ($modelView->hasRedirect()) {
-                    $this->setRedirect( $modelView->getRedirect() );
+                    $this->setRedirect($modelView->getRedirect());
 
                     return;
                 }
                 if ($modelView->hasResponse()) {
-                    $this->setResponse( $modelView->getResponse() );
+                    $this->setResponse($modelView->getResponse());
 
                     return;
                 }
                 $data    = $modelView->getData();
-                $vParams = Arr::getDoubtField( $data, 'params', [ ] );
-                if (count( $vParams )) {
-                    $params = Arr::merge( $params, $vParams );
+                $vParams = Arr::getDoubtField($data, 'params', []);
+                if (count($vParams)) {
+                    $params = Arr::merge($params, $vParams);
                 }
-                $viewResults =
-                    [ 'data' => [ $blockName => [ $viewName => $modelView->getData() ] ] ];
-                $this->setData( $viewResults );
+                $viewResults
+                    = ['data' => [$blockName => [$viewName => $modelView->getData()]]];
+                $this->setData($viewResults);
             }
         }
-        $params[ 'data' ] =
-            strtolower( $this->getViewBoxConfigVerify()->document );
-        $params[ 'view' ] = strtolower( $this->getViewBoxConfigVerify()->mode );
-        $this->setData( [ 'viewboxparams' => $params,
-                          'user'          => $this->getAuthServiceVerify()
-                                                  ->getUser()
-        ] );
+        $params['data']
+                        = strtolower($this->getViewBoxConfigVerify()->document);
+        $params['view'] = strtolower($this->getViewBoxConfigVerify()->mode);
+        $this->setData([
+            'viewboxparams' => $params,
+            'user'          => $this->getAuthServiceVerify()
+                ->getUser()
+        ]);
 
         return $this;
     }
 
+    /**
+     * @return ZendViewModel
+     */
     public function output()
     {
         if ($this->hasRedirect()) {
@@ -145,13 +152,10 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         $this->getStrategy()->setViewBox($this);
         return $this->getStrategy()->output();
 
-
-
     }
 
     public function outputPDF()
     {
-
 
         if ($this->hasRedirect()) {
             return $this->getRedirect();
@@ -167,12 +171,9 @@ class ViewBox implements ViewBoxConfigAwareInterface, ParamsAwareInterface,
         //  header('Content-Length: 55766');
         header('Accept-Ranges: bytes');
 
-        $pdf= $this->getPDFServiceVerify();
-        echo $pdf->getPDFtoSave($data[ 'template' ],$data);
+        $pdf = $this->getPDFServiceVerify();
+        echo $pdf->getPDFtoSave($data['template'], $data);
         exit;
     }
-
-
-
 
 }

@@ -2,6 +2,7 @@
 
 /**
  * Class ViewBoxService
+ *
  * @package ModelFramework\ViewBoxService
  */
 
@@ -13,13 +14,17 @@ use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\PDFService\PDFServiceAwareInterface;
 use ModelFramework\PDFService\PDFServiceAwareTrait;
+use ModelFramework\ViewBoxService\ViewBox\ViewBox;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfig;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
 
 class ViewBoxService
-    implements ViewBoxServiceInterface, ConfigServiceAwareInterface, ViewServiceAwareInterface, AuthServiceAwareInterface, PDFServiceAwareInterface
+    implements ViewBoxServiceInterface, ConfigServiceAwareInterface,
+               ViewServiceAwareInterface, AuthServiceAwareInterface,
+               PDFServiceAwareInterface
 {
+
     use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait, PDFServiceAwareTrait;
 
     /**
@@ -55,10 +60,12 @@ class ViewBoxService
         // this object will deal with all view of model stuff
         $viewBox = new ViewBox();
 
-        $viewBoxConfig = $this->getConfigServiceVerify()->getByObject($viewBoxName, new ViewBoxConfig());
+        $viewBoxConfig = $this->getConfigServiceVerify()
+            ->getByObject($viewBoxName, new ViewBoxConfig());
 
         if ($viewBoxConfig == null) {
-            throw new \Exception('Please fill ViewBoxConfig for the '.$viewBoxName.'. I can\'t work on');
+            throw new \Exception('Please fill ViewBoxConfig for the '
+                . $viewBoxName . '. I can\'t work on');
         }
         $viewBox->setViewBoxConfig($viewBoxConfig);
 

@@ -1,5 +1,7 @@
 <?php
-namespace ModelFramework\ViewBoxService\Output\Strategy;
+namespace ModelFramework\ViewBoxService\ViewBox\OutputStrategy;
+
+use ModelFramework\ViewBoxService\ViewBox\ViewBoxAwareInterface;
 
 /**
  * Strategy for output PDF file
@@ -8,20 +10,13 @@ namespace ModelFramework\ViewBoxService\Output\Strategy;
  * @author  Vladimir Pasechnik vladimir.pasechnik@gmail.com
  * @author  Artem Bondarenko a.bondarenko@cronagency.com
  */
-interface OutputStrategyInterface {
-    /**
-     * Set $ViewBox in property
-     * @param array $data
-     * @return $this
-     */
-    public function setViewBox($ViewBox);
+interface OutputStrategyInterface extends ViewBoxAwareInterface
+{
 
     /**
      * Generate output data
      * @return mixed
      */
     public function output();
-
-
 
 }
