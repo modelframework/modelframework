@@ -2,7 +2,6 @@
 
 namespace ModelFramework\ViewBoxService\ViewBox\OutputStrategy;
 
-use ModelFramework\ViewBoxService\ViewBox\ViewBoxAwareInterface;
 use ModelFramework\ViewBoxService\ViewBox\ViewBoxAwareTrait;
 
 /**
@@ -13,7 +12,7 @@ use ModelFramework\ViewBoxService\ViewBox\ViewBoxAwareTrait;
  * @author  Artem Bondarenko a.bondarenko@cronagency.com
  */
 class PDFOutputStrategy
-    implements OutputStrategyInterface, ViewBoxAwareInterface
+    implements OutputStrategyInterface
 {
     use ViewBoxAwareTrait;
 
@@ -25,6 +24,8 @@ class PDFOutputStrategy
     {
         $data=$this->getViewBoxVerify()->getData();
         $pdf= $this->getViewBoxVerify()->getPDFServiceVerify();
+
+//        return $pdf->getPDFtoSave('pdf/order.twig',$data);
         return $pdf->getPDFtoSave($data[ 'template' ],$data);
     }
 }
