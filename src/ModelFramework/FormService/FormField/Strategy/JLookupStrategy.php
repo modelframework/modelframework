@@ -78,6 +78,7 @@ class JLookupStrategy extends AbstractFormFieldStrategy
             $_formElement->options[ 'value_options' ] += $_options;
         }
         if (!empty( $conf->required )) {
+            $_inputFilter->required = true;
             $_formElement->attributes[ 'required' ] = 'required';
             if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )
                 &&

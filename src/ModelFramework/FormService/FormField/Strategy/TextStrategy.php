@@ -35,6 +35,7 @@ class TextStrategy extends AbstractFormFieldStrategy
 
         $_formElement->attributes[ 'name' ] = $this->getName();
         if (!empty( $conf->required )) {
+            $_inputFilter->required = true;
             $_formElement->attributes[ 'required' ] = 'required';
             if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )
                 &&
@@ -46,11 +47,31 @@ class TextStrategy extends AbstractFormFieldStrategy
                     = [ 'class' => 'required' ];
             }
         }
+        if (!empty( $conf->min )){
+            foreach($_inputFilter->validators as $v => $validator){
+                if($validator['name'] == 'StringLength')
+                {
+                    $_inputFilter->validators[$v]['options']['min'] = $conf->min;
+                    break;
+                }
+            }
+        }
+        if (!empty( $conf->max )){
+            foreach($_inputFilter->validators as $v => $validator){
+                if($validator['name'] == 'StringLength')
+                {
+                    $_inputFilter->validators[$v]['options']['max'] = $conf->max;
+                    break;
+                }
+            }
+        }
 
         $result = [
             'filters'  => [ $this->getName() => $_inputFilter ],
             'elements' => [ $this->getName() => $_formElement ]
         ];
+//        prn($result,$_inputFilter);
+//        exit;
 
         return $result;
     }

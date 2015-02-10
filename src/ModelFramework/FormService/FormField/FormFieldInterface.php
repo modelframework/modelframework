@@ -11,9 +11,9 @@ namespace ModelFramework\FormService\FormField;
 use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
-use ModelFramework\FormService\FormField\FieldConfig\ParsedFieldConfigAwareInterface;
 use ModelFramework\FormService\LimitFieldsAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
+use ModelFramework\ModelService\ModelField\FieldConfig\ParsedFieldConfigAwareInterface;
 use ModelFramework\QueryService\QueryServiceAwareInterface;
 
 interface FormFieldInterface extends ParsedFieldConfigAwareInterface,

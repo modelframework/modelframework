@@ -13,6 +13,7 @@ class FieldConfig implements FieldConfigInterface
 
     public $type = '';
     public $group = '';
+    public $min = 0;
     public $max = 0;
     public $required = 0;
     public $label = '';
@@ -30,6 +31,7 @@ class FieldConfig implements FieldConfigInterface
     {
         $this->type     = ( isset( $a[ 'type' ] ) ) ? $a[ 'type' ] : '';
         $this->group    = ( isset( $a[ 'group' ] ) ) ? $a[ 'group' ] : '';
+        $this->min      = ( isset( $a[ 'min' ] ) ) ? $a[ 'min' ] : 0;
         $this->max      = ( isset( $a[ 'max' ] ) ) ? $a[ 'max' ] : 0;
         $this->required = ( isset( $a[ 'required' ] ) ) ? $a[ 'required' ] : 0;
         $this->label    = ( isset( $a[ 'label' ] ) ) ? $a[ 'label' ] : '';
@@ -48,6 +50,7 @@ class FieldConfig implements FieldConfigInterface
         return [
             'type'     => $this->type,
             'group'    => $this->group,
+            'min'      => $this->min,
             'max'      => $this->max,
             'required' => $this->required,
             'label'    => $this->label,
