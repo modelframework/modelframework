@@ -8,31 +8,22 @@
 
 namespace ModelFramework\FormService\FormField;
 
-use ModelFramework\AclService\AclConfig\AclConfigAwareInterface;
 use ModelFramework\AclService\AclConfig\AclConfigAwareTrait;
-use ModelFramework\ConfigService\ConfigServiceAwareInterface;
 use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelAwareInterface;
 use ModelFramework\DataModel\DataModelAwareTrait;
-use ModelFramework\FieldTypesService\FieldTypesServiceAwareInterface;
 use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
 use ModelFramework\FieldTypesService\InputFilterConfig\InputFilterConfigInterface;
-use ModelFramework\FormService\FormField\FieldConfig\ParsedFieldConfigAwareInterface;
-use ModelFramework\FormService\FormField\FieldConfig\ParsedFieldConfigAwareTrait;
 use ModelFramework\FormService\FormField\Strategy\DefaultStrategy;
-use ModelFramework\FormService\FormField\Strategy\EmailStrategy;
-use ModelFramework\FormService\FormField\Strategy\FieldStrategy;
 use ModelFramework\FormService\FormField\Strategy\JLookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\LookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\FormFieldStrategyInterface;
 use ModelFramework\FormService\FormField\Strategy\StaticLookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\TextStrategy;
-use ModelFramework\FormService\LimitFieldsAwareInterface;
 use ModelFramework\FormService\LimitFieldsAwareTrait;
-use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
-use ModelFramework\QueryService\QueryServiceAwareInterface;
+use ModelFramework\ModelService\ModelField\FieldConfig\ParsedFieldConfigAwareTrait;
 use ModelFramework\QueryService\QueryServiceAwareTrait;
 
 class FormField
@@ -124,6 +115,7 @@ class FormField
 //            case 'email':
 //                $this->setStrategy( new EmailStrategy() );
 //                break;
+            case 'credit_card':
             case 'text':
                 $this->setStrategy( new TextStrategy() );
                 break;

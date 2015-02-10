@@ -8,7 +8,8 @@
 
 namespace ModelFramework\FormService\FormField\Strategy;
 
-use ModelFramework\FormService\FormField\FieldConfig\FieldConfigAwareInterface;
+
+use ModelFramework\ModelService\ModelField\FieldConfig\FieldConfigAwareInterface;
 
 interface FormFieldStrategyInterface
     extends FieldConfigAwareInterface

@@ -101,6 +101,7 @@ class ModelField
             case 'email':
                 $this->setStrategy(new EmailStrategy());
                 break;
+            case 'credit_card':
             default:
                 $this->setStrategy(new FieldStrategy());
         }
