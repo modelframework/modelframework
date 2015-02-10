@@ -115,6 +115,7 @@ class FormField
 //            case 'email':
 //                $this->setStrategy( new EmailStrategy() );
 //                break;
+            case 'credit_card':
             case 'text':
                 $this->setStrategy( new TextStrategy() );
                 break;
