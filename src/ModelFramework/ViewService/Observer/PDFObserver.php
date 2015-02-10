@@ -69,9 +69,20 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $order['products']=$model->toArray();
 
 
+
+        switch ($subject->getParams()->fromRoute('type')){
+            case 'recipe':
+                $template='pdf/recipe.twig';
+                break;
+            default:
+                $template='pdf/order_.twig';
+        }
+
+
         /* Generate PDF*/
        $PDFService = $subject->getPDFServiceVerify();
-       $pdf = $PDFService->getPDFtoSave('invoice/pdf.twig',$order);
+       echo $template. $pdf = $PDFService->getPDFtoSave($template,$order);
+        exit;
 
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
 
