@@ -62,7 +62,6 @@ class StaticLookupStrategy extends AbstractFormFieldStrategy
         $_formElement->attributes[ 'name' ] = $name;
         if (!empty( $conf->required )) {
             $_inputFilter->required = true;
-            prn($_inputFilter);
             $_formElement->attributes[ 'required' ] = 'required';
             if (!empty( $_formElement->options[ 'label_attributes' ][ 'class' ] )
                 &&

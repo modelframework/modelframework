@@ -70,8 +70,6 @@ class TextStrategy extends AbstractFormFieldStrategy
             'filters'  => [ $this->getName() => $_inputFilter ],
             'elements' => [ $this->getName() => $_formElement ]
         ];
-//        prn($result,$_inputFilter);
-//        exit;
 
         return $result;
     }
