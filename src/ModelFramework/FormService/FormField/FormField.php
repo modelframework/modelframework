@@ -16,6 +16,7 @@ use ModelFramework\FieldTypesService\FieldTypesServiceAwareTrait;
 use ModelFramework\FieldTypesService\FormElementConfig\FormElementConfigInterface;
 use ModelFramework\FieldTypesService\InputFilterConfig\InputFilterConfigInterface;
 use ModelFramework\FormService\FormField\Strategy\DefaultStrategy;
+use ModelFramework\FormService\FormField\Strategy\FileStrategy;
 use ModelFramework\FormService\FormField\Strategy\JLookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\LookupStrategy;
 use ModelFramework\FormService\FormField\Strategy\FormFieldStrategyInterface;
@@ -111,6 +112,9 @@ class FormField
                 break;
             case 'jlookup':
                 $this->setStrategy( new JLookupStrategy() );
+                break;
+            case 'file':
+                $this->setStrategy( new FileStrategy() );
                 break;
 //            case 'email':
 //                $this->setStrategy( new EmailStrategy() );

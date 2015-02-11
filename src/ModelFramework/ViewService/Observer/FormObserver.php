@@ -67,6 +67,8 @@ class FormObserver extends AbstractObserver
         $request = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
             $form->setData( $request->getPost() );
+//            prn($request->getFiles(), $request->getPost(), $form->isValid(), $form->getValidationGroup());
+//            exit;
             if ($form->isValid()) {
                 $model_data = [ ];
                 foreach ($form->getData() as $_k => $_data) {
