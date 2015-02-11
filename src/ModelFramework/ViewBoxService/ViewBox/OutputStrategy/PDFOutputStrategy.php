@@ -25,7 +25,9 @@ class PDFOutputStrategy
         $data=$this->getViewBoxVerify()->getData();
         $pdf= $this->getViewBoxVerify()->getPDFServiceVerify();
 
-//        return $pdf->getPDFtoSave('pdf/order.twig',$data);
+       // return $pdf->getPDFtoSave('pdf/order_.twig',$data);
+        //echo $data[ 'template' ];exit;
+        return $pdf->getPDFtoSave('pdf/wepo/'.$data[ 'template' ],$data);
         return $pdf->getPDFtoSave($data[ 'template' ],$data);
     }
 }
