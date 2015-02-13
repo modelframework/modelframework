@@ -22,6 +22,7 @@ class SaveObserver
      */
     public function update(\SplSubject $subject)
     {
+
         $models = $subject->getEventObject();
         if (!(is_array($models) || $models instanceof ResultSetInterface)) {
             $models = [ $models ];

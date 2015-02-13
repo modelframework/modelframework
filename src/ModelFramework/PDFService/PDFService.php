@@ -9,6 +9,9 @@ namespace ModelFramework\PDFService;
  *
  * @author PROG-3
  */
+
+
+
 class PDFService implements PDFServiceInterface
 {
     private $service         = null;
@@ -32,7 +35,6 @@ class PDFService implements PDFServiceInterface
         $model        = $this->getViewModel($template, $variables, $params);
         $twigRenderer = $this->service->get('zfctwigviewtwigrenderer');
         $markup       = $this->service->get('ViewPDFRenderer')->setHtmlRenderer($twigRenderer)->render($model);
-
         return $markup;
     }
 
@@ -55,6 +57,8 @@ class PDFService implements PDFServiceInterface
         $PDFView->setOption('basePath', 'public');
         $PDFView->setVariables($variables);
         $PDFView->setTemplate($template);
+
+      //  prn($PDFView);exit;
 
         return $PDFView;
     }

@@ -68,28 +68,25 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $model  = $subject->getGatewayServiceVerify()->get('OrderDetail')->find($query->getWhere());
         $order['products']=$model->toArray();
 
-
-
-        switch ($subject->getParams()->fromRoute('type')){
-            case 'recipe':
-                $template='pdf/recipe.twig';
-                break;
-            default:
-                $template='pdf/order_.twig';
-        }
+        $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->find(['title'=>$subject->getParams()->fromRoute('type')]);
+        $order['products']=$model->toArray();
+        $ta=$model_tpl->toArray();
+        $template_name=$subject->getParams()->fromRoute('type').'.twig';
+        $temp_dir = '../wepo/module/wepo/templates/temp/';
+        file_put_contents($temp_dir.$template_name,$ta[0]['body']);
 
 
         /* Generate PDF*/
-       $PDFService = $subject->getPDFServiceVerify();
-       echo $template. $pdf = $PDFService->getPDFtoSave($template,$order);
-        exit;
+        $PDFService = $subject->getPDFServiceVerify();
+        $pdf = $PDFService->getPDFtoSave($template_name,$order);
 
+        unlink($temp_dir.$template_name);
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
 
         /* Store PDF*/
         $fileService = $subject->getFileServiceVerify();
         $dataModel->document =
-             $fileService->saveStramToFile('order.pdf',$pdf, false );
+             $fileService->saveStramToFile($ta[0]['title'].'.pdf',$pdf, false );
 
         /* Save to DB */
         $model = $this->setModel($dataModel);

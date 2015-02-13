@@ -77,8 +77,10 @@ class FormObserver extends AbstractObserver
                 $model->merge( $old_data );
                 $subject->getLogicServiceVerify()->get( 'pre'
                                                         . $viewConfig->mode,
+
                     $model->getModelName() )
                         ->trigger( $model->getDataModel() );
+               // prn($model->toArray());exit;
                 try {
                     $subject->getGateway()->save( $model->getDataModel() );
                 } catch ( \Exception $ex ) {

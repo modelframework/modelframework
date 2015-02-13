@@ -16,17 +16,25 @@ class TriggerObserver extends AbstractConfigObserver
 
     public function process($model, $key, $value)
     {
+
+//        $trgModelGW=$this->getSubject()->getGatewayService()->get($model->getModelName());
+//        prn($trgModelGW);
+//        prn( $trgModelGW->find(['title'=>'order'])->toArray());
         $action    = $value;
         $srcConfig = $this->getSubject()->getModelServiceVerify()->getParsedModelConfig($model->getModelName())->joins;
+
         foreach ($srcConfig as $join) {
+            prn($join);
             if (isset($join[ 'on' ][ $key ])) {
-                $trgModelName   = $join[ 'model' ];
+                echo $trgModelName   = $join[ 'model' ];
                 $trgSearchField = $join[ 'on' ][ $key ];
                 $trgModelGW     = $this->getSubject()->getGatewayService()->get($trgModelName);
+                prn($trgModelGW);
                 $trgModel       = $trgModelGW->find([ $trgSearchField => $model->$key ])->current();
                 $logic = $this->getSubject()->getLogicService()->get($action, $trgModel->getModelName());
                 $logic->trigger($trgModel);
             }
         }
+//        exit;
     }
 }
