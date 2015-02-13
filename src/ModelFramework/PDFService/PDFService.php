@@ -38,6 +38,15 @@ class PDFService implements PDFServiceInterface
         return $markup;
     }
 
+    private function getPDFMarkupFromString($template, $variables = [ ], $params = [ ])
+    {
+        $model        = $this->getViewModel($template, $variables, $params);
+        $twigRenderer = $this->service->get('zfctwigviewtwigrenderer');
+        $this->service->get('twigenvironment')->getLoader()->addLoader(new \Twig_Loader_String());
+        $markup       = $this->service->get('ViewPDFRenderer')->setHtmlRenderer($twigRenderer)->render($model);
+        return $markup;
+    }
+
     public function saveAsPDF($template, $dir, $variables = [ ], $params = [ ])
     {
         $markup   = $this->getPDFMarkup($template, $variables, $params);
@@ -58,14 +67,12 @@ class PDFService implements PDFServiceInterface
         $PDFView->setVariables($variables);
         $PDFView->setTemplate($template);
 
-      //  prn($PDFView);exit;
-
         return $PDFView;
     }
 
     public function getPDFtoSave($template, $variables = [ ], $params = [ ])
     {
-        $markup   = $this->getPDFMarkup($template, $variables, $params);
+        $markup   = $this->getPDFMarkupFromString($template, $variables, $params);
         $response = new \Zend\Http\Response();
         $response->setContent($markup);
 

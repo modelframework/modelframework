@@ -35,6 +35,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
     {
         $this->setSubject($subject);
 
+
         $dataModel = $this->initModel();
         $dataModel->document_extension ='pdf';
 
@@ -71,16 +72,16 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->find(['title'=>$subject->getParams()->fromRoute('type')]);
         $order['products']=$model->toArray();
         $ta=$model_tpl->toArray();
-        $template_name=$subject->getParams()->fromRoute('type').'.twig';
-        $temp_dir = '../wepo/module/wepo/templates/temp/';
-        file_put_contents($temp_dir.$template_name,$ta[0]['body']);
+//        $template_name=$subject->getParams()->fromRoute('type').'.twig';
+//        $temp_dir = '../wepo/module/wepo/templates/temp/';
+//        file_put_contents($temp_dir.$template_name,$ta[0]['body']);
 
 
         /* Generate PDF*/
         $PDFService = $subject->getPDFServiceVerify();
-        $pdf = $PDFService->getPDFtoSave($template_name,$order);
+        $pdf = $PDFService->getPDFtoSave($ta[0]['body'],$order);
 
-        unlink($temp_dir.$template_name);
+       // unlink($temp_dir.$template_name);
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
 
         /* Store PDF*/
