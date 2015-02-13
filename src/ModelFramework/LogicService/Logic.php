@@ -76,7 +76,8 @@ class Logic extends AbstractService
         'EmailObserver',
         'UpdateMailFields',
         'CheckNumFieldObserver',
-        'AvatarCopyObserver'
+        'AvatarCopyObserver',
+        'IsDefaultObserver'
     ];
 
     protected $observers = [ ];
