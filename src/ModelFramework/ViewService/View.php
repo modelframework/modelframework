@@ -87,6 +87,7 @@ class View
             'SignUpObserver',
             'MailSendObserver',
             'PDFObserver',
+            'ListLiteObserver',
         ];
     protected $observers = [];
     private $_data = [];

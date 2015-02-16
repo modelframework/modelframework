@@ -23,6 +23,7 @@ class StaticObserver extends AbstractObserver
         foreach ($this->getRootConfig() as $field => $value) {
             $where[ $field ] = $value;
         }
+
         $subject->setWhere($where);
     }
 }

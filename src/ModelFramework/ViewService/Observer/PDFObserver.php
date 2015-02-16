@@ -53,9 +53,9 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
         $order=$model->toArray();
         $dataModel->title=$order['title'];
-        $dataModel->document_name = 'Order - '.$order['title'];
+        $dataModel->document_name = 'pdf - '.$order['title'];
         $dataModel->description  = $order['description'];
-        $dataModel->document_real_name='order.pdf';
+        $dataModel->document_real_name='document.pdf';
         $dataModel->owner_id=$order['owner_id'];
         $dataModel->creator_id=$order['creator_id'];
         $dataModel->patient_id=$order['patient_id'];
@@ -69,25 +69,19 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $model  = $subject->getGatewayServiceVerify()->get('OrderDetail')->find($query->getWhere());
         $order['products']=$model->toArray();
 
-        $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->find(['title'=>$subject->getParams()->fromRoute('type')]);
-        $order['products']=$model->toArray();
-        $ta=$model_tpl->toArray();
-//        $template_name=$subject->getParams()->fromRoute('type').'.twig';
-//        $temp_dir = '../wepo/module/wepo/templates/temp/';
-//        file_put_contents($temp_dir.$template_name,$ta[0]['body']);
-
+        $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->findOne(['_id'=>$_GET['template']]);
 
         /* Generate PDF*/
         $PDFService = $subject->getPDFServiceVerify();
-        $pdf = $PDFService->getPDFtoSave($ta[0]['body'],$order);
+        $pdf = $PDFService->getPDFtoSave($model_tpl->body,$order);
 
-       // unlink($temp_dir.$template_name);
+
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
 
         /* Store PDF*/
         $fileService = $subject->getFileServiceVerify();
         $dataModel->document =
-             $fileService->saveStramToFile($ta[0]['title'].'.pdf',$pdf, false );
+             $fileService->saveStramToFile($model_tpl->model_title.'.pdf',$pdf, false );
 
         /* Save to DB */
         $model = $this->setModel($dataModel);
