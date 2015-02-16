@@ -78,7 +78,7 @@ class ConvertObserver extends AbstractObserver implements ConfigAwareInterface
             foreach ($config[ 'fields' ] as $field => $value) {
                 $targetModel->$field = $this->parse( $value );
             }
-            $this->saveModel( $targetModel, 'insert' );
+            $this->saveModel( $targetModel, 'insertconverted' );
             $data[ $target ] = $targetModel;
             $this->setData( $data );
 
