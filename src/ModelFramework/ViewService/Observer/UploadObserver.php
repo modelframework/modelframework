@@ -44,6 +44,16 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                         $realname  = $_fieldname.'_real_name';
                         $size      = $_fieldname.'_size';
                         $extension = $_fieldname.'_extension';
+                        if ($_fieldname != 'avatar') {
+                            $dataModel->$_fieldname = $fileService->saveFile($_file[ 'name' ], $_file[ 'tmp_name' ]);
+                        } else {
+                            if( substr($_file['type'],0, 5)!='image'){
+                                break;
+                            }
+                            $dataModel->$_fieldname =
+                                basename($fileService->saveFile($_file[ 'name' ], $_file[ 'tmp_name' ], true,
+                                    lcfirst($dataModel->getModelName())));
+                        }
                         if (isset($dataModel->$size)) {
                             $dataModel->$size = (string) (round((float) $_file[ 'size' ] / 1048576, 2)).' MB';
                         }
@@ -53,13 +63,7 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                         if (isset($dataModel->$extension)) {
                             $dataModel->$extension = $fileService->getFileExtension($_file[ 'name' ]);
                         }
-                        if ($_fieldname != 'avatar') {
-                            $dataModel->$_fieldname = $fileService->saveFile($_file[ 'name' ], $_file[ 'tmp_name' ]);
-                        } else {
-                            $dataModel->$_fieldname =
-                                basename($fileService->saveFile($_file[ 'name' ], $_file[ 'tmp_name' ], true,
-                                                                  lcfirst($dataModel->getModelName())));
-                        }
+
                     }
                 }
             }
