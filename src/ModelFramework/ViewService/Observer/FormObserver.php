@@ -97,6 +97,11 @@ class FormObserver extends AbstractObserver
                         $model->getModelName() )
                             ->trigger( $model->getDataModel() );
                     $url = $subject->getBackUrl();
+//                    prn($url, $subject->getParams()->getController()->url());
+//                    exit();
+                    if($form->getActionParams()['view'] == 'insert'){
+                        $url ='/'.$form->getRoute().'/'.$form->getActionParams()['data'].'/view/'.$model->id;
+                    }
                     if ($url == null || $url == '/') {
                         $url = $subject->getParams()->getController()->url()
                                        ->fromRoute( $form->getRoute(),

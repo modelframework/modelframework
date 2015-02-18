@@ -75,7 +75,10 @@ class RecycleObserver implements \SplObserver
                         ->trigger( $results[ 'items' ] );
 
                 $url = $subject->getParams()->fromPost( 'saurl' )[ 'back' ];
-                parse_str( parse_url( $url )[ 'query' ], $output );
+                $output = null;
+                if (isset($url[ 'query' ])){
+                    parse_str( parse_url( $url )[ 'query' ], $output );
+                }
                 $temp = $subject->getGateway()->findOne( [ '_id' => $id ] );
                 if ($temp) {
                     if (isset( $output[ 'back' ] ) &&
