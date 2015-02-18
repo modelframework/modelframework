@@ -35,6 +35,8 @@ class JLookupStrategy extends AbstractFormFieldStrategy
         $_formElement->attributes[ 'name' ]       = $name;
         $_formElement->attributes[ 'class' ]      = 'select2';
         $_formElement->attributes[ 'data-scope' ] = strtolower( $conf->model );
+        $_formElement->attributes[ 'data-query' ] = $conf->query;
+
         if (!empty( $this->getDataModel()->$name )) {
             $_where  = [ '_id' => $this->getDataModel()->$name ];
             $_order  = $conf->fields;
