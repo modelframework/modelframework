@@ -88,6 +88,7 @@ class View
             'MailSendObserver',
             'PDFObserver',
             'ListLiteObserver',
+            'MailTplObserver',
         ];
     protected $observers = [];
     private $_data = [];

@@ -16,7 +16,7 @@ use ModelFramework\ViewService\View;
  * Clone ListObserver w/o paginator
  * @package ModelFramework\ViewService\Observer
  */
-class ListLiteObserver
+class MailTplObserver
     implements \SplObserver
 {
 
@@ -44,11 +44,12 @@ class ListLiteObserver
                         'route'       => 'common',
                         'label'       => $row->title,
                         'routeparams' => [
-                            'view' => $viewConfig->params['view'],
-                            'data' => $subject->getParams()->fromRoute('data')],
+                            'view' => 'send',
+                            'data' => 'mail',
+                        ],
                        'queryparams' => [
-                           'id'   => $subject->getParams()->fromRoute('id'),
-                           'template'=>$row->_id,
+                           'recipient'  => $subject->getParams()->fromRoute('id'),
+                           'template'   =>$row->_id,
                            ],
             ];
         }
