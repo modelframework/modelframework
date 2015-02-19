@@ -99,7 +99,7 @@ class FormObserver extends AbstractObserver
                     $url = $subject->getBackUrl();
 //                    prn($url, $subject->getParams()->getController()->url());
 //                    exit();
-                    if($form->getActionParams()['view'] == 'insert'){
+                    if(isset($form->getActionParams()['view']) && $form->getActionParams()['view'] == 'insert'){
                         $url ='/'.$form->getRoute().'/'.$form->getActionParams()['data'].'/view/'.$model->id;
                     }
                     if ($url == null || $url == '/') {
