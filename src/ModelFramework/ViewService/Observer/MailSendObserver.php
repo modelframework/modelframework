@@ -269,12 +269,11 @@ class MailSendObserver extends FormObserver
         $mail->from_id   = $send_setting->user_id;
         if ($params){
 
-            $twigRenderer = $this->service->get('zfctwigviewtwigrenderer');
-            $this->service->get('twigenvironment')->getLoader()->addLoader(new \Twig_Loader_String());
-            $markup       = $this->service->get('ViewPDFRenderer')->setHtmlRenderer($twigRenderer)->render($model);
+            prn($this);
 
 
-         //   echo $mail->text;
+
+            echo $mail->text;
             exit;
         }
         $model->setDataModel( $mail );
