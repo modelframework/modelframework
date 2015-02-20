@@ -80,6 +80,22 @@ class MailSendObserver extends FormObserver
             $toOptions[ $defaultOption ] = urldecode( $defaultOption );
         }
 
+        $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
+        if ($defaultRecipient_id){
+            $defaultRecipient = $this->getSubject()
+                ->getGatewayServiceVerify()
+                ->get('Email')
+                ->findOne(['model_id'=>$defaultRecipient_id])
+                ->email;
+
+
+
+            $toOptions[ $defaultRecipient ] = urldecode($defaultRecipient );
+        }
+
+
+
+
         $form->getFieldsets()[ 'fields' ]->add( array(
             'type'       => 'Zend\Form\Element\Select',
             'name'       => 'to',
@@ -89,7 +105,7 @@ class MailSendObserver extends FormObserver
             ),
             'attributes' => array(
                 'id'         => 'email',
-                'value'      => $defaultOption,
+                'value'      => $toOptions,
                 'class'      => 'email-select2',
                 'data-scope' => 'Email',
                 'multiple'   => 'multiple'
@@ -217,6 +233,19 @@ class MailSendObserver extends FormObserver
 
     public function configureMail( $model, $data, $old_data )
     {
+
+        $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
+        if ($defaultRecipient_id){
+            $dataModel = $this->getSubject()
+                ->getGatewayServiceVerify()
+                ->get('Email')
+                ->findOne(['model_id'=>$defaultRecipient_id])->data;
+            $params = $this->getSubject()
+                ->getGatewayServiceVerify()
+                ->get($dataModel)
+                ->findOne(['_id'=>$defaultRecipient_id]);
+        }
+
         $mail               = $model->getDataModel();
         $send_setting       =
             $this->getSubject()->getGatewayService()->get( 'MailSendSetting' )
@@ -238,6 +267,16 @@ class MailSendObserver extends FormObserver
         $mail->date      = date( 'Y-m-d H:i:s' );
         $mail->status_id = Status::SENDING;
         $mail->from_id   = $send_setting->user_id;
+        if ($params){
+
+            $twigRenderer = $this->service->get('zfctwigviewtwigrenderer');
+            $this->service->get('twigenvironment')->getLoader()->addLoader(new \Twig_Loader_String());
+            $markup       = $this->service->get('ViewPDFRenderer')->setHtmlRenderer($twigRenderer)->render($model);
+
+
+         //   echo $mail->text;
+            exit;
+        }
         $model->setDataModel( $mail );
     }
 
