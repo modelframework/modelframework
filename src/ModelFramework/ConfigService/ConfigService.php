@@ -153,4 +153,18 @@ class ConfigService
 
         return $result;
     }
+
+    public function saveConfigToDbByObject( DataModelInterface $configObject ){
+        $configArray =
+            Arr::getDoubtField( $this->getConfigPart( $configObject->getModelName() ),
+                'custom', [ ] );
+        foreach ($configArray as $config) {
+            $object = clone $configObject;
+            $object->exchangeArray( $config );
+            $this->getGatewayServiceVerify()
+                 ->get( $configObject->getModelName(), $configObject )
+                 ->save( $object );
+        }
+        return $this;
+    }
 }
