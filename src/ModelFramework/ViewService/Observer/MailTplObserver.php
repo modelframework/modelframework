@@ -39,20 +39,24 @@ class MailTplObserver
             return;
         }
 
-        foreach ($model as $row){
+        foreach ($model as $key=> $row){
             $result['selectlinks'][]=[
                         'route'       => 'common',
                         'label'       => $row->title,
+                        'folder_title'=> $row->folder_title,
                         'routeparams' => [
                             'view' => 'send',
                             'data' => 'mail',
                         ],
                        'queryparams' => [
                            'recipient'  => $subject->getParams()->fromRoute('id'),
-                           'template'   =>$row->_id,
+                           'template'   => $row->_id,
                            ],
             ];
         }
-        $subject->setData($result );
+        usort($result['selectlinks'], function($a, $b){
+           return strnatcmp($a['folder_title'], $b['folder_title']);
+        });
+        $subject->setData($result);
     }
 }
