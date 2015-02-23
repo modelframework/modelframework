@@ -87,6 +87,28 @@ class AclService
      * @return DataModelInterface
      * @throws \Exception
      */
+    public function getVisibleFields( $modelName )
+    {
+        $acl           = $this->getAclConfig( $modelName );
+        $visibleFields = [ ];
+        foreach ($acl->fields as $field => $permission) {
+            if (substr( $field, -3 ) == '_id') {
+                continue;
+            }
+            if (in_array( $permission, [ 'read', 'write' ] )) {
+                $visibleFields[ ] = $field;
+            }
+        }
+
+        return $visibleFields;
+    }
+
+    /**
+     * @param $modelName
+     *
+     * @return DataModelInterface
+     * @throws \Exception
+     */
     public function get( $modelName )
     {
         return $this->getAclDataModel( $modelName );

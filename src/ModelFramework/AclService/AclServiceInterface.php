@@ -21,6 +21,15 @@ interface AclServiceInterface
     public function getAclConfig($modelName);
 
     /**
+     * @param string $modelName
+     *
+     * @return AclConfig
+     * @throws \Exception
+     */
+    public function getVisibleFields($modelName);
+
+
+    /**
      * @param $modelName
      *
      * @return DataModelInterface

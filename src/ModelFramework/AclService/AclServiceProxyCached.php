@@ -42,6 +42,18 @@ class AclServiceProxyCached
             ->getCachedObjMethod($this->getAclServiceVerify(), 'getAclConfig',
                 [$modelName]);
     }
+    /**
+     * @param $modelName
+     *
+     * @return DataModelInterface
+     * @throws \Exception
+     */
+    public function getVisibleFields($modelName)
+    {
+        return $this->getCacheServiceVerify()
+                    ->getCachedObjMethod($this->getAclServiceVerify(), 'getVisibleFields',
+                        [$modelName]);
+    }
 
     /**
      * @param $modelName
