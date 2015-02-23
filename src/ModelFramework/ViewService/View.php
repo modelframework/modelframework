@@ -45,6 +45,8 @@ use ModelFramework\ViewService\ViewConfig\ViewConfigAwareInterface;
 use ModelFramework\ViewService\ViewConfig\ViewConfigAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
 use ModelFramework\ConfigService\ConfigAwareInterface;
+use ModelFramework\TwigService\TwigServiceAwareInterface;
+use ModelFramework\TwigService\TwigServiceAwareTrait;
 
 class View
     implements ViewInterface, ViewConfigAwareInterface,
@@ -55,13 +57,15 @@ class View
                AclServiceAwareInterface, AuthServiceAwareInterface,
                LogicServiceAwareInterface, PDFServiceAwareInterface,
                QueryServiceAwareInterface, ConfigServiceAwareInterface,
-               \SplSubject, ResponseAwareInterface, DataModelAwareInterface
+               \SplSubject, ResponseAwareInterface, DataModelAwareInterface,
+		TwigServiceAwareInterface
 {
 
     use ViewConfigAwareTrait, ParsedModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, PDFServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
-        AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait;
+        AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait, 
+	TwigServiceAwareTrait;
 
     protected $allowed_observers
         = [

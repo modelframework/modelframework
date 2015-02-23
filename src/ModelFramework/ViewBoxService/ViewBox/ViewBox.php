@@ -25,14 +25,16 @@ use ModelFramework\ViewService\ViewServiceAwareTrait;
 use ModelFramework\ViewBoxService\ViewBox\OutputStrategy\OutputStrategyInterface;
 use ModelFramework\ViewBoxService\ViewBox\OutputStrategy\OutputStrategyAwareTrait;
 use Zend\View\Model\ViewModel as ZendViewModel;
+use ModelFramework\TwigService\TwigServiceAwareInterface;
+use ModelFramework\TwigService\TwigServiceAwareTrait;
 
 class ViewBox implements ViewBoxInterface, ViewBoxConfigAwareInterface, ParamsAwareInterface,
                          ViewServiceAwareInterface, AuthServiceAwareInterface,
-                         ResponseAwareInterface
+                         ResponseAwareInterface 
 
 {
 
-    use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait, PDFServiceAwareTrait, OutputStrategyAwareTrait;
+    use ViewBoxConfigAwareTrait, ParamsAwareTrait, ViewServiceAwareTrait, AuthServiceAwareTrait, ResponseAwareTrait, PDFServiceAwareTrait, OutputStrategyAwareTrait, TwigServiceAwareTrait;
 
     private $_data = [];
     private $_redirect = null;

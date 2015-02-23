@@ -234,6 +234,7 @@ class MailSendObserver extends FormObserver
     public function configureMail( $model, $data, $old_data )
     {
 
+        /* Get Lead or patient or... information from model */
         $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
         if ($defaultRecipient_id){
             $dataModel = $this->getSubject()
@@ -243,10 +244,22 @@ class MailSendObserver extends FormObserver
             $params = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get($dataModel)
-                ->findOne(['_id'=>$defaultRecipient_id]);
+                ->findOne(['_id'=>$defaultRecipient_id])->toArray();
+        }
+
+        /* Parse title and text as twig template */
+        if ($params){
+            $data[ 'title' ] = $this ->getSubject()
+                ->getTwigServiceVerify()
+                ->getParseString($data[ 'title' ],$params);
+
+            $data[ 'text' ] = $this ->getSubject()
+                ->getTwigServiceVerify()
+                ->getParseString($data[ 'text' ],$params);
         }
 
         $mail               = $model->getDataModel();
+
         $send_setting       =
             $this->getSubject()->getGatewayService()->get( 'MailSendSetting' )
                  ->find( [ '_id' => $data[ 'from' ] ] )->current();
@@ -267,15 +280,7 @@ class MailSendObserver extends FormObserver
         $mail->date      = date( 'Y-m-d H:i:s' );
         $mail->status_id = Status::SENDING;
         $mail->from_id   = $send_setting->user_id;
-        if ($params){
 
-            prn($this);
-
-
-
-            echo $mail->text;
-            exit;
-        }
         $model->setDataModel( $mail );
     }
 

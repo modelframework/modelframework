@@ -28,19 +28,21 @@ use ModelFramework\FormService\FormServiceAwareTrait;
 use ModelFramework\QueryService\QueryServiceAwareInterface;
 use ModelFramework\QueryService\QueryServiceAwareTrait;
 use ModelFramework\ViewService\ViewConfig\ViewConfig;
+use ModelFramework\TwigService\TwigServiceAwareInterface;
+use ModelFramework\TwigService\TwigServiceAwareTrait;
 
 class ViewService
     implements ViewServiceInterface, ConfigServiceAwareInterface,
                GatewayServiceAwareInterface, AclServiceAwareInterface,
                ModelServiceAwareInterface,
                FormServiceAwareInterface, AuthServiceAwareInterface,
-               LogicServiceAwareInterface,
-               QueryServiceAwareInterface, FileServiceAwareInterface, PDFServiceAwareInterface
+               LogicServiceAwareInterface,PDFServiceAwareInterface,
+               QueryServiceAwareInterface, FileServiceAwareInterface, TwigServiceAwareInterface
 {
 
     use ConfigServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait,
-        ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait,
-        LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait, PDFServiceAwareTrait;
+        ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, PDFServiceAwareTrait,
+        LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait, TwigServiceAwareTrait;
 
     /**
      * @param string $viewName
@@ -102,6 +104,7 @@ class ViewService
         $view->setQueryService( $this->getQueryServiceVerify() );
         $view->setFileService( $this->getFileServiceVerify() );
         $view->setPDFService( $this->getPDFServiceVerify() );
+        $view->setTwigService( $this->getTwigServiceVerify() );
         $view->init();
 
         return $view;

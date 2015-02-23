@@ -18,14 +18,17 @@ use ModelFramework\ViewBoxService\ViewBox\ViewBox;
 use ModelFramework\ViewBoxService\ViewBoxConfig\ViewBoxConfig;
 use ModelFramework\ViewService\ViewServiceAwareInterface;
 use ModelFramework\ViewService\ViewServiceAwareTrait;
+use ModelFramework\TwigService\TwigServiceAwareInterface;
+use ModelFramework\TwigService\TwigServiceAwareTrait;
+
 
 class ViewBoxService
     implements ViewBoxServiceInterface, ConfigServiceAwareInterface,
                ViewServiceAwareInterface, AuthServiceAwareInterface,
-               PDFServiceAwareInterface
+               PDFServiceAwareInterface, TwigServiceAwareInterface
 {
 
-    use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait, PDFServiceAwareTrait;
+    use ViewServiceAwareTrait, ConfigServiceAwareTrait, AuthServiceAwareTrait, PDFServiceAwareTrait, TwigServiceAwareTrait;
 
     /**
      * @param string $viewBoxName
@@ -72,6 +75,7 @@ class ViewBoxService
         $viewBox->setViewService($this->getViewServiceVerify());
         $viewBox->setAuthService($this->getAuthServiceVerify());
         $viewBox->setPDFService($this->getPDFServiceVerify());
+        $viewBox->setTwigService($this->getTwigServiceVerify());
 
         return $viewBox;
     }
