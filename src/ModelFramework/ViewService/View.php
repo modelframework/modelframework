@@ -93,6 +93,7 @@ class View
             'PDFObserver',
             'ListLiteObserver',
             'MailTplObserver',
+            'ConstructPatternMenuObserver',
         ];
     protected $observers = [];
     private $_data = [];
