@@ -28,14 +28,15 @@ class ConstructPatternMenuObserver implements \SplObserver
             $dataModel = ucfirst($subject
                 ->getGatewayServiceVerify()
                 ->get('Email')
-                ->findOne(['model_id' => $Recipient_id])->data);
-            $this->allow_models[] = $dataModel;
+                ->findOne(['model_id' => $Recipient_id]));
+            if($dataModel){
+                $this->allow_models[] = $dataModel->data;
+            }
         }
 
         if (!is_array($this->allow_models)) {
             return;
         }
-
         foreach ($this->allow_models as $model) {
 
             $visibleFields['pattern_items'][$model] = $subject
