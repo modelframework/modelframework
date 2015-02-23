@@ -57,18 +57,18 @@ class MailSendObserver extends FormObserver
         }
         ksort( $mailSendSettingsOptions );
 
-        $form->getFieldsets()[ 'fields' ]->add( array(
+        $form->getFieldsets()[ 'fields' ]->add( [
             'type'       => 'Zend\Form\Element\Select',
             'name'       => 'from',
-            'options'    => array(
+            'options'    => [
                 'label'         => 'From',
                 'value_options' => $mailSendSettingsOptions,
-            ),
-            'attributes' => array(
+            ],
+            'attributes' => [
                 'value' => $defaultOption, //set selected to '1'
                 'class' => 'static-select2'
-            )
-        ) );
+            ]
+        ] );
 
         //TO FIELD INITIALIZATION
 
@@ -88,29 +88,25 @@ class MailSendObserver extends FormObserver
                 ->findOne(['model_id'=>$defaultRecipient_id])
                 ->email;
 
-
-
             $toOptions[ $defaultRecipient ] = urldecode($defaultRecipient );
         }
 
 
-
-
-        $form->getFieldsets()[ 'fields' ]->add( array(
+        $form->getFieldsets()[ 'fields' ]->add( [
             'type'       => 'Zend\Form\Element\Select',
             'name'       => 'to',
-            'options'    => array(
+            'options'    => [
                 'label'         => 'To',
                 'value_options' => $toOptions,
-            ),
-            'attributes' => array(
+            ],
+            'attributes' => [
                 'id'         => 'email',
                 'value'      => $toOptions,
                 'class'      => 'email-select2',
                 'data-scope' => 'Email',
                 'multiple'   => 'multiple'
-            )
-        ) );
+            ]
+        ] );
 
         //INPUT FILTER SETTINGS
 
@@ -236,16 +232,16 @@ class MailSendObserver extends FormObserver
 
         /* Get Lead or patient or... information from model */
         $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
+
         if ($defaultRecipient_id){
-            $dataModel = $this->getSubject()
-                ->getGatewayServiceVerify()
-                ->get('Email')
-                ->findOne(['model_id'=>$defaultRecipient_id])->data;
+
+            $dataModel = $this->getRecipientModelName($defaultRecipient_id);
             $params = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get($dataModel)
                 ->findOne(['_id'=>$defaultRecipient_id])->toArray();
         }
+
 
         /* Parse title and text as twig template */
         if ($params){
@@ -325,5 +321,18 @@ class MailSendObserver extends FormObserver
                 $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValueOptions( $options );
             }
         }
+    }
+
+    /**
+     * Find Model Name by email id
+     * @param string $defaultRecipient_id
+     * @return string Model Name
+     */
+    private function getRecipientModelName($defaultRecipient_id=null){
+
+        return $dataModel = $this->getSubject()
+            ->getGatewayServiceVerify()
+            ->get('Email')
+            ->findOne(['model_id'=>$defaultRecipient_id])->data;
     }
 }
