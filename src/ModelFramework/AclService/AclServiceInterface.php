@@ -23,7 +23,7 @@ interface AclServiceInterface
     /**
      * @param string $modelName
      *
-     * @return AclConfig
+     * @return array
      * @throws \Exception
      */
     public function getVisibleFields($modelName);

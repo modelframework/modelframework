@@ -84,19 +84,24 @@ class AclService
     /**
      * @param $modelName
      *
-     * @return DataModelInterface
+     * @return array
      * @throws \Exception
      */
     public function getVisibleFields( $modelName )
     {
-        $acl           = $this->getAclConfig( $modelName );
-        $visibleFields = [ ];
+        $parsedModelConfig =
+            $this->getModelServiceVerify()->getParsedModelConfig( $modelName );
+        $acl               = $this->getAclConfig( $modelName );
+        $visibleFields     = [ ];
         foreach ($acl->fields as $field => $permission) {
-            if (substr( $field, -3 ) == '_id') {
+            if (substr( $field, -3 ) == '_id' ||
+                substr( $field, -5 ) == '_link'
+            ) {
                 continue;
             }
             if (in_array( $permission, [ 'read', 'write' ] )) {
-                $visibleFields[ ] = $field;
+                $visibleFields[ $field ] =
+                    $parsedModelConfig->fields [ $field ][ 'label' ];
             }
         }
 
