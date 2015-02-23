@@ -85,10 +85,14 @@ class MailSendObserver extends FormObserver
             $defaultRecipient = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get('Email')
-                ->findOne(['model_id'=>$defaultRecipient_id])
-                ->email;
+                ->findOne(['model_id'=>$defaultRecipient_id]);
+            if($defaultRecipient){
+                $defaultRecipient = $defaultRecipient->email;
+                $toOptions[ $defaultRecipient ] = urldecode($defaultRecipient );
+            }
 
-            $toOptions[ $defaultRecipient ] = urldecode($defaultRecipient );
+        }
+
         }
 
 
