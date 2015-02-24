@@ -42,6 +42,7 @@ class ConstructPatternMenuObserver implements \SplObserver
                 ->getAclServiceVerify()
                 ->getVisibleFields($model);
         }
+
         $subject->setData($visibleFields);
     }
 }

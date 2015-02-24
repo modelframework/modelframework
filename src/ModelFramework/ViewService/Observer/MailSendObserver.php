@@ -93,7 +93,7 @@ class MailSendObserver extends FormObserver
 
         }
 
-        }
+
 
 
         $form->getFieldsets()[ 'fields' ]->add( [
