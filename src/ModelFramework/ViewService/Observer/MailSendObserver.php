@@ -93,9 +93,6 @@ class MailSendObserver extends FormObserver
 
         }
 
-
-
-
         $form->getFieldsets()[ 'fields' ]->add( [
             'type'       => 'Zend\Form\Element\Select',
             'name'       => 'to',
