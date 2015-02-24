@@ -25,13 +25,13 @@ class ConstructPatternMenuObserver implements \SplObserver
 
         $Recipient_id = $subject->getParam('recipient', 0);
         if ($Recipient_id) {
-            $dataModel = ucfirst($subject
+            $dataModel = $subject
                 ->getGatewayServiceVerify()
                 ->get('Email')
-                ->findOne(['model_id' => $Recipient_id])->data);
+                ->findOne(['model_id' => $Recipient_id]);
 
             if($dataModel){
-                $this->allow_models[] = $dataModel;
+                $this->allow_models[] = ucfirst($dataModel->data);
             }
         }
 

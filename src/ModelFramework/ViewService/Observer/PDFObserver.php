@@ -52,9 +52,10 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         }
 
         $order=$model->toArray();
+
         $dataModel->title=$order['title'];
         $dataModel->document_name = 'pdf - '.$order['title'];
-        $dataModel->description  = $order['description'];
+        $dataModel->description  = $order['subject'];
         $dataModel->document_real_name='document.pdf';
         $dataModel->owner_id=$order['owner_id'];
         $dataModel->creator_id=$order['creator_id'];
