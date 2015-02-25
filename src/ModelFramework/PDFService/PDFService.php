@@ -51,12 +51,14 @@ class PDFService implements PDFServiceInterface
         $this->service->get('twigenvironment')->getLoader()->addLoader(new \Twig_Loader_String());
 
         $pdfRenderer=$this->service->get('ViewPDFRenderer');
-
+        try{
         $pdfRenderer->getEngine()->keep_table_proportions = true;
         $html  = $pdfRenderer->setRenderer($twigRenderer)->getRenderer()-> render($pdf);
         $pdfRenderer->getEngine()->WriteHTML($html);
-        $markup = $pdfRenderer->getEngine()->Output('', 'S');
+        $markup = $pdfRenderer->getEngine()->Output('','S');
+        } catch ( \Exception $e ) {prn($e);}
         return $markup;
+        exit;
     }
 
     public function saveAsPDF($template, $dir, $variables = [ ], $params = [ ])

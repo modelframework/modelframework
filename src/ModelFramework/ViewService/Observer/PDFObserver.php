@@ -51,6 +51,8 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
             throw new \Exception('Data not found');
         }
 
+        $variable[$model->getModelName()] = $model->toArray();
+
         $order=$model->toArray();
 
         $dataModel->title=$order['title'];
@@ -70,11 +72,17 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $model  = $subject->getGatewayServiceVerify()->get('OrderDetail')->find($query->getWhere());
         $order['products']=$model->toArray();
 
+
+        $variable['OrderDetail'] = $model->toArray();
         $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->findOne(['_id'=>$_GET['template']]);
+
+
+
+
 
         /* Generate PDF*/
         $PDFService = $subject->getPDFServiceVerify();
-        $pdf = $PDFService->getPDFtoSave($model_tpl->body,$order);
+        $pdf = $PDFService->getPDFtoSave($model_tpl->body,$variable);
 
 
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';

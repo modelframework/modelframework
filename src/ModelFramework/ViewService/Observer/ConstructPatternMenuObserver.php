@@ -21,6 +21,8 @@ class ConstructPatternMenuObserver implements \SplObserver
     public function update(\SplSubject $subject)
     {
         $this->allow_models[] = 'Account';
+        $this->allow_models[] = 'Order';
+        $this->allow_models[] = 'OrderDetail';
 
 
         $Recipient_id = $subject->getParam('recipient', 0);
