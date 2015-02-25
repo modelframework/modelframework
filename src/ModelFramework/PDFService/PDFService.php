@@ -10,7 +10,7 @@ namespace ModelFramework\PDFService;
  * @author PROG-3
  */
 
-
+use \LosPdf\View\Model\PdfModel;
 
 class PDFService implements PDFServiceInterface
 {
@@ -32,18 +32,30 @@ class PDFService implements PDFServiceInterface
 
     private function getPDFMarkup($template, $variables = [ ], $params = [ ])
     {
-        $model        = $this->getViewModel($template, $variables, $params);
+        $pdf        = $this->getViewModel($template, $variables, $params);
         $twigRenderer = $this->service->get('zfctwigviewtwigrenderer');
-        $markup       = $this->service->get('ViewPDFRenderer')->setHtmlRenderer($twigRenderer)->render($model);
+
+        $pdfRenderer=$this->service->get('ViewPDFRenderer');
+
+        $pdfRenderer->getEngine()->keep_table_proportions = true;
+        $html  = $pdfRenderer->setRenderer($twigRenderer)->getRenderer()-> render($pdf);
+        $pdfRenderer->getEngine()->WriteHTML($html);
+        $markup = $pdfRenderer->getEngine()->Output('', 'S');
         return $markup;
     }
 
     private function getPDFMarkupFromString($template, $variables = [ ], $params = [ ])
     {
-        $model        = $this->getViewModel($template, $variables, $params);
+        $pdf        = $this->getViewModel($template, $variables, $params);
         $twigRenderer = $this->service->get('zfctwigviewtwigrenderer');
         $this->service->get('twigenvironment')->getLoader()->addLoader(new \Twig_Loader_String());
-        $markup       = $this->service->get('ViewPDFRenderer')->setHtmlRenderer($twigRenderer)->render($model);
+
+        $pdfRenderer=$this->service->get('ViewPDFRenderer');
+
+        $pdfRenderer->getEngine()->keep_table_proportions = true;
+        $html  = $pdfRenderer->setRenderer($twigRenderer)->getRenderer()-> render($pdf);
+        $pdfRenderer->getEngine()->WriteHTML($html);
+        $markup = $pdfRenderer->getEngine()->Output('', 'S');
         return $markup;
     }
 
@@ -58,7 +70,7 @@ class PDFService implements PDFServiceInterface
 
     public function getViewModel($template, $variables = [ ], $params = [ ])
     {
-        $PDFView = new \DOMPDFModule\View\Model\PdfModel();
+        $PDFView = new PdfModel();
 
         foreach ($params as $key => $parametr) {
             $PDFView->setOption($key, $parametr);
