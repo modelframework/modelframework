@@ -50,7 +50,7 @@ class ConstructPatternMenuObserver implements \SplObserver
         }
 
         /* Copy current recipient data to array 'Contacts' */
-        if ($dataModel){
+        if (isset($dataModel)){
             $visibleFields['pattern_items']['Contacts']=
                 $visibleFields['pattern_items'][ucfirst($dataModel->data)];
         }
