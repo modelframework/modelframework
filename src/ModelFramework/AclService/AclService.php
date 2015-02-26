@@ -100,6 +100,12 @@ class AclService
                 continue;
             }
             if (in_array( $permission, [ 'read', 'write' ] )) {
+                if (!isset( $parsedModelConfig->fields [ $field ] )) {
+                    throw new \Exception(
+                        'Field \'' . $field .
+                        '\' does not exist in ModelConfig, but asked in AclConfig for ' .
+                        $modelName );
+                }
                 $visibleFields[ $field ] =
                     $parsedModelConfig->fields [ $field ][ 'label' ];
             }
