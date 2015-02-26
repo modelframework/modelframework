@@ -54,10 +54,13 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $variable[$model->getModelName()] = $model->toArray();
 
         $order=$model->toArray();
-
+        $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->findOne(['_id'=>$_GET['template']]);
+        if ( !$model_tpl) {
+            throw new \Exception('Data of template not found');
+        }
         $dataModel->title=$order['title'];
         $dataModel->document_name = 'pdf - '.$order['title'];
-        $dataModel->description  = $order['subject'];
+        $dataModel->description  = $order['subject'].' ('.$model_tpl->title .')';
         $dataModel->document_real_name='document.pdf';
         $dataModel->owner_id=$order['owner_id'];
         $dataModel->creator_id=$order['creator_id'];
@@ -74,7 +77,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
 
         $variable['OrderDetail'] = $model->toArray();
-        $model_tpl  = $subject->getGatewayServiceVerify()->get('TemplatePDF')->findOne(['_id'=>$_GET['template']]);
+
 
 
 
