@@ -23,6 +23,8 @@ class ConstructPatternMenuObserver implements \SplObserver
         $this->allow_models[] = 'Account';
         $this->allow_models[] = 'Order';
         $this->allow_models[] = 'OrderDetail';
+        $this->allow_models[] = 'Lead';
+        $this->allow_models[] = 'Patient';
 
 
         $Recipient_id = $subject->getParam('recipient', 0);
@@ -45,6 +47,12 @@ class ConstructPatternMenuObserver implements \SplObserver
             $visibleFields['pattern_items'][$model] = $subject
                 ->getAclServiceVerify()
                 ->getVisibleFields($model);
+        }
+
+        /* Copy current recipient data to array 'Contacts' */
+        if ($dataModel){
+            $visibleFields['pattern_items']['Contacts']=
+                $visibleFields['pattern_items'][ucfirst($dataModel->data)];
         }
 
         $subject->setData($visibleFields);
