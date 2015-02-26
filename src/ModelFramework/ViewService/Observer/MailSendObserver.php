@@ -235,14 +235,10 @@ class MailSendObserver extends FormObserver
         $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
 
         if ($defaultRecipient_id){
-
-
-
             $dataModel = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get('Email')
                 ->findOne(['model_id'=>$defaultRecipient_id])->data;
-            prn($dataModel);
 
             $params[$dataModel] =
             $params['Contacts']
@@ -250,17 +246,14 @@ class MailSendObserver extends FormObserver
                 ->getGatewayServiceVerify()
                 ->get($dataModel)
                 ->findOne(['_id'=>$defaultRecipient_id])->toArray();
-
-            $params['User']=$this->getSubject()->getUser()->toArray();
         }
+
+        $params['User']=$this->getSubject()->getUser()->toArray();
 
 
         /* Parse title and text as twig template */
         if (isset($params)){
 
-prn($params);
-
-            exit();
             $data[ 'title' ] = $this ->getSubject()
                 ->getTwigServiceVerify()
                 ->getParseString($data[ 'title' ],$params);
