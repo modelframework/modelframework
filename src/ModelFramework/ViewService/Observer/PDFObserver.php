@@ -59,7 +59,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
             throw new \Exception('Data of template not found');
         }
         $dataModel->title=$order['title'];
-        $dataModel->document_name = 'pdf - '.$order['title'];
+        $dataModel->document_name = $model_tpl->title. ' - '.$order['title'];
         $dataModel->description  = $order['subject'].' ('.$model_tpl->title .')';
         $dataModel->document_real_name='document.pdf';
         $dataModel->owner_id=$order['owner_id'];
