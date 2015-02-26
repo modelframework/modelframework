@@ -236,16 +236,31 @@ class MailSendObserver extends FormObserver
 
         if ($defaultRecipient_id){
 
-            $dataModel = $this->getRecipientModelName($defaultRecipient_id);
-            $params = $this->getSubject()
+
+
+            $dataModel = $this->getSubject()
+                ->getGatewayServiceVerify()
+                ->get('Email')
+                ->findOne(['model_id'=>$defaultRecipient_id])->data;
+            prn($dataModel);
+
+            $params[$dataModel] =
+            $params['Contacts']
+                = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get($dataModel)
                 ->findOne(['_id'=>$defaultRecipient_id])->toArray();
+
+            $params['User']=$this->getSubject()->getUser()->toArray();
         }
 
 
         /* Parse title and text as twig template */
-        if ($params){
+        if (isset($params)){
+
+prn($params);
+
+            exit();
             $data[ 'title' ] = $this ->getSubject()
                 ->getTwigServiceVerify()
                 ->getParseString($data[ 'title' ],$params);
