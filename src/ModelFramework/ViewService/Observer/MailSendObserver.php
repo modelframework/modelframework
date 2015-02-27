@@ -16,48 +16,48 @@ use Zend\InputFilter\InputFilter;
 class MailSendObserver extends FormObserver
 {
 
-    public function process( $model )
+    public function process($model)
     {
         $form = $this->initCustomForm();
-        $this->processForm( $form, $this->getModel() );
+        $this->processForm($form, $this->getModel());
     }
 
     public function initCustomForm()
     {
         $form = $this->initForm();
 
-        $form->getFieldsets()[ 'button' ]->getElements()[ 'submit' ]->setValue( 'Send' );
+        $form->getFieldsets()['button']->getElements()['submit']->setValue('Send');
 
         //updating default form
 
-        $re = $this->getSubject()->getParam( 're' );
+        $re = $this->getSubject()->getParam('re');
 
         $actionParams =
-            array_merge( $form->getActionParams(), [ 're' => $re ] );
-        $form->setActionParams( $actionParams );
+            array_merge($form->getActionParams(), ['re' => $re]);
+        $form->setActionParams($actionParams);
 
         //FROM FIELD INITIALIZATION
 
-        $query  = $this->getSubject()->getQueryServiceVerify()
-                       ->get( 'MailSendSetting.lookup' )->process();
+        $query = $this->getSubject()->getQueryServiceVerify()
+            ->get('MailSendSetting.lookup')->process();
         $_where = $query->getWhere();
-        $res    = $this->getSubject()->getGatewayServiceVerify()
-                       ->get( 'MailSendSetting' )->find( $_where );
+        $res = $this->getSubject()->getGatewayServiceVerify()
+            ->get('MailSendSetting')->find($_where);
 
-        $mailSendSettingsOptions = [ ];
-        $defaultOption           = null;
+        $mailSendSettingsOptions = [];
+        $defaultOption = null;
         foreach ($res as $option) {
-            $mailSendSettingsOptions[ $option->_id ] = $option->title;
+            $mailSendSettingsOptions[$option->_id] = $option->title;
             if ($option->is_default) {
                 $defaultOption = $option->_id;
             }
         }
-        if (!isset( $defaultOption )) {
-            $mailSendSettingsOptions[ '0' ] = 'Please select ...';
+        if (!isset($defaultOption)) {
+            $mailSendSettingsOptions['0'] = 'Please select ...';
         }
-        ksort( $mailSendSettingsOptions );
+        ksort($mailSendSettingsOptions);
 
-        $form->getFieldsets()[ 'fields' ]->add( [
+        $form->getFieldsets()['fields']->add([
             'type'       => 'Zend\Form\Element\Select',
             'name'       => 'from',
             'options'    => [
@@ -68,32 +68,32 @@ class MailSendObserver extends FormObserver
                 'value' => $defaultOption, //set selected to '1'
                 'class' => 'static-select2'
             ]
-        ] );
+        ]);
 
         //TO FIELD INITIALIZATION
 
-        $defaultOption = $this->getSubject()->getParam( 'to', 0 );
+        $defaultOption = $this->getSubject()->getParam('to', 0);
 
-        $toOptions = [ ];
+        $toOptions = [];
 
-        if (!empty( $defaultOption )) {
-            $toOptions[ $defaultOption ] = urldecode( $defaultOption );
+        if (!empty($defaultOption)) {
+            $toOptions[$defaultOption] = urldecode($defaultOption);
         }
 
-        $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
-        if ($defaultRecipient_id){
+        $defaultRecipient_id = $this->getSubject()->getParam('recipient', 0);
+        if ($defaultRecipient_id) {
             $defaultRecipient = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get('Email')
-                ->findOne(['model_id'=>$defaultRecipient_id]);
-            if($defaultRecipient){
+                ->findOne(['model_id' => $defaultRecipient_id]);
+            if ($defaultRecipient) {
                 $defaultRecipient = $defaultRecipient->email;
-                $toOptions[ $defaultRecipient ] = urldecode($defaultRecipient );
+                $toOptions[$defaultRecipient] = urldecode($defaultRecipient);
             }
 
         }
 
-        $form->getFieldsets()[ 'fields' ]->add( [
+        $form->getFieldsets()['fields']->add([
             'type'       => 'Zend\Form\Element\Select',
             'name'       => 'to',
             'options'    => [
@@ -107,48 +107,48 @@ class MailSendObserver extends FormObserver
                 'data-scope' => 'Email',
                 'multiple'   => 'multiple'
             ]
-        ] );
+        ]);
 
         //INPUT FILTER SETTINGS
 
-        $form->addValidationField( 'fields', 'from' );
-        $form->addValidationField( 'fields', 'to' );
+        $form->addValidationField('fields', 'from');
+        $form->addValidationField('fields', 'to');
 
-        $factory           = new Factory();
-        $fieldsInputFilter = $form->getInputFilter()->get( 'fields' );
+        $factory = new Factory();
+        $fieldsInputFilter = $form->getInputFilter()->get('fields');
 
         $fieldsInputFilter->add(
-            $factory->createInput( [
+            $factory->createInput([
                 'name'       => 'from',
                 'required'   => true,
                 'filters'    => [
-                    [ 'name' => 'StripTags' ],
-                    [ 'name' => 'StringTrim' ],
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
                 ],
                 'validators' => [
                     [
                         'name' => 'NotEmpty',
                     ],
                 ],
-            ] )
+            ])
         );
         $fieldsInputFilter->add(
-            $factory->createInput( [
+            $factory->createInput([
                 'name'       => 'to',
                 'required'   => true,
                 'filters'    => [
-                    [ 'name' => 'StripTags' ],
-                    [ 'name' => 'StringTrim' ],
+                    ['name' => 'StripTags'],
+                    ['name' => 'StringTrim'],
                 ],
                 'validators' => [
                     [
                         'name' => 'NotEmpty',
                     ],
                 ],
-            ] )
+            ])
         );
 
-        $form->addInputFilter( $fieldsInputFilter, 'fields' );
+        $form->addInputFilter($fieldsInputFilter, 'fields');
 
         //end updating default form
         return $form;
@@ -158,49 +158,67 @@ class MailSendObserver extends FormObserver
      * @param $form
      * @param $model
      */
-    public function processForm( $form, $model )
+    public function processForm($form, $model)
     {
-        $subject    = $this->getSubject();
+        $subject = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        $results    = [ ];
-        $old_data   = $model->split( $form->getValidationGroup() );
+        $results = [];
+        $old_data = $model->split($form->getValidationGroup());
         //Это жесть конечно и забавно, но на время сойдет :)
         $model_bind = $model->toArray();
-        $fieldsAcl  = $model->getAclConfig()->fields;
+        $fieldsAcl = $model->getAclConfig()->fields;
         foreach ($model_bind as $_k => $_v) {
-            if (substr( $_k, -4 ) == '_dtm' && $fieldsAcl[ $_k ] == 'write') {
-                $model->$_k = str_replace( ' ', 'T', $_v );
+            if (substr($_k, -4) == '_dtm' && $fieldsAcl[$_k] == 'write') {
+                $model->$_k = str_replace(' ', 'T', $_v);
             }
         }
-        $this->replyTo( $model, $form );
+        $this->replyTo($model, $form);
         //Конец жести
         $request = $subject->getParams()->getController()->getRequest();
         if ($request->isPost()) {
-            $form->setData( $request->getPost() );
+            $form->setData($request->getPost());
             if ($form->isValid()) {
-                $model_data = [ ];
+                $model_data = [];
                 foreach ($form->getData() as $_k => $_data) {
-                    $model_data += is_array( $_data ) ? $_data :
-                        [ $_k => $_data ];
+                    $model_data += is_array($_data) ? $_data :
+                        [$_k => $_data];
                 }
-                $this->configureMail( $model, $model_data, $old_data );
+
+
+                /* If send with template */
+                if (preg_match('#\{\{[\s\w\d\.]+\}\}#Usi',$model_data['title'].$model_data['text'])){
+                    $recipients = $model_data['to'];
+                }else{
+                    $recipients = [$model_data['to']];
+                }
+
+                foreach ($recipients as $recipient) {
+                    $model->_id = null;
+                    $model_data['to'] = $recipient;
+                    $this->configureMail($model, $model_data, $old_data);
+
+                    $subject->getLogicServiceVerify()
+                        ->get('presave', $model->getModelName())
+                        ->trigger($model->getDataModel());
+                    $subject->getGateway()->save($model->getDataModel());
+                }
+
+
                 try {
                     $subject->getLogicServiceVerify()
-                            ->get( 'presave', $model->getModelName() )
-                            ->trigger( $model->getDataModel() );
-                    $subject->getGateway()->save( $model->getDataModel() );
-                    $subject->getLogicServiceVerify()
-                            ->get( 'mailsend', 'User' )
-                            ->trigger( $this->getSubject()
-                                            ->getAclServiceVerify()
-                                            ->getAclServiceVerify()
-                                            ->getUser() );
-                } catch ( \Exception $ex ) {
-                    $results[ 'message' ]
-                        = 'Send mail problems happened: ' . $ex->getMessage();
+                        ->get('mailsend', 'User')
+                        ->trigger($this->getSubject()
+                            ->getAclServiceVerify()
+                            ->getAclServiceVerify()
+                            ->getUser());
+                } catch (\Exception $ex) {
+                    $results['message']
+                        .= 'Send mail problems happened: ' . $ex->getMessage();
                 }
-                if (!isset( $results[ 'message' ] )
-                    || !strlen( $results[ 'message' ] )
+
+
+                if (!isset($results['message'])
+                    || !strlen($results['message'])
                 ) {
                     //$subject->getLogicServiceVerify()->get( 'post'
                     //. $viewConfig->mode,
@@ -209,125 +227,124 @@ class MailSendObserver extends FormObserver
                     $url = $subject->getBackUrl();
                     if ($url == null || $url == '/') {
                         $url = $subject->getParams()->getController()->url()
-                                       ->fromRoute( $form->getRoute(),
-                                           $form->getActionParams() );
+                            ->fromRoute($form->getRoute(),
+                                $form->getActionParams());
                     }
-                    $subject->setRedirect( $subject->refresh( $model->getModelName()
-                                                              .
-                                                              ' data was successfully saved',
-                        $url ) );
+                    $subject->setRedirect($subject->refresh($model->getModelName()
+                        .
+                        ' data was successfully saved',
+                        $url));
 
                     return;
                 }
             }
         } else {
-            $form->bind( $model );
+            $form->bind($model);
         }
         $form->prepare();
-        $results[ 'form' ] = $form;
-        $subject->setData( $results );
+        $results['form'] = $form;
+        $subject->setData($results);
     }
 
-    public function configureMail( $model, $data, $old_data )
+    public function configureMail($model, $data, $old_data)
     {
-
         /* Get Lead or patient or... information from model */
-        $defaultRecipient_id = $this->getSubject()->getParam('recipient',0 );
+        /* Prepare from template */
+        if (!is_array($data['to'])) {
 
-        if ($defaultRecipient_id){
-            $dataModel = $this->getSubject()
+            /* Find recipient model by email */
+            $dataModels = $this->getSubject()
                 ->getGatewayServiceVerify()
                 ->get('Email')
-                ->findOne(['model_id'=>$defaultRecipient_id])->data;
+                ->find(['email' => $data['to']])->toArray();
 
-            $params[$dataModel] =
-            $params['Contacts']
-                = $this->getSubject()
-                ->getGatewayServiceVerify()
-                ->get($dataModel)
-                ->findOne(['_id'=>$defaultRecipient_id])->toArray();
+            foreach ($dataModels as $dmodel) {
+                $variable[$dmodel['data']] =
+                $variable['Contacts']
+                    = $this->getSubject()
+                    ->getGatewayServiceVerify()
+                    ->get($dmodel['data'])
+                    ->findOne(['_id' => $dmodel['model_id']])->toArray();
+            }
+            $variable['User'] = $this->getSubject()->getUser()->toArray();
+
+            /* Parse title and text as twig template */
+            $data['title'] = $this->getSubject()
+                ->getTwigServiceVerify()
+                ->getParseString($data['title'], $variable);
+
+            $data['text'] = $this->getSubject()
+                ->getTwigServiceVerify()
+                ->getParseString($data['text'], $variable);
         }
 
-        $params['User']=$this->getSubject()->getUser()->toArray();
+        $mail = $model->getDataModel();
+
+        $send_setting =
+            $this->getSubject()->getGatewayService()->get('MailSendSetting')
+                ->find(['_id' => $data['from']])->current();
 
 
-        /* Parse title and text as twig template */
-        if (isset($params)){
-
-            $data[ 'title' ] = $this ->getSubject()
-                ->getTwigServiceVerify()
-                ->getParseString($data[ 'title' ],$params);
-
-            $data[ 'text' ] = $this ->getSubject()
-                ->getTwigServiceVerify()
-                ->getParseString($data[ 'text' ],$params);
-        }
-
-        $mail               = $model->getDataModel();
-
-        $send_setting       =
-            $this->getSubject()->getGatewayService()->get( 'MailSendSetting' )
-                 ->find( [ '_id' => $data[ 'from' ] ] )->current();
-        $header             = [
+        $header = [
             'from'         => $send_setting->email,
-            'to'           => $data[ 'to' ],
+            'to'           => $data['to'],
             'message-id'   => 'send',
             'content-type' => 'text/html',
-            'subject'      => $data[ 'title' ],
+            'subject'      => $data['title'],
         ];
-        $mail->protocol_ids = [ $data[ 'from' ] ];
-        $mail->text         = $data[ 'text' ];
-        $mail->title        = $data[ 'title' ];
-        if (!empty( $mail->header )) {
-            $header = array_merge( $mail->header, $header );
+        $mail->protocol_ids = [$data['from']];
+        $mail->text = $data['text'];
+        $mail->title = $data['title'];
+        if (!empty($mail->header)) {
+            $header = array_merge($mail->header, $header);
         }
-        $mail->header    = $header;
-        $mail->date      = date( 'Y-m-d H:i:s' );
+        $mail->header = $header;
+        $mail->date = date('Y-m-d H:i:s');
         $mail->status_id = Status::SENDING;
-        $mail->from_id   = $send_setting->user_id;
+        $mail->from_id = $send_setting->user_id;
 
-        $model->setDataModel( $mail );
+        $model->setDataModel($mail);
     }
 
-    public function replyTo( $model, $form )
+    public function replyTo($model, $form)
     {
-        $dataModel         = $model->getDataModel();
+        $dataModel = $model->getDataModel();
         $replyMessageQuery = $this->getSubject()->getQueryServiceVerify()
-                                  ->get( 'MailDetail.reply' )->process();
-        $chainQuery        = $this->getSubject()->getQueryServiceVerify()
-                                  ->get( 'Mail.reply' )->process();
+            ->get('MailDetail.reply')->process();
+        $chainQuery = $this->getSubject()->getQueryServiceVerify()
+            ->get('Mail.reply')->process();
 
         $replyMessage =
-            $this->getSubject()->getGatewayService()->get( 'MailDetail' )
-                 ->find( $replyMessageQuery->getWhere() )->current();
-        if (isset( $replyMessage )) {
-            $chainWhere          = $chainQuery->getWhere();
-            $chainWhere[ '_id' ] = $replyMessage->chain_id;
-            $chain               =
-                $this->getSubject()->getGatewayService()->get( 'Mail' )
-                     ->find( $chainWhere )->current();
-            $dataModel->title    = 'RE: ' . $chain->title;
-            $references          =
-                isset( $replyMessage->header[ 'references' ] ) ?
-                    $replyMessage->header[ 'references' ] : [ ];
-            $references[ ]       = $replyMessage->header[ 'message-id' ];
-            $header              = [
-                'in-reply-to' => $replyMessage->header[ 'message-id' ],
+            $this->getSubject()->getGatewayService()->get('MailDetail')
+                ->find($replyMessageQuery->getWhere())->current();
+        if (isset($replyMessage)) {
+            $chainWhere = $chainQuery->getWhere();
+            $chainWhere['_id'] = $replyMessage->chain_id;
+            $chain =
+                $this->getSubject()->getGatewayService()->get('Mail')
+                    ->find($chainWhere)->current();
+            $dataModel->title = 'RE: ' . $chain->title;
+            $references =
+                isset($replyMessage->header['references']) ?
+                    $replyMessage->header['references'] : [];
+            $references[] = $replyMessage->header['message-id'];
+            $header = [
+                'in-reply-to' => $replyMessage->header['message-id'],
                 'references'  => $references,
 
             ];
-            $dataModel->header   = $header;
-            if (!count( $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->getValueOptions() )) {
+            $dataModel->header = $header;
+            if (!count($form->getFieldsets()['fields']->getElements()['to']->getValueOptions())) {
                 $temp = $replyMessage->type == 'inbox' ?
-                    $replyMessage->header[ 'from' ] :
-                    $replyMessage->header[ 'to' ];
-                $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValue( $temp );
-                $options = [ ];
+                    $replyMessage->header['from'] :
+                    $replyMessage->header['to'];
+                $form->getFieldsets()['fields']->getElements()['to']->setValue($temp);
+                $options = [];
                 foreach ($temp as $address) {
-                    $options[ $address ] = $address;
+                    $options[$address] = $address;
                 }
-                $options[ 'test' ] = 'test';
-                $form->getFieldsets()[ 'fields' ]->getElements()[ 'to' ]->setValueOptions( $options );
+                $options['test'] = 'test';
+                $form->getFieldsets()['fields']->getElements()['to']->setValueOptions($options);
             }
         }
     }
@@ -337,11 +354,12 @@ class MailSendObserver extends FormObserver
      * @param string $defaultRecipient_id
      * @return string Model Name
      */
-    private function getRecipientModelName($defaultRecipient_id=null){
+    private function getRecipientModelName($defaultRecipient_id = null)
+    {
 
         return $dataModel = $this->getSubject()
             ->getGatewayServiceVerify()
             ->get('Email')
-            ->findOne(['model_id'=>$defaultRecipient_id])->data;
+            ->findOne(['model_id' => $defaultRecipient_id])->data;
     }
 }

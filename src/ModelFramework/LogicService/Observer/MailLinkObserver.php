@@ -49,6 +49,9 @@ class MailLinkObserver
     {
         $searchValues = $mail->type == 'inbox' ? $mail->header[ 'from' ] :
             $mail->header[ 'to' ];
+        if (!is_array($searchValues)){
+            $searchValues=[$searchValues];
+        }
         $emailGW      =
             $this->getSubject()->getGatewayServiceVerify()->get( 'Email' );
         $linkGW       =
