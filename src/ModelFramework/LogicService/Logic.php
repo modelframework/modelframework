@@ -77,7 +77,8 @@ class Logic extends AbstractService
         'UpdateMailFields',
         'CheckNumFieldObserver',
         'AvatarCopyObserver',
-        'IsDefaultObserver'
+        'IsDefaultObserver',
+        'TriggerByModelObserver'
     ];
 
     protected $observers = [ ];
@@ -199,7 +200,6 @@ class Logic extends AbstractService
 //            }
 //
 //        }
-
         $this->setEventObject($eventObject);
 
         $this->process();
