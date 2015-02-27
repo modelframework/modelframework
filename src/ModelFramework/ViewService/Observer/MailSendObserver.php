@@ -288,7 +288,8 @@ class MailSendObserver extends FormObserver
         $header = [
             'from'         => $send_setting->email,
             'to'           => $data['to'],
-            'message-id'   => 'send',
+            'message-id'   => uniqid(),
+            //'message-id'   => 'send',  /* ЗАЧЕМ??? */
             'content-type' => 'text/html',
             'subject'      => $data['title'],
         ];
@@ -340,6 +341,9 @@ class MailSendObserver extends FormObserver
                     $replyMessage->header['to'];
                 $form->getFieldsets()['fields']->getElements()['to']->setValue($temp);
                 $options = [];
+                $temp=is_array($temp)?
+                    $temp:
+                    [$temp];
                 foreach ($temp as $address) {
                     $options[$address] = $address;
                 }

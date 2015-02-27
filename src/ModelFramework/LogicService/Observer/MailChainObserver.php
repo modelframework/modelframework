@@ -40,6 +40,7 @@ class MailChainObserver
                 $this->updateMailChains( $unchainedMails );
                 break;
         }
+
     }
 
     public function unchainMailChains( $mails )
@@ -69,6 +70,7 @@ class MailChainObserver
 
     public function updateMailChains( $noChainMails )
     {
+
         $mailGW       =
             $this->getSubject()->getGatewayService()->get( 'MailDetail' );
         $chainGW      = $this->getSubject()->getGatewayService()->get( 'Mail' );
@@ -166,6 +168,7 @@ class MailChainObserver
                      ->get( 'create', 'Mail' )->trigger( $chain );
 //                prn($chain);
 //                prn($chainMails);
+//                exit;
                 $chainGW->save( $chain );
                 foreach ($chainMails as $mail) {
                     $mail->chain_id =
