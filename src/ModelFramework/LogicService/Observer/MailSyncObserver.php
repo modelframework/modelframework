@@ -135,7 +135,7 @@ class MailSyncObserver
 
     public function syncMails( $user )
     {
-        ini_set( 'max_execution_time', 300 );
+//        ini_set( 'max_execution_time', 300 );
         $settings = $this->getFetchSetting( $user );
         $count    = 0;
 
@@ -159,7 +159,7 @@ class MailSyncObserver
                     $exceptUids[ ] = $mail->protocol_ids[ $setting->id() ];
                 }
             }
-            //prn($exceptUids, $setting);
+//            prn($exceptUids, $setting);
             //exit();
 //            prn($setting,$user);
 //            exit;
