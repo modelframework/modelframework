@@ -15,6 +15,7 @@ use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareInterface;
 use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
+use Wepo\Model\Status;
 
 
 class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
@@ -78,6 +79,19 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
         $variable['OrderDetail'] = $model->toArray();
 
+        $cardInfo  = $subject->getGatewayServiceVerify()
+            ->get('CardPatient')
+            ->find([
+                'patient_id'=>$order['patient_id'],
+                'card_status_id'=>'1',
+                'status_id' => [
+                    Status::NORMAL,
+                    Status::NEW_,],
+
+
+            ]);
+        prn($cardInfo->toArray());
+        exit;
 
 
 
