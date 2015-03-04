@@ -105,7 +105,11 @@ class MailSendObserver extends FormObserver
                 'value'      => $toOptions,
                 'class'      => 'email-select2',
                 'data-scope' => 'Email',
-                'multiple'   => 'multiple'
+                'multiple'   => 'multiple',
+                'data-query' => $this->getSubject()
+                                ->getModelServiceVerify()
+                                ->getModelConfig($this->getModel()->getModelName())
+                                ->toArray()['fields']['to']['query'],
             ]
         ]);
 

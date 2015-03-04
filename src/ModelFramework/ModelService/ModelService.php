@@ -211,7 +211,11 @@ class ModelService
         $modelConfig = $this->getParsedModelConfig($model);
 
         $indexes = [];
+        $i = 0;
         foreach ($modelConfig->fields as $_key => $_field) {
+            if ($i++ >= 64){
+                break;
+            }
             if ($_key == '_id' || $_field['datatype'] == 'array'
                 || $_field['type'] == 'source'
             ) {

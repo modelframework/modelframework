@@ -138,6 +138,8 @@ class MailChainObserver
             $status        = Status::NEW_;
             foreach ($chainMails as $mail) {
                 $mailDate = strtotime( $mail->date );
+                $from = $mail->header['from'];
+                $to = $mail->header['to'];
 //                prn( $mail->date, $mailDate, $firstMailDate, $lastMailDate );
                 if (( $mailDate < $firstMailDate ) || !$firstMailDate) {
                     $title         = $mail->title;
@@ -152,10 +154,17 @@ class MailChainObserver
             }
 
             $chain->reference =
-                array_unique( array_merge( $chainWhere, $chain->reference ) );
+                array_unique( array_merge( $chainWhere , $chain->reference ) );
+            $from=is_array($from)?
+                $from:
+                [$from];
+            $chain->correspondents =
+                array_unique( array_merge( $from ,$to, $chain->correspondents ) );
             $chain->title     = $title;
             $chain->date      = $date;
             $chain->last_mail = $last_mail;
+
+
             $chain->count     = $chain->count + count( $chainMails );
             $chain->status_id = $status;
 //            prn( 'result', $chain );
