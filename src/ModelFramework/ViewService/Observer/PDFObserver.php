@@ -79,23 +79,12 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
         $variable['OrderDetail'] = $model->toArray();
 
-        $cardInfo  = $subject->getGatewayServiceVerify()
+        $variable['Card'] = $subject->getGatewayServiceVerify()
             ->get('CardPatient')
-            ->find([
-                'patient_id'=>$order['patient_id'],
-                'card_status_id'=>'1',
-                'status_id' => [
-                    Status::NORMAL,
-                    Status::NEW_,],
+            ->findOne([
+                '_id'=>$order['payment_card_id'],
 
-
-            ]);
-        prn($cardInfo->toArray());
-        exit;
-
-
-
-
+                ]);
 
         /* Generate PDF*/
         $PDFService = $subject->getPDFServiceVerify();
