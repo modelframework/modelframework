@@ -17,6 +17,11 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
 use Wepo\Model\Status;
 
+use \ZendService\Amazon\Exception\ExceptionInterface as AmazonException;
+use \ZendService\Amazon\S3\S3;
+
+
+
 
 class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
@@ -92,6 +97,22 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
 
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
+
+
+
+        S3::setKeys('AKIAIT5USGWBOE6OTJUQ','wZoScgi0l7CZ6gz7cZFGKeqQTN4bY0x7PKfBwPYL');
+        $s3 = new S3();
+
+
+        prn($s3->createBucket("my-own-bucket"));
+        $s3->putObject("test-buc/myobject", "somedata");
+
+
+        prn($s3);
+
+
+
+        exit;
 
         /* Store PDF*/
         $fileService = $subject->getFileServiceVerify();
