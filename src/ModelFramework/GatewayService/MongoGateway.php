@@ -14,7 +14,7 @@ class MongoGateway extends MongoZendGateway
     use ParsedModelConfigAwareTrait;
 
     /**
-     * @param DataModelInterface $model
+     * @param DataModelInterface|array $model
      *
      * @return array|bool|int|mixed
      * @throws \Exception
