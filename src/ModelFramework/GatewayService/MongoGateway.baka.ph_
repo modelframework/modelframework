@@ -610,7 +610,7 @@ class MongoGateway implements GatewayInterface, ParsedModelConfigAwareInterface
      * @return array|bool|int|mixed
      * @throws \Exception
      */
-    public function save( DataModelInterface $model )
+    public function save( $model )
     {
         $data = $this->_convertids( $model->toArray() );
         $_id  = $model->id();
