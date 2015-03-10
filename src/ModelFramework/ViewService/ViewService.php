@@ -2,6 +2,7 @@
 
 /**
  * Class ViewService
+ *
  * @package ModelFramework\ViewService
  */
 
@@ -36,8 +37,9 @@ class ViewService
                GatewayServiceAwareInterface, AclServiceAwareInterface,
                ModelServiceAwareInterface,
                FormServiceAwareInterface, AuthServiceAwareInterface,
-               LogicServiceAwareInterface,PDFServiceAwareInterface,
-               QueryServiceAwareInterface, FileServiceAwareInterface, TwigServiceAwareInterface
+               LogicServiceAwareInterface, PDFServiceAwareInterface,
+               QueryServiceAwareInterface, FileServiceAwareInterface,
+               TwigServiceAwareInterface
 {
 
     use ConfigServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait,
@@ -50,9 +52,9 @@ class ViewService
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function getView( $viewName )
+    public function get($viewName)
     {
-        return $this->createView( $viewName );
+        return $this->getView($viewName);
     }
 
     /**
@@ -61,9 +63,9 @@ class ViewService
      * @return View|ViewInterface
      * @throws \Exception
      */
-    public function get( $viewName )
+    public function getView($viewName)
     {
-        return $this->getView( $viewName );
+        return $this->createView($viewName);
     }
 
     /**
@@ -72,39 +74,40 @@ class ViewService
      * @return View|ViewInterface
      * @throws \Exception
      */
-    protected function createView( $viewName )
+    protected function createView($viewName)
     {
         $view = new View();
-        $view->setAuthService( $this->getAuthServiceVerify() );
-        $view->setAclService( $this->getAclServiceVerify() );
-        $view->setLogicService( $this->getLogicServiceVerify() );
-        $view->setConfigService( $this->getConfigServiceVerify() );
+        $view->setName($viewName);
+        $view->setAuthService($this->getAuthServiceVerify());
+        $view->setAclService($this->getAclServiceVerify());
+        $view->setLogicService($this->getLogicServiceVerify());
+        $view->setConfigService($this->getConfigServiceVerify());
         $viewConfig = $this->getConfigServiceVerify()
-                           ->getByObject( $viewName, new ViewConfig() );
+            ->getByObject($view->getName(), new ViewConfig());
         if ($viewConfig == null) {
-            throw new \Exception( 'Please fill ViewConfig for the ' .
-                                  $viewName . '. I can\'t work on' );
+            throw new \Exception('Please fill ViewConfig for the ' .
+                $view->getName() . '. I can\'t work on');
         }
-        $view->setViewConfig( $viewConfig );
-        $view->setModelService( $this->getModelServiceVerify() );
+        $view->setViewConfig($viewConfig);
+        $view->setModelService($this->getModelServiceVerify());
         // info about model - how it is organized. it will be useful
         $parsedModelConfig = $this->getModelServiceVerify()
-                                  ->getParsedModelConfig( $viewConfig->model );
-        $view->setParsedModelConfig( $parsedModelConfig );
+            ->getParsedModelConfig($viewConfig->model);
+        $view->setParsedModelConfig($parsedModelConfig);
         // model view should deal with acl enabled model
-        $aclModel =
-            $this->getAclServiceVerify()->getAclDataModel( $viewConfig->model );
+        $aclModel
+            = $this->getAclServiceVerify()->getAclDataModel($viewConfig->model);
         // primary gateway for data ops
         $gateway = $this->getGatewayServiceVerify()
-                        ->get( $viewConfig->model, $aclModel );
-        $view->setGateway( $gateway );
-        $view->setGatewayService( $this->getGatewayServiceVerify() );
-        $view->setFormService( $this->getFormServiceVerify() );
-        $view->setConfigService( $this->getConfigServiceVerify() );
-        $view->setQueryService( $this->getQueryServiceVerify() );
-        $view->setFileService( $this->getFileServiceVerify() );
-        $view->setPDFService( $this->getPDFServiceVerify() );
-        $view->setTwigService( $this->getTwigServiceVerify() );
+            ->get($viewConfig->model, $aclModel);
+        $view->setGateway($gateway);
+        $view->setGatewayService($this->getGatewayServiceVerify());
+        $view->setFormService($this->getFormServiceVerify());
+        $view->setConfigService($this->getConfigServiceVerify());
+        $view->setQueryService($this->getQueryServiceVerify());
+        $view->setFileService($this->getFileServiceVerify());
+        $view->setPDFService($this->getPDFServiceVerify());
+        $view->setTwigService($this->getTwigServiceVerify());
         $view->init();
 
         return $view;
