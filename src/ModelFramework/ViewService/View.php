@@ -64,7 +64,7 @@ class View
     use ViewConfigAwareTrait, ParsedModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, PDFServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
-        AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait, 
+        AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait,
 	TwigServiceAwareTrait;
 
     protected $allowed_observers
@@ -96,9 +96,21 @@ class View
             'ConstructPatternMenuObserver',
         ];
     protected $observers = [];
+    protected $_name = '';
     private $_data = [];
     private $_redirect = null;
     private $_isAllowed = true;
+
+    public function setName($name )
+    {
+        $this->_name = $name;
+        return $this;
+    }
+
+    public function getName( )
+    {
+        return $this->_name;
+    }
 
     public function getRedirect()
     {

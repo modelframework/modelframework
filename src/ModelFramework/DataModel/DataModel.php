@@ -52,6 +52,7 @@ class DataModel implements DataModelInterface
 
     public function exchangeArray( array $data )
     {
+
         if (!isset( $this->_fields )) {
             throw new \Exception( ' _fields property is not set in ' .
                                   get_class() );
