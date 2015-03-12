@@ -263,12 +263,13 @@ class MailSendObserver extends FormObserver
                 ->find(['email' => $data['to']])->toArray();
 
             foreach ($dataModels as $dmodel) {
-                $variable[$dmodel['data']] =
-                $variable['Contacts']
-                    = $this->getSubject()
+                if ($chains = $this->getSubject()
                     ->getGatewayServiceVerify()
                     ->get($dmodel['data'])
-                    ->findOne(['_id' => $dmodel['model_id']])->toArray();
+                    ->findOne(['_id' => $dmodel['model_id']])){
+                    $variable[$dmodel['data']] =
+                        $variable['Contacts']=$chains->toArray();
+                }
             }
             $variable['User'] = $this->getSubject()->getUser()->toArray();
 
