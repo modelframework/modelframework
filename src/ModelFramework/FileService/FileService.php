@@ -51,6 +51,8 @@ class FileService implements FileServiceInterface
 
         $response = $this->httpClient->send()->getContent();
 
+
+
         return json_decode($response)->data->$filename;
     }
 
@@ -63,34 +65,26 @@ class FileService implements FileServiceInterface
      */
     public function saveStramToFile($filename, $stream, $ispublic = false, $userdir = null)
     {
-
+        file_put_contents('tmp',$stream);
+        
+        return $this->saveFile($filename,'tmp',$ispublic,$userdir);
+        $this->httpClient->
         $this->httpClient->setMethod('POST');
         $this->httpClient->setUri('http://files.local/api/v2/fs/');
-//        $this->httpClient->setParameterPOST(array_merge($this->auth_param,
-//            ['filename' => $filename,
-//             'ispublic' => $ispublic,
-//             'method'   => 'stream'
-//            ]));
+        $this->httpClient->setParameterPOST(array_merge($this->auth_param,
+            ['filename' => $filename,
+             'ispublic' => $ispublic,
+             'method'   => 'stream'
+            ]));
 
-//       $ad = $this->httpClient->getAdapter();
-//        $ad->setOutputStream(fopen('data://text/plain;base64,' . base64_encode($stream),'r'));
-//        $this->httpClient->setAdapter($ad);
+
+
         $response = $this->httpClient
-            ->setStream(fopen('data://text/plain;base64,' . base64_encode($stream),'r'))
+        //    ->setStream(fopen('data://text/plain;base64,' . base64_encode($stream),'r'))
             ->send()
             ->setStatusCode(200);
 
-
-
-
-
-
-
-
-
-
-        prn($response->getBody());
-exit;
+        unlink('tmp');
         return json_decode($response)->data->$filename;
     }
 
