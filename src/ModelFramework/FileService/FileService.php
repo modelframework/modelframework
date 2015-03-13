@@ -15,28 +15,28 @@ class FileService implements FileServiceInterface
     private $auth_param = [];
     private $api_url=null;
 
-    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $config)
+    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $config=[])
     {
 
         $this->service = $serviceManager;
-        $this->httpClient = new Client();
-        $this->api_url=$config['api_url'];
-        $timestamp = time();
-        $auth = $this->service->get('ModelFramework\AuthService');
-        $company_id = (string)$auth->getMainUser()->company_id;
-        $user_id=$auth->getUser()->_id;
-        $login = $auth->getUser()->login;
-        $key = $config['key'];
-        $hash = md5($login . $company_id . $timestamp . $key);
-        $this->auth_param = ['timestamp' => $timestamp,
-                             'login'     => $login,
-                             'owner'     => $user_id,
-                             'bucket'    => $company_id,
-                             'hash'      => $hash,
-        ];
-
-        $adapter = new Curl();
-        $this->httpClient->setAdapter($adapter);
+//        $this->httpClient = new Client();
+//        $this->api_url=$config['api_url'];
+//        $timestamp = time();
+//        $auth = $this->service->get('ModelFramework\AuthService');
+//        $company_id = (string)$auth->getMainUser()->company_id;
+//        $user_id=$auth->getUser()->_id;
+//        $login = $auth->getUser()->login;
+//        $key = $config['key'];
+//        $hash = md5($login . $company_id . $timestamp . $key);
+//        $this->auth_param = ['timestamp' => $timestamp,
+//                             'login'     => $login,
+//                             'owner'     => $user_id,
+//                             'bucket'    => $company_id,
+//                             'hash'      => $hash,
+//        ];
+//
+//        $adapter = new Curl();
+//        $this->httpClient->setAdapter($adapter);
     }
 
     public function saveFile($filename, $tmpname, $ispublic = false, $userdir = null)
