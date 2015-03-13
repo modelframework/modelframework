@@ -20,6 +20,8 @@ use ModelFramework\DataModel\DataModelAwareInterface;
 use ModelFramework\DataModel\DataModelAwareTrait;
 use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
+use ModelFramework\FilesystemService\FilesystemServiceAwareInterface;
+use ModelFramework\FilesystemService\FilesystemServiceAwareTrait;
 use ModelFramework\PDFService\PDFServiceAwareInterface;
 use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayAwareInterface;
@@ -58,14 +60,14 @@ class View
                LogicServiceAwareInterface, PDFServiceAwareInterface,
                QueryServiceAwareInterface, ConfigServiceAwareInterface,
                \SplSubject, ResponseAwareInterface, DataModelAwareInterface,
-		TwigServiceAwareInterface
+		        TwigServiceAwareInterface, FilesystemServiceAwareInterface
 {
 
     use ViewConfigAwareTrait, ParsedModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, PDFServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
         AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait,
-	TwigServiceAwareTrait;
+	TwigServiceAwareTrait, FilesystemServiceAwareTrait;
 
     protected $allowed_observers
         = [

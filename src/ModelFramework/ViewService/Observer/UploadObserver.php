@@ -33,7 +33,7 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
         $this->setSubject($subject);
         $files = $subject->getParams()->fromFiles();
         if (count($files)) {
-            $fileService = $subject->getFileServiceVerify();
+            $fileService = $subject->getFilesystemServiceVerify();
             $subject->getLogicServiceVerify()->setParams($subject->getParams());
 
             $dataModel = $this->initModel();

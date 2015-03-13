@@ -16,6 +16,8 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
+use ModelFramework\FilesystemService\FilesystemServiceAwareInterface;
+use ModelFramework\FilesystemService\FilesystemServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicConfig\LogicConfig;
@@ -31,12 +33,13 @@ class LogicService
     implements LogicServiceInterface, ConfigServiceAwareInterface,
                GatewayServiceAwareInterface, ParamsAwareInterface,
                AuthServiceAwareInterface, ModelServiceAwareInterface,
-               QueryServiceAwareInterface, FileServiceAwareInterface
+               QueryServiceAwareInterface, FileServiceAwareInterface,
+	       FilesystemServiceAwareInterface
 {
 
     use ConfigServiceAwareTrait, GatewayServiceAwareTrait, AuthServiceAwareTrait,
         ModelServiceAwareTrait, ParamsAwareTrait, MailServiceAwareTrait,
-        QueryServiceAwareTrait, FileServiceAwareTrait;
+        QueryServiceAwareTrait, FileServiceAwareTrait, FilesystemServiceAwareTrait;
 
     public function dispatch( $event )
     {
@@ -97,6 +100,7 @@ class LogicService
         $logic->setMailService( $this->getMailService() );
         $logic->setQueryService( $this->getQueryServiceVerify() );
         $logic->setFileService( $this->getFileServiceVerify() );
+        $logic->setFilesystemService( $this->getFilesystemServiceVerify() );
         if ($this->getParams() != null) {
             $logic->setParams( $this->getParams() );
         }
