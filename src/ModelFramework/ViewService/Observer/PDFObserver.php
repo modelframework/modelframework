@@ -17,6 +17,11 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
 use Wepo\Model\Status;
 
+use \ZendService\Amazon\Exception\ExceptionInterface as AmazonException;
+use \ZendService\Amazon\S3\S3;
+
+
+
 
 class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInterface
 {
@@ -92,6 +97,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
 
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
+
 
         /* Store PDF*/
         $fileService = $subject->getFilesystemServiceVerify();
