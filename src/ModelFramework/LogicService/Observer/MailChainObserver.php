@@ -155,9 +155,8 @@ class MailChainObserver
 
             $chain->reference =
                 array_unique( array_merge( $chainWhere , $chain->reference ) );
-            $from=is_array($from)?
-                $from:
-                [$from];
+            $from=is_array($from)?$from:[$from];
+            $to=is_array($to)?$to:[$to];
             $chain->correspondents =
                 array_unique( array_merge( $from ,$to, $chain->correspondents ) );
             $chain->title     = $title;

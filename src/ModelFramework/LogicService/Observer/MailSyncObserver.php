@@ -49,7 +49,7 @@ class MailSyncObserver
                     $resMails = $this->sendMails( $user );
                     $mails    = array_merge( $mails, $resMails );
                 }
-                //todo move heare mail send observer logic
+                //todo move here mail send observer logic
                 break;
         }
         $this->getSubject()->getLogicService()

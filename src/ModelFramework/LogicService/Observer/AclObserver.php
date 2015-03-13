@@ -26,7 +26,8 @@ class AclObserver extends AbstractConfigObserver
             $acl[ ] = [
                 'type'    => 'owner',
                 'role'    => 'owner',
-                'role_id' => $user->id(),
+                'role_id' => !empty( $model->owner_id ) ? $model->owner_id :
+                    $user->id(),
                 'data'    => $value[ 'owner' ],
             ];
         }

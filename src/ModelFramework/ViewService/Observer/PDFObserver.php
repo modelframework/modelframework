@@ -91,18 +91,16 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
                 ]);
 
-        /* Generate PDF*/
+          /* Generate PDF*/
         $PDFService = $subject->getPDFServiceVerify();
         $pdf = $PDFService->getPDFtoSave($model_tpl->body,$variable);
 
-
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
 
-
         /* Store PDF*/
-        $fileService = $subject->getFileServiceVerify();
+        $fileService = $subject->getFilesystemServiceVerify();
         $dataModel->document =
-             $fileService->saveStramToFile($model_tpl->model_title.'.pdf',$pdf, false );
+             $fileService->saveStringToFile($model_tpl->model_title.'.pdf',$pdf, false );
 
         /* Save to DB */
         $model = $this->setModel($dataModel);
