@@ -12,8 +12,9 @@ class DownloadObserver extends AbstractObserver
     public function process($model)
     {
         $subject = $this->getSubject();
-        $fs = $subject->getFilesystemServiceVerify();
-        $response = $fs->downloadFile($model->document,$model->document_real_name);
+        $fs = $subject->getFileServiceVerify();
+        $filename = basename($model->document);
+        $response = $fs->downloadFile($filename);
         $subject->setResponse($response);
     }
 }
