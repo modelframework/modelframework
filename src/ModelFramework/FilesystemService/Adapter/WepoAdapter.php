@@ -1,6 +1,6 @@
 <?php
 
-namespace ModelFramework\Filesystem\Wepo;
+namespace ModelFramework\FilesystemService\Adapter;
 
 use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\Adapter\Polyfill\NotSupportingVisibilityTrait;
@@ -35,15 +35,37 @@ class WepoAdapter extends AbstractAdapter
     protected $client;
 
     /**
+     * @var array auth_param
+     */
+    protected $auth_param;
+
+    /**
      * Constructor.
      *
-     * @param Client $client
-     * @param string $prefix
+     * @param AuthService $auth
+     * @param string $api_url
+     * @param string $key
      */
-    public function __construct(Client $client, $prefix = null)
+    public function __construct(\ModelFramework\AuthService\AuthService $auth,  $api_url, $key)
     {
-        $this->client = $client;
-        $this->setPathPrefix($prefix);
+        $this->client = new Client();
+        $this->api_url=$api_url;
+        $timestamp = time();
+        $company_id = (string)$auth->getMainUser()->company_id;
+        $user_id=$auth->getUser()->_id;
+        $login = $auth->getUser()->login;
+        $key = $key;
+        $hash = md5($login . $company_id . $timestamp . $key);
+        $this->auth_param = ['timestamp' => $timestamp,
+                             'login'     => $login,
+                             'owner'     => $user_id,
+                             'bucket'    => $company_id,
+                             'hash'      => $hash,
+        ];
+
+        $adapter = new Curl();
+        $this->client->setAdapter($adapter);
+
     }
 
     /**
@@ -51,20 +73,20 @@ class WepoAdapter extends AbstractAdapter
      */
     public function getMetadata($path)
     {
-        $location = $this->applyPathPrefix($path);
-
-        try {
-            $result = $this->client->propFind($location, [
-                '{DAV:}displayname',
-                '{DAV:}getcontentlength',
-                '{DAV:}getcontenttype',
-                '{DAV:}getlastmodified',
-            ]);
-
-            return $this->normalizeObject($result, $path);
-        } catch (Exception\FileNotFound $e) {
-            return false;
-        }
+//        $location = $this->applyPathPrefix($path);
+//
+//        try {
+//            $result = $this->client->propFind($location, [
+//                '{DAV:}displayname',
+//                '{DAV:}getcontentlength',
+//                '{DAV:}getcontenttype',
+//                '{DAV:}getlastmodified',
+//            ]);
+//
+//            return $this->normalizeObject($result, $path);
+//        } catch (Exception\FileNotFound $e) {
+//            return false;
+//        }
     }
 
     /**
@@ -72,7 +94,7 @@ class WepoAdapter extends AbstractAdapter
      */
     public function has($path)
     {
-        return $this->getMetadata($path);
+//        return $this->getMetadata($path);
     }
 
     /**
@@ -80,23 +102,23 @@ class WepoAdapter extends AbstractAdapter
      */
     public function read($path)
     {
-        $location = $this->applyPathPrefix($path);
-
-        try {
-            $response = $this->client->request('GET', $location);
-
-            if ($response['statusCode'] !== 200) {
-                return false;
-            }
-
-            return array_merge([
-                'contents' => $response['body'],
-                'timestamp' => strtotime($response['headers']['last-modified']),
-                'path' => $path,
-            ], Util::map($response['headers'], static::$resultMap));
-        } catch (Exception\FileNotFound $e) {
-            return false;
-        }
+//        $location = $this->applyPathPrefix($path);
+//
+//        try {
+//            $response = $this->client->request('GET', $location);
+//
+//            if ($response['statusCode'] !== 200) {
+//                return false;
+//            }
+//
+//            return array_merge([
+//                'contents' => $response['body'],
+//                'timestamp' => strtotime($response['headers']['last-modified']),
+//                'path' => $path,
+//            ], Util::map($response['headers'], static::$resultMap));
+//        } catch (Exception\FileNotFound $e) {
+//            return false;
+//        }
     }
 
     /**
@@ -104,6 +126,43 @@ class WepoAdapter extends AbstractAdapter
      */
     public function write($path, $contents, Config $config)
     {
+        $location = $this->applyPathPrefix($path);
+
+
+
+
+        prn($path, $contents, $config,$location,(dirname($location)));
+
+
+        $this->client->setMethod('POST');
+        $this->client->setUri($this->api_url);
+        $this->client->setParameterPOST(array_merge($this->auth_param,
+            ['filename' => $path,
+            ]));
+
+
+
+
+        file_put_contents('tmp',$contents);
+
+
+
+
+        $this->client->setFileUpload('tmp', 'form');
+
+        $response = $this->client->send();
+
+        if ($response->getStatusCode() !=200){
+            throw new \Exception ( json_decode($response->getBody())->message);
+        }
+prn($response->getContent());
+        return json_decode($response->getContent())->data->$filename;
+
+
+
+
+
+
         $location = $this->applyPathPrefix($path);
         $this->client->request('PUT', $location, $contents);
 
@@ -121,7 +180,7 @@ class WepoAdapter extends AbstractAdapter
      */
     public function update($path, $contents, Config $config)
     {
-        return $this->write($path, $contents, $config);
+//        return $this->write($path, $contents, $config);
     }
 
     /**
@@ -129,21 +188,21 @@ class WepoAdapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        $location = $this->applyPathPrefix($path);
-
-        try {
-            $response = $this->client->request('MOVE', '/'.ltrim($location, '/'), null, [
-                'Destination' => '/'.ltrim($newpath, '/'),
-            ]);
-
-            if ($response['statusCode'] >= 200 && $response['statusCode'] < 300) {
-                return true;
-            }
-        } catch (Exception\FileNotFound $e) {
-            // Would have returned false here, but would be redundant
-        }
-
-        return false;
+//        $location = $this->applyPathPrefix($path);
+//
+//        try {
+//            $response = $this->client->request('MOVE', '/'.ltrim($location, '/'), null, [
+//                'Destination' => '/'.ltrim($newpath, '/'),
+//            ]);
+//
+//            if ($response['statusCode'] >= 200 && $response['statusCode'] < 300) {
+//                return true;
+//            }
+//        } catch (Exception\FileNotFound $e) {
+//            // Would have returned false here, but would be redundant
+//        }
+//
+//        return false;
     }
 
     /**
@@ -151,15 +210,15 @@ class WepoAdapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        $location = $this->applyPathPrefix($path);
-
-        try {
-            $this->client->request('DELETE', $location);
-
-            return true;
-        } catch (Exception\FileNotFound $e) {
-            return false;
-        }
+//        $location = $this->applyPathPrefix($path);
+//
+//        try {
+//            $this->client->request('DELETE', $location);
+//
+//            return true;
+//        } catch (Exception\FileNotFound $e) {
+//            return false;
+//        }
     }
 
     /**
@@ -167,14 +226,14 @@ class WepoAdapter extends AbstractAdapter
      */
     public function createDir($path, Config $config)
     {
-        $location = $this->applyPathPrefix($path);
-        $response = $this->client->request('MKCOL', $location);
-
-        if ($response['statusCode'] !== 201) {
-            return false;
-        }
-
-        return compact('path') + ['type' => 'dir'];
+//        $location = $this->applyPathPrefix($path);
+//        $response = $this->client->request('MKCOL', $location);
+//
+//        if ($response['statusCode'] !== 201) {
+//            return false;
+//        }
+//
+//        return compact('path') + ['type' => 'dir'];
     }
 
     /**
@@ -182,7 +241,7 @@ class WepoAdapter extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        return $this->delete($dirname);
+//        return $this->delete($dirname);
     }
 
     /**
@@ -190,30 +249,30 @@ class WepoAdapter extends AbstractAdapter
      */
     public function listContents($directory = '', $recursive = false)
     {
-        $location = $this->applyPathPrefix($directory);
-
-        $response = $this->client->propFind($location, [
-            '{DAV:}displayname',
-            '{DAV:}getcontentlength',
-            '{DAV:}getcontenttype',
-            '{DAV:}getlastmodified',
-        ], 1);
-
-        array_shift($response);
-
-        $result = [];
-
-        foreach ($response as $path => $object) {
-            $path = $this->removePathPrefix($path);
-            $object = $this->normalizeObject($object, $path);
-            $result[] = $object;
-
-            if ($recursive && $object['type'] === 'dir') {
-                $result = array_merge($result, $this->listContents($object['path'], true));
-            }
-        }
-
-        return $result;
+//        $location = $this->applyPathPrefix($directory);
+//
+//        $response = $this->client->propFind($location, [
+//            '{DAV:}displayname',
+//            '{DAV:}getcontentlength',
+//            '{DAV:}getcontenttype',
+//            '{DAV:}getlastmodified',
+//        ], 1);
+//
+//        array_shift($response);
+//
+//        $result = [];
+//
+//        foreach ($response as $path => $object) {
+//            $path = $this->removePathPrefix($path);
+//            $object = $this->normalizeObject($object, $path);
+//            $result[] = $object;
+//
+//            if ($recursive && $object['type'] === 'dir') {
+//                $result = array_merge($result, $this->listContents($object['path'], true));
+//            }
+//        }
+//
+//        return $result;
     }
 
     /**
@@ -221,7 +280,7 @@ class WepoAdapter extends AbstractAdapter
      */
     public function getSize($path)
     {
-        return $this->getMetadata($path);
+//        return $this->getMetadata($path);
     }
 
     /**
@@ -229,7 +288,7 @@ class WepoAdapter extends AbstractAdapter
      */
     public function getTimestamp($path)
     {
-        return $this->getMetadata($path);
+//        return $this->getMetadata($path);
     }
 
     /**
@@ -237,32 +296,8 @@ class WepoAdapter extends AbstractAdapter
      */
     public function getMimetype($path)
     {
-        return $this->getMetadata($path);
+//        return $this->getMetadata($path);
     }
 
-    /**
-     * Normalise a WebDAV repsonse object.
-     *
-     * @param array  $object
-     * @param string $path
-     *
-     * @return array
-     */
-    protected function normalizeObject(array $object, $path)
-    {
-        if (! isset($object['{DAV:}getcontentlength'])) {
-            return ['type' => 'dir', 'path' => trim($path, '/')];
-        }
 
-        $result = Util::map($object, static::$resultMap);
-
-        if (isset($object['{DAV:}getlastmodified'])) {
-            $result['timestamp'] = strtotime($object['{DAV:}getlastmodified']);
-        }
-
-        $result['type'] = 'file';
-        $result['path'] = trim($path, '/');
-
-        return $result;
-    }
 }
