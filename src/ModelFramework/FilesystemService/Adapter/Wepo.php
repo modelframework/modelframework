@@ -104,6 +104,24 @@ class Wepo extends AbstractAdapter
         $config = Util::ensureConfig($config);
         $this->ensureDirectory(dirname($location));
 
+        $this->client->setMethod('POST');
+        $this->client->setUri($this->api_url);
+        $this->client->setParameterPOST(array_merge($this->auth_param,
+            ['filename' => $path,
+            ]));
+
+
+
+
+        file_put_contents('tmp',$contents);
+        $this->client->setFileUpload('tmp', 'form');
+
+        $response = $this->client->send();
+
+        prn($contents,$type,$size,$path,$response->getContent());
+        exit;
+
+
         if (($size = file_put_contents($location, $contents, LOCK_EX)) === false) {
             return false;
         }
