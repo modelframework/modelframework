@@ -39,8 +39,6 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
             return false;
         }
 
-        prn($f);
-
         return $destenation;
     }
 

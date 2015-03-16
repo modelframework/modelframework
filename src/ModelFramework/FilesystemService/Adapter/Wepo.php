@@ -111,6 +111,11 @@ class Wepo extends AbstractAdapter
             ]));
 
 
+        $this->client
+        ->setHeaders(
+                ['wp_path'=>$path]
+            );
+
 
 
         file_put_contents('tmp',$contents);
@@ -118,20 +123,15 @@ class Wepo extends AbstractAdapter
 
         $response = $this->client->send();
 
-        prn($contents,$type,$size,$path,$response->getContent());
-        exit;
+        $path = json_decode($response->getContent())->file_id;
+     //  exit;
 
-
-        if (($size = file_put_contents($location, $contents, LOCK_EX)) === false) {
-            return false;
-        }
-
-        $type = 'file';
+        $type = 'wepo_fs';
         $result = compact('contents', 'type', 'size', 'path');
 
         if ($visibility = $config->get('visibility')) {
             $result['visibility'] = $visibility;
-            $this->setVisibility($path, $visibility);
+            //$this->setVisibility($path, $visibility);
         }
 
         return $result;

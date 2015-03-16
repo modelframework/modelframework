@@ -41,14 +41,6 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
     {
         $this->setSubject($subject);
 
-        $fileService = $subject->getFilesystemServiceVerify();
-        $r= $fileService->saveStringToFile('dddhdd.txt','test-string');
-
-        prn($fileService,$r);
-
-
-        exit;
-
         $dataModel = $this->initModel();
         $dataModel->document_extension ='pdf';
 
