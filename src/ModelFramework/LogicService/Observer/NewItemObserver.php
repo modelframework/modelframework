@@ -18,6 +18,9 @@ class NewItemObserver extends AbstractConfigObserver
         if ($value < 0 && isset($model->status_id) && $model->status_id != Status::NEW_) {
             return;
         }
+        if( ($value>0 && $model->status_id != Status::NEW_) && ($model->status_id != Status::INPROGRESS && $value>0 )){
+            return;
+        }
         $id       = $model->$key;
         $user     =
             $this->getSubject()->getGatewayServiceVerify()->get('User')->findOne([ '_id' => $id ]);
