@@ -3,11 +3,11 @@
 namespace ModelFramework\FilesystemService\Adapter\Factory;
 
 use BsbFlysystem\Adapter\Factory\AbstractAdapterFactory;
-use ModelFramework\FilesystemService\Adapter\Wepo as Adapter;
+use ModelFramework\FilesystemService\Adapter\Pydio as Adapter;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
-class WepoAdapterFactory extends AbstractAdapterFactory implements FactoryInterface
+class PydioAdapterFactory extends AbstractAdapterFactory implements FactoryInterface
 {
     /**
      * Create service
@@ -20,8 +20,10 @@ class WepoAdapterFactory extends AbstractAdapterFactory implements FactoryInterf
 
         $adapter = new Adapter(
             $serviceLocator->get('modelframeworkauthservice'),
-            $this->options['key'],
-            $this->options['api_url']
+            $this->options['login'],
+            $this->options['pass'],
+            $this->options['api_url'],
+            $this->options['workspace']
         );
 
         return $adapter;
@@ -32,11 +34,17 @@ class WepoAdapterFactory extends AbstractAdapterFactory implements FactoryInterf
      */
     protected function validateConfig()
     {
-        if (!isset($this->options['key'])) {
-            throw new \UnexpectedValueException("Missing 'key' as option");
+        if (!isset($this->options['login'])) {
+            throw new \UnexpectedValueException("Missing 'login' as option");
+        }
+        if (!isset($this->options['pass'])) {
+            throw new \UnexpectedValueException("Missing 'pass' as option");
         }
         if (!isset($this->options['api_url'])) {
             throw new \UnexpectedValueException("Missing 'api_url' as option");
+        }
+        if (!isset($this->options['workspace'])) {
+            throw new \UnexpectedValueException("Missing 'workspace' as option");
         }
     }
 }

@@ -14,13 +14,15 @@ use League\Flysystem\Adapter\AbstractAdapter;
 use Zend\Http\Client;
 use Zend\Http\Client\Adapter\Curl;
 use Zend\Http\Client\Exception;
+use Zend\Json\Json;
+
 
 class Wepo extends AbstractAdapter
 {
-    protected static $permissions = array(
-        'public' => 0744,
+    protected static $permissions = [
+        'public'  => 0744,
         'private' => 0700,
-    );
+    ];
 
 
     /**
@@ -43,10 +45,10 @@ class Wepo extends AbstractAdapter
     public function __construct(\ModelFramework\AuthService\AuthService $auth, $key, $api_url)
     {
         $this->client = new Client();
-        $this->api_url=$api_url;
+        $this->api_url = $api_url;
         $timestamp = time();
         $company_id = (string)$auth->getMainUser()->company_id;
-        $user_id=$auth->getUser()->_id;
+        $user_id = $auth->getUser()->_id;
         $login = $auth->getUser()->login;
         $key = $key;
         $hash = md5($login . $company_id . $timestamp . $key);
@@ -57,7 +59,19 @@ class Wepo extends AbstractAdapter
                              'hash'      => $hash,
         ];
 
+
         $adapter = new Curl();
+        $adapter->setOptions([
+            'curloptions' => [
+                CURLOPT_POST           => 1,
+                CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
+                CURLOPT_USERPWD        => "username:password",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => FALSE,
+                CURLOPT_SSL_VERIFYHOST => FALSE,
+            ]
+        ]);
+
         $this->client->setAdapter($adapter);
 
     }
@@ -65,7 +79,7 @@ class Wepo extends AbstractAdapter
     /**
      * Ensure the root directory exists.
      *
-     * @param   string  $root  root directory path
+     * @param   string $root root directory path
      * @return  string  real path to root
      */
     protected function ensureDirectory($root)
@@ -80,13 +94,13 @@ class Wepo extends AbstractAdapter
     /**
      * Check whether a file is present
      *
-     * @param   string   $path
+     * @param   string $path
      * @return  boolean
      */
     public function has($path)
     {
         $location = $this->applyPathPrefix($path);
-
+        //   return true;
         return is_file($location);
     }
 
@@ -98,7 +112,7 @@ class Wepo extends AbstractAdapter
      * @param null $config
      * @return array|bool
      */
-    public function write($path, $contents, $config = null)
+    public function write($path, $contents, Config $config)
     {
         $location = $this->applyPathPrefix($path);
         $config = Util::ensureConfig($config);
@@ -112,19 +126,16 @@ class Wepo extends AbstractAdapter
 
 
         $this->client
-        ->setHeaders(
-                ['wp_path'=>$path]
+            ->setHeaders(
+                ['wp_path' => $path]
             );
 
-
-
-        file_put_contents('tmp',$contents);
+        file_put_contents('tmp', $contents);
         $this->client->setFileUpload('tmp', 'form');
 
         $response = $this->client->send();
 
         $path = json_decode($response->getContent())->file_id;
-     //  exit;
 
         $type = 'wepo_fs';
         $result = compact('contents', 'type', 'size', 'path');
@@ -145,29 +156,70 @@ class Wepo extends AbstractAdapter
      * @param null $config
      * @return array|bool
      */
-    public function writeStream($path, $resource, $config = null)
+    public function writeStream($path, $resource, Config $config)
     {
-        $config = Util::ensureConfig($config);
+
+        $username = 'admin';
+        $password = '12345678';
+
+        $auth = base64_encode($username . ':' . $password);
+
+        $this->client->setUri('http://192.168.10.47/api/wstest/upload/fg');
+        // $this->client->setUri('http://files.local/api/v2/fs');
+        $this->client->setMethod('POST');
+        $headers = [
+            'Accept'        => '*/*',
+            'Cache-Control' => 'no-cache',
+            'Authorization' => 'Basic ' . $auth,
+            'X-File-Name'   => 'todo.txt',
+            // 'Content-Type'  => 'application/x-www-form-urlencoded',
+            'Content-Type'  => 'application/x-www-form-urlencoded',
+            // 'Content-Length'=>'50',
+        ];
+        $this->client->setHeaders($headers);
+        file_put_contents('tmp', $resource);
+//        $this->client->setFileUpload('todo.txt', 'todo_txt', $resource);
+
+        $text = 'this is some plain text';
+        $this->client->setFileUpload('some_text.txt', 'some_text_txt', $text, 'text/plain');
+
+        prn($this->client->send()->getContent());
+
+
+        exit;
+
         $location = $this->applyPathPrefix($path);
+        $config = Util::ensureConfig($config);
         $this->ensureDirectory(dirname($location));
 
-        if ( ! $stream = fopen($location, 'w+')) {
-            return false;
-        }
+        $this->client->setMethod('POST');
+        $this->client->setUri($this->api_url);
+        $this->client->setParameterPOST(array_merge($this->auth_param,
+            ['filename' => $path,
+            ]));
 
-        while ( ! feof($resource)) {
-            fwrite($stream, fread($resource, 1024), 1024);
-        }
 
-        if ( ! fclose($stream)) {
-            return false;
-        }
+        $this->client
+            ->setHeaders(
+                ['wp_path' => $path]
+            );
+
+        file_put_contents('tmp', $resource);
+        $this->client->setFileUpload('tmp', 'form');
+
+        $response = $this->client->send();
+
+        $path = json_decode($response->getContent())->file_id;
+
+        $type = 'wepo_fs';
+        $result = compact('contents', 'type', 'size', 'path');
 
         if ($visibility = $config->get('visibility')) {
-            $this->setVisibility($path, $visibility);
+            $result['visibility'] = $visibility;
+
         }
 
-        return compact('path', 'visibility');
+        return $result;
     }
 
     /**
@@ -178,21 +230,64 @@ class Wepo extends AbstractAdapter
      */
     public function readStream($path)
     {
-        $location = $this->applyPathPrefix($path);
-        $stream = fopen($location, 'r');
+        $headers = [
+            'User-Agent' => 'testing/1.0',
+            'Accept'     => 'application/json',
+            'X-Foo'      => ['Bar', 'Baz'],
+            'custom'     => 'cust',
+        ];
+        $stream = \GuzzleHttp\Stream\Stream::factory('contents...');
 
-        return compact('stream', 'path');
+        $client = new \GuzzleHttp\Client(['headers' => $headers]);
+        $resource = fopen('a.gif', 'r');
+        $request = $client->put($this->api_url . 'upload', ['body' => $resource]);
+
+        prn($client, $request);
+        echo $request->getBody();
+
+
+        exit;
+        $location = $this->applyPathPrefix($path);
+
+        $this->client->setMethod('PUT');
+        $this->client->setUri($this->api_url . 'upload');
+        $this->client->setParameterPost(array_merge($this->auth_param,
+            ['location' => $location,
+
+            ]));
+//        $this->client
+//            //->setHeaders(['path: /usr/local....'])
+//            ->setFileUpload('todo.txt','r')
+//            ->setRawData(fopen('todo.txt','r'));
+
+        $fp = fopen('todo.txt', "r");
+
+        $curl = $this->client->getAdapter();
+        $curl->setCurlOption(CURLOPT_PUT, 1)
+            ->setCurlOption(CURLOPT_RETURNTRANSFER, 1)
+            ->setCurlOption(CURLOPT_INFILE, $fp)
+            ->setCurlOption(CURLOPT_INFILESIZE, filesize('todo.txt'));
+
+
+        //  prn($curl->setOutputStream($fp));
+
+
+        $response = $this->client->send();
+        prn($response->getContent(), json_decode($response->getContent()));
+        exit;
+
+
     }
 
     /**
      * Update a file using a stream
      *
-     * @param   string    $path
-     * @param   resource  $resource
-     * @param   mixed     $config   Config object or visibility setting
+     * @param   string $path
+     * @param   resource $resource
+     * @param   mixed $config Config object or visibility setting
      * @return  array|bool
      */
-    public function updateStream($path, $resource, $config = null)
+    public function updateStream($path, $resource, Config $config)
     {
         return $this->writeStream($path, $resource, $config);
     }
@@ -200,12 +295,12 @@ class Wepo extends AbstractAdapter
     /**
      * Update a file
      *
-     * @param   string       $path
-     * @param   string       $contents
-     * @param   mixed        $config   Config object or visibility setting
+     * @param   string $path
+     * @param   string $contents
+     * @param   mixed $config Config object or visibility setting
      * @return  array|bool
      */
-    public function update($path, $contents, $config = null)
+    public function update($path, $contents, Config $config)
     {
         $location = $this->applyPathPrefix($path);
         $mimetype = Util::guessMimeType($path, $contents);
@@ -220,7 +315,7 @@ class Wepo extends AbstractAdapter
     /**
      * Read a file
      *
-     * @param   string  $path
+     * @param   string $path
      * @return  array|bool
      */
     public function read($path)
@@ -290,11 +385,11 @@ class Wepo extends AbstractAdapter
      */
     public function listContents($directory = '', $recursive = false)
     {
-        $result = array();
-        $location = $this->applyPathPrefix($directory).$this->pathSeparator;
+        $result = [];
+        $location = $this->applyPathPrefix($directory) . $this->pathSeparator;
 
-        if ( ! is_dir($location)) {
-            return array();
+        if (!is_dir($location)) {
+            return [];
         }
 
         $iterator = $recursive ? $this->getRecursiveDirectoryIterator($location) : $this->getDirectoryIterator($location);
@@ -344,7 +439,7 @@ class Wepo extends AbstractAdapter
         $location = $this->applyPathPrefix($path);
         $finfo = new Finfo(FILEINFO_MIME_TYPE);
 
-        return array('mimetype' => $finfo->file($location));
+        return ['mimetype' => $finfo->file($location)];
     }
 
     /**
@@ -392,20 +487,20 @@ class Wepo extends AbstractAdapter
     /**
      * Create a directory
      *
-     * @param   string       $dirname directory name
+     * @param   string $dirname directory name
      * @param   array|Config $options
      *
      * @return  bool
      */
-    public function createDir($dirname, $options = null)
+    public function createDir($dirname, Config $config)
     {
         $location = $this->applyPathPrefix($dirname);
 
-        if ( ! is_dir($location)) {
+        if (!is_dir($location)) {
             mkdir($location, 0777, true);
         }
 
-        return array('path' => $dirname, 'type' => 'dir');
+        return ['path' => $dirname, 'type' => 'dir'];
     }
 
     /**
@@ -418,7 +513,7 @@ class Wepo extends AbstractAdapter
     {
         $location = $this->applyPathPrefix($dirname);
 
-        if ( ! is_dir($location)) {
+        if (!is_dir($location)) {
             return false;
         }
 
@@ -444,11 +539,11 @@ class Wepo extends AbstractAdapter
      */
     protected function normalizeFileInfo(SplFileInfo $file)
     {
-        $normalized = array(
-            'type' => $file->getType(),
-            'path' => $this->getFilePath($file),
+        $normalized = [
+            'type'      => $file->getType(),
+            'path'      => $this->getFilePath($file),
             'timestamp' => $file->getMTime()
-        );
+        ];
 
         if ($normalized['type'] === 'file') {
             $normalized['size'] = $file->getSize();
@@ -460,7 +555,7 @@ class Wepo extends AbstractAdapter
     /**
      * Get the normalized path from a SplFileInfo object
      *
-     * @param   SplFileInfo  $file
+     * @param   SplFileInfo $file
      * @return  string
      */
     protected function getFilePath(SplFileInfo $file)
@@ -493,4 +588,5 @@ class Wepo extends AbstractAdapter
 
         return $iterator;
     }
+
 }

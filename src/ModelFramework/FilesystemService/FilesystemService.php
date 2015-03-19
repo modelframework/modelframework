@@ -8,7 +8,7 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
 {
     private $service = null;
 
-    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager,$adapter)
+    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $adapter)
     {
         parent::__construct($adapter);
         $this->service = $serviceManager;
@@ -17,11 +17,11 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
     public function saveFile($filename, $tmpname, $ispublic = false, $userdir = null)
     {
 
+
         $destenation = $this->setDestenation($filename, $ispublic, $userdir);
-        if (!$destenation || !$this->write($destenation,fopen($tmpname,'r'))) {
+        if (!$destenation || !$result = $this->writeStream($destenation, fopen($tmpname, 'r'))) {
             return false;
         }
-
         return $destenation;
     }
 
@@ -35,7 +35,7 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
     public function saveStringToFile($filename, $string, $ispublic = false, $userdir = null)
     {
         $destenation = $this->setDestenation($filename, $ispublic, $userdir);
-        if (!$destenation || !$f=$this->write($destenation, $string)) {
+        if (!$destenation || !$f = $this->write($destenation, $string)) {
             return false;
         }
 
@@ -55,23 +55,23 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
     {
         $auth = $this->service->get('ModelFramework\AuthService');
         if ($ispublic) {
-            $companydirname = './public/'.(string) $auth->getMainUser()->company_id;
+            $companydirname = './public/' . (string)$auth->getMainUser()->company_id;
         } else {
-            $companydirname = './upload/'.(string) $auth->getMainUser()->company_id;
+            $companydirname = './upload/' . (string)$auth->getMainUser()->company_id;
         }
         if ($userdir == null) {
-            $userdir = (string) $auth->getUser()->id();
+            $userdir = (string)$auth->getUser()->id();
         }
 
-        $userdirname = $companydirname.'/'.$userdir;
-        $destenation = $userdirname.'/'.uniqid().$filename;
+        $userdirname = $companydirname . '/' . $userdir;
+        $destenation = $userdirname . '/' . uniqid() . $filename;
 
         return $destenation;
     }
 
     public function getFileExtension($filename)
     {
-        return strtolower(@pathinfo($filename)[ 'extension' ]);
+        return strtolower(@pathinfo($filename)['extension']);
     }
 
 //    public function getBucket()
@@ -139,22 +139,25 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
 //        return $response;
 //    }
 //
-    public function downloadFile($destenation,$filename, $ispublic = false)
+    public function downloadFile($destenation, $filename, $ispublic = false)
     {
 
         if (!$this->has($destenation)) {
             return false;
         }
 
+        $content = $this->read($destenation);
+
         $response = new \Zend\Http\Response\Stream();
-        $headers  = new \Zend\Http\Headers();
+        $headers = new \Zend\Http\Headers();
         $headers->addHeaderLine('Content-Type', 'application/octet-stream')
-                ->addHeaderLine('Content-Disposition', 'attachment; filename="'.$filename.'"')
-                ->addHeaderLine('Content-Length', $this->getSize($destenation));
+            ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->addHeaderLine('Content-Length', strlen($content));
 
         $response->setHeaders($headers);
 
-        $response->setStream($this->readStream($destenation));
+
+        $response->setStream(fopen('data://text/plain;base64,' . base64_encode($content), 'r'));
         $response->setStatusCode(200);
 
         return $response;

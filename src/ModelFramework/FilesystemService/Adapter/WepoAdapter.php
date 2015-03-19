@@ -155,7 +155,7 @@ class WepoAdapter extends AbstractAdapter
         if ($response->getStatusCode() !=200){
             throw new \Exception ( json_decode($response->getBody())->message);
         }
-prn($response->getContent());
+        prn($response->getContent());
         return json_decode($response->getContent())->data->$filename;
 
 
