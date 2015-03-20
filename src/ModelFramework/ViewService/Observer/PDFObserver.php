@@ -17,8 +17,8 @@ use ModelFramework\Utility\SplSubject\SubjectAwareTrait;
 use ModelFramework\ViewService\View;
 use Wepo\Model\Status;
 
-use \ZendService\Amazon\Exception\ExceptionInterface as AmazonException;
-use \ZendService\Amazon\S3\S3;
+//use \ZendService\Amazon\Exception\ExceptionInterface as AmazonException;
+//use \ZendService\Amazon\S3\S3;
 
 
 
@@ -40,7 +40,6 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
     public function update(\SplSubject $subject)
     {
         $this->setSubject($subject);
-
 
         $dataModel = $this->initModel();
         $dataModel->document_extension ='pdf';
@@ -72,6 +71,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $dataModel->creator_id=$order['creator_id'];
         $dataModel->patient_id=$order['patient_id'];
 
+
         $query
             = $subject->getQueryServiceVerify()
             ->get('OrderDetail.list')
@@ -91,21 +91,22 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
                 ]);
 
-        /* Generate PDF*/
+          /* Generate PDF*/
         $PDFService = $subject->getPDFServiceVerify();
         $pdf = $PDFService->getPDFtoSave($model_tpl->body,$variable);
 
         $dataModel->document_size=(string) (round((float) strlen($pdf) / 131072, 2)).' MB';
 
         /* Store PDF*/
-        $fileService = $subject->getFileServiceVerify();
+        $fileService = $subject->getFilesystemServiceVerify();
+        $dataModel->filesystem=$fileService->getFilesystem();
         $dataModel->document =
              $fileService->saveStringToFile($model_tpl->model_title.'.pdf',$pdf, false );
 
         /* Save to DB */
         $model = $this->setModel($dataModel);
         $subject->getGatewayServiceVerify()
-            ->get('Document')->save($model);
+            ->get('Document')->save($dataModel);
 
         $url = $subject->getParams()->getController()->url()
             ->fromRoute('common', [

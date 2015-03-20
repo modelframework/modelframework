@@ -63,7 +63,9 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                         if (isset($dataModel->$extension)) {
                             $dataModel->$extension = $fileService->getFileExtension($_file[ 'name' ]);
                         }
-
+                        if (isset($dataModel->filesystem)) {
+                            $dataModel->filesystem = $fileService->getFilesystem();
+                        }
                     }
                 }
             }
