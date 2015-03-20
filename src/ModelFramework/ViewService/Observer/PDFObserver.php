@@ -71,6 +71,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $dataModel->creator_id=$order['creator_id'];
         $dataModel->patient_id=$order['patient_id'];
 
+
         $query
             = $subject->getQueryServiceVerify()
             ->get('OrderDetail.list')
@@ -98,13 +99,14 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
 
         /* Store PDF*/
         $fileService = $subject->getFilesystemServiceVerify();
+        $dataModel->filesystem=$fileService->getFilesystem();
         $dataModel->document =
              $fileService->saveStringToFile($model_tpl->model_title.'.pdf',$pdf, false );
 
         /* Save to DB */
         $model = $this->setModel($dataModel);
         $subject->getGatewayServiceVerify()
-            ->get('Document')->save($model);
+            ->get('Document')->save($dataModel);
 
         $url = $subject->getParams()->getController()->url()
             ->fromRoute('common', [

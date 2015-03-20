@@ -7,11 +7,21 @@ use \League\Flysystem\Filesystem;
 class FilesystemService extends Filesystem implements FilesystemServiceInterface
 {
     private $service = null;
+    protected $filesystem='';
 
-    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $adapter)
+    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $adapter,$filesystem)
     {
         parent::__construct($adapter);
         $this->service = $serviceManager;
+        $this->filesystem = $filesystem;
+    }
+
+    /**
+     * Get current filesystem
+     * @return string
+     */
+    public function getFilesystem(){
+        return $this->filesystem;
     }
 
     public function saveFile($filename, $tmpname, $ispublic = false, $userdir = null)

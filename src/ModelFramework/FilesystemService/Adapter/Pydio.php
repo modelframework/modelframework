@@ -146,6 +146,37 @@ class Pydio extends AbstractAdapter
     }
 
 
+    protected function request($action, $path, $postData = [])
+    {
+
+
+        $actionUrl = self::$actions[$action] . $path;
+
+        $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
+
+        $authHash = $this->getAuthToken($actionUrl);
+
+        $curl = curl_init($apiUrl);
+        $curlPostData = [
+            "force_post" => urlencode("true"),
+            "auth_hash"  => $authHash,
+            "auth_token" => $this->authToken,
+        ];
+        $curlPostData = array_merge($curlPostData, $postData);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
+        $response = curl_exec($curl);
+
+        if (curl_getinfo($curl, CURLINFO_HTTP_CODE) >= 400) {
+            throw new \Exception ($response);
+        }
+//        prn($action,$path,$response,curl_getinfo($curl),$curlPostData);
+        curl_close($curl);
+        return $response;
+
+    }
+
     /**
      * Ensure the root directory exists.
      *
@@ -183,8 +214,17 @@ class Pydio extends AbstractAdapter
     public function write($path, $contents, Config $config)
     {
 
+        $this->createDir(dirname($path), $config);
+        $postData = [
+            "xhr_uploader"                      => urlencode("true"),
+            "urlencoded_filename"               => basename($path),
+            'userfile_0"; filename="fake-name"' => $contents,
+        ];
+        $response = $this->request('upload', dirname($path), $postData);
 
-        return $result;
+        return $path;
+
+
     }
 
     /**
@@ -197,34 +237,19 @@ class Pydio extends AbstractAdapter
      */
     public function writeStream($path, $resource, Config $config)
     {
-        $tmpFileName = $_FILES['fields']['tmp_name']['document'];
+        $this->createDir(dirname($path), $config);
 
+        $tmpFileName = $_FILES['fields']['tmp_name']['document'];
 
         $fileHandle = fopen($tmpFileName, "r");
         $fileData = fread($fileHandle, filesize($tmpFileName));
 
-        $actionUrl = self::$actions['upload'] . dirname($path);
-
-        $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
-
-        $authHash = $this->getAuthToken($actionUrl);
-
-        $this->createDir(dirname($path), $config);
-        $curl = curl_init($apiUrl);
-        $curlPostData = [
-            "force_post"                        => urlencode("true"),
-            "auth_hash"                         => $authHash,
-            "urlencoded_filename"               => basename($path),
-            "auth_token"                        => $this->authToken,
+        $postData = [
             "xhr_uploader"                      => urlencode("true"),
+            "urlencoded_filename"               => basename($path),
             'userfile_0"; filename="fake-name"' => $fileData,
         ];
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, ["Content-Type: multipart/form-data"]);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
-        $response = curl_exec($curl);
-        curl_close($curl);
+        $response = $this->request('upload', dirname($path), $postData);
 
         return $path;
     }
@@ -237,32 +262,11 @@ class Pydio extends AbstractAdapter
      */
     public function readStream($path)
     {
-        //  echo $location = $this->applyPathPrefix($path);
-        $actionUrl = self::$actions['get_content'] . $path;
+        $response = $this->request('get_content', $path);
 
-        $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
-
-        $authHash = $this->getAuthToken($actionUrl);
-
-        $curl = curl_init($apiUrl);
-        $curlPostData = [
-            "force_post" => urlencode("true"),
-            "auth_hash"  => $authHash,
-            "auth_token" => $this->authToken,
-        ];
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-
-//        prn($response);exit;
         $stream = \GuzzleHttp\Stream\Stream::factory($response);
-        stream_get_contents(fopen('data://text/plain,' . $response, 'r'));
+        stream_get_contents(fopen('data://,' . $response, 'r'));
         return $stream;
-
-
     }
 
     /**
@@ -383,23 +387,7 @@ class Pydio extends AbstractAdapter
      */
     public function listContents($directory = '', $recursive = false)
     {
-        $actionUrl = self::$actions['ls'] . $directory;
-
-        $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
-        $authHash = $this->getAuthToken($actionUrl);
-
-
-        $curl = curl_init($apiUrl);
-        $curlPostData = [
-            "force_post" => urlencode("true"),
-            "auth_hash"  => $authHash,
-            "auth_token" => $this->authToken,
-        ];
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
-        $response = curl_exec($curl);
-        curl_close($curl);
+        $response = $this->request('ls', $directory);
 
         if ($xml = simplexml_load_string($response)) {
             $result = $this->normalizeFileInfo($response);
@@ -428,33 +416,12 @@ class Pydio extends AbstractAdapter
      */
     public function getMetadata($path)
     {
-        try {
-            $actionUrl = self::$actions['ls'] . dirname($path);
+        $response = $this->request('ls', dirname($path), ["file" => basename($path)]);
 
-            $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
-            $authHash = $this->getAuthToken($actionUrl);
-
-            $curl = curl_init($apiUrl);
-            $curlPostData = [
-                "force_post" => urlencode("true"),
-                "auth_hash"  => $authHash,
-                "file"       => basename($path),
-                "auth_token" => $this->authToken,
-            ];
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
-            $response = curl_exec($curl);
-            curl_close($curl);
-
-            $xml = simplexml_load_string($response);
-            if (count($xml)){
-                return $this->normalizeFileInfo($xml);
-            }else{
-                return false;
-            }
-
-        } catch (Exception\FileNotFound $e) {
+        $xml = simplexml_load_string($response);
+        if (count($xml)) {
+            return $this->normalizeFileInfo($xml);
+        } else {
             return false;
         }
     }
