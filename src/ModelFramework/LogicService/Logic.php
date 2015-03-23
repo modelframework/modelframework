@@ -18,6 +18,8 @@ use ModelFramework\ConfigService\ConfigServiceAwareTrait;
 use ModelFramework\DataModel\DataModelInterface;
 use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
+use ModelFramework\FilesystemService\FilesystemServiceAwareInterface;
+use ModelFramework\FilesystemService\FilesystemServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayServiceAwareInterface;
 use ModelFramework\GatewayService\GatewayServiceAwareTrait;
 use ModelFramework\LogicService\LogicConfig\LogicConfigAwareInterface;
@@ -33,12 +35,12 @@ class Logic extends AbstractService
     implements GatewayServiceAwareInterface, LogicConfigAwareInterface,
                AuthServiceAwareInterface, ParamsAwareInterface, \SplSubject,
                LogicServiceAwareInterface, ConfigServiceAwareInterface,
-               QueryServiceAwareInterface, FileServiceAwareInterface
+               QueryServiceAwareInterface, FileServiceAwareInterface, FilesystemServiceAwareInterface
 {
     use ModelServiceAwareTrait, GatewayServiceAwareTrait, LogicConfigAwareTrait,
         AuthServiceAwareTrait, ParamsAwareTrait, LogicServiceAwareTrait,
         ConfigServiceAwareTrait, MailServiceAwareTrait, QueryServiceAwareTrait,
-        FileServiceAwareTrait;
+        FileServiceAwareTrait, FilesystemServiceAwareTrait;
 
     /**
      * @var array|DataModel|null

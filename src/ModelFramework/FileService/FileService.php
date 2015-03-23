@@ -15,7 +15,7 @@ class FileService implements FileServiceInterface
     private $auth_param = [];
     private $api_url=null;
 
-    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager)
+    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $config=[])
     {
 
         $this->service = $serviceManager;
@@ -42,12 +42,22 @@ class FileService implements FileServiceInterface
     public function saveFile($filename, $tmpname, $ispublic = false, $userdir = null)
     {
 
-        $destenation = $this->setDestenation($filename, $ispublic, $userdir);
-        if (!$destenation || !@copy($tmpname, $destenation)) {
-            return false;
+        $this->httpClient->setMethod('POST');
+        $this->httpClient->setUri($this->api_url);
+        $this->httpClient->setParameterPOST(array_merge($this->auth_param,
+            ['filename' => $filename,
+             'ispublic' => $ispublic,
+            ]));
+
+        $this->httpClient->setFileUpload($tmpname, 'form');
+
+        $response = $this->httpClient->send();
+
+        if ($response->getStatusCode() !=200){
+            throw new \Exception ( json_decode($response->getBody())->message);
         }
 
-        return $destenation;
+        return json_decode($response->getContent())->data->$filename;
     }
 
     /**
