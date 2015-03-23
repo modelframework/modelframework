@@ -15,7 +15,7 @@ class FileService implements FileServiceInterface
     private $auth_param = [];
     private $api_url=null;
 
-    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager, $config=[])
+    public function __construct(\Zend\ServiceManager\ServiceManager $serviceManager)
     {
 
         $this->service = $serviceManager;
@@ -42,22 +42,12 @@ class FileService implements FileServiceInterface
     public function saveFile($filename, $tmpname, $ispublic = false, $userdir = null)
     {
 
-        $this->httpClient->setMethod('POST');
-        $this->httpClient->setUri($this->api_url);
-        $this->httpClient->setParameterPOST(array_merge($this->auth_param,
-            ['filename' => $filename,
-             'ispublic' => $ispublic,
-            ]));
-
-        $this->httpClient->setFileUpload($tmpname, 'form');
-
-        $response = $this->httpClient->send();
-
-        if ($response->getStatusCode() !=200){
-            throw new \Exception ( json_decode($response->getBody())->message);
+        $destenation = $this->setDestenation($filename, $ispublic, $userdir);
+        if (!$destenation || !@copy($tmpname, $destenation)) {
+            return false;
         }
 
-        return json_decode($response->getContent())->data->$filename;
+        return $destenation;
     }
 
     /**
@@ -99,38 +89,38 @@ class FileService implements FileServiceInterface
 
     public function moveFile($from, $to)
     {
-//        if (!@rename($from, $to)) {
-//            return false;
-//        }
-//
-//        return true;
+        if (!@rename($from, $to)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function setDestenation($filename, $ispublic = false, $userdir = null)
     {
-//        $auth = $this->service->get('ModelFramework\AuthService');
-//        if ($ispublic) {
-//            $companydirname = './public/' . (string)$auth->getMainUser()->company_id;
-//        } else {
-//            $companydirname = './upload/' . (string)$auth->getMainUser()->company_id;
-//        }
-//        if ($userdir == null) {
-//            $userdir = (string)$auth->getUser()->id();
-//        }
-//        if (!file_exists($companydirname)) {
-//            if (!mkdir($companydirname, 0777, true)) {
-//                return false;
-//            }
-//        }
-//        $userdirname = $companydirname . '/' . $userdir;
-//        if (!file_exists($userdirname)) {
-//            if (!mkdir($userdirname, 0777, true)) {
-//                return false;
-//            }
-//        }
-//        $destenation = $userdirname . '/' . uniqid() . $filename;
-//
-//        return $destenation;
+        $auth = $this->service->get('ModelFramework\AuthService');
+        if ($ispublic) {
+            $companydirname = './public/' . (string)$auth->getMainUser()->company_id;
+        } else {
+            $companydirname = './upload/' . (string)$auth->getMainUser()->company_id;
+        }
+        if ($userdir == null) {
+            $userdir = (string)$auth->getUser()->id();
+        }
+        if (!file_exists($companydirname)) {
+            if (!mkdir($companydirname, 0777, true)) {
+                return false;
+            }
+        }
+        $userdirname = $companydirname . '/' . $userdir;
+        if (!file_exists($userdirname)) {
+            if (!mkdir($userdirname, 0777, true)) {
+                return false;
+            }
+        }
+        $destenation = $userdirname . '/' . uniqid() . $filename;
+
+        return $destenation;
     }
 
     public function getFileExtension($filename)
@@ -145,78 +135,82 @@ class FileService implements FileServiceInterface
 
     public function checkDestenation($filename, $ispublic = false, $userdir = null)
     {
-//        $auth = $this->service->get('ModelFramework\AuthService');
-//        if ($userdir == null) {
-//            $userdir = (string)$auth->getUser()->id();
-//        }
-//        if ($ispublic) {
-//            $destenation = './public/' . (string)$auth->getMainUser()->company_id . '/' . $userdir . '/' . $filename;
-//        } else {
-//            $destenation = './upload/' . (string)$auth->getMainUser()->company_id . '/' . $userdir . '/' . $filename;
-//        }
-//        if (file_exists($destenation) && !empty($filename)) {
-//            return $destenation;
-//        }
-//
-//        return false;
+        $auth = $this->service->get('ModelFramework\AuthService');
+        if ($userdir == null) {
+            $userdir = (string)$auth->getUser()->id();
+        }
+        if ($ispublic) {
+            $destenation = './public/' . (string)$auth->getMainUser()->company_id . '/' . $userdir . '/' . $filename;
+        } else {
+            $destenation = './upload/' . (string)$auth->getMainUser()->company_id . '/' . $userdir . '/' . $filename;
+        }
+        if (file_exists($destenation) && !empty($filename)) {
+            return $destenation;
+        }
+
+        return false;
     }
 
     public function checkBucket($filename, $bucketname, $ispublic = false)
     {
-//        $auth = $this->service->get('ModelFramework\AuthService');
-//        if ($ispublic) {
-//            $destenation = './public/' . $bucketname . '/' . $filename;
-//        } else {
-//            $destenation =
-//                './upload/' . (string)$auth->getMainUser()->company_id . '/' . (string)$auth->getUser()->id() . '/' .
-//                $filename;
-//        }
-//        if (file_exists($destenation)) {
-//            return $destenation;
-//        }
-//
-//        return false;
+        $auth = $this->service->get('ModelFramework\AuthService');
+        if ($ispublic) {
+            $destenation = './public/' . $bucketname . '/' . $filename;
+        } else {
+            $destenation =
+                './upload/' . (string)$auth->getMainUser()->company_id . '/' . (string)$auth->getUser()->id() . '/' .
+                $filename;
+        }
+        if (file_exists($destenation)) {
+            return $destenation;
+        }
+
+        return false;
     }
 
     public function getFileStream($filename, $bucketname = null, $ispublic = false)
     {
-//        if ($bucketname == null) {
-//            $bucketname = $this->getBucket();
-//        }
-//        $destenation = $this->checkBucket($filename, $bucketname, $ispublic);
-//        if (!$destenation) {
-//            return false;
-//        }
-//
-//        $response = new \Zend\Http\Response\Stream();
-//        $headers = new \Zend\Http\Headers();
-//
-//        $headers->addHeaderLine('Content-Type', 'application/octet-stream')
-//            ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $filename . '"')
-//            ->addHeaderLine('Content-Length', filesize($destenation));
-//
-//        $response->setHeaders($headers);
-//
-//        $response->setStream($stream = fopen($destenation, 'r'));
-//        $response->setStatusCode(200);
-//
-//        return $response;
+        if ($bucketname == null) {
+            $bucketname = $this->getBucket();
+        }
+        $destenation = $this->checkBucket($filename, $bucketname, $ispublic);
+        if (!$destenation) {
+            return false;
+        }
+
+        $response = new \Zend\Http\Response\Stream();
+        $headers = new \Zend\Http\Headers();
+
+        $headers->addHeaderLine('Content-Type', 'application/octet-stream')
+            ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->addHeaderLine('Content-Length', filesize($destenation));
+
+        $response->setHeaders($headers);
+
+        $response->setStream($stream = fopen($destenation, 'r'));
+        $response->setStatusCode(200);
+//        prn($destenation,$headers->toString(),filesize($destenation),$response); exit;
+        return $response;
     }
 
     public function downloadFile($filename, $ispublic = false, $userdir = null)
     {
-
-
-        $this->httpClient->setMethod('GET');
-        $this->httpClient->setUri($this->api_url . $filename);
-        $this->httpClient->setParameterGET($this->auth_param);
-
-
-        $response = $this->httpClient->send();
-
-        if ($response->getStatusCode() !=200){
-            throw new \Exception ( json_decode($response->getBody())->message);
+        $destenation = $this->checkDestenation($filename, $ispublic);
+        if (!$destenation) {
+            return false;
         }
+
+        $response = new \Zend\Http\Response\Stream();
+        $headers  = new \Zend\Http\Headers();
+
+        $headers->addHeaderLine('Content-Type', 'application/octet-stream')
+                ->addHeaderLine('Content-Disposition', 'attachment; filename="'.$filename.'"')
+                ->addHeaderLine('Content-Length', filesize($destenation));
+
+        $response->setHeaders($headers);
+
+        $response->setStream($stream = fopen($destenation, 'r'));
+        $response->setStatusCode(200);
 
         return $response;
 
@@ -224,14 +218,14 @@ class FileService implements FileServiceInterface
 
     public function deleteFile($filename)
     {
-//        $destenation = $this->checkDestenation($filename);
-//        if (!$destenation) {
-//            return false;
-//        }
-//
-//        @unlink($destenation);
-//
-//        return true;
+        $destenation = $this->checkDestenation($filename);
+        if (!$destenation) {
+            return false;
+        }
+
+        @unlink($destenation);
+
+        return true;
     }
 
     public function getServerUrl()
