@@ -27,11 +27,11 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
     public function saveFile($filename, $tmpname, $ispublic = false, $userdir = null)
     {
 
-
         $destenation = $this->setDestenation($filename, $ispublic, $userdir);
         if (!$destenation || !$result = $this->writeStream($destenation, fopen($tmpname, 'r'))) {
             return false;
         }
+
         return $destenation;
     }
 
