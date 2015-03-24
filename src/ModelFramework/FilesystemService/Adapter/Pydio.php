@@ -1,7 +1,7 @@
 <?php
 
 namespace ModelFramework\FilesystemService\Adapter;
-
+set_time_limit(200);
 use League\Flysystem\Config;
 use SplFileInfo;
 use FilesystemIterator;
@@ -32,6 +32,11 @@ class Pydio extends AbstractAdapter
         'ls'          => '/ls/',
         'download'    => '/download/',
         'get_content' => '/get_content/',
+        'rename'      => '/rename/',
+        'copy'        => '/copy/',
+        'move'        => '/move/',
+        'delete'      => '/delete/',
+
 
     ];
 
@@ -158,9 +163,10 @@ class Pydio extends AbstractAdapter
 
         $curl = curl_init($apiUrl);
         $curlPostData = [
-            "force_post" => urlencode("true"),
-            "auth_hash"  => $authHash,
-            "auth_token" => $this->authToken,
+            "force_post"  => urlencode("true"),
+            "auth_hash"   => $authHash,
+            "auth_token"  => $this->authToken,
+            "auto_rename" => urlencode("false"),
         ];
         $curlPostData = array_merge($curlPostData, $postData);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -216,15 +222,12 @@ class Pydio extends AbstractAdapter
 
         $this->createDir(dirname($path), $config);
         $postData = [
-            "xhr_uploader"                      => urlencode("true"),
-            "urlencoded_filename"               => basename($path),
-            'userfile_0"; filename="fake-name"' => $contents,
+            "xhr_uploader"                       => urlencode("true"),
+            "urlencoded_filename"                => basename($path),
+            '@userfile_0"; filename="fake-name"' => $contents,
         ];
-        $response = $this->request('upload', dirname($path), $postData);
-
+        $this->request('upload', dirname($path), $postData);
         return $path;
-
-
     }
 
     /**
@@ -237,19 +240,38 @@ class Pydio extends AbstractAdapter
      */
     public function writeStream($path, $resource, Config $config)
     {
-        $this->createDir(dirname($path), $config);
+        if (!$this->has(dirname($path))) {
+            $this->createDir(dirname($path), $config);
+        }
 
-        $tmpFileName = $_FILES['fields']['tmp_name']['document'];
+//
+//        while (! feof($resource)) {
+//            $postData = [
+//                "xhr_uploader"                      => urlencode("true"),
+//                "auto_rename"                       => urlencode("false"),
+//                "urlencoded_filename"               => urlencode(basename($path)),
+//                'userfile_0"; filename="fake-name"' => fread($resource, 1024),
+//                "appendto_urlencoded_part"          => urlencode(basename($path)),
+//            ];
+//            echo ftell($resource)."<br/>";
+//            $response = $this->request('upload', dirname($path), $postData);
+//        }
+//
+//        return $path;
+        $stream = '';
+        while (!feof($resource)) {
+            $stream .= fread($resource, 1024);
+        }
 
-        $fileHandle = fopen($tmpFileName, "r");
-        $fileData = fread($fileHandle, filesize($tmpFileName));
 
         $postData = [
             "xhr_uploader"                      => urlencode("true"),
-            "urlencoded_filename"               => basename($path),
-            'userfile_0"; filename="fake-name"' => $fileData,
+            "auto_rename"                       => urlencode("false"),
+            "urlencoded_filename"               => urlencode(basename($path)),
+            'userfile_0"; filename="fake-name"' => $stream,
         ];
-        $response = $this->request('upload', dirname($path), $postData);
+
+        $this->request('upload', dirname($path), $postData);
 
         return $path;
     }
@@ -262,11 +284,12 @@ class Pydio extends AbstractAdapter
      */
     public function readStream($path)
     {
+        exit;
         $response = $this->request('get_content', $path);
 
-        $stream = \GuzzleHttp\Stream\Stream::factory($response);
-        stream_get_contents(fopen('data://,' . $response, 'r'));
-        return $stream;
+//        $stream = \GuzzleHttp\Stream\Stream::factory($response);
+//  //      stream_get_contents(fopen('data://,' . $response, 'r'));
+        return \GuzzleHttp\Stream\Stream::factory($response);
     }
 
     /**
@@ -311,24 +334,7 @@ class Pydio extends AbstractAdapter
     public function read($path)
     {
 
-        $actionUrl = self::$actions['download'] . $path;
-
-        $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
-
-        $authHash = $this->getAuthToken($actionUrl);
-
-        $curl = curl_init($apiUrl);
-        $curlPostData = [
-            "force_post" => urlencode("true"),
-            "auth_hash"  => $authHash,
-            "auth_token" => $this->authToken,
-        ];
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
-        $contents = curl_exec($curl);
-        curl_close($curl);
-
+        $contents = $this->request('download', $path);
         return compact('contents', 'path');
     }
 
@@ -341,6 +347,17 @@ class Pydio extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
+
+        $postData = [
+            //  "file"=>urlencode(($path)),
+            "filename_new" => urlencode(basename($newpath)),
+            "dest"         => (dirname($newpath)),
+
+        ];
+        $contents = $this->request('rename', $path, $postData);
+        prn($contents);
+
+
         $location = $this->applyPathPrefix($path);
         $destination = $this->applyPathPrefix($newpath);
         $parentDirectory = $this->applyPathPrefix(Util::dirname($newpath));
