@@ -191,11 +191,8 @@ class Pydio extends AbstractAdapter
      */
     protected function ensureDirectory($root)
     {
-        if (is_dir($root) === false) {
-            mkdir($root, 0755, true);
-        }
 
-        return realpath($root);
+
     }
 
     /**
@@ -345,25 +342,17 @@ class Pydio extends AbstractAdapter
      * @param $newpath
      * @return bool
      */
-    public function rename($path, $newpath)
+    public function rename($path, $new_name)
     {
 
         $postData = [
-            //  "file"=>urlencode(($path)),
-            "filename_new" => urlencode(basename($newpath)),
-            "dest"         => (dirname($newpath)),
-
+            "file"         => '/' . $path,
+            "filename_new" => '/' . basename($new_name),
+            "dest"         => '/' . dirname($new_name),
         ];
         $contents = $this->request('rename', $path, $postData);
-        prn($contents);
+        return compact('contents', 'path');
 
-
-        $location = $this->applyPathPrefix($path);
-        $destination = $this->applyPathPrefix($newpath);
-        $parentDirectory = $this->applyPathPrefix(Util::dirname($newpath));
-        $this->ensureDirectory($parentDirectory);
-
-        return rename($location, $destination);
     }
 
     /**
@@ -390,9 +379,12 @@ class Pydio extends AbstractAdapter
      */
     public function delete($path)
     {
-        $location = $this->applyPathPrefix($path);
+        $postData = [
+            "file" => '/' . $path,
+        ];
+        $contents = $this->request('delete', $path, $postData);
 
-        return unlink($location);
+        return compact('contents', 'path');
     }
 
     /**
@@ -411,16 +403,6 @@ class Pydio extends AbstractAdapter
         } else {
             throw new \Exception ('Request error');
         }
-
-
-//        prn($response);
-//
-//
-//        $attributes = simplexml_load_string($response)->attributes();
-//
-//
-//        echo $attributes['is_file'];
-
 
         return $result;
     }
