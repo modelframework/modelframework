@@ -65,7 +65,7 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
     {
         $auth = $this->service->get('ModelFramework\AuthService');
         if ($ispublic) {
-            $companydirname = './public/' . (string)$auth->getMainUser()->company_id;
+            $companydirname = './public/upload/' . (string)$auth->getMainUser()->company_id;
         } else {
             $companydirname = './upload/' . (string)$auth->getMainUser()->company_id;
         }
@@ -84,11 +84,11 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
         return strtolower(@pathinfo($filename)['extension']);
     }
 
-//    public function getBucket()
-//    {
-//        return $this->service->get('ModelFramework\AuthService')->getMainUser()->company_id;
-//    }
-//
+    public function getBucket()
+    {
+        return $this->service->get('ModelFramework\AuthService')->getMainUser()->company_id;
+    }
+
 //    public function checkDestenation($filename, $ispublic = false, $userdir = null)
 //    {
 //        $auth = $this->service->get('ModelFramework\AuthService');
@@ -106,49 +106,51 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
 //
 //        return false;
 //    }
-//
-//    public function checkBucket($filename, $bucketname, $ispublic = false)
-//    {
-//        $auth = $this->service->get('ModelFramework\AuthService');
-//        if ($ispublic) {
-//            $destenation = './public/'.$bucketname.'/'.$filename;
-//        } else {
-//            $destenation =
-//                './upload/'.(string) $auth->getMainUser()->company_id.'/'.(string) $auth->getUser()->id().'/'.
-//                $filename;
-//        }
-//        if (file_exists($destenation)) {
-//            return $destenation;
-//        }
-//
-//        return false;
-//    }
-//
-//    public function getFileStream($filename, $bucketname = null, $ispublic = false)
-//    {
-//        if ($bucketname == null) {
-//            $bucketname = $this->getBucket();
-//        }
-//        $destenation = $this->checkBucket($filename, $bucketname, $ispublic);
-//        if (!$destenation) {
-//            return false;
-//        }
-//
-//        $response = new \Zend\Http\Response\Stream();
-//        $headers  = new \Zend\Http\Headers();
-//
-//        $headers->addHeaderLine('Content-Type', 'application/octet-stream')
-//                ->addHeaderLine('Content-Disposition', 'attachment; filename="'.$filename.'"')
-//                ->addHeaderLine('Content-Length', filesize($destenation));
-//
-//        $response->setHeaders($headers);
-//
-//        $response->setStream($stream = fopen($destenation, 'r'));
-//        $response->setStatusCode(200);
-//
-//        return $response;
-//    }
-//
+
+    public function checkBucket($filename, $bucketname, $ispublic = false)
+    {
+        $auth = $this->service->get('ModelFramework\AuthService');
+        if ($ispublic) {
+            $destenation = './public/'.$bucketname.'/'.$filename;
+        } else {
+            $destenation =
+                './upload/'.(string) $auth->getMainUser()->company_id.'/'.(string) $auth->getUser()->id().'/'.
+                $filename;
+        }
+        if (file_exists($destenation)) {
+            return $destenation;
+        }
+
+        return false;
+    }
+
+    public function getFileStream($filename, $bucketname = null, $ispublic = false)
+    {
+        if ($bucketname == null) {
+            $bucketname = $this->getBucket();
+        }
+        $destenation = $this->checkBucket($filename, $bucketname, $ispublic);
+        if (!$destenation) {
+            return false;
+        }
+
+        return $this->downloadFile($destenation,$filename,$ispublic);
+
+        $response = new \Zend\Http\Response\Stream();
+        $headers  = new \Zend\Http\Headers();
+
+        $headers->addHeaderLine('Content-Type', 'application/octet-stream')
+                ->addHeaderLine('Content-Disposition', 'attachment; filename="'.$filename.'"')
+                ->addHeaderLine('Content-Length', filesize($destenation));
+
+        $response->setHeaders($headers);
+
+        $response->setStream($stream = fopen($destenation, 'r'));
+        $response->setStatusCode(200);
+
+        return $response;
+    }
+
     public function downloadFile($destenation, $filename, $ispublic = false)
     {
 
@@ -163,9 +165,7 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
         $headers->addHeaderLine('Content-Type', 'application/octet-stream')
             ->addHeaderLine('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->addHeaderLine('Content-Length', strlen($content));
-
         $response->setHeaders($headers);
-
 
         $response->setStream(fopen('data://text/plain;base64,' . base64_encode($content), 'r'));
         $response->setStatusCode(200);
