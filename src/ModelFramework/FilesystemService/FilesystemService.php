@@ -89,23 +89,23 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
         return $this->service->get('ModelFramework\AuthService')->getMainUser()->company_id;
     }
 
-//    public function checkDestenation($filename, $ispublic = false, $userdir = null)
-//    {
-//        $auth = $this->service->get('ModelFramework\AuthService');
-//        if ($userdir == null) {
-//            $userdir = (string) $auth->getUser()->id();
-//        }
-//        if ($ispublic) {
-//            $destenation = './public/'.(string) $auth->getMainUser()->company_id.'/'.$userdir.'/'.$filename;
-//        } else {
-//            $destenation = './upload/'.(string) $auth->getMainUser()->company_id.'/'.$userdir.'/'.$filename;
-//        }
-//        if (file_exists($destenation) && !empty($filename)) {
-//            return $destenation;
-//        }
-//
-//        return false;
-//    }
+    public function checkDestenation($filename, $ispublic = false, $userdir = null)
+    {
+        $auth = $this->service->get('ModelFramework\AuthService');
+        if ($userdir == null) {
+            $userdir = (string) $auth->getUser()->id();
+        }
+        if ($ispublic) {
+            $destenation = './public/upload/'.(string) $auth->getMainUser()->company_id.'/'.$userdir.'/'.$filename;
+        } else {
+            $destenation = './upload/'.(string) $auth->getMainUser()->company_id.'/'.$userdir.'/'.$filename;
+        }
+        if ($this->has($destenation) && !empty($filename)) {
+            return $destenation;
+        }
+
+        return false;
+    }
 
     public function checkBucket($filename, $bucketname, $ispublic = false)
     {
@@ -117,7 +117,8 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
                 './upload/'.(string) $auth->getMainUser()->company_id.'/'.(string) $auth->getUser()->id().'/'.
                 $filename;
         }
-        if (file_exists($destenation)) {
+
+        if ($this->has($destenation)) {
             return $destenation;
         }
 
