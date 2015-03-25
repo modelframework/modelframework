@@ -1,7 +1,6 @@
 <?php
 
 namespace ModelFramework\FilesystemService\Adapter;
-set_time_limit(200);
 use League\Flysystem\Config;
 use SplFileInfo;
 use FilesystemIterator;
@@ -9,13 +8,7 @@ use DirectoryIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use League\Flysystem\Util;
-use League\Flysystem\AdapterInterface;
 use League\Flysystem\Adapter\AbstractAdapter;
-use Zend\Http\Client;
-use Zend\Http\Request;
-use Zend\Http\Client\Adapter\Curl;
-use Zend\Http\Client\Exception;
-use Zend\Json\Json;
 use Zend\Config\Reader;
 
 
@@ -51,12 +44,6 @@ class Pydio extends AbstractAdapter
      * @var string deviceId
      */
     protected static $deviceId = "";
-
-    /**
-     * @var Client
-     */
-    protected $client;
-
 
     /**
      * @var
@@ -99,44 +86,31 @@ class Pydio extends AbstractAdapter
      */
     public function __construct(\ModelFramework\AuthService\AuthService $auth, $pydioRestUser, $pydioRestPw, $pydioRestApi, $workspaceId)
     {
-
         $this->workspaceId = $workspaceId;
         $this->pydioRestUser = $pydioRestUser;
         $this->pydioRestPw = $pydioRestPw;
         $this->pydioRestApi = $pydioRestApi;
-
-        $this->client = new Client();
-
-
-        $adapter = new Curl();
-        $adapter->setOptions([
-            'curloptions' => [
-                CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => false,
-            ]
-        ]);
-
-        $this->client->setAdapter($adapter);
-
     }
 
     protected function getAuthToken($actionUrl)
     {
+
         // Generate authentication token first...
         if (!$this->authToken) {
+
             $apiUrl = $this->pydioRestApi . self::$generateAuthTokenUrl . "/" . self::$deviceId;
 
-            $response = $this->client->setUri($apiUrl)
-                ->setAuth($this->pydioRestUser, $this->pydioRestPw)
-                ->send();
+            $curl = curl_init($apiUrl);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_USERPWD, $this->pydioRestUser.':'.$this->pydioRestPw);
+            $response = curl_exec($curl);
 
-            if ($response->getStatusCode() >= 400) {
-                throw new \Exception ($response->getContent());
+            if (curl_getinfo($curl, CURLINFO_HTTP_CODE) >= 400) {
+                throw new \Exception ($response);
             }
+            curl_close($curl);
 
-            $jsonResponse = json_decode($response->getContent());
+            $jsonResponse = json_decode($response);
             $this->authToken = $jsonResponse->t;
             $this->authPrivate = $jsonResponse->p;
         }
@@ -146,15 +120,12 @@ class Pydio extends AbstractAdapter
         $message = $uri . ":" . $nonce . ":" . $this->authPrivate;
         $hash = hash_hmac("sha256", $message, $this->authToken);
         $authHash = $nonce . ":" . $hash;
-
         return $authHash;
     }
 
 
     protected function request($action, $path, $postData = [])
     {
-
-
         $actionUrl = self::$actions[$action] . $path;
 
         $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
@@ -177,7 +148,6 @@ class Pydio extends AbstractAdapter
         if (curl_getinfo($curl, CURLINFO_HTTP_CODE) >= 400) {
             throw new \Exception ($response);
         }
-//        prn($action,$path,$response,curl_getinfo($curl),$curlPostData);
         curl_close($curl);
         return $response;
 
@@ -191,8 +161,6 @@ class Pydio extends AbstractAdapter
      */
     protected function ensureDirectory($root)
     {
-
-
     }
 
     /**
@@ -216,7 +184,6 @@ class Pydio extends AbstractAdapter
      */
     public function write($path, $contents, Config $config)
     {
-
         $this->createDir(dirname($path), $config);
         $postData = [
             "xhr_uploader"                       => urlencode("true"),
@@ -241,36 +208,25 @@ class Pydio extends AbstractAdapter
             $this->createDir(dirname($path), $config);
         }
 
-//
-//        while (! feof($resource)) {
-//            $postData = [
-//                "xhr_uploader"                      => urlencode("true"),
-//                "auto_rename"                       => urlencode("false"),
-//                "urlencoded_filename"               => urlencode(basename($path)),
-//                'userfile_0"; filename="fake-name"' => fread($resource, 1024),
-//                "appendto_urlencoded_part"          => urlencode(basename($path)),
-//            ];
-//            echo ftell($resource)."<br/>";
-//            $response = $this->request('upload', dirname($path), $postData);
-//        }
-//
-//        return $path;
-        $stream = '';
+        $string = '';
         while (!feof($resource)) {
-            $stream .= fread($resource, 1024);
+            $string .= fread($resource, 1024);
         }
-
 
         $postData = [
             "xhr_uploader"                      => urlencode("true"),
             "auto_rename"                       => urlencode("false"),
             "urlencoded_filename"               => urlencode(basename($path)),
-            'userfile_0"; filename="fake-name"' => $stream,
+            'userfile_0"; filename="fake-name"' => $string,
         ];
 
         $this->request('upload', dirname($path), $postData);
 
-        return $path;
+        if ($visibility = $config->get('visibility')) {
+        //    $this->setVisibility($path, $visibility);
+        }
+
+        return compact('path', 'visibility');
     }
 
     /**
@@ -281,11 +237,9 @@ class Pydio extends AbstractAdapter
      */
     public function readStream($path)
     {
-        exit;
+
         $response = $this->request('get_content', $path);
 
-//        $stream = \GuzzleHttp\Stream\Stream::factory($response);
-//  //      stream_get_contents(fopen('data://,' . $response, 'r'));
         return \GuzzleHttp\Stream\Stream::factory($response);
     }
 
@@ -444,10 +398,10 @@ class Pydio extends AbstractAdapter
      */
     public function getMimetype($path)
     {
-        $location = $this->applyPathPrefix($path);
-        $finfo = new Finfo(FILEINFO_MIME_TYPE);
-
-        return ['mimetype' => $finfo->file($location)];
+//        $location = $this->applyPathPrefix($path);
+//        $finfo = new Finfo(FILEINFO_MIME_TYPE);
+//
+//        return ['mimetype' => $finfo->file($location)];
     }
 
     /**
@@ -469,12 +423,7 @@ class Pydio extends AbstractAdapter
      */
     public function getVisibility($path)
     {
-        $location = $this->applyPathPrefix($path);
-        clearstatcache(false, $location);
-        $permissions = octdec(substr(sprintf('%o', fileperms($location)), -4));
-        $visibility = $permissions & 0044 ? AdapterInterface::VISIBILITY_PUBLIC : AdapterInterface::VISIBILITY_PRIVATE;
-
-        return compact('visibility');
+        return;
     }
 
     /**
@@ -486,10 +435,7 @@ class Pydio extends AbstractAdapter
      */
     public function setVisibility($path, $visibility)
     {
-        $location = $this->applyPathPrefix($path);
-        chmod($location, static::$permissions[$visibility]);
-
-        return compact('visibility');
+        return;
     }
 
     /**
@@ -503,30 +449,12 @@ class Pydio extends AbstractAdapter
     public function createDir($dirname, Config $config)
     {
 
-        $dirnames = explode('/', $dirname);
-
         $create = '/';
-        foreach ($dirnames as $dirname) {
+        foreach (explode('/', $dirname) as $dirname) {
             $create .= '/' . $dirname;
-
-            $actionUrl = self::$actions['mkdir'] . $create;
-
-            $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
-            $authHash = $this->getAuthToken($actionUrl);
-
-
-            $curl = curl_init($apiUrl);
-            $curlPostData = [
-                "force_post" => urlencode("true"),
-                "auth_hash"  => $authHash,
-                "auth_token" => $this->authToken,
-            ];
-
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
-            $response = curl_exec($curl);
-            curl_close($curl);
+            if(!$this->request('mkdir', $create)){
+                return false;
+            }
         }
 
         return ['path' => $create, 'type' => 'dir'];
@@ -540,35 +468,32 @@ class Pydio extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        $location = $this->applyPathPrefix($dirname);
 
-        if (!is_dir($location)) {
-            return false;
-        }
-
-        $contents = $this->listContents($dirname, true);
-        $contents = array_reverse($contents);
-
-        foreach ($contents as $file) {
-            if ($file['type'] === 'file') {
-                unlink($this->applyPathPrefix($file['path']));
-            } else {
-                rmdir($this->applyPathPrefix($file['path']));
-            }
-        }
-
-        return rmdir($location);
+//        if (!$this->has($dirname)) {
+//            return false;
+//        }
+//
+//        $contents = $this->listContents($dirname, true);
+//        $contents = array_reverse($contents);
+//
+//        foreach ($contents as $file) {
+//            if ($file['type'] === 'file') {
+//                unlink($this->applyPathPrefix($file['path']));
+//            } else {
+//                rmdir($this->applyPathPrefix($file['path']));
+//            }
+//        }
+//
+//        return rmdir($dirname);
     }
 
     /**
      * Normalize the file info
-     *
-     * @param SplFileInfo $file
+     * @param xml $xml
      * @return array
      */
     protected function normalizeFileInfo($xml)
     {
-
         $normalized = [
             'type'      => ($xml->tree['is_file'] == 'true') ? 'file' : 'dir',
             'path'      => (string)$xml->tree['filename'],
