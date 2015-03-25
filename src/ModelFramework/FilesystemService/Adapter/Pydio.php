@@ -1,6 +1,7 @@
 <?php
 
 namespace ModelFramework\FilesystemService\Adapter;
+
 use League\Flysystem\Config;
 use SplFileInfo;
 use FilesystemIterator;
@@ -237,10 +238,11 @@ class Pydio extends AbstractAdapter
      */
     public function readStream($path)
     {
-
         $response = $this->request('get_content', $path);
 
-        return \GuzzleHttp\Stream\Stream::factory($response);
+        $stream = fopen('data://text/plain;base64,' . base64_encode($response), 'r');
+
+        return compact('stream', 'path');
     }
 
     /**
