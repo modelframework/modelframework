@@ -1,13 +1,13 @@
 <?php
-
+/**
+ * Class Pydio Flysystem Adapter
+ * @package ModelFramework\ModelViewService
+ * @author  Artem Bondarenko taxist0@gmail.com
+ */
 namespace ModelFramework\FilesystemService\Adapter;
 
+use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
-use SplFileInfo;
-use FilesystemIterator;
-use DirectoryIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use League\Flysystem\Util;
 use League\Flysystem\Adapter\AbstractAdapter;
 use Zend\Config\Reader;
@@ -15,22 +15,39 @@ use Zend\Config\Reader;
 
 class Pydio extends AbstractAdapter
 {
+
+    /**
+     * @var string path prefix
+     */
+    protected $pathPrefix = '/';
+
+    /**
+     * File permission value
+     * @var array
+     */
     protected static $permissions = [
-        'public'  => 0744,
-        'private' => 0700,
+        'public'  => 744,
+        'private' => 700,
     ];
 
+    /**
+     * Allow actions and url
+     * @var array
+     */
     protected static $actions = [
         'upload'      => '/upload/put/',
+        'mkfile'      => '/mkfile/',
         'mkdir'       => '/mkdir/',
+        'purge'       => '/purge/',
         'ls'          => '/ls/',
         'download'    => '/download/',
         'get_content' => '/get_content/',
+        'put_content' => '/put_content/put/',
         'rename'      => '/rename/',
         'copy'        => '/copy/',
         'move'        => '/move/',
         'delete'      => '/delete/',
-
+        'chmod'       => '/chmod/',
 
     ];
 
@@ -60,7 +77,6 @@ class Pydio extends AbstractAdapter
      * @var
      */
     protected $pydioRestApi;
-
 
     /**
      * @var string authToken
@@ -93,6 +109,12 @@ class Pydio extends AbstractAdapter
         $this->pydioRestApi = $pydioRestApi;
     }
 
+    /**
+     * Generate authentication token
+     * @param $actionUrl
+     * @return bool|string
+     * @throws \Exception
+     */
     protected function getAuthToken($actionUrl)
     {
 
@@ -103,12 +125,15 @@ class Pydio extends AbstractAdapter
 
             $curl = curl_init($apiUrl);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_USERPWD, $this->pydioRestUser.':'.$this->pydioRestPw);
-            $response = curl_exec($curl);
+            curl_setopt($curl, CURLOPT_USERPWD, $this->pydioRestUser . ':' . $this->pydioRestPw);
 
+            if (!$response = curl_exec($curl)) {
+                return false;
+            }
             if (curl_getinfo($curl, CURLINFO_HTTP_CODE) >= 400) {
                 throw new \Exception ($response);
             }
+
             curl_close($curl);
 
             $jsonResponse = json_decode($response);
@@ -124,7 +149,14 @@ class Pydio extends AbstractAdapter
         return $authHash;
     }
 
-
+    /**
+     * API request
+     * @param $action
+     * @param $path
+     * @param array $postData
+     * @return mixed
+     * @throws \Exception
+     */
     protected function request($action, $path, $postData = [])
     {
         $actionUrl = self::$actions[$action] . $path;
@@ -162,6 +194,10 @@ class Pydio extends AbstractAdapter
      */
     protected function ensureDirectory($root)
     {
+        if (!$this->has($root)) {
+            return false;
+        }
+        return $root;
     }
 
     /**
@@ -185,14 +221,28 @@ class Pydio extends AbstractAdapter
      */
     public function write($path, $contents, Config $config)
     {
-        $this->createDir(dirname($path), $config);
+        if (!$this->has($this->getDirname($path))) {
+            $this->createDir($this->getDirname($path), $config);
+        }
+
+        $this->request('mkfile', $path);
+
         $postData = [
-            "xhr_uploader"                       => urlencode("true"),
-            "urlencoded_filename"                => basename($path),
-            '@userfile_0"; filename="fake-name"' => $contents,
+            "file"    => '/' . $path,
+            'content' => $contents,
+            '_method' => 'put',
         ];
-        $this->request('upload', dirname($path), $postData);
-        return $path;
+        $this->request('put_content', $path, $postData);
+
+        $size = strlen($contents);
+        $type = 'file';
+
+        if ($visibility = $config->get('visibility')) {
+            $result['visibility'] = $visibility;
+            $this->setVisibility($path, $visibility);
+        }
+
+        return compact('contents', 'type', 'size', 'path');
     }
 
     /**
@@ -205,8 +255,8 @@ class Pydio extends AbstractAdapter
      */
     public function writeStream($path, $resource, Config $config)
     {
-        if (!$this->has(dirname($path))) {
-            $this->createDir(dirname($path), $config);
+        if (!$this->has($this->getDirname($path))) {
+            $this->createDir($this->getDirname($path), $config);
         }
 
         $string = '';
@@ -221,10 +271,10 @@ class Pydio extends AbstractAdapter
             'userfile_0"; filename="fake-name"' => $string,
         ];
 
-        $this->request('upload', dirname($path), $postData);
+        $this->request('upload', $this->getDirname($path), $postData);
 
         if ($visibility = $config->get('visibility')) {
-        //    $this->setVisibility($path, $visibility);
+            $this->setVisibility($path, $visibility);
         }
 
         return compact('path', 'visibility');
@@ -238,9 +288,8 @@ class Pydio extends AbstractAdapter
      */
     public function readStream($path)
     {
-        $response = $this->request('get_content', $path);
-
-        $stream = fopen('data://text/plain;base64,' . base64_encode($response), 'r');
+        $response = $this->read($path);
+        $stream = fopen('data://text/plain;base64,' . base64_encode($response['contents']), 'r');
 
         return compact('stream', 'path');
     }
@@ -268,11 +317,23 @@ class Pydio extends AbstractAdapter
      */
     public function update($path, $contents, Config $config)
     {
-        $location = $this->applyPathPrefix($path);
-        $mimetype = Util::guessMimeType($path, $contents);
+        if (!$this->has($path)) {
+            throw new \Exception ('File not found' . $path);
+        }
 
-        if (($size = file_put_contents($location, $contents, LOCK_EX)) === false) {
-            return false;
+        $postData = [
+            "file"    => '/' . $path,
+            'content' => $contents,
+            '_method' => 'put',
+        ];
+        $this->request('put_content', $path, $postData);
+
+        $size = strlen($contents);
+        $mimetype = $this->getMimetype($path);
+
+        if ($visibility = $config->get('visibility')) {
+            $result['visibility'] = $visibility;
+            $this->setVisibility($path, $visibility);
         }
 
         return compact('path', 'size', 'contents', 'mimetype');
@@ -286,7 +347,6 @@ class Pydio extends AbstractAdapter
      */
     public function read($path)
     {
-
         $contents = $this->request('download', $path);
         return compact('contents', 'path');
     }
@@ -301,12 +361,17 @@ class Pydio extends AbstractAdapter
     public function rename($path, $new_name)
     {
 
+        if (!$this->has($this->getDirname($new_name))) {
+            $this->createDir($this->getDirname($new_name), new Config());
+        }
+
         $postData = [
             "file"         => '/' . $path,
             "filename_new" => '/' . basename($new_name),
-            "dest"         => '/' . dirname($new_name),
+            "dest"         => '/' . $this->getDirname($new_name),
+            "dir"          => '/' . $this->getDirname($path),
         ];
-        $contents = $this->request('rename', $path, $postData);
+        $contents = $this->request('move', $path, $postData);
         return compact('contents', 'path');
 
     }
@@ -320,11 +385,17 @@ class Pydio extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        $location = $this->applyPathPrefix($path);
-        $destination = $this->applyPathPrefix($newpath);
-        $this->ensureDirectory(dirname($destination));
 
-        return copy($location, $destination);
+        if (!$this->has($this->getDirname($newpath))) {
+            $this->createDir($this->getDirname($newpath), new Config());
+        }
+
+        $postData = [
+            "file" => '/' . $path,
+            "dest" => '/' . $this->getDirname($newpath),
+            "dir"  => '/' . $this->getDirname($path),
+        ];
+        return $this->request('copy', $path, $postData);
     }
 
     /**
@@ -352,6 +423,8 @@ class Pydio extends AbstractAdapter
      */
     public function listContents($directory = '', $recursive = false)
     {
+
+
         $response = $this->request('ls', $directory);
 
         if ($xml = simplexml_load_string($response)) {
@@ -371,7 +444,7 @@ class Pydio extends AbstractAdapter
      */
     public function getMetadata($path)
     {
-        $response = $this->request('ls', dirname($path), ["file" => basename($path)]);
+        $response = $this->request('ls', $this->getDirname($path), ["file" => basename($path)]);
 
         $xml = simplexml_load_string($response);
         if (count($xml)) {
@@ -400,10 +473,7 @@ class Pydio extends AbstractAdapter
      */
     public function getMimetype($path)
     {
-//        $location = $this->applyPathPrefix($path);
-//        $finfo = new Finfo(FILEINFO_MIME_TYPE);
-//
-//        return ['mimetype' => $finfo->file($location)];
+        return $this->getMetadata($path);
     }
 
     /**
@@ -418,6 +488,17 @@ class Pydio extends AbstractAdapter
     }
 
     /**
+     * Get the permissions of a file
+     *
+     * @param $path
+     * @return array
+     */
+    public function getPermission($path)
+    {
+        return $this->getMetadata($path);
+    }
+
+    /**
      * Get the visibility of a file
      *
      * @param $path
@@ -425,7 +506,10 @@ class Pydio extends AbstractAdapter
      */
     public function getVisibility($path)
     {
-        return;
+        $permissions = octdec(substr(sprintf('%o', $this->getPermission($path)), -4));
+        $visibility = $permissions & 0044 ? AdapterInterface::VISIBILITY_PUBLIC : AdapterInterface::VISIBILITY_PRIVATE;
+
+        return compact('visibility');
     }
 
     /**
@@ -437,7 +521,10 @@ class Pydio extends AbstractAdapter
      */
     public function setVisibility($path, $visibility)
     {
-        return;
+        $this->request('chmod', $this->getDirname($path), [
+            "file"        => '/' . ($path),
+            "chmod_value" => static::$permissions[$visibility]]);
+        return compact('visibility');
     }
 
     /**
@@ -451,10 +538,14 @@ class Pydio extends AbstractAdapter
     public function createDir($dirname, Config $config)
     {
 
-        $create = '/';
+        if ($this->has($dirname)) {
+            return ['path' => $dirname, 'type' => 'dir'];
+        }
+
+        $create = '';
         foreach (explode('/', $dirname) as $dirname) {
             $create .= '/' . $dirname;
-            if(!$this->request('mkdir', $create)){
+            if (!$this->request('mkdir', $create)) {
                 return false;
             }
         }
@@ -470,23 +561,7 @@ class Pydio extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-
-//        if (!$this->has($dirname)) {
-//            return false;
-//        }
-//
-//        $contents = $this->listContents($dirname, true);
-//        $contents = array_reverse($contents);
-//
-//        foreach ($contents as $file) {
-//            if ($file['type'] === 'file') {
-//                unlink($this->applyPathPrefix($file['path']));
-//            } else {
-//                rmdir($this->applyPathPrefix($file['path']));
-//            }
-//        }
-//
-//        return rmdir($dirname);
+        return $this->delete($dirname);
     }
 
     /**
@@ -497,9 +572,13 @@ class Pydio extends AbstractAdapter
     protected function normalizeFileInfo($xml)
     {
         $normalized = [
-            'type'      => ($xml->tree['is_file'] == 'true') ? 'file' : 'dir',
-            'path'      => (string)$xml->tree['filename'],
-            'timestamp' => (string)$xml->tree['ajxp_modiftime']
+            'type'          => ($xml->tree['is_file'] == 'true') ? 'file' : 'dir',
+            'path'          => (string)$xml->tree['filename'],
+            'timestamp'     => (string)$xml->tree['ajxp_modiftime'],
+            'permission'    => (string)$xml->tree['file_perms'],
+            'mimestring_id' => (string)$xml->tree['mimestring_id'],
+            'mimestring'    => (string)$xml->tree['mimestring'],
+            'mimetype'      => (string)$xml->tree['mimestring'],
         ];
         if ($normalized['type'] === 'file') {
             $normalized['size'] = (string)$xml->tree['bytesize'];
@@ -509,40 +588,13 @@ class Pydio extends AbstractAdapter
     }
 
     /**
-     * Get the normalized path from a SplFileInfo object
-     *
-     * @param   SplFileInfo $file
-     * @return  string
-     */
-    protected function getFilePath(SplFileInfo $file)
-    {
-        $path = $file->getPathname();
-        $path = $this->removePathPrefix($path);
-
-        return trim($path, '\\/');
-    }
-
-    /**
+     * Check root folder
      * @param $path
-     * @return RecursiveIteratorIterator
+     * @return string
      */
-    protected function getRecursiveDirectoryIterator($path)
+    protected function getDirname($path)
     {
-        $directory = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
-        $iterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::SELF_FIRST);
-
-        return $iterator;
-    }
-
-    /**
-     * @param $path
-     * @return DirectoryIterator
-     */
-    protected function getDirectoryIterator($path)
-    {
-        $iterator = new DirectoryIterator($path);
-
-        return $iterator;
+        return (dirname($path) == '.') ? $path : dirname($path);
     }
 
 }
