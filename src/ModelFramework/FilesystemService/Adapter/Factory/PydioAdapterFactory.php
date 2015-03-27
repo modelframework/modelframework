@@ -19,7 +19,6 @@ class PydioAdapterFactory extends AbstractAdapterFactory implements FactoryInter
     {
 
         $adapter = new Adapter(
-            $serviceLocator->get('modelframeworkauthservice'),
             $this->options['login'],
             $this->options['pass'],
             $this->options['api_url'],

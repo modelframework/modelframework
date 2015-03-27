@@ -35,7 +35,7 @@ class Pydio extends AbstractAdapter
      * @var array
      */
     protected static $actions = [
-        'upload'      => '/upload/put/',
+        'upload'      => '/upload/',
         'mkfile'      => '/mkfile/',
         'mkdir'       => '/mkdir/',
         'purge'       => '/purge/',
@@ -101,7 +101,7 @@ class Pydio extends AbstractAdapter
      * @param string $api_url
      * @param string $key
      */
-    public function __construct(\ModelFramework\AuthService\AuthService $auth, $pydioRestUser, $pydioRestPw, $pydioRestApi, $workspaceId)
+    public function __construct($pydioRestUser, $pydioRestPw, $pydioRestApi, $workspaceId)
     {
         $this->workspaceId = $workspaceId;
         $this->pydioRestUser = $pydioRestUser;
@@ -221,7 +221,7 @@ class Pydio extends AbstractAdapter
      */
     public function write($path, $contents, Config $config)
     {
-        if (!$this->has($this->getDirname($path))) {
+        if ($this->getDirname($path) && !$this->has($this->getDirname($path))) {
             $this->createDir($this->getDirname($path), $config);
         }
 
@@ -255,7 +255,7 @@ class Pydio extends AbstractAdapter
      */
     public function writeStream($path, $resource, Config $config)
     {
-        if (!$this->has($this->getDirname($path))) {
+        if ($this->getDirname($path) && !$this->has($this->getDirname($path))) {
             $this->createDir($this->getDirname($path), $config);
         }
 
@@ -265,13 +265,16 @@ class Pydio extends AbstractAdapter
         }
 
         $postData = [
+//            "dir"    => $this->getDirname($path),
+//            "file"    => '/' . $path,
             "xhr_uploader"                      => urlencode("true"),
             "auto_rename"                       => urlencode("false"),
-            "urlencoded_filename"               => urlencode(basename($path)),
+            "urlencoded_filename"               => '/'.(basename($path)),
             'userfile_0"; filename="fake-name"' => $string,
         ];
 
-        $this->request('upload', $this->getDirname($path), $postData);
+        $url=$this->getDirname($path)?'put/'.$this->getDirname($path):$path;
+        $this->request('upload', $url , $postData);
 
         if ($visibility = $config->get('visibility')) {
             $this->setVisibility($path, $visibility);
@@ -352,13 +355,13 @@ class Pydio extends AbstractAdapter
     }
 
     /**
-     * Rename a file
+     * Move a file
      *
      * @param $path
      * @param $newpath
      * @return bool
      */
-    public function rename($path, $new_name)
+    public function move($path, $new_name)
     {
 
         if (!$this->has($this->getDirname($new_name))) {
@@ -377,6 +380,30 @@ class Pydio extends AbstractAdapter
     }
 
     /**
+     * Rename a file
+     *
+     * @param $path
+     * @param $newpath
+     * @return bool
+     */
+    public function rename($path, $new_name)
+    {
+
+        if (!$this->has($this->getDirname($new_name))) {
+            $this->createDir($this->getDirname($new_name), new Config());
+        }
+
+        $postData = [
+            "file"         => '/' . $path,
+            "filename_new" => '/' . basename($new_name),
+//            "dest"         => '/' . $this->getDirname($new_name),
+//            "dir"          => '/' . $this->getDirname($path),
+        ];
+        $contents = $this->request('rename', $path, $postData);
+        return compact('contents', 'path');
+
+    }
+    /**
      * Copy a file
      *
      * @param $path
@@ -385,7 +412,6 @@ class Pydio extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-
         if (!$this->has($this->getDirname($newpath))) {
             $this->createDir($this->getDirname($newpath), new Config());
         }
@@ -421,11 +447,9 @@ class Pydio extends AbstractAdapter
      * @param bool $recursive
      * @return array
      */
-    public function listContents($directory = '', $recursive = false)
+    public function listContents($directory='', $recursive = false)
     {
-
-
-        $response = $this->request('ls', $directory);
+          $response = $this->request('ls', $directory, ["dir" => '/'.($directory)]);
 
         if ($xml = simplexml_load_string($response)) {
             $result = $this->normalizeFileInfo($response);
@@ -444,7 +468,10 @@ class Pydio extends AbstractAdapter
      */
     public function getMetadata($path)
     {
-        $response = $this->request('ls', $this->getDirname($path), ["file" => basename($path)]);
+       if (!$path){
+           return true;
+       }
+        $response = $this->request('ls', $path, ["file" => '/'.($path)]);
 
         $xml = simplexml_load_string($response);
         if (count($xml)) {
@@ -594,7 +621,10 @@ class Pydio extends AbstractAdapter
      */
     protected function getDirname($path)
     {
-        return (dirname($path) == '.') ? $path : dirname($path);
+        if (dirname($path) == '.'){
+
+        }
+        return (dirname($path) == '.') ? '' : dirname($path);
     }
 
 }
