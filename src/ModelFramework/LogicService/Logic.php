@@ -81,7 +81,8 @@ class Logic extends AbstractService
         'CheckNumFieldObserver',
         'AvatarCopyObserver',
         'IsDefaultObserver',
-        'TriggerByModelObserver'
+        'TriggerByModelObserver',
+        'UniqidObserver'
     ];
 
     protected $observers = [ ];
