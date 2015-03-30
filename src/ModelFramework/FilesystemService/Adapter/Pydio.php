@@ -10,7 +10,6 @@ use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util;
 use League\Flysystem\Adapter\AbstractAdapter;
-use Zend\Config\Reader;
 
 
 class Pydio extends AbstractAdapter
@@ -125,6 +124,8 @@ class Pydio extends AbstractAdapter
 
             $curl = curl_init($apiUrl);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_USERPWD, $this->pydioRestUser . ':' . $this->pydioRestPw);
 
             if (!$response = curl_exec($curl)) {
@@ -175,6 +176,8 @@ class Pydio extends AbstractAdapter
         $curlPostData = array_merge($curlPostData, $postData);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $curlPostData);
         $response = curl_exec($curl);
 
@@ -182,6 +185,7 @@ class Pydio extends AbstractAdapter
             throw new \Exception ($response);
         }
         curl_close($curl);
+//        prn($apiUrl,$response);
         return $response;
 
     }
@@ -265,8 +269,8 @@ class Pydio extends AbstractAdapter
         }
 
         $postData = [
-//            "dir"    => $this->getDirname($path),
-//            "file"    => '/' . $path,
+            "dir"    => $this->getDirname($path),
+            "file"    => '/' . $path,
             "xhr_uploader"                      => urlencode("true"),
             "auto_rename"                       => urlencode("false"),
             "urlencoded_filename"               => '/'.(basename($path)),
@@ -472,6 +476,10 @@ class Pydio extends AbstractAdapter
            return true;
        }
         $response = $this->request('ls', $path, ["file" => '/'.($path)]);
+
+        if($response===false){
+            return false;
+        }
 
         $xml = simplexml_load_string($response);
         if (count($xml)) {
