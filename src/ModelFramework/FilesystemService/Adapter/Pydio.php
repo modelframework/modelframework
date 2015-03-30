@@ -592,7 +592,7 @@ class Pydio extends AbstractAdapter
      */
     public function createDir($dirname, Config $config)
     {
-        $path=$this->clean($path);
+        $dirname=$this->clean($dirname);
         if ($this->has($dirname)) {
             return ['path' => $dirname, 'type' => 'dir'];
         }

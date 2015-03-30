@@ -82,7 +82,8 @@ class Logic extends AbstractService
         'AvatarCopyObserver',
         'IsDefaultObserver',
         'TriggerByModelObserver',
-        'UniqidObserver'
+        'UniqidObserver',
+        'RecycleObserver'
     ];
 
     protected $observers = [ ];
