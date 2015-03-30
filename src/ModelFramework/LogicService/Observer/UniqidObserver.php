@@ -13,7 +13,7 @@ class UniqidObserver extends AbstractConfigObserver
     public function process($model, $key, $value)
     {
         if (empty($model->$key)) {
-            $model->$key = hexdec(uniqid(''));
+            $model->$key = time().mt_rand(0,9).mt_rand(0,9);
         }
     }
 }
