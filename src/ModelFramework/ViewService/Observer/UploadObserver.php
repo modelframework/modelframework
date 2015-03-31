@@ -37,31 +37,38 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
             $subject->getLogicServiceVerify()->setParams($subject->getParams());
 
             $dataModel = $this->initModel();
+            if ($oldAvatar = $dataModel->avatar()){
+                $oldAvatar = dirname($fileService->setDestenation($oldAvatar, true, lcfirst($dataModel->getModelName()))) . '/'.$oldAvatar;
+            }
 
             foreach ($files as $_group => $_filefields) {
                 foreach ($_filefields as $_fieldname => $_file) {
-                    if (isset($dataModel->$_fieldname) && !$_file[ 'error' ]) {
-                        $realname  = $_fieldname.'_real_name';
-                        $size      = $_fieldname.'_size';
-                        $extension = $_fieldname.'_extension';
+                    if (isset($dataModel->$_fieldname) && !$_file['error']) {
+                        $realname = $_fieldname . '_real_name';
+                        $size = $_fieldname . '_size';
+                        $extension = $_fieldname . '_extension';
                         if ($_fieldname != 'avatar') {
-                            $dataModel->$_fieldname = $fileService->saveFile($_file[ 'name' ], $_file[ 'tmp_name' ]);
+                            $dataModel->$_fieldname = $fileService->saveFile($_file['name'], $_file['tmp_name']);
                         } else {
-                            if( substr($_file['type'],0, 5)!='image'){
+                            if (substr($_file['type'], 0, 5) != 'image') {
                                 break;
                             }
                             $dataModel->$_fieldname =
-                                basename($fileService->saveFile($_file[ 'name' ], $_file[ 'tmp_name' ], true,
+                                basename($fileService->saveFile($_file['name'], $_file['tmp_name'], true,
                                     lcfirst($dataModel->getModelName())));
+                            /* Delete old avatar */
+                            if (isset($oldAvatar)) {
+                                $fileService->deleteFile($oldAvatar);
+                            }
                         }
                         if (isset($dataModel->$size)) {
-                            $dataModel->$size = (string) (round((float) $_file[ 'size' ] / 1048576, 2)).' MB';
+                            $dataModel->$size = (string)(round((float)$_file['size'] / 1048576, 2)) . ' MB';
                         }
                         if (isset($dataModel->$realname)) {
-                            $dataModel->$realname = basename($_file[ 'name' ]);
+                            $dataModel->$realname = basename($_file['name']);
                         }
                         if (isset($dataModel->$extension)) {
-                            $dataModel->$extension = $fileService->getFileExtension($_file[ 'name' ]);
+                            $dataModel->$extension = $fileService->getFileExtension($_file['name']);
                         }
                         if (isset($dataModel->filesystem)) {
                             $dataModel->filesystem = $fileService->getFilesystem();
@@ -89,17 +96,17 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
 
     public function initModel()
     {
-        $subject    = $this->getSubject();
+        $subject = $this->getSubject();
         $viewConfig = $subject->getViewConfigVerify();
-        $query      =
+        $query =
             $subject->getQueryServiceVerify()
-                    ->get($viewConfig->query)
-                    ->setParams($subject->getParams())
-                    ->process();
+                ->get($viewConfig->query)
+                ->setParams($subject->getParams())
+                ->process();
 
         $data = $subject->getData();
-        if (isset($data[ 'model' ]) && $data[ 'model' ] instanceof DataModelInterface) {
-            $model = $data[ 'model' ];
+        if (isset($data['model']) && $data['model'] instanceof DataModelInterface) {
+            $model = $data['model'];
         } else {
             if ($viewConfig->mode == 'insert') {
                 $model = $subject->getGateway()->model();
@@ -110,14 +117,14 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                     throw new \Exception('Data is not accessible');
                 }
             } else {
-                throw new \Exception("Wrong mode  '".$viewConfig->mode."' in  ".$viewConfig->key.
-                                      ' View Config for the '.get_class());
+                throw new \Exception("Wrong mode  '" . $viewConfig->mode . "' in  " . $viewConfig->key .
+                    ' View Config for the ' . get_class());
             }
         }
 
         if ($model instanceof AclDataModel) {
             $this->_aclModel = $model;
-            $this->_model    = $this->_aclModel->getDataModel();
+            $this->_model = $this->_aclModel->getDataModel();
         }
 
         $subject->getLogicServiceVerify()->get('setDefaults', $model->getModelName())->trigger($this->_model);
@@ -132,7 +139,7 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
             $model = $this->_aclModel;
         }
 
-        $this->getSubject()->setData([ 'model' => $model ]);
+        $this->getSubject()->setData(['model' => $model]);
 
         return $model;
     }
