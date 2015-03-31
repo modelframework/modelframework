@@ -57,7 +57,7 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
                                 basename($fileService->saveFile($_file['name'], $_file['tmp_name'], true,
                                     lcfirst($dataModel->getModelName())));
                             /* Delete old avatar */
-                            if (isset($oldAvatar)) {
+                            if ($oldAvatar) {
                                 $fileService->deleteFile($oldAvatar);
                             }
                         }
