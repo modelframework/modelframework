@@ -95,6 +95,7 @@ class View
             'PDFObserver',
             'ListLiteObserver',
             'MailTplObserver',
+            'CloneObserver',
             'ConstructPatternMenuObserver',
         ];
     protected $observers = [];
