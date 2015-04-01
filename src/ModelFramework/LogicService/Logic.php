@@ -83,7 +83,8 @@ class Logic extends AbstractService
         'IsDefaultObserver',
         'TriggerByModelObserver',
         'UniqidObserver',
-        'RecycleObserver'
+        'RecycleObserver',
+        'ParseLinkObserver'
     ];
 
     protected $observers = [ ];
