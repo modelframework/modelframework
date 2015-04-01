@@ -93,6 +93,7 @@ class Pydio extends AbstractAdapter
      */
     protected $workspaceId = '';
 
+
     /**
      * Constructor.
      *
@@ -160,7 +161,7 @@ class Pydio extends AbstractAdapter
      */
     protected function request($action, $path, $postData = [])
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         $actionUrl = self::$actions[$action] . $path;
 
         $apiUrl = $this->pydioRestApi . $this->workspaceId . $actionUrl;
@@ -226,7 +227,7 @@ class Pydio extends AbstractAdapter
      */
     public function write($path, $contents, Config $config)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
 
         if ($this->getDirname($path) && !$this->has($this->getDirname($path))) {
             $this->createDir($this->getDirname($path), $config);
@@ -234,7 +235,7 @@ class Pydio extends AbstractAdapter
 
         $this->request('mkfile', $path);
 
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         $postData = [
             "file"    => '/' . $path,
             'content' => $contents,
@@ -263,7 +264,7 @@ class Pydio extends AbstractAdapter
      */
     public function writeStream($path, $resource, Config $config)
     {
-      //  $path=$this->clean($path);
+        //  $path=$this->clean($path);
 
         if ($this->getDirname($path) && !$this->has($this->getDirname($path))) {
             $this->createDir($this->getDirname($path), $config);
@@ -301,7 +302,7 @@ class Pydio extends AbstractAdapter
      */
     public function readStream($path)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
 
         $response = $this->read($path);
         $stream = fopen('data://text/plain;base64,' . base64_encode($response['contents']), 'r');
@@ -332,7 +333,7 @@ class Pydio extends AbstractAdapter
      */
     public function update($path, $contents, Config $config)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         if (!$this->has($path)) {
             throw new \Exception ('File not found' . $path);
         }
@@ -363,7 +364,7 @@ class Pydio extends AbstractAdapter
      */
     public function read($path)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         $contents = $this->request('download', $path);
         return compact('contents', 'path');
     }
@@ -377,8 +378,8 @@ class Pydio extends AbstractAdapter
      */
     public function move($path, $new_name)
     {
-        $path=$this->clean($path);
-        $new_name=$this->clean($new_name);
+        $path = $this->clean($path);
+        $new_name = $this->clean($new_name);
 
         if (!$this->has($this->getDirname($new_name))) {
             $this->createDir($this->getDirname($new_name), new Config());
@@ -404,8 +405,8 @@ class Pydio extends AbstractAdapter
      */
     public function rename($path, $new_name)
     {
-        $path=$this->clean($path);
-        $new_name=$this->clean($new_name);
+        $path = $this->clean($path);
+        $new_name = $this->clean($new_name);
         if (!$this->has($this->getDirname($new_name))) {
             $this->createDir($this->getDirname($new_name), new Config());
         }
@@ -430,8 +431,8 @@ class Pydio extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        $path=$this->clean($path);
-        $newpath=$this->clean($newpath);
+        $path = $this->clean($path);
+        $newpath = $this->clean($newpath);
         if (!$this->has($this->getDirname($newpath))) {
             $this->createDir($this->getDirname($newpath), new Config());
         }
@@ -452,7 +453,7 @@ class Pydio extends AbstractAdapter
      */
     public function delete($path)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         $postData = [
             "file" => '/' . $path,
         ];
@@ -489,7 +490,7 @@ class Pydio extends AbstractAdapter
      */
     public function getMetadata($path)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         if (!$path) {
             return true;
         }
@@ -559,7 +560,7 @@ class Pydio extends AbstractAdapter
      */
     public function getVisibility($path)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         $permissions = octdec(substr(sprintf('%o', $this->getPermission($path)), -4));
         $visibility = $permissions & 0044 ? AdapterInterface::VISIBILITY_PUBLIC : AdapterInterface::VISIBILITY_PRIVATE;
 
@@ -575,7 +576,7 @@ class Pydio extends AbstractAdapter
      */
     public function setVisibility($path, $visibility)
     {
-        $path=$this->clean($path);
+        $path = $this->clean($path);
         $this->request('chmod', $this->getDirname($path), [
             "file"        => '/' . ($path),
             "chmod_value" => static::$permissions[$visibility]]);
@@ -592,7 +593,7 @@ class Pydio extends AbstractAdapter
      */
     public function createDir($dirname, Config $config)
     {
-        $dirname=$this->clean($dirname);
+        $dirname = $this->clean($dirname);
         if ($this->has($dirname)) {
             return ['path' => $dirname, 'type' => 'dir'];
         }

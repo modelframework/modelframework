@@ -187,6 +187,12 @@ class FilesystemService extends Filesystem implements FilesystemServiceInterface
 
     public function getServerUrl()
     {
-        return $this->service->get('ViewHelperManager')->get('serverUrl')->__invoke();
+        $config = $this->service->get('config');
+        $defaultAdapter=$config['bsb_flysystem']['filesystems']['default']['adapter'];
+        if(isset($config['bsb_flysystem']['adapters'][$defaultAdapter]['options']['public_url'])){
+            return $config['bsb_flysystem']['adapters'][$defaultAdapter]['options']['public_url'];
+        }
+
+        return $this->service->get('ViewHelperManager')->get('serverUrl')->__invoke().'/link';
     }
 }
