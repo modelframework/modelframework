@@ -107,7 +107,7 @@ class PDFObserver implements \SplObserver, ConfigAwareInterface, SubjectAwareInt
         $model = $this->setModel($dataModel);
         $subject->getGatewayServiceVerify()
             ->get('Document')->save($dataModel);
-
+        $subject->getLogicServiceVerify()->get('postinsert', 'Document')->trigger($this->_model);
         $url = $subject->getParams()->getController()->url()
             ->fromRoute('common', [
             'data' => 'document',
