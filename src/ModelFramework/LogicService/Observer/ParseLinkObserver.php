@@ -13,7 +13,7 @@ class ParseLinkObserver extends AbstractConfigObserver
     public function process($model, $key, $value)
     {
         if (!empty($model->$key) && empty(parse_url($model->$key)['scheme'])){
-            $model->$key = addslashes('http:\\').$model->$key;
+            $model->$key = 'http://'.$model->$key;
         }
     }
 }
