@@ -14,6 +14,7 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
 
     public function getListParams( $hash )
     {
+        if(!$hash) return null;
         $listParams = $this->getGatewayServiceVerify()->get('ListParams')
                           ->find(['label' => $hash]);
         if ($listParams->count() > 0) {
@@ -27,6 +28,7 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
 
     public function generateLabel($viewConfig, $qparams)
     {
+        if($qparams->fromRoute('view')!='list') return null;
         $listParams = $this->getGatewayServiceVerify()->get('ListParams');
         $params        = $listParams->model();
         $params->rows = $qparams->fromQuery('rowcount',$viewConfig->rows);
