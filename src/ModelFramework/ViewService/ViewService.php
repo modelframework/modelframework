@@ -18,6 +18,8 @@ use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\FilesystemService\FilesystemServiceAwareInterface;
 use ModelFramework\FilesystemService\FilesystemServiceAwareTrait;
+use ModelFramework\ListParamsService\ListParamsServiceAwareInterface;
+use ModelFramework\ListParamsService\ListParamsServiceAwareTrait;
 use ModelFramework\PDFService\PDFServiceAwareInterface;
 use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\FormService\FormServiceAwareInterface;
@@ -41,12 +43,12 @@ class ViewService
                FormServiceAwareInterface, AuthServiceAwareInterface,
                LogicServiceAwareInterface, PDFServiceAwareInterface,
                QueryServiceAwareInterface, FileServiceAwareInterface,
-                FilesystemServiceAwareInterface,TwigServiceAwareInterface
+                FilesystemServiceAwareInterface,TwigServiceAwareInterface, ListParamsServiceAwareInterface
 {
 
     use ConfigServiceAwareTrait, GatewayServiceAwareTrait, AclServiceAwareTrait,
         ModelServiceAwareTrait, FormServiceAwareTrait, AuthServiceAwareTrait, PDFServiceAwareTrait,
-        LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait, FilesystemServiceAwareTrait, TwigServiceAwareTrait;
+        LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait, FilesystemServiceAwareTrait, TwigServiceAwareTrait, ListParamsServiceAwareTrait;
 
     /**
      * @param string $viewName
@@ -111,6 +113,7 @@ class ViewService
         $view->setFilesystemService($this->getFilesystemServiceVerify());
         $view->setPDFService($this->getPDFServiceVerify());
         $view->setTwigService($this->getTwigServiceVerify());
+        $view->setListParamsService($this->getListParamsServiceVerify());
         $view->init();
 
         return $view;

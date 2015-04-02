@@ -22,6 +22,8 @@ use ModelFramework\FileService\FileServiceAwareInterface;
 use ModelFramework\FileService\FileServiceAwareTrait;
 use ModelFramework\FilesystemService\FilesystemServiceAwareInterface;
 use ModelFramework\FilesystemService\FilesystemServiceAwareTrait;
+use ModelFramework\ListParamsService\ListParamsServiceAwareInterface;
+use ModelFramework\ListParamsService\ListParamsServiceAwareTrait;
 use ModelFramework\PDFService\PDFServiceAwareInterface;
 use ModelFramework\PDFService\PDFServiceAwareTrait;
 use ModelFramework\GatewayService\GatewayAwareInterface;
@@ -60,14 +62,14 @@ class View
                LogicServiceAwareInterface, PDFServiceAwareInterface,
                QueryServiceAwareInterface, ConfigServiceAwareInterface,
                \SplSubject, ResponseAwareInterface, DataModelAwareInterface,
-		        TwigServiceAwareInterface, FilesystemServiceAwareInterface
+		        TwigServiceAwareInterface, FilesystemServiceAwareInterface, ListParamsServiceAwareInterface
 {
 
     use ViewConfigAwareTrait, ParsedModelConfigAwareTrait, GatewayAwareTrait, ParamsAwareTrait,
         GatewayServiceAwareTrait, ModelServiceAwareTrait, FormServiceAwareTrait, PDFServiceAwareTrait,
         AuthServiceAwareTrait, LogicServiceAwareTrait, QueryServiceAwareTrait, FileServiceAwareTrait,
         AclServiceAwareTrait, ConfigServiceAwareTrait, ResponseAwareTrait, DataModelAwareTrait,
-	TwigServiceAwareTrait, FilesystemServiceAwareTrait;
+	TwigServiceAwareTrait, FilesystemServiceAwareTrait, ListParamsServiceAwareTrait;
 
     protected $allowed_observers
         = [
@@ -295,6 +297,8 @@ class View
         $result['saurlback']   = $this->getSaUrlBack($this->getParams()
             ->fromQuery('back',
                 'home'));
+        $result['listparamshash'] = $this->getListParamsServiceVerify()->generateLabel($viewConfig, $this->getParams());
+        $result['listparams'] = $this->getListParamsServiceVerify()->getListParams($result['listparamshash']);
         $this->setData($result);
     }
 
