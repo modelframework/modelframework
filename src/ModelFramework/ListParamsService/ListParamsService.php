@@ -28,7 +28,7 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
 
     public function generateLabel($viewConfig, $qparams)
     {
-        if($qparams->fromRoute('view')!='list') return null;
+        if($qparams->fromRoute('view')!='list' && $qparams->fromRoute('view')!=null) return null;
         $listParams = $this->getGatewayServiceVerify()->get('ListParams');
         $params        = $listParams->model();
         $params->rows = $qparams->fromQuery('rowcount',$viewConfig->rows);

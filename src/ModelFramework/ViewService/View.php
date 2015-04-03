@@ -298,7 +298,8 @@ class View
             ->fromQuery('back',
                 'home'));
         $result['listparamshash'] = $this->getListParamsServiceVerify()->generateLabel($viewConfig, $this->getParams());
-        $result['listparams'] = $this->getListParamsServiceVerify()->getListParams($result['listparamshash']);
+        $result['listparams'] = $this->getListParamsServiceVerify()->getListParams($this->getParams()
+                                                                                        ->fromQuery('lp',null));
         $this->setData($result);
     }
 
