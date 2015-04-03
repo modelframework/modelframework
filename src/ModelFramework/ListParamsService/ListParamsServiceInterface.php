@@ -12,5 +12,5 @@ interface ListParamsServiceInterface
 {
     public function getListParams($hash);
 
-    public function generateLabel($viewConfig, $params);
+    public function generateLabel($params);
 }
