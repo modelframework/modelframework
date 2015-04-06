@@ -12,5 +12,9 @@ interface ListParamsServiceInterface
 {
     public function getListParams($hash);
 
-    public function generateLabel($params);
+    public function getHash($modelName, $params, $customParams = null);
+
+    public function gatherParams($model,$modelName, $qparams);
+
+    public function checkParams($model);
 }

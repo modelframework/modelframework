@@ -297,7 +297,7 @@ class View
         $result['saurlback']   = $this->getSaUrlBack($this->getParams()
             ->fromQuery('back',
                 'home'));
-        $result['listparamshash'] = $this->getListParamsServiceVerify()->generateLabel($this->getParams());
+        $result['listparamshash'] = $this->getListParamsServiceVerify()->getHash($result['modelname'], $this->getParams());
         $result['listparams'] = $this->getListParamsServiceVerify()->getListParams($this->getParams()
                                                                                         ->fromQuery('lp',null));
         $this->setData($result);
