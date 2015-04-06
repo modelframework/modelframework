@@ -48,7 +48,10 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
         if ($customParams) {
             if (is_array( $customParams )) {
                 if(!empty($customParams['hash'])){
-                    $params = $this->getListParams($customParams['hash']);
+                    $tmp = $this->getListParams($customParams['hash']);
+                    if ($tmp){
+                        $params = $tmp;
+                    }
                 }
                 $params = $params->merge($customParams);
                 $params->label = '';
@@ -92,14 +95,16 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
             'letter' => $model->letter,
             'w'      => $model->w,
         ] );
+//        prn($checkParam);
         if ($checkParam) {
             return $checkParam->label;
         } else {
             $model->label = md5( md5( time() . uniqid() ) );
+            $model->_id = null;
             try {
                 $this->_listParams->save( $model );
             } catch ( \Exception $ex ) {
-                $this->_listParams->label = null;
+                $model->label = null;
             }
             return $model->label;
         }
