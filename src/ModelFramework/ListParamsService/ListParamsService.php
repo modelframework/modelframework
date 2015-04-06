@@ -50,7 +50,8 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
                 if(!empty($customParams['hash'])){
                     $params = $this->getListParams($customParams['hash']);
                 }
-                $params = $params->exchangeArray($customParams);
+                $params = $params->merge($customParams);
+                $params->label = '';
             }
             else throw new \Exception('Wrong params');
             $hash = $this->checkParams( $params );
@@ -68,6 +69,7 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
         }
         $viewConfig    = $this->getConfigServiceVerify()->getByObject( $modelName . '.list',
             new ViewConfig() );
+        if(!$viewConfig) return null;
         $model->rows   = $qparams->fromQuery( 'rowcount', $viewConfig->rows );
         $model->p      = $qparams->fromRoute( 'page', '1' );
         $model->sort   = $qparams->fromRoute( 'sort', 'created_dtm' );
