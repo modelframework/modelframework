@@ -20,6 +20,7 @@ use ModelFramework\ModelService\ModelServiceAwareTrait;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\Session\Container;
 use Wepo\Model\Role;
+use Wepo\Model\Status;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\AclInterface;
 use Zend\Stdlib\ArrayUtils;
@@ -167,30 +168,42 @@ class AuthService
             $company = $this->getGateway('MainCompany')
                 ->get($this->_mainUser->company_id);
 
-            $configDB = $this->getGateway('MainConfig')
-                ->findOne(['company_id' => $company->_id]);
+//            $configDB = $this->getGateway('MainConfig')
+//                ->findOne(['company_id' => $company->_id]);
+//
+//            if (!$configDB) {
+//                if (($defaultCompanyConfig = include  'config/autoload/company.php')===false) {
+//                    throw new \Exception('No exist default company config file');
+//                }
+//
+//                $dataModel = $this->getGateway('MainConfig')->model();
+//                $dataModel->company_id = $company->_id;
+//                $dataModel->config = json_encode($defaultCompanyConfig);
+//                $this->getGateway('MainConfig')->save($dataModel);
+//
+//                $companyConfig=$defaultCompanyConfig;
+//            } else {
+//               $companyConfig =json_decode($configDB->config(),true);
+//            }
 
-            if (!$configDB) {
-                if (($defaultCompanyConfig = include  'config/autoload/company.php')===false) {
-                    throw new \Exception('No exist default company config file');
-                }
-
-                $dataModel = $this->getGateway('MainConfig')->model();
-                $dataModel->company_id = $company->_id;
-                $dataModel->config = json_encode($defaultCompanyConfig);
-                $this->getGateway('MainConfig')->save($dataModel);
-
-                $companyConfig=$defaultCompanyConfig;
-            } else {
-               $companyConfig =json_decode($configDB->config(),true);
-            }
+            $companyConfig['bsb_flysystem']['adapters']['pydio']['options'] =
+                $this->getGateway('MainFS')
+                ->findOne(['company_id' => $company->_id ,
+                    'isdefault'=>'true',
+                    'status_id'=>Status::NORMAL])
+                    ->toArray();
 
             $config = $this->getServiceLocator()->get('Config');
             $config = ArrayUtils::merge($config, $companyConfig);
 
+            $this->getServiceLocator()
+                ->setAllowOverride('Config')
+                ->setService('Config',$config);
 
-            $dbs = $this->getGateway('MainDb')
-                ->find(['company_id' => $company->_id]);
+            $dbs     = $this->getGateway( 'MainDb' )
+                ->find( [ 'company_id' => $company->_id ,
+                    'isdefault'=>'true',
+                    'status_id'=>Status::NORMAL]);
 
             if ($dbs->count() > 0) {
                 $db = $dbs->current();
@@ -231,6 +244,7 @@ class AuthService
                     }
                 }
             } else {
+                $this->cleanUsers();
                 throw new \Exception('Could not connect to db');
             }
         }
@@ -290,4 +304,5 @@ class AuthService
     {
         return $this->_user->role_title;
     }
+
 }
