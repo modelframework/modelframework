@@ -70,6 +70,7 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
         if ($qparams->fromRoute( 'view' ) != 'list' && $qparams->fromRoute( 'view' ) != null) {
             return null;
         }
+        $modelName = ucfirst($modelName);
         $viewConfig    = $this->getConfigServiceVerify()->getByObject( $modelName . '.list',
             new ViewConfig() );
         if(!$viewConfig) return null;
