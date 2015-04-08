@@ -47,16 +47,17 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
         $params     = $listParams->model();
         if ($customParams) {
             if (is_array( $customParams )) {
-                if(!empty($customParams['hash'])){
-                    $tmp = $this->getListParams($customParams['hash']);
-                    if ($tmp){
+                if (!empty( $customParams[ 'hash' ] )) {
+                    $tmp = $this->getListParams( $customParams[ 'hash' ] );
+                    if ($tmp) {
                         $params = $tmp;
                     }
                 }
-                $params = $params->merge($customParams);
+                $params        = $params->merge( $customParams );
                 $params->label = '';
+            } else {
+                throw new \Exception( 'Wrong params' );
             }
-            else throw new \Exception('Wrong params');
             $hash = $this->checkParams( $params );
         } else {
             $params = $this->gatherParams( $params, $modelName, $qparams );
@@ -70,16 +71,19 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
         if ($qparams->fromRoute( 'view' ) != 'list' && $qparams->fromRoute( 'view' ) != null) {
             return null;
         }
-        $modelName = ucfirst($modelName);
-        $viewConfig    = $this->getConfigServiceVerify()->getByObject( $modelName . '.list',
+        $modelName  = ucfirst( $modelName );
+        $viewConfig = $this->getConfigServiceVerify()->getByObject( $modelName . '.list',
             new ViewConfig() );
-        if(!$viewConfig) return null;
-        $model->rows   = $qparams->fromQuery( 'rowcount', $viewConfig->rows );
-        $model->p      = $qparams->fromRoute( 'page', '1' );
-        $model->sort   = $qparams->fromRoute( 'sort', 'created_dtm' );
-        $model->desc   = $qparams->fromRoute( 'desc', '1' );
-        $model->letter = $qparams->fromQuery( 'letter', null );
-        $model->w      = $qparams->fromQuery( 'q', null );
+        if (!$viewConfig) {
+            return null;
+        }
+        $model->modelname = $modelName;
+        $model->rows      = $qparams->fromQuery( 'rowcount', $viewConfig->rows );
+        $model->p         = $qparams->fromRoute( 'page', '1' );
+        $model->sort      = $qparams->fromRoute( 'sort', 'created_dtm' );
+        $model->desc      = $qparams->fromRoute( 'desc', '1' );
+        $model->letter    = $qparams->fromQuery( 'letter', null );
+        $model->w         = $qparams->fromQuery( 'q', null );
         return $model;
     }
 
@@ -89,19 +93,20 @@ class ListParamsService implements ListParamsServiceInterface, GatewayServiceAwa
             return null;
         }
         $checkParam = $this->_listParams->findOne( [
-            'rows'   => $model->rows,
-            'p'      => $model->p,
-            'sort'   => $model->sort,
-            'desc'   => $model->desc,
-            'letter' => $model->letter,
-            'w'      => $model->w,
+            'rows'      => $model->rows,
+            'p'         => $model->p,
+            'sort'      => $model->sort,
+            'desc'      => $model->desc,
+            'letter'    => $model->letter,
+            'w'         => $model->w,
+            'modelname' => $model->modelname,
         ] );
 //        prn($checkParam);
         if ($checkParam) {
             return $checkParam->label;
         } else {
             $model->label = md5( md5( time() . uniqid() ) );
-            $model->_id = null;
+            $model->_id   = null;
             try {
                 $this->_listParams->save( $model );
             } catch ( \Exception $ex ) {
