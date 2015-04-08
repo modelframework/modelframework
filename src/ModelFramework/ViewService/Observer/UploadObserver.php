@@ -37,7 +37,11 @@ class UploadObserver implements \SplObserver, ConfigAwareInterface, SubjectAware
             $subject->getLogicServiceVerify()->setParams($subject->getParams());
 
             $dataModel = $this->initModel();
-            if ($oldAvatar = $dataModel->avatar()){
+
+            if ($dataModel->__isset('avatar'))
+            {
+//                            prn($dataModel);
+                $oldAvatar =$dataModel->avatar();
                 $oldAvatar = dirname($fileService->setDestenation($oldAvatar, true, lcfirst($dataModel->getModelName()))) . '/'.$oldAvatar;
             }
 

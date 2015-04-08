@@ -8,6 +8,7 @@ namespace ModelFramework\FilesystemService\Adapter;
 
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
+use League\Flysystem\Exception;
 use League\Flysystem\Util;
 use League\Flysystem\Adapter\AbstractAdapter;
 
@@ -139,8 +140,13 @@ class Pydio extends AbstractAdapter
             curl_close($curl);
 
             $jsonResponse = json_decode($response);
+            if (!isset($jsonResponse->t) || !isset($jsonResponse->p)){
+                throw new \Exception ('No Auth token in response: '.$response);
+            }
             $this->authToken = $jsonResponse->t;
             $this->authPrivate = $jsonResponse->p;
+
+
         }
         // Build the authentication hash...
         $nonce = sha1(mt_rand(0, mt_getrandmax() - 1) / mt_getrandmax());
