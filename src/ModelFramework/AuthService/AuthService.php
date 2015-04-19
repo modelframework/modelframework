@@ -26,8 +26,8 @@ use Zend\Stdlib\ArrayUtils;
 
 class AuthService
     implements AuthServiceInterface, ServiceLocatorAwareInterface,
-    ModelServiceAwareInterface, GatewayServiceAwareInterface,
-    AclInterface
+               ModelServiceAwareInterface, GatewayServiceAwareInterface,
+               AclInterface
 {
 
     use ServiceLocatorAwareTrait, ModelServiceAwareTrait, GatewayServiceAwareTrait;
@@ -48,11 +48,11 @@ class AuthService
 
     public function init()
     {
-        $this->_session = new Container('auth');
-        $this->_user = $this->getModel('User');
-        $this->_user->role_id = Role::GUEST;
+        $this->_session          = new Container('auth');
+        $this->_user             = $this->getModel('User');
+        $this->_user->role_id    = Role::GUEST;
         $this->_user->role_title = Role::GUESTNAME;
-        $this->_mainUser = $this->getModel('MainUser');
+        $this->_mainUser         = $this->getModel('MainUser');
         $this->checkAuth();
 
         return $this;
@@ -123,7 +123,7 @@ class AuthService
         $this->_acl = new Acl();
         foreach ($rules['roles'] as $role => $extends) {
             if (is_int($role) && is_string($extends)) {
-                $role = $extends;
+                $role    = $extends;
                 $extends = null;
             }
             $this->_acl->addRole(new \Zend\Permissions\Acl\Role\GenericRole($role),
@@ -133,9 +133,9 @@ class AuthService
             foreach ($allow as $controller => $actions) {
                 if (is_int($controller) && is_string($actions)) {
                     $controller = $actions;
-                    $actions = null;
+                    $actions    = null;
                 }
-                if (!$this->_acl->hasResource($controller)) {
+                if ( !$this->_acl->hasResource($controller)) {
                     $this->_acl->addResource(new \Zend\Permissions\Acl\Resource\GenericResource($controller));
                 }
                 $this->_acl->allow($role, $controller, $actions);
@@ -143,7 +143,7 @@ class AuthService
         }
         foreach ($rules['dataAccess'] as $role => $dataAllow) {
             foreach ($dataAllow as $dataType => $mode) {
-                if (!$this->_acl->hasResource($dataType)) {
+                if ( !$this->_acl->hasResource($dataType)) {
                     $this->_acl->addResource($dataType);
                 }
                 $this->_acl->allow($role, $dataType, $mode);
@@ -154,52 +154,68 @@ class AuthService
 
     public function checkAuth()
     {
-        if (isset($this->_session->main_user_id) &&
-            $this->_session->main_user_id
+        if (isset($this->_session->main_user_id)
+            && $this->_session->main_user_id
         ) {
             try {
                 $this->_mainUser = $this->getGateway('MainUser')
                     ->get($this->_session->main_user_id);
             } catch (\Exception $e) {
                 $this->_session->main_user_id = 0;
+
                 return false;
             }
+
             $company = $this->getGateway('MainCompany')
                 ->get($this->_mainUser->company_id);
 
             $configDB = $this->getGateway('MainConfig')
                 ->findOne(['company_id' => $company->_id]);
 
-            if (!$configDB) {
-                if (($defaultCompanyConfig = include  'config/autoload/company.php')===false) {
-                    throw new \Exception('No exist default company config file');
+            if ( !$configDB) {
+                if (($defaultCompanyConfig
+                        = @include 'config/autoload/company.php') === false
+                ) {
+                    throw new \Exception('Company default config does not exist');
                 }
 
-                $dataModel = $this->getGateway('MainConfig')->model();
+                $dataModel             = $this->getGateway('MainConfig')
+                    ->model();
                 $dataModel->company_id = $company->_id;
-                $dataModel->config = json_encode($defaultCompanyConfig);
+                $dataModel->config     = $defaultCompanyConfig;
                 $this->getGateway('MainConfig')->save($dataModel);
 
-                $companyConfig=$defaultCompanyConfig;
+                $companyConfig = $defaultCompanyConfig;
             } else {
-               $companyConfig =json_decode($configDB->config(),true);
+                $companyConfig = $configDB->config();
             }
 
+            $serviceManager = $this->getServiceLocator();
             $config = $this->getServiceLocator()->get('Config');
             $config = ArrayUtils::merge($config, $companyConfig);
 
+            $connection = $this->getServiceLocator()->get('wepo_company')
+                ->getDriver()->getConnection();
+            $connection->setConnectionParameters($companyConfig['mongozend_db']['adapters']['wepo_company']);
+
+            $allowOverride = $serviceManager->getAllowOverride();
+            $serviceManager->setAllowOverride(true);
+            $serviceManager->setService('Config', $config);
+            $serviceManager->setAllowOverride($allowOverride);
+
+            $user = $this->getGateway('User')
+                ->findOne(['main_id' => $this->_mainUser->_id]);
 
             $dbs = $this->getGateway('MainDb')
                 ->find(['company_id' => $company->_id]);
 
             if ($dbs->count() > 0) {
-                $db = $dbs->current();
+                $db         = $dbs->current();
                 $connection = $this->getServiceLocator()->get('wepo_company')
                     ->getDriver()->getConnection();
                 $connection->setConnectionParameters($db->toArray());
-                $user =
-                    $this->getGateway('User')
-                        ->findOne(['main_id' => $this->_mainUser->_id]);
+                $user = $this->getGateway('User')
+                    ->findOne(['main_id' => $this->_mainUser->_id]);
                 if ($user == null) {
                     $this->cleanUsers();
                     throw new \Exception('User does not exist');
@@ -207,26 +223,24 @@ class AuthService
                 $this->_user = $user;
                 if (strlen($this->_user->theme)) {
 
-                    if (is_array($config) &&
-                        isset($config['view_manager'])
+                    if (is_array($config) && isset($config['view_manager'])
                     ) {
                         $config = $config['view_manager'];
-                        if (is_array($config) &&
-                            isset($config['template_path_stack'])
+                        if (is_array($config)
+                            && isset($config['template_path_stack'])
                         ) {
-                            $config['template_path_stack']['wepo'] =
-                                __DIR__ .
+                            $config['template_path_stack']['wepo'] = __DIR__ .
                                 '/../../../../../../module/Wepo/themes/' .
                                 $this->_user->theme;
 
-                            $config['template_path_stack']['partial'] =
-                                __DIR__ .
+                            $config['template_path_stack']['partial']
+                                = __DIR__ .
                                 '/../../../../../../module/Wepo/themes/' .
                                 $this->_user->theme . '/wepo';
                         }
-                        $zZfcTwigLoaderTemplatePathStack =
-                            $this->getServiceLocator()
-                                ->get('ZfcTwigLoaderTemplatePathStack');
+                        $zZfcTwigLoaderTemplatePathStack
+                            = $this->getServiceLocator()
+                            ->get('ZfcTwigLoaderTemplatePathStack');
                         $zZfcTwigLoaderTemplatePathStack->setPaths($config['template_path_stack']);
                     }
                 }
@@ -246,8 +260,7 @@ class AuthService
         $role = null,
         $resource = null,
         $privilege = null
-    )
-    {
+    ) {
         return $this->_acl->isAllowed($role, $resource, $privilege);
     }
 
@@ -256,10 +269,10 @@ class AuthService
         if (null === $this->_acl) {
             return false;
         }
-        if (!$this->_acl->hasResource($resource)) {
+        if ( !$this->_acl->hasResource($resource)) {
             return false;
         }
-        if (!$this->_acl->hasRole($this->getRole())) {
+        if ( !$this->_acl->hasRole($this->getRole())) {
             return false;
         }
         if ($this->isGranted($resource, 'all')) {
