@@ -20,6 +20,7 @@ use ModelFramework\ModelService\ModelServiceAwareTrait;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\Session\Container;
 use Wepo\Model\Role;
+use Wepo\Model\Status;
 use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\AclInterface;
 use Zend\Stdlib\ArrayUtils;
@@ -169,6 +170,7 @@ class AuthService
             $company = $this->getGateway('MainCompany')
                 ->get($this->_mainUser->company_id);
 
+/*
             $configDB = $this->getGateway('MainConfig')
                 ->findOne(['company_id' => $company->_id]);
 
@@ -189,6 +191,16 @@ class AuthService
             } else {
                 $companyConfig = $configDB->config();
             }
+*/
+
+            // $company->_id : 533ec57a83971eba5c19bbb8
+
+            $companyConfig['bsb_flysystem']['adapters']['pydio']['options'] =
+                $this->getGateway('MainFS')
+                ->findOne(['company_id' => $company->_id ,
+                    'isdefault'=>'true',
+                    'status_id'=>Status::NORMAL])
+                    ->toArray();
 
             $serviceManager = $this->getServiceLocator();
             $config = $this->getServiceLocator()->get('Config');
@@ -206,8 +218,13 @@ class AuthService
             $user = $this->getGateway('User')
                 ->findOne(['main_id' => $this->_mainUser->_id]);
 
-            $dbs = $this->getGateway('MainDb')
-                ->find(['company_id' => $company->_id]);
+            $dbs     = $this->getGateway( 'MainDb' )
+                ->find( [ 'company_id' => $company->_id ,
+                    'isdefault'=>'true',
+                    'status_id'=>Status::NORMAL]);
+
+            prn($dbs);
+            exit();
 
             if ($dbs->count() > 0) {
                 $db         = $dbs->current();
@@ -245,6 +262,7 @@ class AuthService
                     }
                 }
             } else {
+                $this->cleanUsers();
                 throw new \Exception('Could not connect to db');
             }
         }
@@ -303,4 +321,5 @@ class AuthService
     {
         return $this->_user->role_title;
     }
+
 }
