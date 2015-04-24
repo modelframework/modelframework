@@ -201,6 +201,10 @@ class AuthService
                     'isdefault'=>'true',
                     'status_id'=>Status::NORMAL])
                     ->toArray();
+            $dbs     = $this->getGateway( 'MainDb' )
+                ->findOne( [ 'company_id' => $company->_id ,
+                          'isdefault'=>'true',
+                          'status_id'=>Status::NORMAL]);
 
             $serviceManager = $this->getServiceLocator();
             $config = $this->getServiceLocator()->get('Config');
